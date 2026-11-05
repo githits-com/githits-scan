@@ -57,7 +57,8 @@ that section describe 0.2.0 only; use the README for current commands and the
   `--include-manifests` flag with no flag, or use `--lockfiles-only` to omit
   unconfigured manifest-only projects. Review `detect` and run `detect --save`
   to accept intended inventory changes. Missing explicit `--config` files now
-  fail with exit 2, including with `detect --save`.
+  fail with exit 2, except that `detect --config FILE --save` creates a missing
+  file from the same commented template as plain `detect --save`.
 - **Compact license reports** - Online `license report --json` uses experimental
   schema 2 with typed input paths and focused evidence summaries. Offline replay
   accepts schemas 1 and 2 with exact original JSON bytes. Human details show
