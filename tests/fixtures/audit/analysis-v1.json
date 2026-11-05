@@ -1,0 +1,251 @@
+{
+  "format": "githits-scan-analysis",
+  "schema_version": 1,
+  "writer_version": "0.2.0",
+  "producer_report": {
+    "schema_version": 2,
+    "generated_at": "2026-10-27T00:00:00Z",
+    "summary": {
+      "dependencies": 2,
+      "vulnerabilities": 1,
+      "deprecated": 0,
+      "outdated": 0,
+      "duplicates": 0,
+      "excluded_dependencies": 0,
+      "incomplete_sources": 0,
+      "incomplete_checks": 0
+    },
+    "coverage": {
+      "vulnerabilities": {
+        "candidates_count": 2,
+        "checked_count": 2,
+        "unknown_count": 0,
+        "unsupported_count": 0,
+        "unsupported_registries": []
+      },
+      "deprecation": {
+        "candidates_count": 2,
+        "checked_count": 2,
+        "unknown_count": 0,
+        "not_collected_count": 0,
+        "not_collected_registries": []
+      },
+      "outdated": {
+        "candidates_count": 2,
+        "checked_count": 2,
+        "unknown_count": 0,
+        "not_collected_count": 0,
+        "not_collected_registries": []
+      }
+    },
+    "findings": {
+      "vulnerabilities": [
+        {
+          "coordinate": {
+            "registry": "npm",
+            "name": "demo",
+            "version": "1.0.0"
+          },
+          "paths": [
+            "package-lock.json"
+          ],
+          "advisory_id": "GHSA-example",
+          "aliases": [],
+          "summary": "Authored example vulnerability",
+          "severity_score": null,
+          "severity_type": null,
+          "malicious": false,
+          "fixed_in_versions": [
+            "1.1.1"
+          ],
+          "verified_remedies": []
+        }
+      ],
+      "deprecated": [],
+      "outdated": [],
+      "duplicates": []
+    },
+    "unknowns": {
+      "vulnerabilities": [],
+      "metadata": [],
+      "sources": [],
+      "resolution": [],
+      "excluded_dependencies": []
+    },
+    "remediation": {
+      "status": "completed",
+      "recommendations": [
+        {
+          "subject": {
+            "registry": "npm",
+            "name": "demo",
+            "version": "1.0.0"
+          },
+          "finding_refs": [
+            0
+          ],
+          "occurrence_refs": [
+            0
+          ],
+          "outcome": "proposed",
+          "changes": [
+            {
+              "registry": "npm",
+              "name": "demo",
+              "from_version": "1.0.0",
+              "target_version": "1.1.1",
+              "strategy": "upgrade",
+              "occurrence_refs": [
+                0
+              ],
+              "paths": [
+                "package-lock.json"
+              ],
+              "availability_source": "catalog",
+              "prerelease_target": false,
+              "deprecated_target": false
+            },
+            {
+              "registry": "npm",
+              "name": "parent",
+              "from_version": "2.0.0",
+              "target_version": "2.1.0",
+              "strategy": "upgrade",
+              "occurrence_refs": [
+                1
+              ],
+              "paths": [
+                "package-lock.json"
+              ],
+              "availability_source": "catalog",
+              "prerelease_target": false,
+              "deprecated_target": true
+            }
+          ],
+          "blockers": [],
+          "checks": {
+            "release_availability": "observed",
+            "availability_source": "catalog",
+            "withdrawal": "unknown",
+            "advisories": "non_affecting",
+            "requirements": "matched",
+            "preference_differences": 0,
+            "native_resolution": "not_checked",
+            "parent_search": "completed",
+            "catalog_freshness": "unknown",
+            "prerelease_target": false,
+            "deprecated_target": true
+          },
+          "addressed_finding_refs": [
+            0
+          ],
+          "remaining_finding_refs": [],
+          "remaining_occurrence_refs": [],
+          "limitations": [],
+          "detail_status": "retained"
+        }
+      ],
+      "trace": {
+        "status": "retained",
+        "occurrences": [
+          {
+            "path": "package-lock.json",
+            "name": "demo",
+            "version": "1.0.0",
+            "kind": "locked_package",
+            "coordinate": {
+              "registry": "npm",
+              "name": "demo",
+              "version": "1.0.0"
+            },
+            "project_root": false,
+            "dependency_coverage": {
+              "state": "complete",
+              "reasons": []
+            }
+          },
+          {
+            "path": "package-lock.json",
+            "name": "parent",
+            "version": "2.0.0",
+            "kind": "locked_package",
+            "coordinate": {
+              "registry": "npm",
+              "name": "parent",
+              "version": "2.0.0"
+            },
+            "project_root": false,
+            "dependency_coverage": {
+              "state": "complete",
+              "reasons": []
+            }
+          },
+          {
+            "path": "package-lock.json",
+            "name": "application",
+            "version": null,
+            "kind": "project_root",
+            "coordinate": null,
+            "project_root": true,
+            "dependency_coverage": null
+          }
+        ],
+        "relations": [
+          {
+            "from_ref": 2,
+            "to_ref": 1,
+            "path": "package-lock.json",
+            "kind": "dependency",
+            "basis": "lockfile",
+            "disposition": "standard_dependency",
+            "requests": [
+              {
+                "owner": {
+                  "name": "application",
+                  "version": null
+                },
+                "owner_role": "project",
+                "path": "package.json",
+                "kind": "dependency",
+                "requested_requirement": "^2.0.0",
+                "requirement_status": "recorded",
+                "basis": "manifest"
+              }
+            ]
+          },
+          {
+            "from_ref": 1,
+            "to_ref": 0,
+            "path": "package-lock.json",
+            "kind": "dependency",
+            "basis": "lockfile",
+            "disposition": "standard_dependency",
+            "requests": [
+              {
+                "owner": {
+                  "name": "parent",
+                  "version": "2.0.0"
+                },
+                "owner_role": "third_party",
+                "path": "package-lock.json",
+                "kind": "dependency",
+                "requested_requirement": "<1.1.0",
+                "requirement_status": "recorded",
+                "basis": "lockfile"
+              }
+            ]
+          }
+        ]
+      },
+      "limits": {
+        "reasons": [],
+        "omitted_recommendations": 0,
+        "omitted_occurrences": 0,
+        "omitted_relations": 0
+      }
+    }
+  },
+  "selected_manifests": [
+    "package.json"
+  ]
+}

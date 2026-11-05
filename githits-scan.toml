@@ -1,0 +1,30 @@
+# githits-scan configuration for this repository, kept current with
+# `githits-scan detect --save`. CI runs `githits-scan detect` against it, so
+# adding or removing a lockfile without updating this file fails the build.
+
+version = 1
+
+[lockfiles]
+include = [
+    "Cargo.lock",
+]
+# The SBOM fixture is test input, not a dependency of this tool.
+exclude = ["tests/fixtures/**"]
+# xtask is an explicit workspace member covered by the root Cargo.lock.
+manifests = ["xtask/Cargo.toml"]
+
+[licenses]
+# Mirrors the allow list in deny.toml.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "Unicode-3.0",
+]
+
+[[licenses.exceptions]]
+purl = "pkg:cargo/cc"
+reason = "the GitHits SBOM carries no license evidence for cc 1.4.6 (githits:license_observation_status = absent) although crates.io lists MIT OR Apache-2.0; verified 2026-09-13"

@@ -1,0 +1,20 @@
+name: Feature request
+description: A capability the tool should have
+labels: [feature]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you are trying to do in a pipeline or on your machine, and what stops you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The command, flag, or output you have in mind. Exit codes and JSON shapes are compatibility boundaries, so say how a change would fit them.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

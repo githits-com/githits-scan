@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/githits-com/githits-scan/security/advisories/new
+    about: Report privately; see SECURITY.md
+  - name: GitHits API documentation
+    url: https://docs.githits.com/api/overview
+    about: Questions about the API itself rather than this tool

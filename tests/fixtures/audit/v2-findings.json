@@ -1,0 +1,215 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-10-15T00:00:00Z",
+  "summary": {
+    "dependencies": 2,
+    "vulnerabilities": 1,
+    "deprecated": 1,
+    "outdated": 1,
+    "duplicates": 1,
+    "excluded_dependencies": 1,
+    "incomplete_sources": 1,
+    "incomplete_checks": 2
+  },
+  "coverage": {
+    "vulnerabilities": {
+      "candidates_count": 2,
+      "checked_count": 1,
+      "unknown_count": 1,
+      "unsupported_count": 0,
+      "unsupported_registries": []
+    },
+    "deprecation": {
+      "candidates_count": 2,
+      "checked_count": 1,
+      "unknown_count": 1,
+      "not_collected_count": 0,
+      "not_collected_registries": []
+    },
+    "outdated": {
+      "candidates_count": 2,
+      "checked_count": 2,
+      "unknown_count": 0,
+      "not_collected_count": 0,
+      "not_collected_registries": []
+    }
+  },
+  "findings": {
+    "vulnerabilities": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.0.0"
+        },
+        "paths": [
+          "package-lock.json"
+        ],
+        "advisory_id": "GHSA-demo",
+        "aliases": [
+          "CVE-demo"
+        ],
+        "related_advisory_ids": [],
+        "summary": "Authored example advisory",
+        "severity_score": 7.5,
+        "severity_type": "CVSS",
+        "malicious": false,
+        "matched_ranges": [
+          "<1.1.0"
+        ],
+        "fixed_in_versions": [
+          "1.1.0"
+        ],
+        "verified_remedies": [
+          "1.1.1"
+        ]
+      }
+    ],
+    "deprecated": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.0.0"
+        },
+        "paths": [
+          "package-lock.json"
+        ],
+        "reason": "use the maintained package"
+      }
+    ],
+    "outdated": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.0.0"
+        },
+        "paths": [
+          "package-lock.json"
+        ],
+        "latest_version": "2.0.0",
+        "change_type": "major"
+      }
+    ],
+    "duplicates": [
+      {
+        "registry": "npm",
+        "name": "demo",
+        "versions": [
+          {
+            "version": "1.0.0",
+            "paths": [
+              "package-lock.json"
+            ],
+            "origins": [
+              {
+                "path": "package-lock.json",
+                "requester": {
+                  "name": "app",
+                  "version": null
+                },
+                "requested_requirement": "^1.0.0",
+                "status": "recorded"
+              }
+            ]
+          },
+          {
+            "version": "2.0.0",
+            "paths": [
+              "web/package-lock.json"
+            ],
+            "origins": [
+              {
+                "path": "web/package-lock.json",
+                "requester": {
+                  "name": "tool",
+                  "version": "3.0.0"
+                },
+                "requested_requirement": null,
+                "status": "requirement_not_recorded"
+              }
+            ]
+          }
+        ],
+        "unattributed_requirements": [
+          {
+            "path": "package.json",
+            "requester": {
+              "name": "app",
+              "version": null
+            },
+            "requested_requirement": "^1.0.0",
+            "requirement_status": "recorded",
+            "target_status": "untargeted"
+          }
+        ]
+      }
+    ]
+  },
+  "unknowns": {
+    "vulnerabilities": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "2.0.0"
+        },
+        "paths": [
+          "web/package-lock.json"
+        ],
+        "check": "vulnerabilities",
+        "status": "unknown",
+        "reasons": [
+          "invalid_range"
+        ],
+        "advisory_ids": [
+          "GHSA-context"
+        ]
+      }
+    ],
+    "metadata": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "2.0.0"
+        },
+        "paths": [
+          "web/package-lock.json"
+        ],
+        "check": "deprecation",
+        "status": "unknown",
+        "reason": "metadata_unavailable"
+      }
+    ],
+    "sources": [
+      {
+        "path": "package-lock.json",
+        "reasons": [
+          "inventory_only"
+        ]
+      }
+    ],
+    "resolution": [
+      {
+        "path": "package.json",
+        "name": null,
+        "reason": "incomplete_dependency_list"
+      }
+    ],
+    "excluded_dependencies": [
+      {
+        "name": "external-path",
+        "version": null,
+        "paths": [
+          "package-lock.json"
+        ],
+        "reason": "non_registry_source"
+      }
+    ]
+  },
+  "notices": [
+    "Producer prose is not a user-facing evidence inventory."
+  ]
+}

@@ -1,0 +1,25 @@
+version: 2
+# Version updates wait seven days to reduce exposure to compromised fresh
+# releases. Dependabot security updates are not subject to this cooldown.
+updates:
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      semver-major-days: 7
+      include: ["*"]
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      include: ["*"]
+    # Workflow toolchain inputs select Rust. Upgrades also update rust-toolchain.toml,
+    # Cargo.toml, and local verification. Refresh the installer SHA manually from master.
+    ignore:
+      - dependency-name: dtolnay/rust-toolchain

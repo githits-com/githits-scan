@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "inventory": {
+    "completeness": "partial_manifest_inventory",
+    "properties": [
+      {
+        "name": "githits:notice",
+        "value": "Available evidence is incomplete; installed artifacts were not inspected."
+      },
+      {
+        "name": "githits:resolutions",
+        "value": "[{\"path\": \"web/package.json\", \"status\": \"partial\"}]"
+      },
+      {
+        "name": "githits:dependency_coverage",
+        "value": "{\"root\": {\"state\": \"incomplete\", \"reasons\": [\"missing_input\"]}}"
+      }
+    ],
+    "compositions": [
+      {
+        "aggregate": "incomplete",
+        "assemblies": [
+          "root",
+          "a",
+          "b"
+        ]
+      }
+    ],
+    "dependencies": [
+      {
+        "ref": "root",
+        "dependsOn": [
+          "a"
+        ]
+      },
+      {
+        "ref": "a",
+        "dependsOn": [
+          "b"
+        ]
+      }
+    ]
+  },
+  "components": [
+    {
+      "bom_ref": "root",
+      "name": "fixture-root",
+      "version": "1.0.0",
+      "purl": null,
+      "type": "application",
+      "scope": null,
+      "record_kind": "manifest",
+      "licenses": [
+        {
+          "expression": "MIT",
+          "acknowledgement": "declared"
+        }
+      ],
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "source_evidence": null,
+      "external_references": [],
+      "hashes": [],
+      "properties": [
+        {
+          "name": "githits:manifest_path",
+          "value": "package.json"
+        }
+      ]
+    },
+    {
+      "bom_ref": "a",
+      "name": "same-package",
+      "version": "1.2.3",
+      "purl": "pkg:npm/same-package@1.2.3",
+      "type": "library",
+      "scope": null,
+      "record_kind": "locked_package",
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0",
+          "acknowledgement": "declared"
+        },
+        {
+          "license": {
+            "name": "Additional notice"
+          }
+        }
+      ],
+      "observed_licenses": [],
+      "publisher_evidence": {
+        "status": "expression",
+        "capture_status": "present",
+        "coverage": "complete",
+        "observations": [
+          {
+            "relationship": "controlling",
+            "observation": {
+              "source": "registry_metadata",
+              "scope": "release",
+              "field": "license",
+              "statements": [
+                "MIT OR Apache-2.0"
+              ],
+              "version": "1.2.3"
+            }
+          }
+        ]
+      },
+      "source_evidence": null,
+      "external_references": [],
+      "hashes": [],
+      "properties": [
+        {
+          "name": "githits:lockfile_paths",
+          "value": "[\"web/package-lock.json\"]"
+        },
+        {
+          "name": "githits:lockfile_path",
+          "value": "web/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom_ref": "b",
+      "name": "same-package",
+      "version": "1.2.3",
+      "purl": "pkg:npm/same-package@1.2.3",
+      "type": "library",
+      "scope": "excluded",
+      "record_kind": "locked_package",
+      "licenses": [],
+      "observed_licenses": [
+        {
+          "license": {
+            "name": "Custom terms"
+          }
+        }
+      ],
+      "publisher_evidence": {
+        "status": "ambiguous",
+        "capture_status": "present",
+        "coverage": "selected_only",
+        "observations": [
+          {
+            "relationship": "context",
+            "observation": {
+              "source": "repository_metadata",
+              "scope": "repository",
+              "field": "license",
+              "statements": [
+                "MIT",
+                "Custom terms"
+              ]
+            },
+            "interpretation": {
+              "status": "ambiguous",
+              "issues": [
+                {
+                  "code": "invalid_token",
+                  "offset": 9
+                },
+                {
+                  "future_issue": true
+                }
+              ]
+            }
+          }
+        ],
+        "reason": "contextual_statements_only"
+      },
+      "source_evidence": {
+        "provider": "example_provider",
+        "method": "text_identification",
+        "status": "future_observation",
+        "last_attempt_status": "failed",
+        "files": [
+          {
+            "path": "vendor/COPYING",
+            "detected_licenses": [
+              "Custom terms",
+              "MIT"
+            ]
+          }
+        ],
+        "module": "example.invalid/observed-module",
+        "version": "v0.9.0",
+        "url": "https://example.invalid/observed-module/licenses"
+      },
+      "external_references": [
+        {
+          "type": "distribution",
+          "url": "https://example.invalid/package.tgz",
+          "comment": "recorded artifact",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ]
+        }
+      ],
+      "hashes": [],
+      "properties": [
+        {
+          "name": "githits:lockfile_paths",
+          "value": "[\"tools/package-lock.json\"]"
+        },
+        {
+          "name": "githits:license_artifact_verification",
+          "value": "not_checked"
+        },
+        {
+          "name": "future_property",
+          "value": "kept"
+        }
+      ],
+      "future_evidence": {
+        "retained": true
+      }
+    }
+  ],
+  "future_top_level": {
+    "preserved": true
+  }
+}

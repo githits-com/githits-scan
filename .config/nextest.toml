@@ -1,0 +1,3 @@
+# The repository testing policy owns the runner version so local and CI
+# process-isolation semantics cannot drift independently.
+nextest-version = "0.9.143"

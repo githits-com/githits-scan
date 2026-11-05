@@ -1,0 +1,15 @@
+.{
+    .name = .githits_scan_fixture,
+    .version = "0.1.0",
+    .dependencies = .{
+        .known_folders = .{
+            .url = "https://github.com/ziglibs/known-folders/archive/207c34a16e4365edc20d92c7892f962b3bed46e8.tar.gz",
+            .hash = "known_folders-0.0.0-Fy-PJsbKAACbDh9bBxR0MMThxZSS6A9RH4apWphNHY70",
+        },
+        .diffz = .{
+            .url = "https://github.com/ziglibs/diffz/archive/d080c1eb782fff15068cabb3b82da85ce6054b74.tar.gz",
+            .hash = "diffz-0.0.1-G2tlIfLNAQCc06RFk0tFGj2M-X-id4WHFkMVw2JoMILR",
+        },
+    },
+    .paths = .{""},
+}

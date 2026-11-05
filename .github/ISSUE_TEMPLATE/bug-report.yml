@@ -1,0 +1,44 @@
+name: Bug report
+description: Something behaves differently from what the documentation says
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste a token, private package-file contents, or unreviewed reports.
+        Inventory and reports can reveal paths and private package names; redact them.
+        Request IDs help trace API failures. Report vulnerabilities via SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `githits-scan --version`
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and architecture
+      description: For example, macOS ARM64 or Ubuntu x86_64; include how you installed Scan.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The exact command, its stdout and stderr, and the exit code. Use `--json` where available.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: layout
+    attributes:
+      label: Repository layout
+      description: Which lockfiles and manifests are present (the output of `githits-scan detect --json` is ideal), and the `githits-scan.toml` if one is used.
+      render: text

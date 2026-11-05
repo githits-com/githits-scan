@@ -1,0 +1,11 @@
+# Greenfield function-shape ceilings from the GitHits Rust conventions. These
+# are tripwires, not design targets; lower them through reviewed refactors and
+# never raise them to make a change pass.
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+excessive-nesting-threshold = 3
+too-many-arguments-threshold = 7
+too-many-lines-threshold = 100
+
+# Product and format names that legitimately appear in prose without backticks.
+doc-valid-idents = ["GitHits", "NuGet", "CycloneDX", "OpenAPI", "GitHub", ".."]

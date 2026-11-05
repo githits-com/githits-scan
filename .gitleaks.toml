@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated dependency metadata and local agent state"
+paths = [
+    '''Cargo\.lock$''',
+    '''\.claude/''',
+    '''\.context/''',
+]

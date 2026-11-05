@@ -1,0 +1,24 @@
+# Rust
+/target/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local agent state
+.claude/*.local.json
+.claude/*.lock
+.context/
+
+# Logs and coverage
+*.log
+/coverage/

@@ -1,0 +1,451 @@
+{
+  "components": [
+    {
+      "bom_ref": "root",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [
+          "app/package-lock.json"
+        ],
+        "manifest_paths": [
+          "app/package.json"
+        ]
+      },
+      "license_evidence": {
+        "applicability_reason": "uploaded_declaration",
+        "artifact_verification": "not_checked",
+        "interpretation_methods": [
+          "spdx_expression"
+        ],
+        "issues": [
+          {
+            "code": "deprecated",
+            "identifier": "GPL-2.0"
+          }
+        ],
+        "origin_scope": "manifest",
+        "raw": "GPL-2.0+",
+        "source": "manifest_declared",
+        "status": "expression",
+        "syntax": "spdx"
+      },
+      "licenses": [
+        {
+          "acknowledgement": "declared",
+          "expression": "GPL-2.0+"
+        }
+      ],
+      "name": "license-example",
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "purl": null,
+      "record_kind": "manifest",
+      "scope": null,
+      "source_evidence": null,
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom_ref": "registry",
+      "external_references": [
+        {
+          "comment": "{\"basis\":\"package_metadata\"}",
+          "type": "vcs",
+          "url": "https://example.com/dependency"
+        }
+      ],
+      "inputs": {
+        "lockfile_paths": [
+          "app/package-lock.json"
+        ],
+        "manifest_paths": []
+      },
+      "license_evidence": {
+        "applicability_reason": "publisher_release_metadata",
+        "artifact_verification": "not_checked",
+        "source": "registry_declared"
+      },
+      "licenses": [
+        {
+          "acknowledgement": "declared",
+          "expression": "MIT"
+        }
+      ],
+      "metadata_status": "available",
+      "name": "dependency",
+      "observed_licenses": [],
+      "publisher_evidence": {
+        "capture_status": "present",
+        "controlling_index": 0,
+        "coverage": "complete",
+        "expression": "MIT",
+        "observations": [
+          {
+            "interpretation": {
+              "expression": "MIT",
+              "interpretation_methods": [
+                "spdx_expression"
+              ],
+              "issues": [],
+              "status": "expression",
+              "syntax": "spdx"
+            },
+            "observation": {
+              "field": "license",
+              "relation": "single",
+              "scope": "release",
+              "source": "npm_manifest",
+              "statements": [
+                "MIT"
+              ],
+              "status": "present",
+              "version": "1.0.0"
+            },
+            "relationship": "controlling"
+          }
+        ],
+        "reason": "publisher_release_metadata",
+        "status": "expression"
+      },
+      "purl": "pkg:npm/dependency@1.0.0",
+      "record_kind": "locked_package",
+      "resolution_basis": "lockfile_record",
+      "scope": null,
+      "source_evidence": null,
+      "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom_ref": "substitution",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [
+          "php/composer.lock"
+        ],
+        "manifest_paths": []
+      },
+      "license_evidence": {
+        "applicability_reason": "source_substitution",
+        "artifact_verification": "not_checked",
+        "lookup_basis": "registry_name_version",
+        "source": "registry_declared"
+      },
+      "licenses": [],
+      "metadata_status": "available",
+      "name": "example/substitution",
+      "observed_licenses": [],
+      "publisher_evidence": {
+        "capture_status": "present",
+        "controlling_index": 0,
+        "coverage": "complete",
+        "expression": "MIT",
+        "observations": [
+          {
+            "interpretation": {
+              "expression": "MIT",
+              "interpretation_methods": [
+                "spdx_expression"
+              ],
+              "issues": [],
+              "status": "expression",
+              "syntax": "spdx"
+            },
+            "observation": {
+              "field": "license",
+              "relation": "single",
+              "scope": "release",
+              "source": "composer_manifest",
+              "statements": [
+                "MIT"
+              ],
+              "status": "present",
+              "version": "1.0.0"
+            },
+            "relationship": "controlling"
+          }
+        ],
+        "reason": "publisher_release_metadata",
+        "status": "expression"
+      },
+      "purl": "pkg:composer/example/substitution@1.0.0",
+      "record_kind": "locked_package",
+      "resolution_basis": "lockfile_record",
+      "scope": null,
+      "source_evidence": null,
+      "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+      "source_revision": "0123456789abcdef0123456789abcdef01234567",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom_ref": "unavailable",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [
+          "app/package-lock.json"
+        ],
+        "manifest_paths": []
+      },
+      "licenses": [],
+      "metadata_status": "unavailable",
+      "name": "missing-metadata",
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "purl": "pkg:npm/missing-metadata@2.0.0",
+      "record_kind": "locked_package",
+      "resolution_basis": "lockfile_record",
+      "scope": null,
+      "source_evidence": null,
+      "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+      "type": "library",
+      "version": "2.0.0"
+    },
+    {
+      "bom_ref": "local",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [
+          "app/package-lock.json"
+        ],
+        "manifest_paths": []
+      },
+      "licenses": [],
+      "metadata_reason": "non_registry_source",
+      "metadata_status": "not_eligible",
+      "name": "local-dependency",
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "purl": null,
+      "purl_omission_reason": "non_registry_source",
+      "record_kind": "locked_package",
+      "resolution_basis": "lockfile_record",
+      "scope": null,
+      "source_evidence": null,
+      "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+      "type": "library",
+      "version": null
+    },
+    {
+      "bom_ref": "catalog",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [],
+        "manifest_paths": [
+          "native/vcpkg.json"
+        ]
+      },
+      "licenses": [],
+      "metadata_status": "unavailable",
+      "name": "catalog-dependency",
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "purl": null,
+      "record_kind": "resolved_package",
+      "resolution_basis": "current_public_catalog",
+      "resolution_limitation": "vcpkg_baseline_not_applied",
+      "scope": null,
+      "source_evidence": null,
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom_ref": "go",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [],
+        "manifest_paths": [
+          "go.mod"
+        ]
+      },
+      "licenses": [],
+      "name": "example.com/source",
+      "observed_licenses": [
+        {
+          "license": {
+            "name": "Apache-2.0"
+          }
+        },
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "publisher_evidence": null,
+      "purl": "pkg:golang/example.com/source@v1.0.0",
+      "record_kind": "resolved_package",
+      "scope": null,
+      "source_evidence": {
+        "checked_at": "2026-10-22T12:00:00Z",
+        "files": [
+          {
+            "detected_licenses": [
+              "Apache-2.0"
+            ],
+            "path": "LICENSE"
+          },
+          {
+            "detected_licenses": [
+              "MIT"
+            ],
+            "path": "nested/LICENSE"
+          }
+        ],
+        "last_attempt_at": "2026-10-22T12:00:00Z",
+        "last_attempt_status": "ambiguous",
+        "method": "licensecheck",
+        "module": "example.com/source",
+        "provider": "pkg_go_dev",
+        "status": "ambiguous",
+        "url": "https://pkg.go.dev/example.com/source@v1.0.0?tab=licenses",
+        "version": "v1.0.0"
+      },
+      "type": "library",
+      "version": "v1.0.0"
+    },
+    {
+      "bom_ref": "failed-root",
+      "external_references": [],
+      "inputs": {
+        "lockfile_paths": [],
+        "manifest_paths": [
+          "unresolved/package.json"
+        ]
+      },
+      "licenses": [],
+      "name": "unresolved-project",
+      "observed_licenses": [],
+      "publisher_evidence": null,
+      "purl": null,
+      "record_kind": "manifest",
+      "scope": null,
+      "source_evidence": null,
+      "type": "library",
+      "version": null
+    }
+  ],
+  "inventory": {
+    "completeness": "mixed_dependency_inventory",
+    "component_type_basis": "library_assumed_from_inventory",
+    "coverage": [
+      {
+        "aggregate": "incomplete",
+        "assemblies": [
+          "root",
+          "registry",
+          "substitution",
+          "unavailable",
+          "local",
+          "catalog",
+          "go",
+          "failed-root"
+        ]
+      },
+      {
+        "aggregate": "unknown",
+        "dependencies": [
+          "root",
+          "registry",
+          "substitution",
+          "unavailable",
+          "local",
+          "catalog",
+          "go",
+          "failed-root"
+        ]
+      }
+    ],
+    "declaration_agreement": [
+      {
+        "declaration_path": "app/package.json",
+        "declared_scope": "dependencies",
+        "locked_versions": [
+          "1.0.0"
+        ],
+        "matched_versions": [],
+        "name": "dependency",
+        "path": "app/package-lock.json",
+        "recorded_scopes": [
+          "dependencies"
+        ],
+        "requested_requirement": "^2.0.0",
+        "requirement_status": "recorded",
+        "status": "version_mismatch"
+      }
+    ],
+    "declarations": [
+      {
+        "declared_requirement": "^9.0.0",
+        "declared_scope": "dependencies",
+        "manifest_path": "unresolved/package.json",
+        "name": "never-resolved-dependency",
+        "optional": "false",
+        "source_type": "registry"
+      }
+    ],
+    "dependency_coverage": {
+      "catalog": {
+        "reasons": [
+          "not_expanded"
+        ],
+        "state": "unknown"
+      },
+      "failed-root": {
+        "reasons": [
+          "not_expanded"
+        ],
+        "state": "unknown"
+      },
+      "go": {
+        "reasons": [
+          "not_expanded"
+        ],
+        "state": "unknown"
+      }
+    },
+    "lockfiles": [
+      {
+        "association_diagnostics": [],
+        "association_status": "associated",
+        "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+        "format": "LOCKFILE_FORMAT_NPM_PACKAGE_LOCK",
+        "manifest_lock_consistency": "not_checked",
+        "manifest_paths": [
+          "app/package.json"
+        ],
+        "native_format_version": "3",
+        "path": "app/package-lock.json",
+        "projection_notices": [
+          "Target conditions were retained, not evaluated."
+        ]
+      }
+    ],
+    "notices": [
+      "Recorded inventory, not an exact installed build; artifacts were not inspected."
+    ],
+    "resolution_basis": "lockfile_records_and_manifest_resolution",
+    "resolutions": [
+      {
+        "diagnostics": [
+          {
+            "reason": "vcpkg_baseline_not_applied"
+          }
+        ],
+        "path": "native/vcpkg.json",
+        "status": "partial"
+      },
+      {
+        "diagnostics": [
+          {
+            "name": "",
+            "reason": "resolution_failed"
+          }
+        ],
+        "path": "unresolved/package.json",
+        "status": "partial"
+      }
+    ]
+  },
+  "schema_version": 2
+}

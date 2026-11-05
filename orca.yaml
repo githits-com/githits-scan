@@ -1,0 +1,3 @@
+scripts:
+  setup: ./scripts/orca-setup.sh
+  archive: cargo clean 2>/dev/null || true

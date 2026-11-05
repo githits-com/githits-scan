@@ -1,0 +1,69 @@
+repos:
+  - repo: local
+    hooks:
+      # GIT_WORK_TREE is not consistently set by pre-commit in linked
+      # worktrees. Exporting it keeps Cargo hooks reliable in linked worktrees.
+      - id: cargo-fmt
+        name: cargo fmt
+        entry: bash -c 'export GIT_WORK_TREE="${GIT_WORK_TREE:-$(pwd)}" && cargo fmt --all -- --check'
+        language: system
+        files: '^(Cargo\.(toml|lock)|rustfmt\.toml|src/|tests/|xtask/)'
+        pass_filenames: false
+
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: bash -c 'export GIT_WORK_TREE="${GIT_WORK_TREE:-$(pwd)}" && cargo clippy --locked --workspace --all-targets --all-features -- -D warnings'
+        language: system
+        files: '^(Cargo\.(toml|lock)|clippy\.toml|src/|tests/|xtask/)'
+        pass_filenames: false
+
+      # Tests and doctests run in CI, not on every commit. Contributors run
+      # focused tests during development; see docs/guidelines/TESTING.md.
+      - id: cargo-doc
+        name: cargo doc
+        entry: bash -c 'export GIT_WORK_TREE="${GIT_WORK_TREE:-$(pwd)}" && RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --all-features --no-deps'
+        language: system
+        files: '^(Cargo\.(toml|lock)|src/|tests/|xtask/)'
+        pass_filenames: false
+
+      - id: cargo-deny
+        name: cargo deny
+        # Clear the enclosing worktree's repository-local Git environment before
+        # cargo-deny manages its separate RustSec advisory database checkout.
+        entry: bash -c 'unset $(git rev-parse --local-env-vars) && cargo deny check'
+        language: system
+        files: '^(Cargo\.(toml|lock)|deny\.toml)'
+        pass_filenames: false
+
+      - id: zizmor
+        name: zizmor
+        entry: zizmor --format plain --no-online-audits .
+        language: python
+        additional_dependencies: [zizmor==1.30.0]
+        files: '^(\.github/(dependabot\.yml|workflows/.*\.ya?ml)|\.pre-commit-config\.yaml)$'
+        pass_filenames: false
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # frozen: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: 914e7df21a07ef503a81201c76d2b11c789d3fca # frozen: v1.7.12
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e # frozen: v8.30.1
+    hooks:
+      - id: gitleaks
