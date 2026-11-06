@@ -136,6 +136,14 @@ pub fn run<A: SbomApi + AuditApi + UpgradeApi>(
             stderr,
             &mut notices,
         )?;
+        for (input, audit) in [(&base, &audits.0), (&head, &audits.1)] {
+            notices.extend(
+                audit
+                    .notices
+                    .iter()
+                    .map(|notice| format!("{}: {notice}", input.label)),
+            );
+        }
         report.incomplete |= audits.0.incomplete || audits.1.incomplete;
         report.changes = diff::compare(&inventories.0, &inventories.1, (&audits.0, &audits.1));
         enrich(&mut report.changes, &api);
@@ -186,11 +194,14 @@ fn audits<A: AuditApi>(
         if failed {
             return Ok(diff::Audit::default());
         }
-        let result = api.audit(upload.clone(), &mut |event| {
-            progress(request, event, stderr)
-        });
+        let result = api
+            .audit(upload.clone(), &mut |event| {
+                progress(request, event, stderr)
+            })
+            .map_err(Error::from)
+            .and_then(|report| diff::Audit::project(&report, inventory));
         match result {
-            Ok(report) => diff::Audit::project(&report, inventory),
+            Ok(audit) => Ok(audit),
             Err(error) => {
                 notices.push(format!("{}: audit unavailable: {error}", input.label));
                 writeln!(

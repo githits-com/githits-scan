@@ -49,12 +49,14 @@ impl Snapshot {
     ) -> Result<Self, Error> {
         let prefix = capture(root, &["rev-parse", "--show-prefix"], api::MAX_PATH_BYTES).map_err(
             |error| match error {
-                Error::Object => Error::Input("diff PATH must be the Git repository root"),
+                Error::Object => Error::Input("diff PATH must be a readable Git repository root"),
                 error => error,
             },
         )?;
         if !prefix.iter().all(u8::is_ascii_whitespace) {
-            return Err(Error::Input("diff PATH must be the Git repository root"));
+            return Err(Error::Input(
+                "diff PATH must be a readable Git repository root",
+            ));
         }
         let mut snapshot = Self {
             root: root.to_path_buf(),
@@ -320,7 +322,7 @@ fn records(
     result?;
     if !status.success() {
         return Err(Error::Input(
-            "cannot enumerate Git repository; ensure PATH is its root",
+            "cannot enumerate Git repository; ensure PATH is a readable root",
         ));
     }
     Ok(())

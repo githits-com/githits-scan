@@ -124,7 +124,7 @@ fn diff_markdown_escapes_names_keeps_rows_together_and_omits_unsafe_links() {
     let mut bytes = Vec::new();
     render::write(&report, Format::Markdown, &mut bytes).expect("render");
     let text = String::from_utf8(bytes).expect("UTF-8");
-    assert!(text.contains("evil&#124;&lt;script&gt;\\nname"));
+    assert!(text.contains("evil&#124;&lt;script&gt;&#92;nname"));
     assert!(!text.contains("javascript:"));
     assert!(!text.contains("9.9.9"));
     assert!(
@@ -160,4 +160,49 @@ fn diff_terminal_changelog_url_keeps_query_parameters_unchanged() {
     let text = String::from_utf8(bytes).expect("UTF-8");
     assert!(text.contains(link));
     assert!(!text.contains("&amp;"));
+}
+
+#[test]
+fn diff_markdown_package_text_cannot_create_links_images_or_mentions() {
+    let mut changes = changes();
+    changes.truncate(1);
+    changes[0].key.name =
+        "[click](https://evil.invalid) ![](https://evil.invalid/pixel) @someone *bold* _italic_"
+            .into();
+    let report = diff::Report {
+        schema_version: 1,
+        comparison_scope: "repository",
+        base: "base".into(),
+        head: "head".into(),
+        analysis_performed: true,
+        incomplete: false,
+        notices: vec![],
+        changes,
+    };
+    let mut bytes = Vec::new();
+    render::write(&report, Format::Markdown, &mut bytes).expect("render");
+    let text = String::from_utf8(bytes).expect("UTF-8");
+    for markup in ["[click]", "![](", "@someone", "*bold*", "_italic_"] {
+        assert!(!text.contains(markup), "unescaped {markup}");
+    }
+    assert!(text.contains("&#91;click&#93;"));
+    assert!(text.contains("&#64;someone"));
+}
+
+#[test]
+fn diff_empty_markdown_message_is_separate_from_the_table() {
+    let report = diff::Report {
+        schema_version: 1,
+        comparison_scope: "repository",
+        base: "base".into(),
+        head: "head".into(),
+        analysis_performed: false,
+        incomplete: false,
+        notices: vec![],
+        changes: vec![],
+    };
+    let mut bytes = Vec::new();
+    render::write(&report, Format::Markdown, &mut bytes).expect("render");
+    let text = String::from_utf8(bytes).expect("UTF-8");
+    assert!(text.contains("| --- | --- | --- | --- | --- | --- |\n\nNo changes"));
 }

@@ -228,3 +228,51 @@ fn diff_unchanged_direct_version_does_not_label_new_transitive_version_direct() 
     assert_eq!(changes[0].head_scope, Some("transitive"));
     assert_eq!(transitions(&mut changes[0]).len(), 0);
 }
+
+#[test]
+fn diff_orphan_unknown_audit_coordinate_invalidates_per_row_assessment_with_reason() {
+    let inventory = inventory(false);
+    let mut value = fixture::audit(false);
+    value["unknowns"]["vulnerabilities"] = serde_json::json!([{"coordinate":{"registry":"npm","name":"orphan-alias","version":"1.0.0"},"paths":["package-lock.json"],"check":"vulnerabilities","status":"unknown","reasons":["metadata_unavailable"],"advisory_ids":[]}]);
+    value["coverage"]["vulnerabilities"]["checked_count"] = 3.into();
+    value["coverage"]["vulnerabilities"]["unknown_count"] = 1.into();
+    value["summary"]["incomplete_checks"] = 1.into();
+    let report =
+        AuditReport::from_bytes(&serde_json::to_vec(&value).expect("JSON")).expect("report");
+    assert_eq!(
+        crate::audit::assess(&report)
+            .expect("assessment")
+            .unverified
+            .len(),
+        0
+    );
+    let audit = Audit::project(&report, &inventory).expect("projection");
+    assert!(!audit.available);
+    assert!(
+        audit
+            .notices
+            .iter()
+            .any(|n| n.contains("absent from inventory") && n.contains("orphan-alias"))
+    );
+    assert!(!audit.checked(&Key {
+        registry: Some("npm".into()),
+        name: "minimist".into()
+    }));
+}
+
+#[test]
+fn diff_audit_inventory_count_mismatch_has_an_explicit_reason() {
+    let mut inventory = inventory(false);
+    inventory.packages.remove(&Key {
+        registry: Some("npm".into()),
+        name: "parent".into(),
+    });
+    let audit = audit(false, &inventory);
+    assert!(!audit.available);
+    assert!(
+        audit
+            .notices
+            .iter()
+            .any(|n| n.contains("coordinate count 4 does not match inventory 3"))
+    );
+}
