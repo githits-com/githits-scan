@@ -160,3 +160,12 @@ configuration remains written under `--save`. No partial selection is called an
 exact preview. Directory pruning changes classification using only visible
 inputs: for example, excluding `gradle/**` can leave its formerly owning manifest
 as an independent manifest-only project. Exclude that manifest too when desired.
+
+## Git snapshot inputs
+
+Experimental [dependency diff](dependency-diff.md) feeds Git path/size metadata to
+the same pure pairing rules and bounded upload selector through an injected reader.
+Its enumeration policy intentionally keeps tracked-but-ignored files and skips
+ignored untracked files, hidden paths and installed-dependency directories. No
+historical tree is checked out or materialized. Configuration is not loaded; its
+presence and non-deliberately omitted evidence are report notices.

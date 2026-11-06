@@ -96,6 +96,9 @@ For how GitHits processes submitted data, read the
 [Privacy Policy](https://githits.com/privacy) and
 [Terms of Service](https://githits.com/legal/terms-of-service/).
 
+`diff` can upload selected package files from historical commits as well as the
+working tree. Review its explicit input revisions and exclusions before running.
+
 ## Supported package files
 
 Recognition is by exact filename and case. Renaming an unsupported file does not
@@ -212,6 +215,21 @@ reason and do not cause failure; maintenance and incomplete evidence still do.
 There is no category-specific failure switch. Automation can evaluate its own
 policy from complete JSON, preserving exits 2/3 as errors. Saved analysis retains
 its ignore policy for offline replay.
+
+### Experimental dependency diff
+
+```sh
+githits-scan diff --base "$(git merge-base origin/main HEAD)" --head HEAD
+githits-scan diff --base HEAD --format json
+```
+
+Compare direct and transitive dependencies without changing the checkout. Only
+proven direct version transitions request upgrade reviews; audit evidence supplies
+all package vulnerability deltas. This informational command can make four charged
+analysis submissions, which may exceed current personal short-rate limits.
+Partial reports retain explicit unknowns and exit 0. Git is required; configuration
+files are ignored in favor of explicit `--exclude` and `--lockfiles-only` flags.
+See [dependency diff](docs/implementation/dependency-diff.md) for scope and limits.
 
 ### License reports and policy checks
 

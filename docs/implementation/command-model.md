@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document records the contract every command shares: the audiences it serves, the command surface, the configuration file, exit codes, and output conventions. Per-command details live in `discovery.md`, `sbom-generate.md`, `configuration.md`, `license-check.md`, `license-report.md`, and `audit.md`; this page is what ties them together and what a new command must fit.
+This document records the contract every command shares: the audiences it serves, the command surface, the configuration file, exit codes, and output conventions. Per-command details live in `discovery.md`, `sbom-generate.md`, `configuration.md`, `license-check.md`, `license-report.md`, `audit.md`, and `dependency-diff.md`; this page is what ties them together and what a new command must fit.
 
 ## Two Audiences, One Model
 
@@ -21,6 +21,13 @@ This document records the contract every command shares: the audiences it serves
 | `githits-scan license check [PATH]` | Generate (or read with `--sbom`) a CycloneDX document and evaluate the component inventory and nested assemblies against explicit policy; root/local markers exclude their own nodes | One submission plus reads, or none with `--sbom` |
 | `githits-scan audit [PATH]` | Audit vulnerabilities, deprecated releases, outdated and duplicate versions, preserving evidence gaps | One submission, events and result reads |
 | `githits-scan audit --from-analysis FILE [--explain PACKAGE]` | Re-display a saved audit or inspect recorded requests for an exact vulnerable coordinate | None; no token or repository/config reads |
+| `githits-scan diff [PATH] --base REF [--head REF]` | Experimental repository dependency/advisory comparison; `--format human|json|markdown` | Up to four analysis submissions plus direct upgrade-review batches; none for identical selected inputs |
+
+The experimental `diff` command ignores configuration, requires a Git root and
+uses explicit exclusions/manifest flags. It returns 0 for a completed informational
+report, including unavailable audits or reviews, with JSON `incomplete` and null
+unassessed deltas. Required inventory and output failures retain the usual 2/3
+classification. It is not a policy check. See [dependency diff](dependency-diff.md).
 
 ### Shared arguments
 
@@ -32,7 +39,7 @@ This document records the contract every command shares: the audiences it serves
 | `--json` | JSON on stdout or `--output` instead of the human report (`detect`, `license report`, `license check`, `audit`); audit emits focused findings and incomplete checks |
 | `-q`, `--quiet` | Suppress routine progress and success messages (all commands); reports/documents, errors, actionable warnings and blocked-scan diagnostics are preserved |
 | `--no-color` | Disable color; `NO_COLOR` is honored too. Color never carries meaning |
-| `--lockfiles-only` | Leave manifest-only projects out of the inventory (`detect`) and the upload (`sbom generate`, `license report`, `license check`, `audit`); by default they are part of both and resolved from their declared constraints |
+| `--lockfiles-only` | Leave manifest-only projects out of the inventory (`detect`) and the upload (`sbom generate`, `license report`, `license check`, `audit`, `diff`); by default they are part of both and resolved from their declared constraints |
 | `--exclude <GLOB>` | Omit matching package files, including owning/workspace manifests; patterns ending in `/**` prune subtrees (repeatable; same glob rules as `lockfiles.exclude`). `detect --save` merges the patterns into the configuration. Conflicts with `license check --sbom` |
 
 All commands accept `-o/--output FILE` (`-` means stdout). `license check --details` adds component references, package URLs and bounded
