@@ -140,8 +140,10 @@ nothing. It never force-pushes, merges, labels, tags, or publishes bottles.
    No organization, Actions, Workflows, Issues, or Administration permissions are
    needed. App-authored PRs trigger the tap's normal PR workflows.
 2. In `githits-com/githits-scan`, create/protect the environment `homebrew-tap`
-   and restrict deployment refs to release tags. Add environment secrets
-   `HOMEBREW_TAP_APP_ID` and `HOMEBREW_TAP_APP_PRIVATE_KEY`. Keep the private key
+   and restrict deployment refs to release tags. Add the environment variable
+   `HOMEBREW_TAP_APP_ID` and environment secret `HOMEBREW_TAP_APP_PRIVATE_KEY`.
+   The workflow reads the App ID from `vars` and the private key from `secrets`.
+   Keep the private key
    out of chat, files, logs, and process arguments. This setup is a maintainer
    operation; implementation does not create the environment or secrets.
 3. Ensure GitHub Actions is enabled on the tap. Its generated publish workflow
@@ -154,9 +156,11 @@ nothing. It never force-pushes, merges, labels, tags, or publishes bottles.
    review-and-label procedure. The generated publish workflow also supports a
    manual PR number and reviewed head SHA.
 
-When the handoff fails, diagnose the environment/App setup or API error and
-rerun the failed job from the original tag workflow. Do not recreate the GitHub
-release or move its tag. Bottle CI failures are fixed in the tap PR before the
+After each tagged release, confirm that the tap PR exists: a tolerated handoff
+failure can leave the overall release run green. If the PR is missing, inspect
+the Homebrew job, diagnose the environment/App setup or API error, and rerun that
+job from the original tag workflow (`gh run rerun --job <job-id>`). Do not recreate
+the GitHub release or move its tag. Bottle CI failures are fixed in the tap PR before the
 maintainer applies `pr-pull`; unmerged changes do not affect installed users.
 
 ## Deferred crates.io bootstrap
