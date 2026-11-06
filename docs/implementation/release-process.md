@@ -16,8 +16,7 @@ to the shipped scanner.
    The maximum fragment impact determines the bump; before 1.0, major means minor.
    None-only fragments do not trigger a release. Entries are grouped by category
    and sorted by filename. Review and curate the generated notes to describe the
-   behavior that actually ships. Update README's pinned crates.io installation
-   examples to the new version and open a release PR; its CI runs the full gate
+   behavior that actually ships, then open a release PR; its CI runs the full gate
    and packages a clean checkout. `scripts/check.sh` packages the working tree with
    `--allow-dirty` for a contributor who runs the gate locally.
 3. Obtain clean review and green required CI before merging. After merge, dispatch
@@ -105,14 +104,28 @@ matching trusted publisher configured on crates.io.
    while individual owners can also manage ownership.
 2. Verify or configure a trusted publisher for `githits-com/githits-scan`, workflow
    `publish.yml`, environment `crates-io`. Create/protect that GitHub environment
-   and restrict deployment refs to release tags before using it. Match its name
-   exactly in crates.io.
-3. For later authorized versions, manually dispatch **Publish to crates.io** with
-   an actual release tag. Its tag/main/changelog checks precede OIDC authentication
-   and `cargo publish`; the action revokes its short-lived token after the job.
+   with maintainer approval and permit only release tags matching `v*`. Match its
+   name exactly in crates.io. No long-lived registry token belongs in GitHub secrets.
+3. For later authorized versions, manually dispatch **Publish to crates.io** from
+   the release tag, with the same tag as the `tag` input. Set `release_tag` to the
+   approved tag, then run:
+
+   ```bash
+   gh workflow run publish.yml --repo githits-com/githits-scan \
+     --ref "$release_tag" -f tag="$release_tag"
+   ```
+
+   Environment tag restrictions evaluate the workflow run's ref, so dispatching
+   from `main` and checking out a tag inside the job does not satisfy them.
+   After environment approval, tag/main/changelog checks precede OIDC
+   authentication and `cargo publish`; the action revokes its short-lived token
+   after the job. Verify the registry version and installation afterward, then
+   update README's pinned crates.io installation examples to that published
+   version. Do not republish an existing version to test authentication.
 4. After the first workflow publication succeeds, enable the crate's
    trusted-publishing-only setting on crates.io, so API tokens can no longer
-   publish it and every version comes from `publish.yml`.
+   publish new versions. Subsequent publications require a configured trusted
+   publisher.
 
 Versions cannot be overwritten; yanking prevents new resolution but does not erase
 a version. Never put registry credentials in chat, source, logs or process arguments.
