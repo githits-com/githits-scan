@@ -283,3 +283,14 @@ jobs:
           VERSION: ${{ needs.verify.outputs.version }}
           SOURCE_SHA256: ${{ steps.source.outputs.sha256 }}
         run: python3 scripts/bump_homebrew.py "v${VERSION}" "${SOURCE_SHA256}"
+
+  trigger-docs-changelog:
+    name: Trigger Mintlify changelog draft
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [verify, release]
+    permissions: {}
+    uses: ./.github/workflows/mintlify-changelog-trigger.yml # zizmor: ignore[self-repository] -- actionlint 1.7.12 does not support GitHub's $/ syntax
+    with:
+      version: ${{ needs.verify.outputs.version }}
+    secrets:
+      MINTLIFY_API_KEY: ${{ secrets.MINTLIFY_API_KEY }}

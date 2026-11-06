@@ -83,6 +83,55 @@ Do not recreate the GitHub release or move its tag. For tap CI/publication failu
 inspect the failed job before rerunning; do not label a failed or stale result.
 Unmerged formula changes do not affect installed users.
 
+## Mintlify changelog drafts
+
+After successful tagged GitHub publication, the final job in `release.yml` calls
+`mintlify-changelog-trigger.yml`. It does not wait for Homebrew approval and never
+runs for release rehearsals or `release_candidate` dispatches. The called workflow
+also supports independent `workflow_dispatch`; its optional `version` input is
+for logging only and is not sent to Mintlify. Both entrypoints grant no GitHub
+token permissions and execute no checked-out repository code.
+
+Configure these in **githits-com/githits-scan > Settings > Secrets and variables >
+Actions**, at repository level:
+
+- Secret `MINTLIFY_API_KEY`: a Mintlify admin API key with write scope and an
+  expiry. Set its IP allowlist to the same fixed egress ranges used by the CLI
+  runner when creating the key; changing the allowlist requires a replacement key.
+  See [Mintlify API authentication](https://www.mintlify.com/docs/api/introduction).
+- Variable `MINTLIFY_PROJECT_ID`: the same project as githits-cli.
+- Variable `MINTLIFY_DRAFT_CHANGELOG_WORKFLOW_ID`: the same Draft changelog
+  automation as githits-cli. Scan shares that automation; no separate workflow ID
+  is needed. Keep its trigger on a custom schedule, as required by the
+  [Mintlify trigger API](https://www.mintlify.com/docs/api/automations/trigger).
+
+Keep all three settings at repository level and configure them before testing.
+A repository secret matches the release workflow's
+existing API secret setup and avoids an environment approval before even an
+unconfigured skip. Neither `crates-io` nor `homebrew-tap` owns this integration;
+no new environment is required. Repository writers can use repository secrets in
+other workflows too.
+
+The job uses `aks-deployment-runner` for fixed egress allowed by the Mintlify key.
+Ensure Scan has access to that runner's group, including access for this public
+repository. A missing setting emits a notice and skips the request; HTTP failures
+are tolerated with `continue-on-error`, bounded timeouts and retries. Runner
+availability is separate: without a matching accessible runner the job can stay
+queued and eventually fail the workflow after publication has succeeded.
+
+After this workflow reaches `main`, test without creating a release:
+
+```bash
+gh workflow run mintlify-changelog-trigger.yml --repo githits-com/githits-scan \
+  --ref main -f version=manual-check
+```
+
+This creates a real Mintlify automation run. Inspect the trigger step for a skip
+notice or request error and confirm a Draft changelog run appears in Mintlify and
+covers Scan. A green GitHub workflow alone does not prove the tolerated request
+succeeded. This check also verifies runner access, key allowlisting and the
+shared automation's scope.
+
 ## Preparation and approval
 
 1. Run `cargo xtask release audit` during development. CI also compares the root
