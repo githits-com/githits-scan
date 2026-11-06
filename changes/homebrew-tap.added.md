@@ -2,4 +2,4 @@
 "githits-scan": none
 ---
 
-- **Homebrew distribution** - Add the macOS/Linux tap installation path and open formula update PRs after tagged GitHub releases; maintainers review and publish bottles separately.
+- **Homebrew distribution** - Add macOS/Linux installation with three bottle targets and automatic formula updates and publication after tagged GitHub releases; Intel macOS builds from source.
