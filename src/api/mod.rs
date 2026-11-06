@@ -3,7 +3,7 @@
 //! Everything the service's contract dictates lives here and nowhere else:
 //! upload limits and filename rules ([`upload`]), the problem-document shape
 //! ([`problem`]), request construction and status interpretation ([`http`]),
-//! and the little the client needs to know about a returned document. Other
+//! and public package upgrade reviews ([`upgrade`]), plus the little the client needs to know about a returned document. Other
 //! modules reach the network only through [`SbomApi`], [`AuditApi`] or [`LicensesApi`] so tests
 //! substitute a fake. See `docs/implementation/sbom-api-contract.md` for the
 //! client rules this module honors.
@@ -20,6 +20,7 @@ pub mod jobs;
 pub mod licenses;
 pub mod problem;
 mod sse;
+pub mod upgrade;
 pub mod upload;
 
 pub use problem::{Code, FileFailure, FileStatus, Problem};

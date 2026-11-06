@@ -10,6 +10,9 @@
 
 mod support;
 
+#[path = "cli/diff.rs"]
+mod diff;
+
 #[path = "cli/polish.rs"]
 mod polish;
 
