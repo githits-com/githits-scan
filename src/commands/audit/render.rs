@@ -81,7 +81,7 @@ pub(super) fn write(
         }
         writeln!(
             out,
-            "  Ignored advisories do not cause failure. Mitigation guidance below retains producer evidence, including ignored advisories."
+            "  Ignored advisories do not cause failure. Any mitigation guidance retains producer evidence, including ignored advisories."
         )?;
     }
     remediation::write(view, out, palette)?;

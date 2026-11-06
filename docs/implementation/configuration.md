@@ -36,7 +36,9 @@ reason = "Reviewed for this deployment"
 - `version` must be `1`. Unknown keys anywhere are errors (exit 2) so a typo cannot silently widen policy. `include` and `manifests` entries must satisfy the same path rules as upload filenames.
 - `exclude` holds globs; `*` does not cross a directory separator, `**` does. They are compiled once when the file loads.
 - `[licenses]` is consumed by `license check`, which rejects invalid `allow`
-  requirements and scoped exception PURLs with exit 2 before evaluation or upload. Offline `--sbom` readability and byte limits are checked before policy setup.
+  requirements, scoped exception PURLs, blank exception reasons and invalid Git
+  selectors with exit 2 before evaluation or upload. Offline `--sbom` readability
+  and byte limits are checked before policy setup.
   See [policy and evidence](license-check.md#policy-and-evidence).
 
 Implicit default configuration discovery is optional for `detect`, `sbom generate`,
