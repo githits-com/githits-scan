@@ -55,9 +55,7 @@ pub(super) fn write(
         .chunk_by(same_coordinate)
         .flat_map(|group| {
             group.iter().map(|c| {
-                let context = (group.len() > 1)
-                    .then(|| occurrences.label(c.reference(), !details))
-                    .flatten();
+                let context = occurrences.label(c.reference(), !details);
                 label(c, false, context).text.value.chars().count()
             })
         })
@@ -123,13 +121,9 @@ fn write_group(
         if !details && occurrences.skip(component.reference()) {
             continue;
         }
-        let context = (group.len() > 1)
-            .then(|| occurrences.label(component.reference(), !details))
-            .flatten();
+        let context = occurrences.label(component.reference(), !details);
         shortened |= write_row(component, distinguish, details, width, context, out)?;
-        if context.is_some() {
-            shortened |= occurrences.continuation(component.reference(), !details, out)?;
-        }
+        shortened |= occurrences.continuation(component.reference(), !details, "  ", out)?;
         if !details && remaining > 1 {
             component.inputs(out)?;
         }

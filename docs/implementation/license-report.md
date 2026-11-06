@@ -97,7 +97,9 @@ lock-local `githits:package_id`, and the group name. Unknown additive fields,
 license choices/applicability, source/input provenance, versions, PURL
 qualifiers, scope and markers remain in the comparison. Enclosing assemblies
 stay distinct. Equal PURLs or equal shortened display strings are insufficient;
-repeated same-group records remain separate. Report context is optional: absent
+repeated same-group records remain separate. Multiple readable group/marker
+conditions remain visible on their own row, without making that row eligible
+for combination. Report context is optional: absent
 or unreadable context leaves ordinary per-occurrence rows.
 
 A shared nonempty marker appears once after the group list. Non-equivalent rows

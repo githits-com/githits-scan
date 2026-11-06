@@ -461,3 +461,81 @@ fn license_groups_mixed_singletons_and_additional_context_properties_stay_distin
         .expect("singleton row");
     assert!(!line.contains("[default]"), "{text}");
 }
+
+fn set_conditions(component: &mut Value, conditions: Value) {
+    if component.get("context").is_some() {
+        component["context"]["group_conditions"] = conditions;
+        return;
+    }
+    let property = component["properties"]
+        .as_array_mut()
+        .expect("properties")
+        .iter_mut()
+        .find(|p| p["name"] == "githits:context")
+        .expect("context property");
+    let mut context: Value =
+        serde_json::from_str(property["value"].as_str().expect("encoded context"))
+            .expect("context");
+    context["group_conditions"] = conditions;
+    property["value"] = context.to_string().into();
+}
+
+#[test]
+fn license_groups_multiple_conditions_stay_labelled_separate_and_attributed() {
+    for (mut value, check) in [(report(1), false), (report(2), false), (sbom(), true)] {
+        set_conditions(
+            &mut value["components"][0],
+            json!([
+            {"group":"default","marker":""}, {"group":"docs","marker":""}]),
+        );
+        let output = run(&value, check, &[]);
+        assert_eq!(
+            output.status.code(),
+            Some(i32::from(check)),
+            "{}",
+            stderr(&output)
+        );
+        let text = stdout(&output);
+        assert_eq!(text.matches("requests 2.32.0").count(), 2, "{text}");
+        assert!(
+            text.contains("[default, docs]") && text.contains("[develop]"),
+            "{text}"
+        );
+        assert_eq!(
+            text.matches("input file: Pipfile.lock").count(),
+            2,
+            "{text}"
+        );
+        if !check {
+            assert_eq!(
+                run(&value, false, &["--json"]).stdout,
+                serde_json::to_vec(&value).expect("json")
+            );
+        }
+    }
+}
+
+#[test]
+fn license_groups_check_details_indent_group_continuations_and_inputs_under_owner() {
+    let mut value = sbom();
+    let marker = format!("python_version >= '3.8' and {}", "condition ".repeat(10));
+    set_conditions(
+        &mut value["components"][0],
+        json!([
+        {"group":"default","marker":marker}, {"group":"docs","marker":""}]),
+    );
+    let output = run(&value, true, &["--details"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let text = stdout(&output);
+    assert!(text.contains("    component reference: default\n    package URL: pkg:pypi/requests@2.32.0\n    group context:"), "{text}");
+    assert_eq!(
+        text.matches("\n    input file: Pipfile.lock\n").count(),
+        2,
+        "{text}"
+    );
+    assert!(
+        text.contains("    group context: default; python_version >= '3.8'"),
+        "{text}"
+    );
+    assert!(text.contains(", docs\n"), "{text}");
+}

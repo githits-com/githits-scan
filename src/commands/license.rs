@@ -374,8 +374,8 @@ fn write_component_details(
         if let Some(purl) = violation.purl.as_deref() {
             shortened |= display::field(out, "    package URL: ", purl, false)?;
         }
-        shortened |= occurrences.continuation(&violation.bom_ref, false, out)?;
-        shortened |= occurrences.inputs(&violation.bom_ref, out)?;
+        shortened |= occurrences.continuation(&violation.bom_ref, false, "    ", out)?;
+        shortened |= occurrences.inputs(&violation.bom_ref, "    ", out)?;
     }
     Ok(shortened)
 }
@@ -566,9 +566,9 @@ fn write_violation_group(
             out,
             palette,
         )?;
-        shortened |= occurrences.continuation(&violation.bom_ref, true, out)?;
+        shortened |= occurrences.continuation(&violation.bom_ref, true, "  ", out)?;
         if remaining > 1 && context.is_some() {
-            shortened |= occurrences.inputs(&violation.bom_ref, out)?;
+            shortened |= occurrences.inputs(&violation.bom_ref, "  ", out)?;
         }
     }
     Ok(shortened)

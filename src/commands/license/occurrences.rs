@@ -34,13 +34,18 @@ pub(super) struct Occurrences {
 
 struct Occurrence {
     label: String,
-    group: String,
-    marker: String,
-    key: Option<String>,
+    merge: Option<MergeKey>,
     paths: BTreeSet<String>,
     // One class label may list thousands of categories; share its text rather
     // than storing that whole list once per occurrence.
     combined: Option<(Rc<str>, bool)>,
+}
+
+// Display all readable conditions, but only single-condition leaves may merge.
+struct MergeKey {
+    evidence: String,
+    group: String,
+    marker: String,
 }
 
 #[derive(Deserialize)]
@@ -152,25 +157,31 @@ impl Occurrences {
         &self,
         reference: &str,
         compact: bool,
+        indent: &str,
         out: &mut dyn Write,
     ) -> io::Result<bool> {
         let Some(label) = self.label(reference, compact) else {
             return Ok(false);
         };
         if display::Text::parts([" [", label, "]"], display::GROUP).shortened {
-            display::field(out, "  group context: ", label, false)?;
+            display::field(out, &format!("{indent}group context: "), label, false)?;
             return Ok(true);
         }
         Ok(false)
     }
 
-    pub(super) fn inputs(&self, reference: &str, out: &mut dyn Write) -> io::Result<bool> {
+    pub(super) fn inputs(
+        &self,
+        reference: &str,
+        indent: &str,
+        out: &mut dyn Write,
+    ) -> io::Result<bool> {
         let Some(o) = self.get(reference) else {
             return Ok(false);
         };
         let mut shortened = false;
         for path in &o.paths {
-            shortened |= display::field(out, "  input file: ", path, false)?;
+            shortened |= display::field(out, &format!("{indent}input file: "), path, false)?;
         }
         Ok(shortened)
     }
@@ -186,30 +197,29 @@ fn collect(
     for (position, raw) in components.iter().enumerate() {
         let component: Component<'_> = serde_json::from_str(raw.get())?;
         index.insert(raw, &component, format, owner, references)?;
-        let Some(_) = component
-            .components
-            .filter(|_| matches!(format, Format::Sbom))
-        else {
-            continue;
-        };
-        let nested: Inventory<'_> = serde_json::from_str(raw.get())?;
-        owner.push(position);
-        collect(index, &nested.components, format, owner, references)?;
-        owner.pop();
+        if matches!(format, Format::Sbom) && component.components.is_some() {
+            let nested: Inventory<'_> = serde_json::from_str(raw.get())?;
+            owner.push(position);
+            collect(index, &nested.components, format, owner, references)?;
+            owner.pop();
+        }
     }
     Ok(())
 }
 
 fn combine(entries: &mut BTreeMap<String, Option<Occurrence>>) {
-    let mut classes: BTreeMap<&str, Vec<(&str, &Occurrence)>> = BTreeMap::new();
+    let mut classes: BTreeMap<&str, Vec<(&str, &MergeKey)>> = BTreeMap::new();
     for (reference, occurrence) in &*entries {
         let Some(o) = occurrence else {
             continue;
         };
-        let Some(key) = o.key.as_deref() else {
+        let Some(key) = o.merge.as_ref() else {
             continue;
         };
-        classes.entry(key).or_default().push((reference, o));
+        classes
+            .entry(&key.evidence)
+            .or_default()
+            .push((reference, key));
     }
     let combinations: Vec<_> = classes
         .values()
@@ -233,7 +243,7 @@ fn set_combination(
     }
 }
 
-fn combination(members: &[(&str, &Occurrence)]) -> Option<(Vec<String>, String)> {
+fn combination(members: &[(&str, &MergeKey)]) -> Option<(Vec<String>, String)> {
     let groups: BTreeSet<_> = members.iter().map(|(_, o)| o.group.as_str()).collect();
     if members.len() < 2 || groups.len() != members.len() {
         return None;
@@ -276,42 +286,46 @@ fn occurrence(
     else {
         return Ok(None);
     };
-    let [condition] = conditions.as_mut_slice() else {
+    let Some(groups) = conditions.iter().map(condition).collect::<Option<Vec<_>>>() else {
         return Ok(None);
     };
-    let Some(group) = condition
-        .get("group")
-        .and_then(Value::as_str)
-        .filter(|g| !g.is_empty())
-        .map(str::to_owned)
-    else {
+    let Some((group, marker)) = groups.first() else {
         return Ok(None);
     };
-    let Some(marker) = condition
-        .get("marker")
-        .and_then(Value::as_str)
-        .map(str::to_owned)
-    else {
-        return Ok(None);
-    };
-    condition["group"] = Value::Null;
-    // Never materialize a whole document tree. Only leaf candidates need a key;
-    // assembly ancestry remains part of that key, so owners are not conflated.
-    let key = if c.components.is_none() {
+    let label = groups
+        .iter()
+        .map(|(group, marker)| context_label(&group_label(group), marker))
+        .collect::<Vec<_>>()
+        .join(", ");
+    // Never materialize a whole document tree. Only single-condition leaf
+    // candidates need a key; enclosing assemblies remain distinct owners.
+    let merge = if groups.len() == 1 && c.components.is_none() {
+        conditions[0]["group"] = Value::Null;
         let mut value: Value = serde_json::from_str(raw.get())?;
         normalize(&mut value, format, context)?;
-        Some(serde_json::to_string(&(owner, value))?)
+        Some(MergeKey {
+            evidence: serde_json::to_string(&(owner, value))?,
+            group: group.clone(),
+            marker: marker.clone(),
+        })
     } else {
         None
     };
     Ok(Some(Occurrence {
-        label: context_label(&group_label(&group), &marker),
-        group,
-        marker,
-        key,
+        label,
+        merge,
         paths: input_paths(&properties).0,
         combined: None,
     }))
+}
+
+fn condition(value: &Value) -> Option<(String, String)> {
+    let group = value
+        .get("group")?
+        .as_str()
+        .filter(|group| !group.is_empty())?;
+    let marker = value.get("marker")?.as_str()?;
+    Some((group.to_owned(), marker.to_owned()))
 }
 
 fn normalize(value: &mut Value, format: Format, context: Value) -> serde_json::Result<()> {
