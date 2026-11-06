@@ -320,33 +320,60 @@ pub(crate) fn scan_filtered(
                 source,
             })?
             .len();
-        let candidate = Candidate { path, bytes };
-        match classification.role {
-            Role::Lockfile(owner) => {
-                let directory = catalog::owning_directory(relative)
-                    .map(relative_string)
-                    .transpose()?
-                    .unwrap_or_default();
-                groups
-                    .entry((directory, classification.ecosystem))
-                    .or_default()
-                    .lockfiles
-                    .push(LockCandidate {
-                        file: candidate,
-                        owner,
-                    });
-            }
-            Role::Manifest => groups
-                .entry((directory_of(&candidate.path), classification.ecosystem))
-                .or_default()
-                .manifests
-                .push(candidate),
-        }
+        add_candidate(&mut groups, path, bytes, classification)?;
     }
     unsupported.sort_by(|a, b| a.path.cmp(&b.path));
     let mut inventory = pair(&groups);
     inventory.unsupported = unsupported;
     Ok(inventory)
+}
+
+/// Pair an already filtered Git inventory through the same rules as a filesystem walk.
+pub(crate) fn from_files(files: &BTreeMap<String, u64>) -> Result<Inventory, DiscoverError> {
+    let mut groups = BTreeMap::new();
+    let mut unsupported = Vec::new();
+    for (path, bytes) in files {
+        let relative = Path::new(path);
+        if let Some(classification) = catalog::classify(relative) {
+            add_candidate(&mut groups, path.clone(), *bytes, classification)?;
+        } else if let Some(hint) = catalog::unsupported_hint(relative) {
+            unsupported.push(UnsupportedFile {
+                path: path.clone(),
+                hint,
+            });
+        }
+    }
+    let mut inventory = pair(&groups);
+    inventory.unsupported = unsupported;
+    Ok(inventory)
+}
+
+fn add_candidate(
+    groups: &mut BTreeMap<(String, Ecosystem), Group>,
+    path: String,
+    bytes: u64,
+    classification: catalog::Classification,
+) -> Result<(), DiscoverError> {
+    let relative = Path::new(&path);
+    let directory = match classification.role {
+        Role::Lockfile(_) => catalog::owning_directory(relative)
+            .map(relative_string)
+            .transpose()?
+            .unwrap_or_default(),
+        Role::Manifest => directory_of(&path),
+    };
+    let group = groups
+        .entry((directory, classification.ecosystem))
+        .or_default();
+    let candidate = Candidate { path, bytes };
+    match classification.role {
+        Role::Lockfile(owner) => group.lockfiles.push(LockCandidate {
+            file: candidate,
+            owner,
+        }),
+        Role::Manifest => group.manifests.push(candidate),
+    }
+    Ok(())
 }
 
 /// Read one inventory file as UTF-8 text for upload, reading at most `limit`

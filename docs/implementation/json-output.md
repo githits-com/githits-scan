@@ -77,3 +77,27 @@ see [license report](license-report.md). It is the input to `--from-report`.
 `sbom generate` returns the requested document unchanged: CycloneDX 1.7 JSON,
 SPDX 2.3 tag-value, or service text. It has no Scan JSON wrapper or `--json` flag.
 `license check --sbom` accepts CycloneDX JSON, not the other report formats.
+
+## Experimental diff (schema 1)
+
+`diff --format json` emits `schema_version: 1`, `base`/`head` (resolved commit IDs
+or `working-tree`), `comparison_scope`, `analysis_performed`, `incomplete`,
+`notices`, and ordered `changes`. This is informational data, not a policy result.
+
+Each change has nullable `registry`, `name`, `kind`, nullable `base`/`head` package
+facts, `base_scope`/`head_scope` (scope of changed versions: direct, transitive, mixed,
+unknown, or null when that side has no changed version), `vulnerabilities`, `upgrade_reviews`, and `review_gaps`. Package facts retain
+version/path sets, per-manifest exact `direct` versions, `direct_unknown` sources
+and `scope_unknown`. Mixed means some changed versions are direct and others are transitive or unknown.
+Unchanged direct versions do not make a transitive version change direct.
+`kind` is added, removed, upgraded, downgraded, changed, or scope_changed.
+
+`vulnerabilities` has `assessed`, nullable fixed/introduced/unchanged advisory sets,
+and `base_observed`/`head_observed` sets. Null means unknown, not zero. `assessed`
+concerns checks for the reported version sets; overall source/declaration gaps
+remain explicit through `incomplete` and notices. Repository
+version unions and source-local direct comparison are described in
+[dependency diff](dependency-diff.md); this does not detect every per-project
+transitive exposure change. Upgrade reviews retain selected producer facts,
+including unknown qualifications, nullable security lists and changelog links.
+They do not replace the scan deltas. Human and Markdown formatting are presentation.

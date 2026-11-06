@@ -25,6 +25,7 @@ const DEADLINE: Duration = Duration::from_secs(30);
 use tempfile::TempDir;
 
 pub mod audit;
+pub mod diff;
 pub mod jobs;
 
 /// A synthetic repository with the given files (relative path, contents).

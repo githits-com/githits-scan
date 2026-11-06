@@ -26,6 +26,10 @@
 //! - [`discover`] owns walking a directory tree, applying ignore rules, and
 //!   pairing lockfiles with the manifests that own them. It is the only
 //!   module that reads the filesystem during a scan.
+//! - [`repository`] supplies immutable local Git inputs for experimental diff; it
+//!   reuses discovery pairing and bounded command upload selection.
+//! - The pure diff projection compares inventory versions, source-local direct
+//!   declarations and audit identities without networking or rendering.
 //! - [`commands`] owns orchestration and rendering for each command; handlers
 //!   write to injected streams and report typed outcomes and errors.
 //! - [`style`] owns terminal styling; renderers receive a palette and never
@@ -43,9 +47,15 @@ pub mod catalog;
 pub mod cli;
 pub mod commands;
 pub mod config;
+#[expect(
+    clippy::redundant_pub_crate,
+    reason = "explicit crate-only diff DTOs satisfy unreachable_pub without exporting internals"
+)]
+mod diff;
 pub mod discover;
 pub mod env;
 pub mod license;
+pub mod repository;
 pub mod style;
 
 #[cfg(test)]

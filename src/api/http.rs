@@ -22,6 +22,8 @@ use super::{
 };
 use crate::env::{Environment, Token};
 
+mod upgrade;
+
 const REQUEST_ID: &str = "x-request-id";
 
 /// HTTP client for asynchronous SBOM generation and audit.
