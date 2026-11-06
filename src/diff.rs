@@ -313,9 +313,10 @@ impl Audit {
                 .collect(),
             ..Self::default()
         };
+        // Source/declaration gaps qualify the whole report; known coordinate checks
+        // remain usable when their own coverage and inventory accounting verify.
         match &report.body {
             Body::V1(r) => {
-                audit.available &= r.unknowns.sources.is_empty();
                 audit.unsupported.clone_from(
                     &r.coverage
                         .vulnerabilities
@@ -337,8 +338,6 @@ impl Audit {
                 );
             }
             Body::V2(r) => {
-                audit.available &=
-                    r.unknowns.sources.is_empty() && r.unknowns.resolution.is_empty();
                 audit.unsupported = r
                     .coverage
                     .vulnerabilities
