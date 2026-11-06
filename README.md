@@ -344,6 +344,12 @@ For a pinned installation, including CI, specify the release version:
 cargo install githits-scan --locked --version 0.3.0
 ```
 
+**Homebrew (macOS and Linux):**
+
+```bash
+brew install githits-com/tap/githits-scan
+```
+
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)
 builds archives for Linux x86_64/ARM64, macOS Intel/Apple Silicon, and Windows
 x86_64, with `SHA256SUMS`. Download the archive for your platform and the checksum
