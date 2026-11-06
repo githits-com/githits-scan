@@ -36,13 +36,15 @@ work without a token or network access.
 
 ## Quick start
 
-1. Install from [crates.io](https://crates.io/crates/githits-scan) with Rust 1.99 or newer:
+1. Install with Homebrew on macOS or Linux:
 
    ```bash
-   cargo install githits-scan --locked
+   brew install githits-com/tap/githits-scan
    ```
 
-   For pinned installations and prebuilt binaries, see [Installation](#installation).
+   Bottles cover macOS 15 ARM64 and Linux x86_64/ARM64. Intel macOS builds from
+   source. See [Installation](#installation) for Cargo, prebuilt binaries, and
+   a checkout.
 
 2. Sign in or create an account at [app.githits.com](https://app.githits.com),
    then create an API token in [Settings → Tokens](https://app.githits.com/settings/tokens).
@@ -293,8 +295,8 @@ inclusion overrides remain unless the CLI excludes them. See
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
-secret named `GITHITS_API_TOKEN`. It installs version `0.3.0` from crates.io.
-Save as `.github/workflows/dependencies.yml`:
+secret named `GITHITS_API_TOKEN`. Local installs use Homebrew. This job pins
+crates.io version `0.3.0`. Save as `.github/workflows/dependencies.yml`:
 
 ```yaml
 name: Dependency checks
@@ -332,22 +334,26 @@ failed jobs in a retry loop.
 
 ## Installation
 
-**Cargo (crates.io):** Rust 1.99 or newer is required:
+**Homebrew (macOS and Linux):** recommended for local installation.
+
+```bash
+brew install githits-com/tap/githits-scan
+```
+
+Bottles are published for macOS 15 ARM64 and Linux x86_64/ARM64. Intel macOS
+builds from source.
+
+**Cargo (crates.io):** Rust 1.99 or newer is required. Use this to pin a
+registry version, including in CI:
 
 ```bash
 cargo install githits-scan --locked
 ```
 
-For a pinned installation, including CI, specify the release version:
+For a pinned installation, specify the release version:
 
 ```bash
 cargo install githits-scan --locked --version 0.3.0
-```
-
-**Homebrew (macOS and Linux):**
-
-```bash
-brew install githits-com/tap/githits-scan
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)
@@ -374,6 +380,12 @@ cargo install --path . --locked
 ```
 
 ### Uninstall
+
+For a Homebrew installation:
+
+```bash
+brew uninstall githits-scan
+```
 
 For a Cargo installation:
 
