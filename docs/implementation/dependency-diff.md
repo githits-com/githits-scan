@@ -62,9 +62,11 @@ to upgrade review; transitive changes never cause a review request.
 
 Audit advisory sets span all reported versions of each package. Fixed means absent
 from the head set, introduced means absent from the base set, and unchanged means
-present in both. If either assessment is unavailable or unverified, these three
-sets are null, and observed findings remain separately available. A partial report
-is not a clean vulnerability assessment.
+present in both. If a reported coordinate's vulnerability assessment is unavailable or unverified,
+these three sets are null, and observed findings remain separately available.
+`assessed` concerns the reported versions: source/declaration gaps still qualify
+the overall report without erasing completed coordinate checks. A partial report
+is not a clean vulnerability assessment of the whole repository.
 
 Markdown text escapes formatting and URL syntax and breaks `@`/`#` tokens
 with a zero-width separator, because GitHub applies those filters after decoding

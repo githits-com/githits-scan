@@ -93,7 +93,9 @@ Unchanged direct versions do not make a transitive version change direct.
 `kind` is added, removed, upgraded, downgraded, changed, or scope_changed.
 
 `vulnerabilities` has `assessed`, nullable fixed/introduced/unchanged advisory sets,
-and `base_observed`/`head_observed` sets. Null means unknown, not zero. Repository
+and `base_observed`/`head_observed` sets. Null means unknown, not zero. `assessed`
+concerns checks for the reported version sets; overall source/declaration gaps
+remain explicit through `incomplete` and notices. Repository
 version unions and source-local direct comparison are described in
 [dependency diff](dependency-diff.md); this does not detect every per-project
 transitive exposure change. Upgrade reviews retain selected producer facts,

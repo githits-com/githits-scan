@@ -276,3 +276,40 @@ fn diff_audit_inventory_count_mismatch_has_an_explicit_reason() {
             .any(|n| n.contains("coordinate count 4 does not match inventory 3"))
     );
 }
+
+#[test]
+fn diff_source_resolution_gap_does_not_erase_checked_coordinate_assessments() {
+    let base = inventory(false);
+    let mut value = fixture::audit(false);
+    value["unknowns"]["sources"] = serde_json::json!([{"path":"package.json","reasons":["not_expanded","incomplete_native_declarations"]}]);
+    value["unknowns"]["resolution"] = serde_json::json!([{"path":"package.json","name":null,"reason":"incomplete_native_declarations"}]);
+    value["summary"]["incomplete_sources"] = 1.into();
+    let report =
+        AuditReport::from_bytes(&serde_json::to_vec(&value).expect("JSON")).expect("report");
+    let assessment = crate::audit::assess(&report).expect("assessment");
+    assert_eq!(assessment.unverified.len(), 0);
+    assert!(assessment.incomplete);
+    let audit = Audit::project(&report, &base).expect("projection");
+    assert!(audit.incomplete);
+    assert!(audit.checked(&Key {
+        registry: Some("npm".into()),
+        name: "minimist".into()
+    }));
+    assert!(
+        audit
+            .notices
+            .iter()
+            .any(|n| n.contains("incomplete or excluded evidence"))
+    );
+    let head = inventory(true);
+    let head_audit = self::audit(true, &head);
+    let changes = compare(&base, &head, (&audit, &head_audit));
+    let minimist = changes
+        .iter()
+        .find(|c| c.key.name == "minimist")
+        .expect("change");
+    assert_eq!(
+        minimist.vulnerabilities.fixed,
+        Some(Set::from(["GHSA-fixed".into()]))
+    );
+}
