@@ -298,10 +298,11 @@ fn collect(child: &mut std::process::Child, limit: usize) -> Result<Vec<u8>, Err
         let _ = child.kill();
     }
     let status = child.wait()?;
+    let bytes = result?;
     if !status.success() {
         return Err(Error::Object);
     }
-    result
+    Ok(bytes)
 }
 
 fn records(
@@ -371,6 +372,24 @@ fn visit_record(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn diff_bounded_git_read_keeps_its_error_after_stopping_the_child() {
+        let repo = tempfile::tempdir().expect("repository");
+        capture(repo.path(), &["init", "--quiet"], 1024).expect("init");
+        std::fs::write(
+            repo.path().join("Cargo.lock"),
+            vec![b'a'; usize::try_from(api::MAX_FILE_BYTES).expect("limit")],
+        )
+        .expect("blob");
+        let oid = capture(repo.path(), &["hash-object", "-w", "Cargo.lock"], 128).expect("object");
+        let oid = std::str::from_utf8(&oid).expect("OID").trim();
+        let error = capture(repo.path(), &["cat-file", "blob", oid], 0).expect_err("read limit");
+        assert!(matches!(
+            error,
+            Error::Input("Git evidence exceeds its bounded read limit")
+        ));
+    }
 
     #[test]
     fn diff_non_utf8_records_ignore_unrelated_names_but_reject_package_paths() {
