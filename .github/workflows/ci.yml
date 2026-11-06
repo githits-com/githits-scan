@@ -186,6 +186,8 @@ jobs:
           echo "${ACTIONLINT_SHA256}  ${archive}" | sha256sum --check --strict
           sudo tar -xzC /usr/local/bin -f "${archive}" actionlint
           rm "${archive}"
+      - name: Test Homebrew release handoff
+        run: python3 -m unittest discover -s scripts -p test_bump_homebrew.py -v
       - name: Validate GitHub Actions workflows
         run: actionlint -color
       - name: Audit GitHub Actions security

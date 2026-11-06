@@ -22,3 +22,6 @@ Thumbs.db
 # Logs and coverage
 *.log
 /coverage/
+
+# Python release tooling
+__pycache__/

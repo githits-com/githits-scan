@@ -328,6 +328,12 @@ failed jobs in a retry loop.
 
 ## Installation
 
+**Homebrew (macOS and Linux):**
+
+```bash
+brew install githits-com/tap/githits-scan
+```
+
 **From source:** Rust 1.99 or newer and Git are required. The quickstart installs
 `main`. To install from an existing checkout (including before the first tag):
 
