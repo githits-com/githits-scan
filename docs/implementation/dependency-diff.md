@@ -45,7 +45,9 @@ adjacency evidence required here. Missing registry/version evidence stays unknow
 The current producer's extensible `githits:registry` property supplies registry
 identity; missing properties and unmatched audit coordinates qualify the result.
 
-Changes aggregate version sets across the repository by registry/name. A transitive
+Changes aggregate version sets across the repository by registry/name. Row scope
+describes changed versions; an unchanged direct version does not label a changed
+transitive version direct. Mixed subsets remain explicit. A transitive
 version already present elsewhere is not a new repository-wide version when added
 to another project. This is not a per-project exposure diff. Stable numeric X.Y.Z
 transitions are ordered locally; unfamiliar version schemes remain `changed`.

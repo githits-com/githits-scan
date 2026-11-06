@@ -208,3 +208,23 @@ fn diff_missing_direct_agreement_is_unknown_without_false_direct_removal() {
             .any(|n| n.contains("direct agreement unavailable"))
     );
 }
+
+#[test]
+fn diff_unchanged_direct_version_does_not_label_new_transitive_version_direct() {
+    let base = inventory(false);
+    let mut head = inventory(false);
+    let key = Key {
+        registry: Some("npm".into()),
+        name: "minimist".into(),
+    };
+    head.packages
+        .get_mut(&key)
+        .expect("package")
+        .versions
+        .insert("2.0.0".into());
+    let mut changes = compare(&base, &head, (&Audit::empty(), &Audit::empty()));
+    assert_eq!(changes.len(), 1);
+    assert_eq!(changes[0].base_scope, None);
+    assert_eq!(changes[0].head_scope, Some("transitive"));
+    assert_eq!(transitions(&mut changes[0]).len(), 0);
+}

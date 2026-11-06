@@ -483,8 +483,8 @@ fn change(
         kind: kind(old, new),
         base: old.cloned(),
         head: new.cloned(),
-        base_scope: old.map(Package::scope),
-        head_scope: new.map(Package::scope),
+        base_scope: changed_scope(old, new),
+        head_scope: changed_scope(new, old),
         vulnerabilities: Delta {
             fixed: assessed.then(|| before.difference(&after).cloned().collect()),
             introduced: assessed.then(|| after.difference(&before).cloned().collect()),
@@ -496,6 +496,33 @@ fn change(
         upgrade_reviews: Vec::new(),
         review_gaps: Vec::new(),
     })
+}
+
+fn changed_scope(package: Option<&Package>, other: Option<&Package>) -> Option<&'static str> {
+    let package = package?;
+    if other.is_some_and(|other| package.versions == other.versions) {
+        return Some(package.scope());
+    }
+    let empty = Set::new();
+    let other = other.map_or(&empty, |p| &p.versions);
+    let changed: Set = package.versions.difference(other).cloned().collect();
+    if changed.is_empty() {
+        return package.versions.is_empty().then_some("unknown");
+    }
+    let direct: Set = package.direct.values().flatten().cloned().collect();
+    if changed.is_subset(&direct) {
+        return Some("direct");
+    }
+    if !changed.is_disjoint(&direct) {
+        return Some("mixed");
+    }
+    Some(
+        if package.scope_unknown || !package.direct_unknown.is_empty() {
+            "unknown"
+        } else {
+            "transitive"
+        },
+    )
 }
 
 fn kind(base: Option<&Package>, head: Option<&Package>) -> &'static str {

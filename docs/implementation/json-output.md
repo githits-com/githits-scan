@@ -94,10 +94,11 @@ or `working-tree`), `comparison_scope`, `analysis_performed`, `incomplete`,
 `notices`, and ordered `changes`. This is informational data, not a policy result.
 
 Each change has nullable `registry`, `name`, `kind`, nullable `base`/`head` package
-facts, `base_scope`/`head_scope` (direct, transitive, unknown, or null for an absent
-side), `vulnerabilities`, `upgrade_reviews`, and `review_gaps`. Package facts retain
+facts, `base_scope`/`head_scope` (scope of changed versions: direct, transitive, mixed,
+unknown, or null when that side has no changed version), `vulnerabilities`, `upgrade_reviews`, and `review_gaps`. Package facts retain
 version/path sets, per-manifest exact `direct` versions, `direct_unknown` sources
-and `scope_unknown`. Direct facts take precedence over unknown transitive scope.
+and `scope_unknown`. Mixed means some changed versions are direct and others are transitive or unknown.
+Unchanged direct versions do not make a transitive version change direct.
 `kind` is added, removed, upgraded, downgraded, changed, or scope_changed.
 
 `vulnerabilities` has `assessed`, nullable fixed/introduced/unchanged advisory sets,
