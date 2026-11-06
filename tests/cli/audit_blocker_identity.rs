@@ -77,6 +77,11 @@ fn audit_blocker_dependency_name_keeps_requirement_status() {
             "future_status",
             "requires cookie (requirement future_status)",
         ),
+        (
+            Value::Null,
+            "provider_requirement",
+            "requires cookie (requirement bound to a provider package)",
+        ),
     ] {
         let mut b = named_blocker();
         b["requested_requirement"] = requirement;

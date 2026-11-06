@@ -13,6 +13,7 @@ pub(super) use crate::commands::safe;
 pub(super) fn requirement_status(value: &str) -> String {
     match value {
         "not_recorded" => "not recorded".into(),
+        "provider_requirement" => "bound to a provider package".into(),
         _ => safe(value),
     }
 }

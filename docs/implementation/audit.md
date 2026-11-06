@@ -261,11 +261,13 @@ by the owner. Human output renders `express@5.1.0 requires cookie ^0.7.1` when
 that name and range are supplied. With a name but no range, it keeps the name and
 explicit requirement status, such as `express@5.1.0 requires cookie (requirement
 not recorded)`. The name is escaped like other untrusted text. Older reports
-without the field keep their existing human rendering. Scan never infers this
+without the field keep their existing human blocker structure. Scan never infers this
 identity from the owner, recommendation target or opaque context. Compact JSON,
 explanation JSON and saved analyses retain `dependency_name` when supplied and
 omit it when absent. A supplied value must be a string; null and other types are
 protocol errors, matching other optional non-null service facts.
+The known `provider_requirement` status reads as “bound to a provider package”;
+the raw status stays in JSON. This readable label also applies to unnamed blockers.
 The limitation `new_dependency_not_checked` is rendered as “a new dependency was
 not checked”; JSON retains the code and the original coverage facts.
 
