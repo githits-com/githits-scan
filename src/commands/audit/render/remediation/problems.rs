@@ -188,7 +188,7 @@ fn advisory_line(finding: &Finding, out: &mut dyn Write) -> io::Result<()> {
     }
     writeln!(out)?;
     for (label, values) in [
-        ("proposed fixes", &finding.proposed_fixes),
+        ("advisory-reported fix versions", &finding.proposed_fixes),
         ("verified advisory fixes", &finding.verified_advisory_fixes),
     ] {
         if !values.is_empty() {

@@ -72,7 +72,7 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let text = stdout(&output);
     assert_eq!(
-        text.matches("blocker: parent@2.0.0 requires <1.1.0")
+        text.matches("constraint: parent@2.0.0 requires <1.1.0")
             .count(),
         2,
         "{text}"
@@ -435,7 +435,7 @@ fn audit_explain_binary_partial_alternatives_keep_complete_actions_and_remaining
     assert!(
         text.contains("Alternative 1")
             && text.contains("Alternative 2")
-            && text.contains("remaining:")
+            && text.contains("still unresolved:")
             && text.contains("GHSA-second")
             && text.contains("Remaining copies:"),
         "{text}"
