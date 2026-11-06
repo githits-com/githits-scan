@@ -232,6 +232,11 @@ Project-root and local-source markers exclude their own nodes, not their childre
 a local path alone does not prove first-party ownership. See
 [license policy](docs/implementation/license-check.md) for scope and exceptions.
 
+Checks warn on stderr when no components were evaluated or dependency resolution
+is incomplete. Offline SBOMs without `githits:completeness` also warn that inventory
+completeness is unknown. Warnings remain visible with `--quiet` and `--json`;
+they leave the verdict and exit code unchanged.
+
 | Document | Produced by | Replay / use |
 | --- | --- | --- |
 | Experimental license evidence JSON | `license report --json` | `license report --from-report FILE` |

@@ -670,7 +670,10 @@ fn license_check_on_a_file_needs_no_token_and_exits_one_on_violations() {
     let output = check(repo.path(), &["--sbom", file.to_str().expect("utf-8 path")]);
 
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-    assert_eq!(stderr(&output), "checking licenses...\n");
+    assert_eq!(
+        stderr(&output),
+        "checking licenses...\nwarning: SBOM has no githits:completeness property; inventory completeness is unknown\n"
+    );
     let report = stdout(&output);
     assert!(
         report.starts_with("1 violation in 3 components\n"),

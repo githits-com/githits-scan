@@ -46,7 +46,10 @@ fn consistency_check_file_validation_details_and_output() {
         &["--sbom", missing.to_str().expect("path"), "-q"],
     );
     assert_eq!(basic.status.code(), Some(1));
-    assert_eq!(basic.stderr, Vec::<u8>::new());
+    assert_eq!(
+        stderr(&basic),
+        "warning: SBOM has no githits:completeness property; inventory completeness is unknown\n"
+    );
     let target = repo.path().join("verdict.txt");
     let detailed = check(
         repo.path(),
@@ -263,7 +266,10 @@ fn consistency_check_json_file_and_stdout_are_equivalent() {
     );
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     assert_eq!(output.stdout, Vec::<u8>::new());
-    assert_eq!(output.stderr, Vec::<u8>::new());
+    assert_eq!(
+        stderr(&output),
+        "warning: SBOM has no githits:completeness property; inventory completeness is unknown\n"
+    );
     let stdout_report = check(
         repo.path(),
         &["--sbom", file.to_str().expect("path"), "--json", "-o", "-"],
