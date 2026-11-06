@@ -50,7 +50,7 @@ impl State {
             recommendations: data
                 .recommendations
                 .iter()
-                .map(|record| Record::new(record, &r.findings.vulnerabilities))
+                .map(|record| Record::new(record, &r.findings.vulnerabilities, &data.trace))
                 .collect(),
             trace_status: data.trace.status.clone(),
             limits: data.limits.clone(),
@@ -74,6 +74,8 @@ pub(in crate::commands::audit) struct Record {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub occurrence_scope: Option<crate::audit::explain::OccurrenceScope>,
     pub subject: String,
+    #[serde(skip)]
+    pub recorded_requests: Vec<crate::audit::explain::RecordedRequest>,
     pub findings: Vec<Finding>,
     pub outcome: String,
     #[serde(serialize_with = "compact_changes")]
@@ -109,10 +111,11 @@ pub(in crate::commands::audit) struct Finding {
 }
 
 impl Record {
-    fn new(r: &wire::Recommendation, findings: &[Vulnerability]) -> Self {
+    fn new(r: &wire::Recommendation, findings: &[Vulnerability], trace: &wire::Trace) -> Self {
         Self {
             occurrence_scope: None,
             subject: coordinate(&r.subject),
+            recorded_requests: crate::audit::explain::recorded_requests(trace, r),
             findings: resolve(&r.finding_refs, findings),
             outcome: r.outcome.clone(),
             changes: r.changes.clone(),

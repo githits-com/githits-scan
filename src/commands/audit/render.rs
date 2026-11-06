@@ -228,7 +228,7 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     }
     for (label, values) in [
         ("aliases", &f.aliases),
-        ("proposed fixes", &f.proposed_fixes),
+        ("advisory-reported fix versions", &f.proposed_fixes),
         ("verified advisory fixes", &f.verified_advisory_fixes),
     ] {
         if !values.is_empty() {

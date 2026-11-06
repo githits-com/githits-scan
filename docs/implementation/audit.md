@@ -234,7 +234,8 @@ recommendation context. Covered vulnerabilities appear in these cards rather tha
 inventory. Membership uses validated original finding
 indices, not coordinate matching; uncovered findings and reports without usable
 remediation keep the original vulnerability section. Supplied advisory fix hints
-stay attached to their advisory in the card. JSON retains the complete
+stay attached to their advisory in the card as `advisory-reported fix versions`;
+this is advisory evidence, distinct from an applicable recommendation. JSON retains the complete
 vulnerability inventory and advisory hints.
 
 The guidance names exact from/target versions, requesting blockers and material
@@ -244,16 +245,26 @@ vulnerability and recognized planning/check evidence. Both use one predicate tha
 also requires every change to be a recognized upgrade. Weaker facts, missing
 addressed evidence, overrides and future strategies retain neutral
 candidate wording; partial candidate groups keep their partial qualifier. Joint action sets stay together; partial results distinguish addressed
-and remaining findings. The complete proposed case avoids repeating advisory IDs only when the record's
-own findings equal the displayed finding context (coordinate, advisory and full
-file set). Subset and joint scopes keep explicit addressed/remaining references.
+and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
+record's own findings equal the displayed finding context (coordinate, advisory
+and full file set). Weak candidates, including overrides, retain their supplied
+`would address` findings even when those cover the full displayed set. Human
+`still unresolved` lines keep remaining advisory/package identities visible, including scoped
+no-upgrade results with no candidate. A package/advisory present in both impact
+lists gets an item-level `(partly)` suffix in both; other advisories are unmarked.
+This describes the supplied overlap without inventing copy counts. A partial
+record with no addressed references says `would address: none reported`. Subset and joint scopes keep explicit addressed/remaining references.
 The shared guidance renderer derives file sets from that borrowed context and
 from the record itself. Common change paths are omitted only when they equal
 both file sets; otherwise change paths stay explicit. Ordinary audit and focused
 explanation use this same comparison, so grouping never broadens a fix's scope. Blockers use
 owner, supplied dependency name, requirement, path and readable reasons; role/kind/basis/recorded-status
-bookkeeping stays in JSON. An override signals departure from a represented
-requirement, not proof of a valid package-manager override or build. Unknown
+bookkeeping stays in JSON. Exclusion reasons use `requirement conflict` without
+a redundant exclusion suffix; other and unknown reasons use neutral `constraint`
+plus the supplied readable/escaped reason. This does not turn an unevaluated
+selector or a deliberate override into a blocked verdict. An override signals
+departure from a represented requirement, not proof of a valid package-manager
+override or build. Unknown
 outcomes, strategies and check values remain visible neutral candidate evidence.
 
 Blockers may supply an optional `dependency_name`, the dependency identity requested
@@ -273,11 +284,34 @@ not checked”; JSON retains the code and the original coverage facts.
 
 Routine unknown catalog freshness, unchecked native resolution, unknown release
 withdrawal and unassessed parent search are JSON evidence, not a human checklist.
+An explicit override candidate is the exception: when native resolution is the
+supplied `not_checked` state, one `override not verified` note states that
+package-manager support and build were not checked. Unknown future check values
+retain their own neutral display and do not trigger that assertion.
 Trace retention and omitted graph/detail counts also remain in JSON. Human output
 keeps omitted recommendation counts, actionable planning limits and warnings about
 the target or requirements. Target-check warnings require an actual proposed
 change; a scoped no-upgrade result does not print checks for an absent target.
 It adds no generic follow-up instructions.
+A scoped negative is separated from source metadata by a blank line and reads
+`No upgrade path found within observed releases and represented requests.` The
+search scope stays explicit; it does not establish that no fix exists.
+
+Joint actions can show `recorded request for TARGET: REQUIREMENT; owner OWNER
+[request path]` immediately after changes and their file locations. The pure
+audit trace selector owns this context and reuses explanation source/reference
+validation. Both trace and recommendation detail must be retained; both relation
+endpoints must be exact occurrence references of changes whose typed coordinates
+match their from versions. Only standard dependency relations with a recorded,
+non-null request are selected. The explicitly supplied request owner remains
+separate from graph endpoints, since they can differ. Identical display facts
+deduplicate in producer order; distinct request paths retain separate lines.
+Missing/unknown detail or unverifiable identity supplies no optional context;
+normal findings and actions keep their existing behavior. This is neither a
+package-name join nor range evaluation, target inference, or a causal explanation
+for a selected parent upgrade. The same context appears in ordinary and focused
+saved explanations; it does not add JSON or saved-report fields. Availability of the optional context depends on supplied retained evidence.
+
 `withdrawal` describes release yanking/retraction, not advisory
 withdrawal. The service excludes withdrawn advisories and known withdrawn release
 targets before mitigation planning; Scan does not reclassify advisory eligibility.

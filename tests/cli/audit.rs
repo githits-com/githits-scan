@@ -171,7 +171,7 @@ fn audit_binary_human_report_preserves_all_categories_attribution_and_progress()
         "web/package-lock.json",
         "advisory range could not be evaluated",
         "GHSA-context",
-        "proposed fixes: 1.0.1",
+        "advisory-reported fix versions: 1.0.1",
         "Required ranges and requesting dependencies are not provided",
     ] {
         assert!(
