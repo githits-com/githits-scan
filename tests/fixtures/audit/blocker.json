@@ -1,0 +1,12 @@
+{
+  "owner": {"name": "express", "version": "5.1.0"},
+  "owner_role": "third_party",
+  "path": "package-lock.json",
+  "kind": "dependency",
+  "dependency_name": "cookie",
+  "requested_requirement": "^0.7.1",
+  "requirement_status": "recorded",
+  "basis": "exact_parent",
+  "context": {},
+  "reason": "third_party_request_excludes_target"
+}

@@ -251,16 +251,21 @@ The shared guidance renderer derives file sets from that borrowed context and
 from the record itself. Common change paths are omitted only when they equal
 both file sets; otherwise change paths stay explicit. Ordinary audit and focused
 explanation use this same comparison, so grouping never broadens a fix's scope. Blockers use
-owner, requirement, path and readable reasons; role/kind/basis/recorded-status
+owner, supplied dependency name, requirement, path and readable reasons; role/kind/basis/recorded-status
 bookkeeping stays in JSON. An override signals departure from a represented
 requirement, not proof of a valid package-manager override or build. Unknown
 outcomes, strategies and check values remain visible neutral candidate evidence.
 
-Blockers currently supply an owner and requested requirement without a typed
-identity for the requested dependency. The owner and recommendation target do not
-establish that identity. Scan does not infer it from another recommendation or
-opaque context. Naming that dependency requires an authoritative service field
-and compatible handling of missing data in existing saved analyses.
+Blockers may supply an optional `dependency_name`, the dependency identity requested
+by the owner. Human output renders `express@5.1.0 requires cookie ^0.7.1` when
+that name and range are supplied. With a name but no range, it keeps the name and
+explicit requirement status, such as `express@5.1.0 requires cookie (requirement
+not recorded)`. The name is escaped like other untrusted text. Older reports
+without the field keep their existing human rendering. Scan never infers this
+identity from the owner, recommendation target or opaque context. Compact JSON,
+explanation JSON and saved analyses retain `dependency_name` when supplied and
+omit it when absent. A supplied value must be a string; null and other types are
+protocol errors, matching other optional non-null service facts.
 The limitation `new_dependency_not_checked` is rendered as “a new dependency was
 not checked”; JSON retains the code and the original coverage facts.
 
@@ -287,7 +292,7 @@ definitions of identical facts while keeping the whole wire report private.
 
 Blocker context is structurally retained as the contract's open JSON object,
 including future keys; key order/whitespace are not preserved. Human output uses
-the blocker's named owner, requirement, path and reason fields rather than dumping
+the blocker's named owner, optional dependency name, requirement, path and reason fields rather than dumping
 this object. Neither context nor returned paths are opened or executed.
 Optional change flags preserve absence separately from false.
 

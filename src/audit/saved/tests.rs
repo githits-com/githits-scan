@@ -12,7 +12,8 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
         serde_json::json!({"private":"never-export"});
     input["remediation"]["recommendations"][0]["blockers"] = serde_json::json!([{
         "owner":{"name":"parent","version":"2.0.0"},"owner_role":"third_party",
-        "path":"package-lock.json","kind":"dependency","requested_requirement":"<1.1.0",
+        "path":"package-lock.json","kind":"dependency","dependency_name":"demo",
+        "requested_requirement":"<1.1.0",
         "requirement_status":"recorded","basis":"lockfile","reason":"future_blocker",
         "context":{"future_information":{"value":"opaque-existing-context"}}
     }]);
@@ -20,6 +21,10 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
     let bytes = encode(&original, &BTreeSet::from(["package.json".into()])).expect("encode");
     assert!(!String::from_utf8_lossy(&bytes).contains("never-export"));
     let stored: serde_json::Value = serde_json::from_slice(&bytes).expect("archive");
+    assert_eq!(
+        stored["producer_report"]["remediation"]["recommendations"][0]["blockers"][0]["dependency_name"],
+        "demo"
+    );
     assert_eq!(
         stored["producer_report"]["remediation"]["recommendations"][0]["blockers"][0]["context"],
         input["remediation"]["recommendations"][0]["blockers"][0]["context"]

@@ -18,6 +18,11 @@ unused trace/additional data to prove it never enters compact output. Binary cas
 mutate it for joint/partial/conflicting records, future values and invalid types
 or references. It contains no live account data.
 
+`blocker.json` is an authored named blocker following the service's optional
+`dependency_name` string contract. Binary tests remove the field for old-report
+compatibility and vary names, requirement status and types. The coordinates are
+illustrative; this fixture makes no claim about current advisory applicability.
+
 `live-minimist/` is a 665-byte npm v3 input with one direct `minimist@0.0.8`
 dependency and a declared `>=0.0.8 <0.3.0` range. npm registry source/integrity
 metadata was verified on 2026-10-23. The fixture is never installed or executed.

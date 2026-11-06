@@ -100,6 +100,12 @@ pub(crate) struct Blocker {
     pub owner_role: String,
     pub path: String,
     pub kind: String,
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub dependency_name: Option<String>,
     #[serde(deserialize_with = "nullable")]
     pub requested_requirement: Option<String>,
     pub requirement_status: String,
