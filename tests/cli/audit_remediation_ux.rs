@@ -65,6 +65,7 @@ fn audit_ux_constraint_labels_distinguish_exclusion_from_uncertainty() {
         let mut blocker = named_constraint();
         blocker["reason"] = reason.into();
         value["remediation"]["recommendations"][0]["blockers"] = json!([blocker]);
+        value["remediation"]["recommendations"][0]["checks"]["requirements"] = "blocked".into();
         let text = human_report(&value);
         assert!(
             text.contains(&format!("{label} express@5.1.0 requires cookie ^0.7.1")),
@@ -85,7 +86,10 @@ fn assert_constraint_explanation(text: &str, explanation: Option<&str>) {
         assert!(!text.contains("excludes the target"), "{text}");
     }
     assert!(!text.contains('\u{1b}'));
-    assert!(!text.contains("Blocked by"), "{text}");
+    assert!(
+        !text.contains("blocked by dependency requirements"),
+        "{text}"
+    );
 }
 
 #[test]
