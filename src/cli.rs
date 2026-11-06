@@ -17,9 +17,10 @@ use crate::commands::{self, ErrorKind, Outcome, audit, detect, license, sbom};
 use crate::env;
 use crate::style::Palette;
 
-/// Exit code for a successful run; for checks, no findings.
+/// Exit code for a successful run; checks have no unignored findings or blocking gaps.
 pub const EXIT_SUCCESS: u8 = 0;
-/// Exit code for findings: empty/drift, policy violations, audit findings or unassessed evidence.
+/// Exit code for findings: empty/drift, policy violations, unignored audit findings
+/// or unassessed evidence.
 ///
 /// A pipeline blocks on this code; it means the repository, not the tool, needs
 /// attention.

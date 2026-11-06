@@ -318,7 +318,7 @@ inclusion overrides remain unless the CLI excludes them. See
 
 | Exit | Meaning | Action |
 | --- | --- | --- |
-| 0 | Success; checks have no findings; license reports are informational | Continue |
+| 0 | Success; checks have no unignored findings or blocking gaps; license reports are informational | Continue |
 | 1 | Findings, incomplete audit, inventory drift, violations, unresolved license projects, or nothing selected | Review the repository or selection |
 | 2 | Invalid invocation/configuration/input, upload limits, missing/rejected token, or account access | Correct the diagnostic's cause |
 | 3 | Network, I/O, rate limit, service, or protocol failure | Investigate; respect `Retry-After` before a deliberate retry |
