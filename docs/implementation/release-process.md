@@ -8,7 +8,7 @@ to the shipped scanner.
 ## Homebrew tap
 
 The public [tap](https://github.com/githits-com/homebrew-tap) owns the source
-formula and bottle builds. End users install with
+formula and bottle builds. Install with
 `brew install githits-com/tap/githits-scan`. Bottles target macOS 15 ARM64 and Linux
 x86_64/ARM64. Other platforms, including Intel macOS, build from source with
 Homebrew's Rust build dependency. Intel can also need a Rust/LLVM source build;
@@ -111,8 +111,8 @@ successful checks. Crates.io publication is always a separate decision.
 
 ### First public release
 
-The first public release is 0.3.0. The repository is public. End users install
-with Homebrew. crates.io remains a supported alternate and the registry
+The first public release is 0.3.0. The repository is public. Homebrew is the
+recommended install. crates.io is a supported alternative and the registry
 publication path. The README pins its CI example to
 [crates.io 0.3.0](https://crates.io/crates/githits-scan/0.3.0).
 The 0.2.0 changelog is retained as a clearly marked pre-public baseline, including

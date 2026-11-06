@@ -295,8 +295,8 @@ inclusion overrides remain unless the CLI excludes them. See
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
-secret named `GITHITS_API_TOKEN`. Local installs use Homebrew. This job pins
-crates.io version `0.3.0`. Save as `.github/workflows/dependencies.yml`:
+secret named `GITHITS_API_TOKEN`. The job installs a pinned version, `0.3.0`,
+from crates.io. Save as `.github/workflows/dependencies.yml`:
 
 ```yaml
 name: Dependency checks
@@ -334,7 +334,7 @@ failed jobs in a retry loop.
 
 ## Installation
 
-**Homebrew (macOS and Linux):** recommended for local installation.
+**Homebrew (macOS and Linux):** the recommended install.
 
 ```bash
 brew install githits-com/tap/githits-scan
