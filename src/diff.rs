@@ -289,6 +289,7 @@ pub(crate) struct Audit {
     unsupported: Set,
     pub available: bool,
     pub incomplete: bool,
+    pub notices: Vec<String>,
 }
 
 impl Audit {
@@ -305,6 +306,11 @@ impl Audit {
         let mut audit = Self {
             available: assessment.unverified.is_empty(),
             incomplete: assessment.incomplete,
+            notices: assessment
+                .unverified
+                .iter()
+                .map(|reason| format!("audit evidence unverified: {reason}"))
+                .collect(),
             ..Self::default()
         };
         match &report.body {
@@ -325,11 +331,9 @@ impl Audit {
                         .map(|v| (&v.coordinate, v.advisory_id.as_str())),
                     inventory,
                 );
-                audit.unknown.extend(
-                    r.unknowns
-                        .vulnerabilities
-                        .iter()
-                        .map(|v| key(&v.coordinate)),
+                audit.record_unknowns(
+                    r.unknowns.vulnerabilities.iter().map(|v| &v.coordinate),
+                    inventory,
                 );
             }
             Body::V2(r) => {
@@ -349,11 +353,9 @@ impl Audit {
                         .map(|v| (&v.coordinate, v.advisory_id.as_str())),
                     inventory,
                 );
-                audit.unknown.extend(
-                    r.unknowns
-                        .vulnerabilities
-                        .iter()
-                        .map(|v| key(&v.coordinate)),
+                audit.record_unknowns(
+                    r.unknowns.vulnerabilities.iter().map(|v| &v.coordinate),
+                    inventory,
                 );
             }
             Body::Future(_) => return Err(Error::Diff("unsupported audit schema version")),
@@ -367,6 +369,15 @@ impl Audit {
         if assessment.summary.dependencies != coordinates as u64 {
             audit.available = false;
             audit.incomplete = true;
+            audit.notices.push(format!(
+                "audit coordinate count {} does not match inventory {coordinates}",
+                assessment.summary.dependencies
+            ));
+        }
+        if assessment.incomplete {
+            audit
+                .notices
+                .push("audit reports incomplete or excluded evidence".into());
         }
         Ok(audit)
     }
@@ -387,16 +398,41 @@ impl Audit {
         id: &str,
         inventory: &Inventory,
     ) {
-        let key = key(coordinate);
-        if !inventory
+        self.check_coordinate(coordinate, inventory);
+        self.findings
+            .entry(key(coordinate))
+            .or_default()
+            .insert(id.into());
+    }
+
+    fn record_unknowns<'a>(
+        &mut self,
+        coordinates: impl Iterator<Item = &'a crate::api::audit::wire::Coordinate>,
+        inventory: &Inventory,
+    ) {
+        for coordinate in coordinates {
+            self.check_coordinate(coordinate, inventory);
+            self.unknown.insert(key(coordinate));
+        }
+    }
+
+    fn check_coordinate(
+        &mut self,
+        coordinate: &crate::api::audit::wire::Coordinate,
+        inventory: &Inventory,
+    ) {
+        if inventory
             .packages
-            .get(&key)
+            .get(&key(coordinate))
             .is_some_and(|p| p.versions.contains(&coordinate.version))
         {
-            self.available = false;
-            self.incomplete = true;
+            return;
         }
-        self.findings.entry(key).or_default().insert(id.into());
+        self.available = false;
+        self.incomplete = true;
+        self.notices.push(format!(
+            "audit coordinate is absent from inventory: {coordinate}"
+        ));
     }
 
     fn checked(&self, key: &Key) -> bool {

@@ -443,3 +443,40 @@ fn diff_ignores_non_utf8_unrelated_names_but_rejects_non_utf8_package_paths() {
         );
     }
 }
+
+#[test]
+fn diff_future_audit_schema_preserves_inventory_and_stops_later_audits() {
+    use super::support::{diff as fixture, jobs::ScriptedServer, response};
+    let repo = pair();
+    let mut future = fixture::exchanges(false, true);
+    future.pop().expect("audit body");
+    future.push(response(
+        "200 OK",
+        &[("Content-Type", "application/json")],
+        br#"{"schema_version":99}"#,
+    ));
+    let server = ScriptedServer::respond_with(
+        [
+            fixture::exchanges(false, false),
+            fixture::exchanges(true, false),
+            future,
+            vec![upgrade_response()],
+        ]
+        .concat(),
+    );
+    let output = online(repo.path(), &server.origin());
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
+    assert_eq!(report["changes"].as_array().expect("changes").len(), 4);
+    assert_eq!(report["incomplete"], true);
+    assert_eq!(
+        report["changes"][2]["vulnerabilities"]["fixed"],
+        serde_json::Value::Null
+    );
+    assert!(
+        report["notices"]
+            .to_string()
+            .contains("unsupported audit schema version")
+    );
+    assert_eq!(server.requests().len(), 10);
+}

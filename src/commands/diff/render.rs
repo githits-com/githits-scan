@@ -33,10 +33,10 @@ pub(super) fn write(report: &Report, format: Format, out: &mut dyn Write) -> io:
     for change in &report.changes {
         row(change, markdown, out)?;
     }
+    writeln!(out)?;
     if report.changes.is_empty() {
         writeln!(out, "No changes in selected dependency inputs.")?;
     }
-    writeln!(out)?;
     for change in &report.changes {
         details(change, markdown, out)?;
     }
@@ -166,11 +166,15 @@ fn details(change: &Change, markdown: bool, out: &mut dyn Write) -> io::Result<(
         .filter_map(|e| e.html_url.as_deref())
         .find_map(safe_url);
     if let Some(link) = link {
+        let link = if markdown {
+            format!("<{}>", link.replace('<', "%3C").replace('>', "%3E"))
+        } else {
+            cell(&link, false)
+        };
         writeln!(
             out,
-            "{} changelog: {}",
-            cell(&change.key.name, markdown),
-            cell(&link, markdown)
+            "{} changelog: {link}",
+            cell(&change.key.name, markdown)
         )?;
     }
     for gap in &change.review_gaps {
@@ -189,12 +193,33 @@ fn cell(value: &str, markdown: bool) -> String {
     if !markdown {
         return safe;
     }
-    safe.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('|', "&#124;")
-        .replace('`', "&#96;")
+    let mut escaped = String::new();
+    for character in safe.chars() {
+        match character {
+            '&' => escaped.push_str("&amp;"),
+            '<' => escaped.push_str("&lt;"),
+            '>' => escaped.push_str("&gt;"),
+            '|' => escaped.push_str("&#124;"),
+            '`' => escaped.push_str("&#96;"),
+            '[' => escaped.push_str("&#91;"),
+            ']' => escaped.push_str("&#93;"),
+            '(' => escaped.push_str("&#40;"),
+            ')' => escaped.push_str("&#41;"),
+            '!' => escaped.push_str("&#33;"),
+            '*' => escaped.push_str("&#42;"),
+            '_' => escaped.push_str("&#95;"),
+            '@' => escaped.push_str("&#64;"),
+            '\\' => escaped.push_str("&#92;"),
+            '#' => escaped.push_str("&#35;"),
+            '+' => escaped.push_str("&#43;"),
+            '-' => escaped.push_str("&#45;"),
+            '.' => escaped.push_str("&#46;"),
+            other => escaped.push(other),
+        }
+    }
+    escaped
 }
+
 fn safe_url(value: &str) -> Option<String> {
     let url = url::Url::parse(value).ok()?;
     (matches!(url.scheme(), "http" | "https")
