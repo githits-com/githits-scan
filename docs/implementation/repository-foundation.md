@@ -70,8 +70,8 @@ The code is distributed under Apache-2.0; see `LICENSE`. New fixtures must be
 authored or have suitable public provenance and must contain no credentials or
 private repository content.
 
-Crates.io bootstrap is a separate maintainer operation; see
-[release process](release-process.md#deferred-cratesio-bootstrap).
+Crates.io publication is a separate maintainer operation; see
+[release process](release-process.md#cratesio-publication).
 
 ## Key Reference Files
 
