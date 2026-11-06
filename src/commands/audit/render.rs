@@ -330,6 +330,7 @@ fn request(requester: Option<&str>, requirement: Option<&str>, status: &str) -> 
         "requirement_not_recorded" | "not_recorded" => "requirement not recorded",
         "requirement_withheld" | "withheld" => "requirement withheld",
         "requirement_ambiguous" => "requirement ambiguous",
+        "provider_requirement" => "requirement bound to a provider package",
         "parent_not_recorded" => "requesting dependency not recorded",
         value => value,
     };
