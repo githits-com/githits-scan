@@ -63,7 +63,7 @@ Pipelines need to tell "the repository failed policy" from "the tool or service 
 
 | Code | Meaning | Examples |
 | --- | --- | --- |
-| 0 | Success; for checks, no findings | SBOM written; inventory matches; no license violations |
+| 0 | Success; for checks, no unignored findings or blocking gaps | SBOM written; inventory matches; no license violations |
 | 1 | Findings | Empty inventory; inventory drift; license violations; audit findings other than explicitly ignored advisories; unassessed evidence |
 | 2 | Usage or configuration error | Unknown flag (clap); invalid configuration or unknown key; missing token or insecure origin; upload limits exceeded; non-UTF-8 upload content or paths; missing or invalid `[licenses]` policy; a missing selected input or non-CycloneDX `--sbom`; caller-action HTTP 4xx failures (except 408/429) |
 | 3 | Execution error | Unreadable tree; network failure; rate limits, service/API protocol failures; output/config file cannot be written (including a missing parent directory) |
