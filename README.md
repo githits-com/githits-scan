@@ -328,12 +328,6 @@ failed jobs in a retry loop.
 
 ## Installation
 
-**Homebrew (macOS and Linux):**
-
-```bash
-brew install githits-com/tap/githits-scan
-```
-
 **From source:** Rust 1.99 or newer and Git are required. The quickstart installs
 `main`. To install from an existing checkout (including before the first tag):
 
@@ -345,6 +339,12 @@ To pin the 0.3.0 release, install from its tag:
 
 ```bash
 cargo install --git https://github.com/githits-com/githits-scan --tag v0.3.0 githits-scan --locked
+```
+
+**Homebrew (macOS and Linux):**
+
+```bash
+brew install githits-com/tap/githits-scan
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)

@@ -5,6 +5,70 @@ owns release policy and uses the same locked dependencies and strict checks.
 Actions owns testing, native builds and publication. No release command is added
 to the shipped scanner.
 
+## Homebrew tap
+
+The public [tap](https://github.com/githits-com/homebrew-tap) owns the source
+formula and bottle builds. Install with `brew install githits-com/tap/githits-scan`
+after the initial formula PR is published. The configured bottle matrix covers
+macOS 15 ARM64/Intel and Linux x86_64/ARM64. Homebrew test-bot skips a formula if
+a dependency has no compatible bottle; currently its Rust dependency prevents
+Intel macOS bottle builds. The tap fails checks on skipped formulae. Do not
+publish until every required target has produced a bottle and passed its test.
+Homebrew builds from source with its Rust build dependency when no bottle matches.
+Scan's minimum Rust version must remain compatible with Homebrew's Rust formula.
+
+After the GitHub release job succeeds on a pushed `vX.Y.Z` tag, the `homebrew`
+job hashes the GitHub tag source tarball and uses a short-lived GitHub App token
+to open a tap PR. It never runs for manual rehearsal or `release_candidate`
+dispatches. The job runs in the `homebrew-tap` GitHub environment and tolerates
+failure independently of the already published release. Its token is passed only
+through the step environment to `gh`; no token is placed in process arguments or
+written by the handoff script.
+
+The handoff updates only the formula's source URL/checksum, removes old bottle
+metadata, and leaves fresh bottles to tap CI. A stable branch per version makes
+reruns resume after a branch or commit was created. An existing PR, including a
+closed PR, is left alone; reopen a deliberately closed PR manually if needed.
+If tap `main` already contains that version or a newer one, the handoff does
+nothing. It never force-pushes, merges, labels, tags, or publishes bottles.
+
+### One-time maintainer setup
+
+1. Create a GitHub App and install it on **only** `githits-com/homebrew-tap`.
+   Grant repository **Contents: read and write**, **Pull requests: read and
+   write**, and the automatically included **Metadata: read-only** permission.
+   No organization, Actions, Workflows, Issues, or Administration permissions are
+   needed. App-authored PRs trigger the tap's normal PR workflows.
+2. In `githits-com/githits-scan`, create/protect the environment `homebrew-tap`
+   and restrict deployment refs to release tags. Add the environment variable
+   `HOMEBREW_TAP_APP_ID` and environment secret `HOMEBREW_TAP_APP_PRIVATE_KEY`.
+   The workflow reads the App ID from `vars` and the private key from `secrets`.
+   Keep the private key out of chat, files, logs, and process arguments. This setup is a maintainer
+   operation; implementation does not create the environment or secrets.
+3. Ensure GitHub Actions is enabled on the tap. Its generated publish workflow
+   uses that repository's own `GITHUB_TOKEN` for bottle releases and commits;
+   no personal access token or App key belongs in the tap.
+4. Review the initial formula PR and successful `brew test-bot` checks for all
+   four runners and a bottle artifact for each. A completed or green run alone
+   is insufficient: test-bot can skip a formula, and pr-pull does not enforce the
+   full platform set. Apply `pr-pull` only after those checks to publish the built
+   bottles and merge the PR.
+   This is the first merge and is performed by the maintainer. Do not use the
+   GitHub merge button before bottle publication. Later bumps use the same
+   review-and-label procedure. The generated publish workflow also supports a
+   manual PR number and reviewed head SHA.
+
+If the environment requires approval, the Homebrew job waits for that approval
+after publication. Once it runs, confirm that the tap PR exists: a tolerated
+handoff failure can leave the overall release run green. If the PR is missing,
+inspect the Homebrew job, diagnose the environment/App setup or API error, and rerun that
+job from the original tag workflow. Find its `databaseId` with
+`gh run view <run-id> --json jobs --jq '.jobs[] | {name, databaseId}'`, then use
+`gh run rerun --job <databaseId>`; the browser URL's job number is not that ID.
+Do not recreate the GitHub release or move its tag. Bottle CI failures are fixed
+in the tap PR before the maintainer applies `pr-pull`; unmerged changes do not
+affect installed users.
+
 ## Preparation and approval
 
 1. Run `cargo xtask release audit` during development. CI also compares the root
@@ -108,60 +172,6 @@ with older OS versions is not verified. Every action remains pinned by SHA.
 
 Do not move/delete a failed release tag. Diagnose and fix the failure before
 retrying publication or deciding how to release a corrected version.
-
-## Homebrew tap
-
-The public [tap](https://github.com/githits-com/homebrew-tap) owns the source
-formula and bottle builds. Install with `brew install githits-com/tap/githits-scan`.
-Bottles target macOS 15 ARM64/Intel and Linux x86_64/ARM64; Homebrew builds from
-source with its Rust build dependency when no bottle matches. Scan's minimum Rust
-version must remain compatible with Homebrew's Rust formula.
-
-After the GitHub release job succeeds on a pushed `vX.Y.Z` tag, the `homebrew`
-job hashes the GitHub tag source tarball and uses a short-lived GitHub App token
-to open a tap PR. It never runs for manual rehearsal or `release_candidate`
-dispatches. The job runs in the `homebrew-tap` GitHub environment and tolerates
-failure independently of the already published release. Its token is passed only
-through the step environment to `gh`; no token is placed in process arguments or
-written by the handoff script.
-
-The handoff updates only the formula's source URL/checksum, removes old bottle
-metadata, and leaves fresh bottles to tap CI. A stable branch per version makes
-reruns resume after a branch or commit was created. An existing PR, including a
-closed PR, is left alone; reopen a deliberately closed PR manually if needed.
-If tap `main` already contains that version or a newer one, the handoff does
-nothing. It never force-pushes, merges, labels, tags, or publishes bottles.
-
-### One-time maintainer setup
-
-1. Create a GitHub App and install it on **only** `githits-com/homebrew-tap`.
-   Grant repository **Contents: read and write**, **Pull requests: read and
-   write**, and the automatically included **Metadata: read-only** permission.
-   No organization, Actions, Workflows, Issues, or Administration permissions are
-   needed. App-authored PRs trigger the tap's normal PR workflows.
-2. In `githits-com/githits-scan`, create/protect the environment `homebrew-tap`
-   and restrict deployment refs to release tags. Add the environment variable
-   `HOMEBREW_TAP_APP_ID` and environment secret `HOMEBREW_TAP_APP_PRIVATE_KEY`.
-   The workflow reads the App ID from `vars` and the private key from `secrets`.
-   Keep the private key
-   out of chat, files, logs, and process arguments. This setup is a maintainer
-   operation; implementation does not create the environment or secrets.
-3. Ensure GitHub Actions is enabled on the tap. Its generated publish workflow
-   uses that repository's own `GITHUB_TOKEN` for bottle releases and commits;
-   no personal access token or App key belongs in the tap.
-4. Review the initial formula PR and successful `brew test-bot` checks for all
-   four runners. Apply `pr-pull` to publish the built bottles and merge the PR.
-   This is the first merge and is performed by the maintainer. Do not use the
-   GitHub merge button before bottle publication. Later bumps use the same
-   review-and-label procedure. The generated publish workflow also supports a
-   manual PR number and reviewed head SHA.
-
-After each tagged release, confirm that the tap PR exists: a tolerated handoff
-failure can leave the overall release run green. If the PR is missing, inspect
-the Homebrew job, diagnose the environment/App setup or API error, and rerun that
-job from the original tag workflow (`gh run rerun --job <job-id>`). Do not recreate
-the GitHub release or move its tag. Bottle CI failures are fixed in the tap PR before the
-maintainer applies `pr-pull`; unmerged changes do not affect installed users.
 
 ## Deferred crates.io bootstrap
 
