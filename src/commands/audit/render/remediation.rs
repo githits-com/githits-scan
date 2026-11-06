@@ -218,19 +218,24 @@ fn blocker_line(b: &Blocker, out: &mut dyn Write) -> io::Result<()> {
         || safe(&b.owner.name),
         |v| format!("{}@{}", safe(&b.owner.name), safe(v)),
     );
-    let requirement = b.requested_requirement.as_ref().map_or_else(
-        || format!("requirement {}", requirement_status(&b.requirement_status)),
-        |r| {
-            if b.requirement_status == "recorded" {
-                return format!("requires {}", safe(r));
-            }
-            format!(
-                "requires {} ({})",
-                safe(r),
-                requirement_status(&b.requirement_status)
-            )
-        },
-    );
+    let mut requirement = match (
+        b.dependency_name.as_deref(),
+        b.requested_requirement.as_deref(),
+    ) {
+        (Some(name), Some(range)) => format!("requires {} {}", safe(name), safe(range)),
+        (None, Some(range)) => format!("requires {}", safe(range)),
+        (Some(name), None) => format!(
+            "requires {} (requirement {})",
+            safe(name),
+            requirement_status(&b.requirement_status)
+        ),
+        (None, None) => format!("requirement {}", requirement_status(&b.requirement_status)),
+    };
+    if b.requested_requirement.is_some() && b.requirement_status != "recorded" {
+        requirement.push_str(" (");
+        requirement.push_str(&requirement_status(&b.requirement_status));
+        requirement.push(')');
+    }
     writeln!(
         out,
         "    blocker: {owner} {requirement} [{}]; {}",

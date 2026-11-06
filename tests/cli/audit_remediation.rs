@@ -1,4 +1,7 @@
 //! Binary acceptance for complete joint mitigation action sets.
+#[path = "audit_blocker_identity.rs"]
+mod audit_blocker_identity;
+
 use super::*;
 use crate::support::audit::v2_findings;
 use serde_json::{Value, json};

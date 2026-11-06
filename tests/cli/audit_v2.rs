@@ -113,6 +113,10 @@ fn audit_v2_binary_missing_withheld_ambiguous_and_future_origins_remain_visible(
         ("requirement_withheld", "requirement withheld"),
         ("requirement_ambiguous", "requirement ambiguous"),
         ("parent_not_recorded", "requesting dependency not recorded"),
+        (
+            "provider_requirement",
+            "requirement bound to a provider package",
+        ),
         ("future_origin", "future_origin"),
     ] {
         let mut value = v2_findings();
