@@ -33,7 +33,9 @@ limit. Construction decodes one narrow owned view and retains it alongside the
 original bytes; rendering cannot introduce a second decode failure. Unknown fields
 are skipped by the typed view and remain intact in the original bytes. When
 coordinates repeat, human rendering borrows raw component fragments and builds
-one leaf candidate tree at a time, retaining canonical comparison keys. It does
+one selected leaf candidate tree at a time, retaining canonical comparison keys
+only for repeated coordinates. Combined occurrences share one group label, so
+label storage grows with the supplied group text rather than its square. It does
 not construct a whole-document JSON tree. If this optional pass cannot decode
 ignored additive data that the typed view accepted, it retains the ordinary
 per-occurrence rendering; presentation never introduces a new decode failure. An envelope version probe chooses a narrow version-specific

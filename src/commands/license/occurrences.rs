@@ -2,6 +2,7 @@
 
 use std::collections::{BTreeMap, BTreeSet, btree_map::Entry};
 use std::io::{self, Write};
+use std::rc::Rc;
 
 use serde::Deserialize;
 use serde_json::{Value, value::RawValue};
@@ -37,7 +38,9 @@ struct Occurrence {
     marker: String,
     key: Option<String>,
     paths: BTreeSet<String>,
-    combined: Option<(String, bool)>,
+    // One class label may list thousands of categories; share its text rather
+    // than storing that whole list once per occurrence.
+    combined: Option<(Rc<str>, bool)>,
 }
 
 #[derive(Deserialize)]
@@ -70,18 +73,21 @@ impl Occurrences {
         // RawValue/Value may reject (invalid UTF-8 or surrogate escapes). Display
         // grouping must never reject a report already accepted by its owner.
         let references: BTreeSet<_> = references.collect();
-        let mut index = Self::read(bytes, format).unwrap_or_default();
-        index
-            .entries
-            .retain(|reference, _| references.contains(reference.as_str()));
+        let mut index = Self::read(bytes, format, &references).unwrap_or_default();
         combine(&mut index.entries);
         index
     }
 
-    fn read(bytes: &[u8], format: Format) -> serde_json::Result<Self> {
+    fn read(bytes: &[u8], format: Format, references: &BTreeSet<&str>) -> serde_json::Result<Self> {
         let inventory: Inventory<'_> = serde_json::from_slice(bytes)?;
         let mut index = Self::default();
-        collect(&mut index, &inventory.components, format, &mut Vec::new())?;
+        collect(
+            &mut index,
+            &inventory.components,
+            format,
+            &mut Vec::new(),
+            references,
+        )?;
         Ok(index)
     }
 
@@ -91,6 +97,7 @@ impl Occurrences {
         component: &Component<'_>,
         format: Format,
         owner: &[usize],
+        references: &BTreeSet<&str>,
     ) -> serde_json::Result<()> {
         let reference = match format {
             Format::Sbom => component.sbom_ref,
@@ -100,6 +107,9 @@ impl Occurrences {
         let Some(reference) = reference.filter(|r| !r.is_empty()) else {
             return Ok(());
         };
+        if !references.contains(reference.as_str()) {
+            return Ok(());
+        }
         let occurrence = occurrence(raw, component, format, owner)?;
         match self.entries.entry(reference) {
             Entry::Vacant(entry) => {
@@ -171,10 +181,11 @@ fn collect(
     components: &[&RawValue],
     format: Format,
     owner: &mut Vec<usize>,
+    references: &BTreeSet<&str>,
 ) -> serde_json::Result<()> {
     for (position, raw) in components.iter().enumerate() {
         let component: Component<'_> = serde_json::from_str(raw.get())?;
-        index.insert(raw, &component, format, owner)?;
+        index.insert(raw, &component, format, owner, references)?;
         let Some(_) = component
             .components
             .filter(|_| matches!(format, Format::Sbom))
@@ -183,7 +194,7 @@ fn collect(
         };
         let nested: Inventory<'_> = serde_json::from_str(raw.get())?;
         owner.push(position);
-        collect(index, &nested.components, format, owner)?;
+        collect(index, &nested.components, format, owner, references)?;
         owner.pop();
     }
     Ok(())
@@ -205,20 +216,20 @@ fn combine(entries: &mut BTreeMap<String, Option<Occurrence>>) {
         .filter_map(|members| combination(members))
         .collect();
     for (references, label) in combinations {
-        set_combination(entries, &references, &label);
+        set_combination(entries, &references, &Rc::from(label));
     }
 }
 
 fn set_combination(
     entries: &mut BTreeMap<String, Option<Occurrence>>,
     references: &[String],
-    label: &str,
+    label: &Rc<str>,
 ) {
     for (position, reference) in references.iter().enumerate() {
         let Some(Some(o)) = entries.get_mut(reference) else {
             continue;
         };
-        o.combined = Some((label.to_owned(), position == 0));
+        o.combined = Some((Rc::clone(label), position == 0));
     }
 }
 

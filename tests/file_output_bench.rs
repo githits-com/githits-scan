@@ -49,7 +49,7 @@ fn licenses() -> Vec<u8> {
     bytes
 }
 
-fn report_case(root: &Path, output: &Path, api: &FixtureApi) {
+fn report_case(root: &Path, output: &Path, api: &FixtureApi, details: bool) {
     let request = report::Request {
         root,
         config: None,
@@ -57,7 +57,7 @@ fn report_case(root: &Path, output: &Path, api: &FixtureApi) {
         include_manifests: true,
         exclude: &[],
         json: false,
-        details: true,
+        details,
         quiet: true,
         output: sbom::Output::File(output.into()),
         source: report::Source::Generate(api),
@@ -130,10 +130,49 @@ fn license_and_audit_file_output_benchmark() -> Result<(), &'static str> {
     let api = FixtureApi(licenses());
     let output = root.path().join("report.txt");
     measure("licenses-file-10000-occurrences", 1, &output, || {
-        report_case(root.path(), &output, &api);
+        report_case(root.path(), &output, &api, true);
     });
     measure("audit-file-findings", 100, &output, || {
         audit_case(root.path(), &output, &api);
     });
+    Ok(())
+}
+
+fn grouped_licenses(groups: usize, singletons: usize) -> Vec<u8> {
+    let components: Vec<_> = (0..groups + singletons).map(|i| {
+        let name = if i < groups { "shared".to_owned() } else { format!("singleton-{i}") };
+        serde_json::json!({
+            "bom_ref":format!("locked-{i}"), "name":name, "version":"1", "purl":format!("pkg:pypi/{name}@1"),
+            "type":"library", "scope":null, "record_kind":"locked_package", "licenses":[{"expression":"MIT"}],
+            "observed_licenses":[], "publisher_evidence":null, "source_evidence":null, "external_references":[],
+            "inputs":{"manifest_paths":[],"lockfile_paths":["Pipfile.lock"]},
+            "context":{"dev_only":false,"group_conditions":[{"group":format!("group-{i:04}"),"marker":""}]},
+            "future_evidence": if i < groups { String::new() } else { "x".repeat(2048) }
+        })
+    }).collect();
+    let bytes = serde_json::to_vec(&serde_json::json!({"schema_version":2,"inventory":{"completeness":"recorded_lockfile_inventory","notices":[],"coverage":[]},"components":components})).expect("benchmark JSON");
+    assert!(bytes.len() <= api::MAX_RESPONSE_BYTES);
+    bytes
+}
+
+#[test]
+#[ignore = "release-only group-presentation measurement; no network or credentials"]
+fn license_group_presentation_benchmark() -> Result<(), &'static str> {
+    if cfg!(debug_assertions) {
+        return Err("run this measurement with --release");
+    }
+    let root = tempfile::tempdir().expect("tempdir");
+    std::fs::write(root.path().join("Pipfile.lock"), "{}").expect("input");
+    let output = root.path().join("report.txt");
+    for (label, groups, singletons) in [
+        ("licenses-4000-groups", 4000, 0),
+        ("licenses-group-pair-2000-singletons", 2, 2000),
+    ] {
+        let api = FixtureApi(grouped_licenses(groups, singletons));
+        println!("INPUT {label} bytes={}", api.0.len());
+        measure(label, 1, &output, || {
+            report_case(root.path(), &output, &api, false);
+        });
+    }
     Ok(())
 }
