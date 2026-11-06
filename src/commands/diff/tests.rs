@@ -167,7 +167,7 @@ fn diff_markdown_package_text_cannot_create_links_images_or_mentions() {
     let mut changes = changes();
     changes.truncate(1);
     changes[0].key.name =
-        "[click](https://evil.invalid) ![](https://evil.invalid/pixel) @someone *bold* _italic_"
+        "[click](https://evil.invalid) ![](https://evil.invalid/pixel) @someone #1 owner/repo#1 a@b.invalid *bold* _italic_"
             .into();
     let report = diff::Report {
         schema_version: 1,
@@ -186,7 +186,10 @@ fn diff_markdown_package_text_cannot_create_links_images_or_mentions() {
         assert!(!text.contains(markup), "unescaped {markup}");
     }
     assert!(text.contains("&#91;click&#93;"));
-    assert!(text.contains("&#64;someone"));
+    assert!(text.contains("@&#8203;someone"));
+    assert!(text.contains("https&#58;//evil"));
+    assert!(text.contains("#&#8203;1"));
+    assert!(text.contains("a@&#8203;b&#46;invalid"));
 }
 
 #[test]

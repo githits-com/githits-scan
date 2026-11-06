@@ -208,9 +208,11 @@ fn cell(value: &str, markdown: bool) -> String {
             '!' => escaped.push_str("&#33;"),
             '*' => escaped.push_str("&#42;"),
             '_' => escaped.push_str("&#95;"),
-            '@' => escaped.push_str("&#64;"),
+            // GitHub applies mention/issue filters after decoding entities.
+            '@' => escaped.push_str("@&#8203;"),
             '\\' => escaped.push_str("&#92;"),
-            '#' => escaped.push_str("&#35;"),
+            '#' => escaped.push_str("#&#8203;"),
+            ':' => escaped.push_str("&#58;"),
             '+' => escaped.push_str("&#43;"),
             '-' => escaped.push_str("&#45;"),
             '.' => escaped.push_str("&#46;"),

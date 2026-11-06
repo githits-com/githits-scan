@@ -66,6 +66,11 @@ present in both. If either assessment is unavailable or unverified, these three
 sets are null, and observed findings remain separately available. A partial report
 is not a clean vulnerability assessment.
 
+Markdown text escapes formatting and URL syntax and breaks mention/issue tokens
+with a zero-width separator, because GitHub applies those filters after decoding
+entities. Terminal text and JSON remain exact. Validated producer changelog URLs
+are intentionally formatted as links.
+
 ## HTTP and cost
 
 Nonidentical nonempty inputs use base SBOM, head SBOM, base audit, head audit, in
