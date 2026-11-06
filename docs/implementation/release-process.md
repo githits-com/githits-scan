@@ -8,8 +8,8 @@ to the shipped scanner.
 ## Homebrew tap
 
 The public [tap](https://github.com/githits-com/homebrew-tap) owns the source
-formula and bottle builds. Install with `brew install githits-com/tap/githits-scan`
-after the initial formula PR is published. Bottles target macOS 15 ARM64 and Linux
+formula and bottle builds. Install with
+`brew install githits-com/tap/githits-scan`. Bottles target macOS 15 ARM64 and Linux
 x86_64/ARM64. Other platforms, including Intel macOS, build from source with
 Homebrew's Rust build dependency. Intel can also need a Rust/LLVM source build;
 that fallback is not exercised by the bottle CI matrix. Scan's minimum Rust
@@ -111,9 +111,10 @@ successful checks. Crates.io publication is always a separate decision.
 
 ### First public release
 
-The first public release is 0.3.0, available on
-[crates.io](https://crates.io/crates/githits-scan/0.3.0). The repository is public,
-and the README uses crates.io as the primary Cargo installation method.
+The first public release is 0.3.0. The repository is public. Homebrew is the
+recommended install. crates.io is a supported alternative and the registry
+publication path. The README pins its CI example to
+[crates.io 0.3.0](https://crates.io/crates/githits-scan/0.3.0).
 The 0.2.0 changelog is retained as a clearly marked pre-public baseline, including
 its historical flags. It is not a supported public installation target.
 
@@ -197,9 +198,10 @@ matching trusted publisher configured on crates.io.
    from `main` and checking out a tag inside the job does not satisfy them.
    After environment approval, tag/main/changelog checks precede OIDC
    authentication and `cargo publish`; the action revokes its short-lived token
-   after the job. Verify the registry version and installation afterward, then
-   update README's pinned crates.io installation examples to that published
-   version. Do not republish an existing version to test authentication.
+   after the job. Verify the registry version and Cargo installation afterward,
+   then update README's pinned crates.io Cargo and CI examples to that published
+   version. Homebrew formula updates stay on the tap handoff above. Do not
+   republish an existing version to test authentication.
 4. After the first workflow publication succeeds, enable the crate's
    trusted-publishing-only setting on crates.io, so API tokens can no longer
    publish new versions. Subsequent publications require a configured trusted
