@@ -33,6 +33,194 @@ fn evaluate(document: &serde_json::Value, policy: &str, flags: &[&str]) -> Outpu
     command.output().expect("offline check")
 }
 
+const EMPTY_WARNING: &str =
+    "warning: no components were evaluated; no license coverage was established";
+const COMPLETENESS_WARNING: &str =
+    "warning: SBOM has no githits:completeness property; inventory completeness is unknown";
+const PARTIAL_WARNING: &str = "warning: dependency resolution is incomplete";
+
+fn assert_coverage_warnings(output: &Output, expected: &[&str]) {
+    let diagnostic = stderr(output);
+    let actual: Vec<_> = diagnostic
+        .lines()
+        .filter(|line| line.starts_with("warning:"))
+        .collect();
+    assert_eq!(actual, expected, "{diagnostic}");
+}
+
+fn coverage_cases() -> [(serde_json::Value, usize, i32); 5] {
+    use serde_json::json;
+    let licensed = json!({"name":"demo","licenses":[{"expression":"MIT"}]});
+    let project =
+        json!({"name":"root","properties":[{"name":"githits:record_kind","value":"manifest"}]});
+    let local = json!({"name":"local","properties":[{"name":"githits:source_kind","value":"LOCKED_PACKAGE_SOURCE_KIND_LOCAL"}]});
+    let mut nested = project.clone();
+    nested["components"] = json!([licensed]);
+    let violation = json!({"name":"denied","licenses":[{"expression":"GPL-3.0-only"}]});
+    [
+        (json!([]), 0, 0),
+        (json!([licensed]), 1, 0),
+        (json!([violation]), 1, 1),
+        (json!([project, local]), 0, 0),
+        (json!([nested]), 1, 0),
+    ]
+}
+
+fn assert_coverage_output(output: &Output, flags: &[&str], count: usize) {
+    if flags.contains(&"--json") {
+        let verdict: serde_json::Value = serde_json::from_slice(&output.stdout).expect("verdict");
+        assert_eq!(verdict["schema_version"], 1);
+        assert_eq!(verdict["components"], count);
+        assert!(verdict.get("warnings").is_none());
+    } else {
+        assert!(!stdout(output).contains("warning:"));
+    }
+}
+
+#[test]
+fn license_check_offline_warnings_use_evaluated_coverage_in_human_json_and_quiet_modes() {
+    for (components, count, exit) in coverage_cases() {
+        for (completeness, warning) in [
+            (Some("recorded_lockfile_inventory"), None),
+            (Some("partial_manifest_inventory"), Some(PARTIAL_WARNING)),
+            (None, Some(COMPLETENESS_WARNING)),
+        ] {
+            assert_coverage_modes(&components, count, exit, completeness, warning);
+        }
+    }
+}
+
+fn assert_coverage_modes(
+    components: &serde_json::Value,
+    count: usize,
+    exit: i32,
+    completeness: Option<&str>,
+    warning: Option<&str>,
+) {
+    use serde_json::json;
+    let mut doc = json!({"bomFormat":"CycloneDX","specVersion":"1.4","components":components});
+    if let Some(value) = completeness {
+        doc["properties"] = json!([{"name":"githits:completeness","value":value}]);
+    }
+    let expected: Vec<_> = (count == 0)
+        .then_some(EMPTY_WARNING)
+        .into_iter()
+        .chain(warning)
+        .collect();
+    for flags in [
+        vec![],
+        vec!["--quiet"],
+        vec!["--json"],
+        vec!["--json", "--quiet"],
+    ] {
+        let result = evaluate(&doc, "version=1\n[licenses]\nallow=[\"MIT\"]\n", &flags);
+        assert_eq!(result.status.code(), Some(exit), "{}", stderr(&result));
+        assert_coverage_warnings(&result, &expected);
+        assert_coverage_output(&result, &flags, count);
+    }
+}
+
+#[test]
+fn license_check_offline_warnings_stay_on_stderr_with_file_and_dash_output() {
+    let repo = repository(&[
+        ("bom.json", r#"{"bomFormat":"CycloneDX","components":[]}"#),
+        ("githits-scan.toml", "version=1\n[licenses]\nallow=[]\n"),
+    ]);
+    let file = repo.path().join("bom.json");
+    let target = repo.path().join("verdict.txt");
+    for mode in [
+        vec![],
+        vec!["--quiet"],
+        vec!["--json"],
+        vec!["--json", "--quiet"],
+    ] {
+        let mut flags = vec!["--sbom", file.to_str().expect("path")];
+        flags.extend(mode);
+        let baseline = check(repo.path(), &flags);
+        assert_eq!(baseline.status.code(), Some(0));
+        for destination in [target.to_str().expect("path"), "-"] {
+            let mut routed_flags = flags.clone();
+            routed_flags.extend(["-o", destination]);
+            let output = check(repo.path(), &routed_flags);
+            assert_eq!(output.status.code(), baseline.status.code());
+            assert_coverage_warnings(&output, &[EMPTY_WARNING, COMPLETENESS_WARNING]);
+            assert_routed_verdict(&output, &baseline, destination, &target);
+        }
+    }
+}
+
+fn assert_routed_verdict(output: &Output, baseline: &Output, destination: &str, target: &Path) {
+    if destination == "-" {
+        assert_eq!(output.stdout, baseline.stdout);
+    } else {
+        assert_eq!(output.stdout, Vec::<u8>::new());
+        assert_eq!(fs::read(target).expect("verdict"), baseline.stdout);
+    }
+}
+
+#[test]
+fn license_check_offline_invalid_inputs_fail_before_coverage_warnings_or_output() {
+    for (document, policy) in [
+        (
+            serde_json::json!({"bomFormat":"CycloneDX","components":{}}),
+            "version=1\n[licenses]\nallow=[]\n",
+        ),
+        (
+            serde_json::json!({"bomFormat":"CycloneDX","components":[]}),
+            "version=1\n[licenses]\nallow=[\"not a license\"]\n",
+        ),
+    ] {
+        let result = evaluate(&document, policy, &["--json", "--quiet"]);
+        assert_eq!(result.status.code(), Some(2), "{}", stderr(&result));
+        assert_eq!(result.stdout, Vec::<u8>::new());
+        assert_coverage_warnings(&result, &[]);
+    }
+}
+
+#[test]
+fn license_check_generated_warnings_cover_empty_and_partial_inventory_in_quiet_json() {
+    for (components, completeness, expected) in [
+        (serde_json::json!([]), None, vec![EMPTY_WARNING]),
+        (
+            serde_json::json!([]),
+            Some("partial_manifest_inventory"),
+            vec![EMPTY_WARNING, PARTIAL_WARNING],
+        ),
+        (
+            serde_json::json!([{"name":"demo","licenses":[{"expression":"MIT"}]}]),
+            Some("partial_manifest_inventory"),
+            vec![PARTIAL_WARNING],
+        ),
+    ] {
+        let mut doc = serde_json::json!({"bomFormat":"CycloneDX","components":components});
+        if let Some(value) = completeness {
+            doc["properties"] = serde_json::json!([{"name":"githits:completeness","value":value}]);
+        }
+        let repo = repository(&[
+            (
+                "githits-scan.toml",
+                "version=1\n[lockfiles]\ninclude=[\"Cargo.lock\"]\n[licenses]\nallow=[\"MIT\"]\n",
+            ),
+            ("Cargo.lock", ""),
+        ]);
+        let server =
+            ScriptedServer::success("cyclonedx", &serde_json::to_vec(&doc).expect("document"));
+        let output = githits_scan()
+            .args(["license", "check"])
+            .arg(repo.path())
+            .args(["--json", "--quiet"])
+            .env("GITHITS_API_TOKEN", "test-token")
+            .env("GITHITS_API_URL", server.origin())
+            .output()
+            .expect("generated check");
+        assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+        assert_coverage_warnings(&output, &expected);
+        let verdict: serde_json::Value = serde_json::from_slice(&output.stdout).expect("verdict");
+        assert_eq!(verdict["completeness"].as_str(), completeness);
+        assert_eq!(server.requests().len(), 3);
+    }
+}
+
 #[test]
 fn license_check_readiness_nested_types_and_derived_evidence_agree_with_verdict() {
     let doc = serde_json::json!({"bomFormat":"CycloneDX","specVersion":"1.4","components":[{"name":"outer","licenses":[{"expression":"MIT"}],"components":[

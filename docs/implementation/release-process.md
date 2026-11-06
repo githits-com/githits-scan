@@ -16,9 +16,8 @@ to the shipped scanner.
    The maximum fragment impact determines the bump; before 1.0, major means minor.
    None-only fragments do not trigger a release. Entries are grouped by category
    and sorted by filename. Review and curate the generated notes to describe the
-   behavior that actually ships. Update README's tagged Git installation example
-   to the new version and open a release PR; its CI runs the full gate and
-   packages a clean checkout. `scripts/check.sh` packages the working tree with
+   behavior that actually ships, then open a release PR; its CI runs the full gate
+   and packages a clean checkout. `scripts/check.sh` packages the working tree with
    `--allow-dirty` for a contributor who runs the gate locally.
 3. Obtain clean review and green required CI before merging. After merge, dispatch
    **Release** on that exact main commit with `release_candidate=true`. This runs
@@ -34,16 +33,14 @@ successful checks. Crates.io publication is always a separate decision.
 
 ### First public release
 
-The first public release is 0.3.0. The 0.2.0 changelog is retained as a clearly
-marked pre-public baseline, including its historical flags. It is not a
-supported public installation target.
-
-Repository protection, release secrets, private vulnerability reporting, and
-publication environments are GitHub settings; they do not travel with Git files.
+The first public release is 0.3.0, available on
+[crates.io](https://crates.io/crates/githits-scan/0.3.0). The repository is public,
+and the README uses crates.io as the primary Cargo installation method.
+The 0.2.0 changelog is retained as a clearly marked pre-public baseline, including
+its historical flags. It is not a supported public installation target.
 
 `orca.yaml` and `scripts/orca-setup.sh` are optional development-environment
-integration retained in the repository, not required by contributors or releases.
-They are excluded from the crates.io source package.
+integration, not required by contributors or releases.
 
 ## Rehearsal and release gates
 
@@ -95,32 +92,23 @@ retrying publication or deciding how to release a corrected version.
 ## Crates.io publication
 
 Crates.io distributes the source crate; GitHub distributes native binaries.
-Crates.io publication always needs separate approval for the exact version.
-Versions cannot be overwritten; yanking prevents new resolution but does not
-erase a version.
+`githits-scan` 0.3.0 is published on crates.io. Before dispatching `publish.yml`,
+verify crate ownership and trusted-publisher configuration; each publication
+requires separate explicit approval.
 
-Trusted publishing requires an existing crate. A new crate's first version must
-be published manually from its reviewed release tag with a verified-email
-maintainer account and local Cargo credentials. Use an operating-system credential
-provider or interactive login; never put a token in chat, source, logs or process
-arguments. Remove or revoke bootstrap credentials when no longer needed.
-Named crate owners can manage ownership; GitHub team owners can publish and yank.
+`publish.yml` uses trusted publishing, which requires an existing crate and a
+matching trusted publisher configured on crates.io.
 
-The publishing contract is:
-
-- The crates.io trusted publisher identifies `githits-com/githits-scan`, workflow
-  filename `publish.yml`, and environment `crates-io`.
-- The GitHub environment `crates-io` requires maintainer approval and permits only
-  release tags matching `v*`. Its name must match the crates.io configuration.
-- `publish.yml` requests an OIDC token and exchanges it for a short-lived registry
-  token. No long-lived crates.io token belongs in GitHub secrets.
-
-For an authorized release:
-
-1. Use an existing release tag whose GitHub release gates passed. Inspect
-   `cargo package --locked -p githits-scan` from that tag before publication.
-2. Dispatch **Publish to crates.io** from that release tag, with the same tag as
-   the `tag` input. For example, set `release_tag` to the approved tag, then run:
+1. Verify the intended owners, preferably a GitHub team for ongoing operations.
+   Named owners must have logged in to crates.io; team owners can publish/yank,
+   while individual owners can also manage ownership.
+2. Verify or configure a trusted publisher for `githits-com/githits-scan`, workflow
+   `publish.yml`, environment `crates-io`. Create/protect that GitHub environment
+   with maintainer approval and permit only release tags matching `v*`. Match its
+   name exactly in crates.io. No long-lived registry token belongs in GitHub secrets.
+3. For later authorized versions, manually dispatch **Publish to crates.io** from
+   the release tag, with the same tag as the `tag` input. Set `release_tag` to the
+   approved tag, then run:
 
    ```bash
    gh workflow run publish.yml --repo githits-com/githits-scan \
@@ -129,14 +117,18 @@ For an authorized release:
 
    Environment tag restrictions evaluate the workflow run's ref, so dispatching
    from `main` and checking out a tag inside the job does not satisfy them.
-3. Approve the environment job. Its tag/main/changelog checks precede OIDC
+   After environment approval, tag/main/changelog checks precede OIDC
    authentication and `cargo publish`; the action revokes its short-lived token
    after the job. Verify the registry version and installation afterward, then
-   update README's crates.io installation examples to that published version.
-   Do not republish an existing version to test authentication.
+   update README's pinned crates.io installation examples to that published
+   version. Do not republish an existing version to test authentication.
 4. After the first workflow publication succeeds, enable the crate's
    trusted-publishing-only setting on crates.io, so API tokens can no longer
-   publish it. This gates subsequent versions on configured trusted publishers.
+   publish new versions. Subsequent publications require a configured trusted
+   publisher.
+
+Versions cannot be overwritten; yanking prevents new resolution but does not erase
+a version. Never put registry credentials in chat, source, logs or process arguments.
 
 See the official [Cargo publishing guide](https://doc.rust-lang.org/cargo/reference/publishing.html),
 [credential providers](https://doc.rust-lang.org/cargo/reference/registry-authentication.html),

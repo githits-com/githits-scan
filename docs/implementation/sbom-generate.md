@@ -74,4 +74,5 @@ A CycloneDX `partial_manifest_inventory` still prints one warning: dependency
 resolution is incomplete and the SBOM may have no components. The document and
 existing success exit code are preserved. Quiet mode therefore still reads the
 completeness property; it is actionable status, not only a success summary.
-This switch belongs to `sbom generate` and `audit`; it does not change license output.
+`license report` and `license check` also support quiet mode, preserving their
+reports and warnings.

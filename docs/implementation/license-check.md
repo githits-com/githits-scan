@@ -20,6 +20,11 @@ additional dependency inventory. Service properties are optional: foreign and
 older CycloneDX JSON documents with a usable shape are supported. This is a
 policy evaluator, not a full CycloneDX schema validator.
 
+Offline input without a string-valued `githits:completeness` property emits a
+warning that inventory completeness is unknown. This does not establish the
+document's provenance or reject foreign documents. The marker alone does not
+prove that an inventory is complete or authentic.
+
 Nodes marked `githits:record_kind=manifest` are excluded project roots. Nodes
 marked `githits:source_kind=LOCKED_PACKAGE_SOURCE_KIND_LOCAL` are excluded local
 sources and counted separately. A local source may be a workspace member or a
@@ -86,6 +91,14 @@ no license coverage; it does not introduce a new failure rule. An unresolved
 `githits:resolutions` project is a finding even without a license violation. Its
 path/status/reasons explain what was not evaluated; add the required lockfile or
 make an explicit selection decision.
+
+Both generated and offline checks warn on stderr when zero components were
+evaluated or `githits:completeness` is `partial_manifest_inventory`. These warnings
+and the offline missing-completeness warning remain visible with `--quiet`,
+`--json` and output files. They do not change the policy verdict, exit status or
+schema-1 JSON; empty input still exits 0 unless it has unresolved projects.
+Zero evaluated components includes input containing only excluded project/local
+nodes. Known partial completeness warns independently of resolution entries.
 
 Human previews escape controls and bound pathological values. Package identities
 have a 160-character budget with up to 64 reserved for supplied qualifiers;

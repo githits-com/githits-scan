@@ -11,6 +11,19 @@ pub(super) const PACKAGE_PADDING: usize = 48;
 pub(super) const LICENSE_PADDING: usize = 32;
 const QUALIFIERS: usize = 64;
 
+/// Return whether the partial-inventory warning was emitted, so callers can
+/// omit a redundant inventory summary.
+pub(super) fn warn_incomplete(
+    completeness: Option<&str>,
+    stderr: &mut dyn Write,
+) -> io::Result<bool> {
+    let incomplete = completeness == Some("partial_manifest_inventory");
+    if incomplete {
+        writeln!(stderr, "warning: dependency resolution is incomplete")?;
+    }
+    Ok(incomplete)
+}
+
 pub(super) fn completeness(value: &str) -> String {
     let value = match value {
         "partial_manifest_inventory" => "incomplete dependency resolution",
