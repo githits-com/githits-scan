@@ -52,12 +52,10 @@ pub(super) fn write(
         Occurrences::default()
     };
     let width = rows
-        .chunk_by(same_coordinate)
-        .flat_map(|group| {
-            group.iter().map(|c| {
-                let context = occurrences.label(c.reference(), !details);
-                label(c, false, context).text.value.chars().count()
-            })
+        .iter()
+        .map(|c| {
+            let context = occurrences.label(c.reference(), !details);
+            label(c, false, context).text.value.chars().count()
         })
         .max()
         .unwrap_or(0)

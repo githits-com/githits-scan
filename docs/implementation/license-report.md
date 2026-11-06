@@ -38,9 +38,10 @@ only for repeated coordinates. Combined occurrences share one group label, so
 label storage grows with the supplied group text rather than its square. It does
 not construct a whole-document JSON tree. If this optional pass cannot decode
 ignored additive data that the typed view accepted, it retains the ordinary
-per-occurrence rendering; presentation never introduces a new decode failure. An envelope version probe chooses a narrow version-specific
-decoder; future versions produce the upgrade diagnostic, while malformed known
-versions are invalid. JSON output does not rebuild the document or create a
+per-occurrence rendering; presentation never introduces a new decode failure.
+An envelope version probe chooses a narrow version-specific decoder; future
+versions produce the upgrade diagnostic, while malformed known versions are
+invalid. JSON output does not rebuild the document or create a
 Scan-specific wrapper. This is the experimental API report, not a settled stable
 JSON contract. Online reports use compact schema 2; saved schema 1 remains
 accepted without rewriting. Schema 2 uses typed input paths and purpose-specific coverage,
@@ -188,7 +189,13 @@ Human output files are plain text, buffered and explicitly flushed;
 flush errors are execution failures. API/parse failures preserve an
 existing destination; output I/O failures can leave a partial write.
 
-Saved replay supports `-o/--output FILE` with the same human/JSON representation as stdout. Repeated coordinates include their input files in compact output as well as details. Known inventory completeness values are rendered as prose; incomplete dependency resolution emits one stderr warning, without a repeated completeness success note. Raw evidence codes remain intact in JSON.
+Saved replay supports `-o/--output FILE` with the same human/JSON representation
+as stdout. Repeated coordinates that remain separate include input files in
+compact output; entirely combined pairs omit those redundant lines. Details
+retain each occurrence's input files. Known inventory completeness values are
+rendered as prose; incomplete dependency resolution emits one stderr warning,
+without a repeated completeness success note. Raw evidence codes remain intact
+in JSON.
 
 ## Exit contract and verification
 
