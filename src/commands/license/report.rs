@@ -80,9 +80,8 @@ pub fn run(
         }
     };
     let view = report.view();
-    if view.completeness() == Some("partial_manifest_inventory") {
-        writeln!(stderr, "warning: dependency resolution is incomplete").map_err(Error::Output)?;
-    }
+    let incomplete =
+        super::display::warn_incomplete(view.completeness(), stderr).map_err(Error::Output)?;
     write_result(&report, view, request, stdout, palette)?;
     if !request.quiet {
         if !request.json && !request.details {
@@ -95,7 +94,7 @@ pub fn run(
         if let Some(summary) = summary {
             writeln!(stderr, "{summary}").map_err(Error::Output)?;
         }
-        if view.completeness() != Some("partial_manifest_inventory") {
+        if !incomplete {
             writeln!(
                 stderr,
                 "inventory: {}",

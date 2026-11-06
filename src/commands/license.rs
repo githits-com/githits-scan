@@ -70,6 +70,7 @@ pub struct Request<'a> {
 /// `palette` styles the report on `stdout`; `stderr_palette` styles the
 /// generation summary on `stderr`, since the two streams may differ in
 /// whether they are terminals.
+/// Coverage warnings go to `stderr` even in quiet and JSON modes.
 ///
 /// Returns [`Outcome::Findings`] on any violation, and also when generation
 /// stopped before a request (drift, or nothing to upload), in which case the
@@ -127,6 +128,7 @@ pub fn run(
         super::progress::message("checking licenses...", stderr).map_err(Error::Output)?;
     }
     let report = license::check(&bytes, &policy)?;
+    write_coverage_warnings(&report, &request.source, stderr).map_err(Error::Output)?;
     super::write_report(&request.output, stdout, palette, |out, palette| {
         if request.json {
             write_json(&report, out)
@@ -142,6 +144,27 @@ pub fn run(
             Outcome::Findings
         },
     )
+}
+
+fn write_coverage_warnings(
+    report: &Report,
+    source: &Source<'_>,
+    stderr: &mut dyn Write,
+) -> std::io::Result<()> {
+    if report.components == 0 {
+        writeln!(
+            stderr,
+            "warning: no components were evaluated; no license coverage was established"
+        )?;
+    }
+    if report.completeness.is_none() && matches!(source, Source::File(_)) {
+        writeln!(
+            stderr,
+            "warning: SBOM has no githits:completeness property; inventory completeness is unknown"
+        )?;
+    }
+    display::warn_incomplete(report.completeness.as_deref(), stderr)?;
+    Ok(())
 }
 
 fn load_policy(request: &Request<'_>) -> Result<Policy, Error> {
