@@ -10,31 +10,9 @@ use super::{safe, write_parts};
 use crate::api::licenses::{
     Component, Interpretation, Issue, LegacyView, Observation, Property, Source,
 };
-use crate::commands::license::display;
+use crate::commands::license::{display, occurrences::input_paths};
 
 use super::{Subject, fields, identity, repeats_primary};
-
-fn input_paths(properties: &[Property]) -> (BTreeSet<String>, bool) {
-    let mut paths = BTreeSet::new();
-    let mut unrecognized = false;
-    for property in properties {
-        let values = match property.name.as_ref() {
-            "githits:manifest_path" | "githits:lockfile_path" => {
-                property.value.as_deref().map(|path| vec![path.to_owned()])
-            }
-            "githits:manifest_paths" | "githits:lockfile_paths" => property
-                .value
-                .as_deref()
-                .and_then(|value| serde_json::from_str::<Vec<String>>(value).ok()),
-            _ => continue,
-        };
-        match values {
-            Some(values) => paths.extend(values),
-            None => unrecognized = true,
-        }
-    }
-    (paths, unrecognized)
-}
 
 pub(super) fn inputs(properties: &[Property], out: &mut dyn Write) -> io::Result<()> {
     let (paths, unrecognized) = input_paths(properties);

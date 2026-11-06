@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 use std::io::{self, Write};
 
 use super::super::display::{self, Text};
+use super::super::occurrences::{Format, Occurrences};
 use crate::api::licenses::compact;
 use crate::api::licenses::{Choice, Component, Publisher, Reference, Source, View};
 
@@ -15,6 +16,7 @@ mod evidence;
 
 pub(super) fn write(
     view: &View,
+    bytes: &[u8],
     details: bool,
     out: &mut dyn Write,
     palette: Palette,
@@ -30,9 +32,35 @@ pub(super) fn write(
             b.subject().purl,
         ))
     });
+    let repeated = rows
+        .windows(2)
+        .any(|pair| same_coordinate(&pair[0], &pair[1]));
+    let occurrences = if repeated {
+        let format = match view {
+            View::Legacy(_) => Format::LegacyReport,
+            View::Compact(_) => Format::CompactReport,
+        };
+        Occurrences::new(
+            bytes,
+            format,
+            rows.chunk_by(same_coordinate)
+                .filter(|group| group.len() > 1)
+                .flatten()
+                .map(Row::reference),
+        )
+    } else {
+        Occurrences::default()
+    };
     let width = rows
-        .iter()
-        .map(|c| label(c, false).text.value.chars().count())
+        .chunk_by(same_coordinate)
+        .flat_map(|group| {
+            group.iter().map(|c| {
+                let context = (group.len() > 1)
+                    .then(|| occurrences.label(c.reference(), !details))
+                    .flatten();
+                label(c, false, context).text.value.chars().count()
+            })
+        })
         .max()
         .unwrap_or(0)
         .clamp(7, display::PACKAGE_PADDING);
@@ -55,16 +83,8 @@ pub(super) fn write(
         )?;
     }
     let mut shortened = false;
-    for group in rows.chunk_by(|a, b| {
-        a.subject().name == b.subject().name && a.subject().version == b.subject().version
-    }) {
-        let base = group[0].subject().purl.map(display::purl_base);
-        let distinguish = group
-            .iter()
-            .any(|c| c.subject().purl.map(display::purl_base) != base);
-        for component in group {
-            shortened |= write_row(component, distinguish, details, group.len() > 1, width, out)?;
-        }
+    for group in rows.chunk_by(same_coordinate) {
+        shortened |= write_group(group, &occurrences, details, width, out)?;
     }
 
     if details {
@@ -83,18 +103,52 @@ pub(super) fn write(
     Ok(())
 }
 
+fn write_group(
+    group: &[Row<'_>],
+    occurrences: &Occurrences,
+    details: bool,
+    width: usize,
+    out: &mut dyn Write,
+) -> io::Result<bool> {
+    let mut shortened = false;
+    let base = group[0].subject().purl.map(display::purl_base);
+    let distinguish = group
+        .iter()
+        .any(|c| c.subject().purl.map(display::purl_base) != base);
+    let remaining = group
+        .iter()
+        .filter(|row| !occurrences.skip(row.reference()))
+        .count();
+    for component in group {
+        if !details && occurrences.skip(component.reference()) {
+            continue;
+        }
+        let context = (group.len() > 1)
+            .then(|| occurrences.label(component.reference(), !details))
+            .flatten();
+        shortened |= write_row(component, distinguish, details, width, context, out)?;
+        if context.is_some() {
+            shortened |= occurrences.continuation(component.reference(), !details, out)?;
+        }
+        if !details && remaining > 1 {
+            component.inputs(out)?;
+        }
+    }
+    Ok(shortened)
+}
+
 fn write_row(
     component: &Row<'_>,
     distinguish: bool,
     details: bool,
-    repeated: bool,
     width: usize,
+    context: Option<&str>,
     out: &mut dyn Write,
 ) -> io::Result<bool> {
     if details {
         writeln!(out)?;
     }
-    let id = label(component, distinguish);
+    let id = label(component, distinguish, context);
     let subject = component.subject();
     let licenses = choices(subject.licenses);
     if details {
@@ -103,9 +157,6 @@ fn write_row(
         writeln!(out, "{:<width$}  {}", id.text.value, licenses.value)?;
     }
     display::continuation(out, &id)?;
-    if repeated && !details {
-        component.inputs(out)?;
-    }
     if details {
         component_details(component, out)?;
     }
@@ -137,7 +188,18 @@ struct Subject<'a> {
     external_references: &'a [Reference],
 }
 
+fn same_coordinate(a: &Row<'_>, b: &Row<'_>) -> bool {
+    a.subject().name == b.subject().name && a.subject().version == b.subject().version
+}
+
 impl Row<'_> {
+    fn reference(&self) -> &str {
+        match self {
+            Self::Legacy(c) => c.bom_ref.as_deref().unwrap_or_default(),
+            Self::Compact(c) => c.bom_ref.as_deref().unwrap_or_default(),
+        }
+    }
+
     fn subject(&self) -> Subject<'_> {
         macro_rules! subject {
             ($c:expr) => {
@@ -182,7 +244,7 @@ impl Row<'_> {
     }
 }
 
-fn label(component: &Row<'_>, distinguish: bool) -> display::Identity {
+fn label(component: &Row<'_>, distinguish: bool, context: Option<&str>) -> display::Identity {
     let c = component.subject();
     let marker = if c.record_kind == Some("manifest") {
         "[project]"
@@ -191,11 +253,15 @@ fn label(component: &Row<'_>, distinguish: bool) -> display::Identity {
     } else {
         ""
     };
-    display::identity(c.name, c.version, c.purl, marker, distinguish)
+    display::identity(c.name, c.version, c.purl, marker, distinguish, context)
 }
 
 fn identity(component: &Component, out: &mut dyn Write) -> io::Result<()> {
-    write!(out, "{}", label(&Row::Legacy(component), false).text.value)
+    write!(
+        out,
+        "{}",
+        label(&Row::Legacy(component), false, None).text.value
+    )
 }
 
 fn safe(value: &str) -> String {

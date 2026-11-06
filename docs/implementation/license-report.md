@@ -22,16 +22,21 @@ is available to other clients but is not used by Scan.
 `api::licenses` validates version-1 and version-2 envelopes and typed display
 fields, retaining the original bytes for JSON. Additive fields and unfamiliar vocabulary remain
 accepted. `commands::license::report` renders without policy evaluation or a
-second interpretation layer. It does not combine choices, merge occurrences,
-infer artifact verification, or promote repository context to release evidence.
+second interpretation layer. It does not combine choices, rewrite inventory, infer artifact verification,
+or promote repository context to release evidence. Compact human rows may summarize
+equivalent group occurrences under the presentation rules below.
 The shared command-layer escaping helper keeps untrusted control characters out
 of terminal text. Evidence URLs and paths are displayed, never fetched or opened.
 
 Both remote and saved reports are capped at the API's 16,777,216-byte response
 limit. Construction decodes one narrow owned view and retains it alongside the
 original bytes; rendering cannot introduce a second decode failure. Unknown fields
-are skipped rather than materialized as a whole JSON tree, and remain intact in
-the original bytes. An envelope version probe chooses a narrow version-specific
+are skipped by the typed view and remain intact in the original bytes. When
+coordinates repeat, human rendering borrows raw component fragments and builds
+one leaf candidate tree at a time, retaining canonical comparison keys. It does
+not construct a whole-document JSON tree. If this optional pass cannot decode
+ignored additive data that the typed view accepted, it retains the ordinary
+per-occurrence rendering; presentation never introduces a new decode failure. An envelope version probe chooses a narrow version-specific
 decoder; future versions produce the upgrade diagnostic, while malformed known
 versions are invalid. JSON output does not rebuild the document or create a
 Scan-specific wrapper. This is the experimental API report, not a settled stable
@@ -56,11 +61,12 @@ token, network access, repository discovery or configuration reads. It rejects
 `-`, explicit PATH and scan-selection flags; replay writes to stdout or `--output`.
 It accepts `--details`, `--json`, `--quiet` and `--no-color`. `--sbom` belongs to `license check`.
 
-Default human output contains aligned `Package` and `License` columns and one package,
-optional version and reported-license row per supplied occurrence. Human rows
+Default human output contains aligned `Package` and `License` columns with package,
+optional version and reported-license rows. Human rows
 are stable-sorted by name, version and supplied PURL; equal identities keep their
 original relative order. JSON bytes and producer order remain unchanged.
-Project/local subjects are labelled and repeated coordinates remain separate rows.
+Project/local subjects are labelled. Repeated coordinates follow the group
+presentation rules below; singleton rows remain unchanged.
 Supplied PURL qualifiers/subpaths distinguish variants; differing PURL bases under
 the same name/version get a source-PURL line. These values are displayed as
 supplied, without inference, decoding or coordinate normalization. A missing
@@ -68,6 +74,37 @@ version is omitted; an empty inventory prints only the header. Missing choices
 are `not reported`; unknown choice objects are `unrecognized choice (retained in
 JSON)`. Observations and contextual statements never substitute for reported
 licenses.
+
+### Repeated group occurrences
+
+The shared `commands::license::occurrences` helper owns human grouping for both
+report and check. Within repeated name/version coordinates, supplied
+`context.group_conditions` (schema 2) or JSON-valued `githits:context` (schema 1
+and CycloneDX) provides native group names and markers. `dev_only` never supplies
+a group name. A default/develop pair can read as one row:
+
+```text
+Package                             License
+requests 2.32.0 [default, develop]  MIT
+```
+
+Only leaf occurrences with exactly one explicit group/marker condition, unique
+nonempty occurrence references, and distinct group names may combine. All
+component evidence must match except the occurrence reference, the value of the
+lock-local `githits:package_id`, and the group name. Unknown additive fields,
+license choices/applicability, source/input provenance, versions, PURL
+qualifiers, scope and markers remain in the comparison. Enclosing assemblies
+stay distinct. Equal PURLs or equal shortened display strings are insufficient;
+repeated same-group records remain separate. Report context is optional: absent
+or unreadable context leaves ordinary per-occurrence rows.
+
+A shared nonempty marker appears once after the group list. Non-equivalent rows
+retain their own groups/markers and input attribution. An entirely combined
+report pair omits the redundant input lines. Group previews reserve at most 48
+of the identity's 160 rendered scalars; shortened context adds a 240-scalar
+continuation and the JSON hint. Group names containing separators are quoted.
+`--details` retains individual report occurrences and their own groups, inputs
+and evidence. Counts and JSON always describe the original occurrences.
 
 Within a choice, the summary prefers the expression, then the license ID with
 its name in parentheses if supplied, then a name alone. Separate choices use

@@ -16,6 +16,8 @@ mod polish;
 #[path = "cli/release_fixes.rs"]
 mod release_fixes;
 
+#[path = "cli/license_groups.rs"]
+mod license_groups;
 #[path = "cli/license_readiness.rs"]
 mod license_readiness;
 #[path = "cli/license_report.rs"]

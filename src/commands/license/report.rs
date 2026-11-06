@@ -146,7 +146,7 @@ fn write_result(
         if request.json {
             out.write_all(report.bytes())?;
         } else {
-            render::write(view, request.details, out, colors)?;
+            render::write(view, report.bytes(), request.details, out, colors)?;
         }
         out.flush()
     };

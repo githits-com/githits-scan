@@ -8,6 +8,7 @@
 //! usage errors that explain how to configure the policy.
 
 mod display;
+mod occurrences;
 /// Full dependency-license inventory, without policy evaluation.
 pub mod report;
 
@@ -128,12 +129,31 @@ pub fn run(
         super::progress::message("checking licenses...", stderr).map_err(Error::Output)?;
     }
     let report = license::check(&bytes, &policy)?;
+    let occurrences = if !request.json
+        && report
+            .violations
+            .windows(2)
+            .any(|pair| pair[0].name == pair[1].name && pair[0].version == pair[1].version)
+    {
+        occurrences::Occurrences::new(
+            &bytes,
+            occurrences::Format::Sbom,
+            report
+                .violations
+                .chunk_by(|a, b| a.name == b.name && a.version == b.version)
+                .filter(|group| group.len() > 1)
+                .flatten()
+                .map(|v| v.bom_ref.as_str()),
+        )
+    } else {
+        occurrences::Occurrences::default()
+    };
     write_coverage_warnings(&report, &request.source, stderr).map_err(Error::Output)?;
     super::write_report(&request.output, stdout, palette, |out, palette| {
         if request.json {
             write_json(&report, out)
         } else {
-            write_human(&report, out, palette, request.details).map_err(Error::Output)
+            write_human(&report, &occurrences, out, palette, request.details).map_err(Error::Output)
         }
     })?;
     super::saved_report(&request.output, request.quiet, stderr)?;
@@ -257,6 +277,7 @@ fn write_json(report: &Report, out: &mut dyn Write) -> Result<(), Error> {
 
 fn write_human(
     report: &Report,
+    occurrences: &occurrences::Occurrences,
     out: &mut dyn Write,
     palette: Palette,
     details: bool,
@@ -275,7 +296,18 @@ fn write_human(
     } else {
         format!(
             "{} in {}",
-            plural(report.violations.len(), "violation"),
+            plural(
+                report.violations.len(),
+                if report
+                    .violations
+                    .iter()
+                    .any(|v| occurrences.combined(&v.bom_ref))
+                {
+                    "occurrence violation"
+                } else {
+                    "violation"
+                }
+            ),
             plural(report.components, "component")
         )
     };
@@ -300,7 +332,7 @@ fn write_human(
     let mut shortened = completeness.is_some_and(|v| v.shortened);
     if !report.violations.is_empty() {
         writeln!(out)?;
-        shortened |= write_violations(report, out, palette)?;
+        shortened |= write_violations(report, occurrences, out, palette)?;
     }
     if !report.unresolved.is_empty() {
         writeln!(out)?;
@@ -308,7 +340,7 @@ fn write_human(
     }
     shortened |= write_exceptions(report, out, palette)?;
     if details {
-        shortened |= write_component_details(report, out)?;
+        shortened |= write_component_details(report, occurrences, out)?;
     }
     if shortened {
         writeln!(out, "\nAbbreviated evidence; use --json for full values.")?;
@@ -316,18 +348,34 @@ fn write_human(
     Ok(())
 }
 
-fn write_component_details(report: &Report, out: &mut dyn Write) -> std::io::Result<bool> {
+fn write_component_details(
+    report: &Report,
+    occurrences: &occurrences::Occurrences,
+    out: &mut dyn Write,
+) -> std::io::Result<bool> {
     if report.violations.is_empty() {
         return Ok(false);
     }
     writeln!(out, "\nComponent details:")?;
     let mut shortened = false;
     for violation in &report.violations {
-        writeln!(out, "  {}", violation_identity(violation, false).text.value)?;
+        writeln!(
+            out,
+            "  {}",
+            violation_identity(
+                violation,
+                false,
+                occurrences.label(&violation.bom_ref, false)
+            )
+            .text
+            .value
+        )?;
         shortened |= display::field(out, "    component reference: ", &violation.bom_ref, false)?;
         if let Some(purl) = violation.purl.as_deref() {
             shortened |= display::field(out, "    package URL: ", purl, false)?;
         }
+        shortened |= occurrences.continuation(&violation.bom_ref, false, out)?;
+        shortened |= occurrences.inputs(&violation.bom_ref, out)?;
     }
     Ok(shortened)
 }
@@ -343,11 +391,11 @@ fn write_exceptions(
     let mut shortened = false;
     writeln!(out, "\n{}", palette.dim("Exceptions applied:"))?;
     for applied in &report.exceptions_applied {
+        let labels = exception_labels(&applied.components);
         let parts = [applied.purl.as_str(), ": ", applied.reason.as_str(), " ("]
             .into_iter()
             .chain(
-                applied
-                    .components
+                labels
                     .iter()
                     .enumerate()
                     .flat_map(|(i, name)| [if i == 0 { "" } else { ", " }, name.as_str()]),
@@ -358,6 +406,24 @@ fn write_exceptions(
         shortened |= text.shortened;
     }
     Ok(shortened)
+}
+
+fn exception_labels(components: &[String]) -> Vec<String> {
+    let mut counts = std::collections::BTreeMap::new();
+    for component in components {
+        *counts.entry(component.as_str()).or_insert(0) += 1;
+    }
+    components
+        .iter()
+        .filter_map(|component| {
+            let count = counts.remove(component.as_str())?;
+            Some(if count == 1 {
+                component.clone()
+            } else {
+                format!("{component} ({})", plural(count, "occurrence"))
+            })
+        })
+        .collect()
 }
 
 fn write_unresolved(
@@ -419,13 +485,20 @@ fn write_unresolved(
 
 fn write_violations(
     report: &Report,
+    occurrences: &occurrences::Occurrences,
     out: &mut dyn Write,
     palette: Palette,
 ) -> std::io::Result<bool> {
     let package_width = report
         .violations
         .iter()
-        .map(|v| violation_identity(v, false).text.value.chars().count())
+        .map(|v| {
+            violation_identity(v, false, occurrences.label(&v.bom_ref, true))
+                .text
+                .value
+                .chars()
+                .count()
+        })
         .max()
         .unwrap_or(0)
         .clamp(7, display::PACKAGE_PADDING);
@@ -449,32 +522,70 @@ fn write_violations(
         .violations
         .chunk_by(|a, b| a.name == b.name && a.version == b.version)
     {
-        let base = group[0].purl.as_deref().map(display::purl_base);
-        let distinguish = group
-            .iter()
-            .any(|v| v.purl.as_deref().map(display::purl_base) != base);
-        for violation in group {
-            shortened |= write_violation(
-                violation,
-                distinguish,
-                package_width,
-                license_width,
-                out,
-                palette,
-            )?;
-        }
+        shortened |= write_violation_group(
+            group,
+            occurrences,
+            package_width,
+            license_width,
+            out,
+            palette,
+        )?;
     }
 
     Ok(shortened)
 }
 
-fn violation_identity(v: &license::Violation, distinguish: bool) -> display::Identity {
+fn write_violation_group(
+    group: &[license::Violation],
+    occurrences: &occurrences::Occurrences,
+    package_width: usize,
+    license_width: usize,
+    out: &mut dyn Write,
+    palette: Palette,
+) -> std::io::Result<bool> {
+    let mut shortened = false;
+    let base = group[0].purl.as_deref().map(display::purl_base);
+    let distinguish = group
+        .iter()
+        .any(|v| v.purl.as_deref().map(display::purl_base) != base);
+    let remaining = group
+        .iter()
+        .filter(|v| !occurrences.skip(&v.bom_ref))
+        .count();
+    for violation in group {
+        if occurrences.skip(&violation.bom_ref) {
+            continue;
+        }
+        let context = occurrences.label(&violation.bom_ref, true);
+        shortened |= write_violation(
+            violation,
+            distinguish,
+            context,
+            package_width,
+            license_width,
+            out,
+            palette,
+        )?;
+        shortened |= occurrences.continuation(&violation.bom_ref, true, out)?;
+        if remaining > 1 && context.is_some() {
+            shortened |= occurrences.inputs(&violation.bom_ref, out)?;
+        }
+    }
+    Ok(shortened)
+}
+
+fn violation_identity(
+    v: &license::Violation,
+    distinguish: bool,
+    context: Option<&str>,
+) -> display::Identity {
     display::identity(
         &v.name,
         v.version.as_deref(),
         v.purl.as_deref(),
         "",
         distinguish,
+        context,
     )
 }
 
@@ -490,12 +601,13 @@ fn violation_evidence(v: &license::Violation) -> display::Text {
 fn write_violation(
     violation: &license::Violation,
     distinguish: bool,
+    context: Option<&str>,
     package_width: usize,
     license_width: usize,
     out: &mut dyn Write,
     palette: Palette,
 ) -> std::io::Result<bool> {
-    let id = violation_identity(violation, distinguish);
+    let id = violation_identity(violation, distinguish, context);
     let text = violation_evidence(violation);
     writeln!(
         out,

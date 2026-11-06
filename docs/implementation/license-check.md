@@ -108,6 +108,19 @@ previews use at most 240 rendered Unicode scalars with explicit abbreviation and
 a `--json` pointer. These are scalar budgets, not Unicode terminal-cell widths.
 The full reason and policy verdict are never replaced by shortened evidence.
 
+Within repeated name/version coordinates, human violation rows use the shared
+[group presentation rules](license-report.md#repeated-group-occurrences).
+Equivalent default/develop occurrences occupy one row; differing source,
+platform, input, marker or license evidence remains separate. Repeated rows with
+native group context show supplied input paths where they still need
+attribution. The headline says “occurrence violations” when rows combine, so its
+count remains the number of policy findings rather than displayed rows.
+`--details` retains every violation's component reference, package URL and own
+group context/input paths. Exception summaries show repeated identical labels
+once with their occurrence count. Evaluation, exception applicability, counts,
+exit status and schema-1 JSON remain per occurrence; presentation never changes
+the policy result or the source SBOM.
+
 `--json` keeps schema version 1 and full values: `components`, `local_packages`,
 optional `completeness`, `violations` (identity, evidence, reason),
 `exceptions_applied` and `unresolved_projects`. Grouping parentheses correct the
