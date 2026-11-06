@@ -10,6 +10,9 @@
 
 mod support;
 
+#[path = "cli/config_licenses.rs"]
+mod config_licenses;
+
 #[path = "cli/polish.rs"]
 mod polish;
 

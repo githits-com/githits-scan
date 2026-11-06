@@ -4,7 +4,7 @@ use crate::test_support::audit::{clean, findings as fixture};
 
 fn interpreted(value: &serde_json::Value) -> Assessment {
     let r = Report::from_bytes(&serde_json::to_vec(value).expect("json")).expect("report");
-    assess(&r).expect("known")
+    assess(&r, &crate::config::Audit::default()).expect("known")
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn audit_openapi_example_is_usable_without_mandatory_manifest_source_rows() {
         "../../tests/fixtures/audit/openapi-example.json"
     ))
     .expect("public example");
-    let a = assess(&report).expect("known");
+    let a = assess(&report, &crate::config::Audit::default()).expect("known");
     assert!(a.attention);
     assert!(a.unverified.is_empty(), "{:?}", a.unverified);
 }

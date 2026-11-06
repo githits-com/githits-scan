@@ -46,6 +46,8 @@ pub(super) struct View {
 pub(super) struct Summary {
     pub dependencies: u64,
     pub vulnerabilities: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ignored_vulnerabilities: Option<u64>,
     pub deprecated: u64,
     pub outdated: u64,
     pub duplicates: u64,
@@ -58,6 +60,10 @@ pub(super) struct Finding {
     pub files: BTreeSet<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub advisory: Option<String>,
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub ignored: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ignore: Option<crate::config::AdvisoryIgnore>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -271,6 +277,7 @@ impl View {
         report: &Report,
         assessment: Option<&Assessment>,
         manifests: Vec<String>,
+        policy: &crate::config::Audit,
     ) -> Self {
         let mut view = Self {
             schema_version: 1,
@@ -307,6 +314,7 @@ impl View {
         view.summary = Some(Summary {
             dependencies: s.dependencies,
             vulnerabilities: s.vulnerabilities,
+            ignored_vulnerabilities: None,
             deprecated: s.deprecated,
             outdated: s.outdated,
             duplicates: s.duplicates,
@@ -316,6 +324,22 @@ impl View {
             Body::V1(r) => view.populate_v1(r, a),
             Body::V2(r) => v2::populate(&mut view, r, a),
             Body::Future(_) => (),
+        }
+        for finding in &mut view.vulnerabilities {
+            finding.ignore = finding
+                .advisory
+                .as_deref()
+                .and_then(|id| crate::audit::ignored(policy, id))
+                .cloned();
+            finding.ignored = finding.ignore.is_some();
+        }
+        let ignored = view
+            .vulnerabilities
+            .iter()
+            .filter(|finding| finding.ignored)
+            .count();
+        if let Some(summary) = &mut view.summary {
+            summary.ignored_vulnerabilities = (ignored != 0).then_some(ignored as u64);
         }
         view.remediation = remediation::State::new(report, a);
         view

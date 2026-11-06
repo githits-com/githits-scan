@@ -223,14 +223,16 @@ struct ViolationEntry<'a> {
     name: &'a str,
     version: Option<&'a str>,
     purl: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    source: Option<&'a crate::license::GitSource>,
     expression: Option<&'a str>,
     reason: &'static str,
 }
 
 #[derive(Serialize)]
 struct AppliedEntry<'a> {
-    purl: &'a str,
-    reason: &'a str,
+    #[serde(flatten)]
+    exception: &'a crate::config::Exception,
     components: &'a [String],
 }
 
@@ -248,6 +250,7 @@ fn write_json(report: &Report, out: &mut dyn Write) -> Result<(), Error> {
                 name: &v.name,
                 version: v.version.as_deref(),
                 purl: v.purl.as_deref(),
+                source: v.source.as_ref(),
                 expression: v.expression.as_deref(),
                 reason: v.reason.id(),
             })
@@ -256,8 +259,7 @@ fn write_json(report: &Report, out: &mut dyn Write) -> Result<(), Error> {
             .exceptions_applied
             .iter()
             .map(|a| AppliedEntry {
-                purl: &a.purl,
-                reason: &a.reason,
+                exception: &a.exception,
                 components: &a.components,
             })
             .collect(),
@@ -374,8 +376,23 @@ fn write_component_details(
         if let Some(purl) = violation.purl.as_deref() {
             shortened |= display::field(out, "    package URL: ", purl, false)?;
         }
+        shortened |= write_git_source(violation.source.as_ref(), out)?;
         shortened |= occurrences.continuation(&violation.bom_ref, false, "    ", out)?;
         shortened |= occurrences.inputs(&violation.bom_ref, "    ", out)?;
+    }
+    Ok(shortened)
+}
+
+fn write_git_source(
+    source: Option<&crate::license::GitSource>,
+    out: &mut dyn Write,
+) -> std::io::Result<bool> {
+    let Some(source) = source else {
+        return Ok(false);
+    };
+    let mut shortened = display::field(out, "    Git source: ", &source.git, false)?;
+    if let Some(rev) = &source.rev {
+        shortened |= display::field(out, "    Git revision: ", rev, false)?;
     }
     Ok(shortened)
 }
@@ -392,7 +409,14 @@ fn write_exceptions(
     writeln!(out, "\n{}", palette.dim("Exceptions applied:"))?;
     for applied in &report.exceptions_applied {
         let labels = exception_labels(&applied.components);
-        let parts = [applied.purl.as_str(), ": ", applied.reason.as_str(), " ("]
+        let selector = match &applied.exception {
+            crate::config::Exception::Package { purl, .. } => purl.clone(),
+            crate::config::Exception::Git { name, git, rev, .. } => rev.as_ref().map_or_else(
+                || format!("{name} from {git}"),
+                |rev| format!("{name} from {git} at {rev}"),
+            ),
+        };
+        let parts = [selector.as_str(), ": ", applied.exception.reason(), " ("]
             .into_iter()
             .chain(
                 labels

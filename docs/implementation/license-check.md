@@ -75,13 +75,38 @@ check's all-entries rule, not a publisher-supplied expression. Single-entry text
 stays verbatim. `license report` instead preserves separate choices without
 inventing a relationship.
 
-Exceptions require an unscoped package URL and a reason. Configured versions,
-qualifiers and subpaths are rejected rather than silently discarded. A valid
-`pkg:npm/%40scope/name` exception applies to every release of that package;
-component versions/qualifiers/subpaths are removed for this package comparison.
-No PURL means no package exception. Every applied exception remains visible.
-`Policy::new` returns `Result<Policy, PolicyError>` so library callers must handle
-invalid policy entries too.
+Exceptions require a nonblank reason and exactly one selector:
+
+- `purl`: an unscoped package URL. Configured versions, qualifiers and subpaths
+  are rejected rather than silently discarded. A valid `pkg:npm/%40scope/name`
+  exception applies to every release; component versions/qualifiers/subpaths are
+  removed for this comparison. No PURL means no PURL exception.
+- `name` and `git`, with optional `rev`: exact component name and recorded Git
+  source repository URL, optionally constrained to the full recorded revision.
+  No URL normalization, `.git` rewriting, or short-commit resolution occurs.
+  Without `rev`, all revisions of that named source match.
+
+Git identity comes only from components marked
+`githits:source_kind=LOCKED_PACKAGE_SOURCE_KIND_GIT` with one unambiguous
+source-owned `vcs_repository` URL in JSON `githits:source_locations` and optional
+`githits:source_revision`. This shape is supported from observed service output;
+missing, malformed, conflicting or unfamiliar evidence never establishes a match.
+Publisher repository links in `externalReferences` do not establish source identity.
+Ambiguity is judged before URL validation. A safe alternative cannot hide an
+unsafe or malformed source-owned alternative. URLs must use `http`, `https`,
+`ssh`, or `git` with a host, no password, query, fragment or whitespace; username
+is permitted only for SSH. The same validator protects matching and newly exposed
+source diagnostics. Failing JSON includes optional `source: {git, rev?}`;
+`--details` previews these values with the existing abbreviation notice. Use
+JSON for full copyable selector values.
+
+Every applied exception remains in `exceptions_applied` and human
+`Exceptions applied`, including its selector, reason and covered components.
+An exception suppresses a policy violation; it neither supplies a license nor
+changes the input SBOM or informational license report.
+`Policy::new` returns `Result<Policy, PolicyError>` with indexed semantic errors
+for library callers. `Exception` is a package/Git selector enum; `Applied` retains
+that configured exception, and `Violation` optionally retains a safe `GitSource`.
 
 ## Output and exits
 

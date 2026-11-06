@@ -68,13 +68,44 @@ terminal output; color never carries meaning.
 
 | Exit | Audit meaning |
 | --- | --- |
-| 0 | No finding in any category, and the selected evidence is fully checked |
-| 1 | Any vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement, evidence gap, unverified accounting or future unassessed report version; also preflight drift/empty selection |
+| 0 | No unignored finding in any category, and the selected evidence is fully checked |
+| 1 | Any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement, evidence gap, unverified accounting or future unassessed report version; also preflight drift/empty selection |
 | 2 | Usage/configuration/credentials/access/upload-limit or caller-action API error; missing/invalid saved input or explanation selector |
 | 3 | Transport, rate limit, service/problem execution, structural report decoding or output error |
 
 Outdated, duplicate or manifest/lock disagreement findings alone cause exit 1.
-This is an attention gate across all findings and evidence gaps.
+This is an attention gate across unignored findings and evidence gaps.
+
+## Local advisory policy
+
+`[[audit.ignore]]` in `githits-scan.toml` accepts `id` and mandatory nonblank
+`reason`. IDs match only the exact case-sensitive reported advisory ID, not an
+alias. Duplicate IDs, whitespace in IDs, unknown keys and blank reasons are
+configuration errors (exit 2). Expiry is not supported.
+
+Raw producer evidence is assessed before local policy. Ignored vulnerabilities
+remain in the same JSON `vulnerabilities` array with `ignored: true` and
+`ignore: {id, reason}`; unmatched findings omit those fields. Summary
+`vulnerabilities` keeps the raw total and optional `ignored_vulnerabilities`
+counts ignored rows when nonzero. Human output always includes an
+`Ignored vulnerabilities` section with reasons, even when mitigation groups
+also cover the finding. Producer mitigation evidence remains visible and may
+include ignored advisories; it is not a local enforcement verdict. Saved human
+explanations also mark ignored problems with the reason.
+
+When all vulnerabilities are ignored, all other finding categories are empty,
+and evidence is complete, exit is 0 and the headline is
+`No unignored audit findings in checked dependencies`. The human summary retains
+the total and ignored count. Ignored advisories with incomplete evidence still
+produce `Audit results` and exit 1; other findings produce `Audit findings` and
+exit 1. Ignores never suppress coverage or accounting errors.
+
+There is no category-specific `--fail-on` or configuration equivalent. Audit is
+an attention gate across vulnerabilities, maintenance, input disagreements and
+evidence gaps. Consumers requiring a different gate can compute it from full
+JSON, including `incomplete`, `issues` and ignored annotations; handle exits 2/3
+as errors rather than policy findings. No additional flag is needed for that
+workflow.
 
 ## Saved analysis and component investigation
 
@@ -92,7 +123,11 @@ HTTP client construction, discovery and configuration. Neither file mode accepts
 `-`. Replay accepts `-o/--output FILE`, including explanations. Offline mode rejects PATH and scan-selection flags rather than
 silently ignoring them. Human output identifies the recorded timestamp; offline
 compact JSON adds `analysis` provenance. Replay uses the current Scan assessment
-of stored facts, not a stored verdict or a fresh check.
+of stored facts, not a stored verdict or a fresh check. The archive also stores
+its explicit local `audit_policy` when nonempty, separate from unchanged producer
+facts. Replay validates and reapplies that policy without reading configuration.
+Older archives default to no ignores. This is additive archive schema 1; older
+Scan readers may omit the policy and return the stricter exit 1.
 
 `--explain REGISTRY:NAME@VERSION` requires offline mode and exactly matches a
 vulnerability coordinate. Human output shows the problem, its immediate recorded
@@ -575,11 +610,11 @@ coverage remain separate product work; there is no universal production group.
 New output formats and CI integrations must consume the same curated result,
 escape untrusted text, preserve gaps and exit semantics, and avoid invented file
 line numbers. An HTML report should work without a server or remote assets.
-The present attention gate remains all findings and gaps until a separate policy
-specifies severity absence, malicious evidence, exceptions and incomplete checks.
-
-Exceptions require explicit alias, package/path and expiry semantics; they cannot
-erase unrelated gaps. Saved-report comparisons require stable finding identities,
+The attention gate covers all unignored findings and gaps. Advisory ignores
+have exact-ID, repository-wide scope with mandatory reasons and no expiry;
+aliases and package/path constraints are not selectors. Any future category or
+severity policy must define missing severity, malicious evidence and incomplete
+checks explicitly, and cannot erase unrelated gaps. Saved-report comparisons require stable finding identities,
 source scope and coverage comparison: absence from incomplete evidence cannot
 prove resolution or attribute a change to a pull request. Migration explanations
 need qualified release/source evidence and a bounded cost model; an advisory fix

@@ -104,9 +104,9 @@ pub fn run(
         }
     })?;
     if let Some(path) = request.save_analysis {
-        saved::save(path, &report, &prepared.manifests)?;
+        saved::save(path, &report, &prepared.manifests, &prepared.audit_policy)?;
     }
-    let (view, outcome) = project(&report, prepared.manifests);
+    let (view, outcome) = project(&report, prepared.manifests, &prepared.audit_policy);
     write_result(
         &view,
         request.json,
@@ -124,11 +124,15 @@ pub fn run(
     Ok(outcome)
 }
 
-fn project(report: &crate::api::audit::Report, manifests: Vec<String>) -> (view::View, Outcome) {
-    let assessment = crate::audit::assess(report);
+fn project(
+    report: &crate::api::audit::Report,
+    manifests: Vec<String>,
+    policy: &crate::config::Audit,
+) -> (view::View, Outcome) {
+    let assessment = crate::audit::assess(report, policy);
     let attention = assessment.as_ref().is_none_or(|a| a.attention);
     (
-        view::View::new(report, assessment.as_ref(), manifests),
+        view::View::new(report, assessment.as_ref(), manifests, policy),
         if attention {
             Outcome::Findings
         } else {

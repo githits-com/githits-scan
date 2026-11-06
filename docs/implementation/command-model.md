@@ -35,7 +35,8 @@ This document records the contract every command shares: the audiences it serves
 | `--lockfiles-only` | Leave manifest-only projects out of the inventory (`detect`) and the upload (`sbom generate`, `license report`, `license check`, `audit`); by default they are part of both and resolved from their declared constraints |
 | `--exclude <GLOB>` | Omit matching package files, including owning/workspace manifests; patterns ending in `/**` prune subtrees (repeatable; same glob rules as `lockfiles.exclude`). `detect --save` merges the patterns into the configuration. Conflicts with `license check --sbom` |
 
-All commands accept `-o/--output FILE` (`-` means stdout). `license check --details` adds component references and package URLs. Detect quiet suppresses save notes, preserving the inventory.
+All commands accept `-o/--output FILE` (`-` means stdout). `license check --details` adds component references, package URLs and bounded
+recorded Git-source previews; JSON retains full selector values. Detect quiet suppresses save notes, preserving the inventory.
 
 Per-command arguments: `license report --details`, `license report --from-report FILE` and `-o/--output FILE` (human or exact public JSON with `--json`); `detect --save`; `sbom generate --format <cyclonedx|spdx|text>` and `-o, --output <FILE>`; `license check --sbom <FILE>`; `audit -o/--output <FILE>` (human by default, compact result JSON with `--json`);
 `audit --details` (expand maintenance lists in ordinary human reports, including saved replay);
@@ -62,8 +63,8 @@ Pipelines need to tell "the repository failed policy" from "the tool or service 
 
 | Code | Meaning | Examples |
 | --- | --- | --- |
-| 0 | Success; for checks, no findings | SBOM written; inventory matches; no license violations |
-| 1 | Findings | Empty inventory; inventory drift; license violations; any audit category finding or unassessed evidence |
+| 0 | Success; for checks, no unignored findings or blocking gaps | SBOM written; inventory matches; no license violations |
+| 1 | Findings | Empty inventory; inventory drift; license violations; audit findings other than explicitly ignored advisories; unassessed evidence |
 | 2 | Usage or configuration error | Unknown flag (clap); invalid configuration or unknown key; missing token or insecure origin; upload limits exceeded; non-UTF-8 upload content or paths; missing or invalid `[licenses]` policy; a missing selected input or non-CycloneDX `--sbom`; caller-action HTTP 4xx failures (except 408/429) |
 | 3 | Execution error | Unreadable tree; network failure; rate limits, service/API protocol failures; output/config file cannot be written (including a missing parent directory) |
 
@@ -96,7 +97,7 @@ See [JSON output contracts](json-output.md) for command-specific fields.
 | Informational license presentation | `commands::license::report` |
 | Audit wire decoding and producer version | `api::audit` |
 | Compact audit result projection and human/JSON presentation | `commands::audit` |
-| Audit evidence projections, accounting, duplicate groups and consumed recommendation references | `audit`, pure; no advisory/upgrade assessment |
+| Audit evidence projections, accounting, duplicate groups, explicit advisory-ignore enforcement and consumed recommendation references | `audit`, pure; no advisory/upgrade assessment |
 | Token and origin | `env` |
 | SPDX expression evaluation and policy decisions | `license`, pure over a parsed document |
 | Human rendering, JSON rendering, outcome and error kinds | `commands`; one module per command |
@@ -105,6 +106,7 @@ See [JSON output contracts](json-output.md) for command-specific fields.
 ## Deliberate Non-Goals
 
 - SARIF output and GitHub Actions annotations: follow-ups once JSON is stable.
-- Version-pinned license exceptions: not until a use case appears; PURL without version is the unit.
+- Version-pinned registry license exceptions: PURLs remain package-wide. Named
+  Git-source exceptions can pin an exact recorded revision.
 - A cache of the generated SBOM for `license check`: `--sbom FILE` covers reuse.
 - Splitting an oversized repository into several uploads: `PATH` scopes a scan.
