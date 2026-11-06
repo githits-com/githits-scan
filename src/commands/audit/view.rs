@@ -47,7 +47,7 @@ pub(super) struct Summary {
     pub dependencies: u64,
     pub vulnerabilities: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ignored_vulnerabilities: Option<usize>,
+    pub ignored_vulnerabilities: Option<u64>,
     pub deprecated: u64,
     pub outdated: u64,
     pub duplicates: u64,
@@ -339,7 +339,7 @@ impl View {
             .filter(|finding| finding.ignored)
             .count();
         if let Some(summary) = &mut view.summary {
-            summary.ignored_vulnerabilities = (ignored != 0).then_some(ignored);
+            summary.ignored_vulnerabilities = (ignored != 0).then_some(ignored as u64);
         }
         view.remediation = remediation::State::new(report, a);
         view

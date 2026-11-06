@@ -74,7 +74,7 @@ terminal output; color never carries meaning.
 | 3 | Transport, rate limit, service/problem execution, structural report decoding or output error |
 
 Outdated, duplicate or manifest/lock disagreement findings alone cause exit 1.
-This is an attention gate across all findings and evidence gaps.
+This is an attention gate across unignored findings and evidence gaps.
 
 ## Local advisory policy
 

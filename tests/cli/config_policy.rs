@@ -144,7 +144,7 @@ fn config_policy_audit_ignored_text_and_saved_replay_keep_reason() {
         "{text}"
     );
     assert!(
-        text.contains("1 ignored vulnerabilities (included in the total)"),
+        text.contains("1 ignored vulnerability (included in the total)"),
         "{text}"
     );
     assert!(text.contains("Ignored vulnerabilities"), "{text}");
@@ -169,6 +169,7 @@ fn config_policy_saved_explanation_labels_ignored_advisories() {
         serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
             .expect("archive");
     let id = input["producer_report"]["findings"]["vulnerabilities"][0]["advisory_id"].clone();
+    input["producer_report"]["findings"]["vulnerabilities"][0]["aliases"] = json!(["CVE-example"]);
     input["audit_policy"] = json!({"ignore":[{"id":id,"reason":"Reviewed advisory"}]});
     fs::write(&archive, serde_json::to_vec(&input).expect("JSON")).expect("archive");
     for json in [false, true] {
@@ -188,7 +189,10 @@ fn config_policy_saved_explanation_labels_ignored_advisories() {
             );
         } else {
             let text = String::from_utf8_lossy(&output.stdout);
-            assert!(text.contains("IGNORED — Reviewed advisory"), "{text}");
+            assert!(
+                text.contains("GHSA-example / CVE-example IGNORED — Reviewed advisory"),
+                "{text}"
+            );
         }
     }
 }
@@ -211,4 +215,30 @@ fn config_policy_saved_analysis_rejects_invalid_ignores() {
         assert_eq!(output.status.code(), Some(2), "{}", stderr(&output));
         assert_eq!(output.stdout, [] as [u8; 0]);
     }
+}
+
+#[test]
+fn config_policy_audit_rejects_invalid_ignores_before_connecting() {
+    let repo = repo();
+    fs::write(
+        repo.path().join("githits-scan.toml"),
+        POLICY.replace("Reviewed for this deployment", " "),
+    )
+    .expect("invalid policy");
+    // The child has finished before accept: a queued connection would prove
+    // that invalid local policy reached HTTP, without an idle server thread.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("listen");
+    listener.set_nonblocking(true).expect("nonblocking");
+    let origin = format!("http://{}", listener.local_addr().expect("address"));
+    let output = run(repo.path(), Some(&origin), &["--json"]);
+    assert_eq!(output.status.code(), Some(2), "{}", stderr(&output));
+    assert_eq!(output.stdout, [] as [u8; 0]);
+    assert!(stderr(&output).contains("audit.ignore[0].reason must not be blank"));
+    assert_eq!(
+        listener
+            .accept()
+            .expect_err("policy must fail before HTTP")
+            .kind(),
+        std::io::ErrorKind::WouldBlock
+    );
 }

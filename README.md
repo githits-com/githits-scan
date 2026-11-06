@@ -263,7 +263,6 @@ exact revision. Short hashes and `.git` URL variants do not match. This is a
 visible policy exception, never license evidence. Existing PURL exceptions remain
 supported. Every exception requires a nonblank reason.
 
-
 Checks warn on stderr when no components were evaluated or dependency resolution
 is incomplete. Offline SBOMs without `githits:completeness` also warn that inventory
 completeness is unknown. Warnings remain visible with `--quiet` and `--json`;

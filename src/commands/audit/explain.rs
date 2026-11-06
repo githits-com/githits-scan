@@ -98,11 +98,11 @@ fn problem_details(problems: &[&view::Finding], out: &mut dyn Write) -> io::Resu
             "  {}",
             safe(f.advisory.as_deref().unwrap_or("advisory not recorded"))
         )?;
-        if let Some(ignore) = &f.ignore {
-            write!(out, " IGNORED — {}", safe(&ignore.reason))?;
-        }
         for alias in &f.aliases {
             write!(out, " / {}", safe(alias))?;
+        }
+        if let Some(ignore) = &f.ignore {
+            write!(out, " IGNORED — {}", safe(&ignore.reason))?;
         }
         if let Some(severity) = f.human_severity() {
             write!(out, " ({})", safe(&severity))?;

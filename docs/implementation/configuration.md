@@ -60,8 +60,8 @@ License exceptions select either a versionless `purl`, or an exact `name` and
 Selectors cannot be mixed. Git matching uses recorded source identity, never a
 publisher repository link or inferred registry license. Copy the full URL and
 revision from a failing `license check --json`; `--details` shows bounded
-previews. Short commit
-prefixes and URL variants such as adding `.git` do not match. Omitting `rev`
+previews. Short commit prefixes and URL variants such as adding `.git` do not
+match. Omitting `rev`
 excepts every recorded revision of that named source. Missing, ambiguous or
 unsupported source evidence does not match. See [license policy](license-check.md).
 License selector semantics are validated by `license check` before evaluation or

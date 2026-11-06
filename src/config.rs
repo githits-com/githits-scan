@@ -651,7 +651,7 @@ manifests = []
 # purl = "pkg:cargo/example"
 # reason = "reviewed 2026-09"
 #
-# # Or except a named Git source; copy the full URL/revision from check --json.
+# # Or except a named Git source; copy the full URL/revision from license check --json.
 # [[licenses.exceptions]]
 # name = "grammar"
 # git = "https://example.invalid/grammar"

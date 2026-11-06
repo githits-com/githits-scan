@@ -156,7 +156,8 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
         if let Some(ignored) = s.ignored_vulnerabilities {
             writeln!(
                 out,
-                "{ignored} ignored vulnerabilities (included in the total)"
+                "{ignored} ignored {} (included in the total)",
+                noun(ignored, "vulnerability", "vulnerabilities")
             )?;
         }
     }
