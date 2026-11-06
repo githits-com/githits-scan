@@ -68,8 +68,8 @@ def bump(tag, checksum):
     pr = api("pulls", "POST", base="main", head=branch,
              title=f"githits-scan {tag}",
              body=f"Update to the published [Scan {tag}](https://github.com/githits-com/githits-scan/releases/tag/{tag}) source.\n\n"
-                  "Review the formula and bottle CI, then apply `pr-pull` to publish bottles and merge.\n"
-                  "Do not merge with GitHub's merge button before bottle publication.")
+                  "This formula-only App PR publishes automatically after bottle CI succeeds.\n"
+                  "If publication fails, inspect the failed job before retrying; do not merge with GitHub's merge button.")
     print(pr["html_url"])
 
 

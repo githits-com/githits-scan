@@ -35,15 +35,20 @@ the tap repository, with the exact tested head SHA and only the modified
 and push using the tap's own `GITHUB_TOKEN`. This directly follows the completed
 CI workflow: it does not depend on a label added with `GITHUB_TOKEN`, which would
 not trigger another workflow. The selection job has read-only permissions;
-publishing uses trusted default-branch code and does not check out a PR branch
-or run PR scripts/workflows with write credentials. `--head-sha` checks the
-selected commit again before publication. Closed PRs and stale CI results skip.
+publishing uses trusted default-branch code and standard `brew pr-pull`, which
+applies the selected PR and evaluates its formula Ruby under the write token.
+Automatic publication trusts the App and tap writers; manual publication trusts
+the maintainer's review. PR workflows and auxiliary scripts are not executed.
+`--head-sha` checks the selected commit again before publication. Closed PRs and
+stale CI results skip.
 
 Human and Dependabot PRs remain manual: review successful checks and all three
 bottle artifacts, then apply `pr-pull`. The initial 0.3.0 PR uses this path.
 Homebrew test-bot can skip an unbottled dependency while returning success, so
 the tap treats skipped formulae as failed checks. `pr-pull` does not enforce the
 complete platform set itself; retain the artifact check on the manual path.
+Published PRs are closed by `pr-pull`; version branches can remain because
+GitHub's automatic branch deletion applies to merges.
 
 The tap keeps Homebrew's default publishing model: no PR-required/checks ruleset
 and no App bypass. Its separate no-bypass rule blocks force-push and deletion,
@@ -64,7 +69,7 @@ environment. The App is used only for Scan's version-update PRs.
    settings or create environment secrets. Never put the key in chat, source,
    logs or process arguments.
 3. Ensure GitHub Actions is enabled on the tap. Review the initial formula PR's
-   three successful bottle checks and artifacts, then Juha applies `pr-pull`
+   three successful bottle checks and artifacts, then a maintainer applies `pr-pull`
    for the first publication/merge. Do not merge formula PRs with GitHub's merge
    button before publishing bottles. Once this workflow is on tap `main`, later
    App-authored formula-only bumps publish automatically after successful CI.
