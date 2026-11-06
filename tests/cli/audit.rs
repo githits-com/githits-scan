@@ -23,6 +23,9 @@ mod audit_explanation_ux;
 #[path = "audit_saved.rs"]
 mod audit_saved;
 
+#[path = "config_policy.rs"]
+mod config_policy;
+
 use super::*;
 use crate::support::audit::{clean, findings as fixture};
 use crate::support::jobs::{accept_response, events_response, snapshot};

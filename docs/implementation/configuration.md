@@ -20,6 +20,16 @@ allow = ["MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-3-Clause", 
 [[licenses.exceptions]]
 purl = "pkg:cargo/ring"
 reason = "OpenSSL-style license reviewed 2026-09"
+
+[[licenses.exceptions]]
+name = "grammar"
+git = "https://example.invalid/grammar"
+rev = "0123456789abcdef0123456789abcdef01234567"
+reason = "Selected source reviewed; license evidence unavailable"
+
+[[audit.ignore]]
+id = "RUSTSEC-2024-0436"
+reason = "Reviewed for this deployment"
 ```
 
 - The default location is `githits-scan.toml` in the scanned directory; `--config FILE` points elsewhere. Paths inside the file are always relative to the scanned directory with forward slashes, whatever directory the file lives in, so a repository scanned from CI and from a developer's shell reads the same file the same way.
@@ -42,6 +52,32 @@ command enforces its own configuration/policy requirement before evaluating or
 generating the document, retaining its specific setup diagnostic. Explicit offline
 input readability and byte limits are checked first. Generated mode still
 validates credentials when constructing the API client before loading policy.
+
+## Policy decisions
+
+License exceptions select either a versionless `purl`, or an exact `name` and
+`git` source URL with optional exact `rev`. Both forms require a nonblank reason.
+Selectors cannot be mixed. Git matching uses recorded source identity, never a
+publisher repository link or inferred registry license. Copy the full URL and
+revision from a failing `license check --json`; `--details` shows bounded
+previews. Short commit
+prefixes and URL variants such as adding `.git` do not match. Omitting `rev`
+excepts every recorded revision of that named source. Missing, ambiguous or
+unsupported source evidence does not match. See [license policy](license-check.md).
+License selector semantics are validated by `license check` before evaluation or
+upload, as with the existing SPDX allow list and PURL rules.
+
+`[[audit.ignore]]` requires an exact, case-sensitive reported advisory `id` and a
+nonblank `reason`. IDs cannot contain whitespace or repeat. Unknown keys are
+errors; expiry is not supported. Aliases do not match. An ignore applies across
+all packages carrying that advisory ID. Findings remain in JSON/text as ignored,
+with the configured reason; raw vulnerability totals remain intact. Only those
+findings stop contributing to exit 1: maintenance findings, input disagreements,
+coverage gaps and inconsistent reports still fail. No configuration changes
+which checks the service performs. See [audit policy](audit.md#local-advisory-policy).
+
+Both policy blocks and comments survive `detect --save`. Informational
+`license report` remains evidence-only and does not apply exceptions.
 
 ## Evaluation
 
@@ -99,7 +135,7 @@ detected reality:
 - `include` becomes every detected eligible lockfile, sorted. Existing explicit entries retain their override of configured/default exclusions; invocation `--exclude` still wins. Other excluded lockfiles are omitted.
 - `manifests` keeps listed entries that remain eligible after exclusions and adds every non-excluded manifest-only project, unless the run is `--lockfiles-only`. A listed companion is removed when its owning lockfile is excluded, so saving cannot leave a missing companion entry behind.
 - A missing default or explicit file is created from a commented template that explains each key and carries a commented-out `[licenses]` skeleton.
-- An existing file keeps comments, key order, and `[licenses]`. `include` and `manifests` are always rewritten, one path per line. `exclude` is rewritten only when `--exclude` is passed, as the file's patterns plus any new invocation globs.
+- An existing file keeps comments, key order, and license/audit policy. `include` and `manifests` are always rewritten, one path per line. `exclude` is rewritten only when `--exclude` is passed, as the file's patterns plus any new invocation globs.
 - Nothing is written when the result equals the current contents, so repeated saves produce no diff. The report says what was created, added, and removed; `--json` carries the same under `saved`.
 - `--save` with `--no-check` is a usage error: a save is the resolution of drift, not a way to ignore it. In the code these are the three variants of `DriftPolicy`.
 

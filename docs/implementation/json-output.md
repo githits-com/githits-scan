@@ -39,10 +39,13 @@ come from the catalog. Arrays retain discovery's deterministic path order.
 `schema_version`, numeric `components` and `local_packages`, optional
 `completeness` (service inventory code, independent of license coverage), plus:
 
-- `violations`: `{bom_ref, name, version, purl, expression, reason}`. Version,
+- `violations`: `{bom_ref, name, version, purl, expression, reason, source?}`.
+  Optional `source: {git, rev?}` retains safe, unambiguous recorded Git identity. Version,
   PURL and expression may be null. Reasons are the policy evaluator's identifiers
   (`no_license`, `non_spdx_name`, `unparsable_expression`, `not_allowed`).
-- `exceptions_applied`: `{purl, reason, components: [package label]}`.
+- `exceptions_applied`: `{purl, reason, components: [package label]}` or
+  `{name, git, rev?, reason, components: [package label]}`. These are exceptions,
+  never fabricated license declarations.
 - `unresolved_projects`: `{path, status, reasons: [code]}`.
 
 These are policy results, not a replay input or a license inventory. See
@@ -55,7 +58,13 @@ optional `summary`, and nonempty finding/evidence groups: `vulnerabilities`,
 `deprecated`, `outdated`, `duplicates`, `manifest_lock_mismatches`, `issues`,
 `manifests`, `resolved_from_manifests`, `limitations`, plus `remediation` when
 available. Empty optional groups are omitted. Source paths and manifests are
-unique and sorted. Summary is absent for unknown producer versions.
+unique and sorted. Summary is absent for unknown producer versions. Vulnerability findings may carry
+`ignored: true` and `ignore: {id, reason}`; unmatched findings omit both fields.
+`summary.vulnerabilities` remains the raw total; optional
+`summary.ignored_vulnerabilities` counts ignored rows when nonzero. The same
+annotations appear on saved explanation `problems`. Archive schema 1 may contain
+optional `audit_policy: {ignore: [{id, reason}]}`; replay validates and reapplies
+it, while archives without it have no ignores.
 
 `audit --from-analysis --explain ... --json` has `kind: audit_explanation`,
 `analysis`, selected `problems`, `sources`, `issues`, `audit_incomplete`,

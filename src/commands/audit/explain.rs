@@ -98,6 +98,9 @@ fn problem_details(problems: &[&view::Finding], out: &mut dyn Write) -> io::Resu
             "  {}",
             safe(f.advisory.as_deref().unwrap_or("advisory not recorded"))
         )?;
+        if let Some(ignore) = &f.ignore {
+            write!(out, " IGNORED — {}", safe(&ignore.reason))?;
+        }
         for alias in &f.aliases {
             write!(out, " / {}", safe(alias))?;
         }
@@ -339,7 +342,8 @@ mod tests {
             "../../../tests/fixtures/audit/v2-findings.json"
         ))
         .expect("report");
-        let (mut view, _) = super::super::project(&report, Vec::new());
+        let (mut view, _) =
+            super::super::project(&report, Vec::new(), &crate::config::Audit::default());
         view.vulnerabilities = packages
             .iter()
             .map(|package| view::Finding {

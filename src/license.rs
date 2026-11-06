@@ -7,7 +7,7 @@
 //! allowed. Only explicit SPDX identifiers and upper-/lower-case operators
 //! are interpreted; names and slash-separated text are never guessed. Formal
 //! GNU postfix-plus notation is canonicalized. Missing or unrecognized evidence
-//! is a violation. Package-wide exceptions require versionless package URLs.
+//! is a violation. Exceptions select a versionless package URL or exact named Git source.
 //! Project-root and local-source markers exclude their own node, not descendants.
 //! A local source marker describes location, not proof of first-party ownership.
 
@@ -18,6 +18,9 @@ use thiserror::Error;
 
 use crate::config::{Exception, Licenses};
 
+mod source;
+pub use source::GitSource;
+
 /// The allow list and exceptions from the configuration, ready to evaluate.
 #[derive(Debug, Clone)]
 pub struct Policy {
@@ -26,14 +29,14 @@ pub struct Policy {
 }
 
 impl Policy {
-    /// Validate the configured allow list and package-wide exceptions.
+    /// Validate the configured allow list, reasons and package/Git selectors.
     ///
     /// Formal GNU postfix-plus notation is canonicalized, so `GPL-2.0+` and
     /// `GPL-2.0-or-later` match the same requirement. An empty list denies all.
     ///
     /// # Errors
-    /// Returns [`PolicyError`] for ambiguous/compound requirements or an exception
-    /// URL whose scope would be discarded during package matching.
+    /// Returns [`PolicyError`] for invalid allow requirements, scoped PURLs,
+    /// blank reasons or invalid Git selectors.
     pub fn new(licenses: &Licenses) -> Result<Self, PolicyError> {
         let allowed = licenses
             .allow
@@ -54,21 +57,54 @@ impl Policy {
         self.allowed.contains(&requirement.to_string())
     }
 
-    fn exception_for(&self, purl: Option<&str>) -> Option<&Exception> {
-        let purl = without_version(purl?);
-        self.exceptions
-            .iter()
-            .find(|exception| without_version(&exception.purl) == purl)
+    fn exception_for(&self, component: &Value, source: Option<&GitSource>) -> Option<&Exception> {
+        self.exceptions.iter().find(|exception| match exception {
+            Exception::Package { purl, .. } => {
+                string(component, "purl").is_some_and(|value| without_version(value) == purl)
+            }
+            Exception::Git { name, git, rev, .. } => source.is_some_and(|source| {
+                string(component, "name") == Some(name.as_str())
+                    && &source.git == git
+                    && rev
+                        .as_ref()
+                        .is_none_or(|rev| source.rev.as_ref() == Some(rev))
+            }),
+        })
     }
 }
 
 fn validate_exceptions(exceptions: &[Exception]) -> Result<(), PolicyError> {
     for (index, exception) in exceptions.iter().enumerate() {
-        if !is_unscoped_package(&exception.purl) {
-            return Err(PolicyError::Exception { index });
+        if exception.reason().trim().is_empty() {
+            return Err(PolicyError::Selector {
+                index,
+                message: "reason must not be blank",
+            });
+        }
+        match exception {
+            Exception::Package { purl, .. } if !is_unscoped_package(purl) => {
+                return Err(PolicyError::Exception { index });
+            }
+            Exception::Git { name, git, rev, .. } => {
+                validate_git(index, name, git, rev.as_deref())?;
+            }
+            Exception::Package { .. } => (),
         }
     }
     Ok(())
+}
+
+fn validate_git(index: usize, name: &str, git: &str, rev: Option<&str>) -> Result<(), PolicyError> {
+    let message = if name.trim().is_empty() {
+        "name must not be blank"
+    } else if rev.is_some_and(|rev| rev.trim().is_empty()) {
+        "rev must not be blank when supplied"
+    } else if !source::valid_url(git) {
+        "git must be an absolute http/https/ssh/git repository URL with a host, no password, query or fragment, and a username only for ssh"
+    } else {
+        return Ok(());
+    };
+    Err(PolicyError::Selector { index, message })
 }
 
 fn is_unscoped_package(purl: &str) -> bool {
@@ -90,6 +126,14 @@ pub enum PolicyError {
     Allow {
         /// Zero-based entry index.
         index: usize,
+    },
+    /// An exception's required reason or Git selector is invalid.
+    #[error("licenses.exceptions[{index}]: {message}")]
+    Selector {
+        /// Zero-based exception index.
+        index: usize,
+        /// Which selector or reason rule was violated, without echoing a URL.
+        message: &'static str,
     },
     /// An exception is not an unscoped package identity.
     #[error(
@@ -149,6 +193,8 @@ pub struct Violation {
     pub version: Option<String>,
     /// Package URL, when the document has one.
     pub purl: Option<String>,
+    /// Recorded Git source, when safe and unambiguous; never license evidence.
+    pub source: Option<GitSource>,
     /// The license evidence as written: one entry stays verbatim; several
     /// entries are parenthesized and joined with ` AND ` as a derived
     /// conjunction, not a publisher expression. `None` when there is none.
@@ -160,10 +206,8 @@ pub struct Violation {
 /// An exception that suppressed at least one violation.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Applied {
-    /// The exception's package URL as configured.
-    pub purl: String,
-    /// The configured reason.
-    pub reason: String,
+    /// The configured selector and reason.
+    pub exception: Exception,
     /// The components it covered, as `name version`.
     pub components: Vec<String>,
 }
@@ -288,7 +332,8 @@ fn check_component(
         return;
     };
     let purl = string(component, "purl");
-    if let Some(exception) = policy.exception_for(purl) {
+    let source = source::recorded(component);
+    if let Some(exception) = policy.exception_for(component, source.as_ref()) {
         record_exception(applied, exception, component);
         return;
     }
@@ -297,6 +342,7 @@ fn check_component(
         name: string(component, "name").unwrap_or_default().to_owned(),
         version: string(component, "version").map(str::to_owned),
         purl: purl.map(str::to_owned),
+        source,
         expression: evidence(component),
         reason,
     });
@@ -468,13 +514,12 @@ fn record_exception(applied: &mut Vec<Applied>, exception: &Exception, component
         string(component, "name").unwrap_or_default(),
         string(component, "version"),
     );
-    if let Some(existing) = applied.iter_mut().find(|a| a.purl == exception.purl) {
+    if let Some(existing) = applied.iter_mut().find(|a| &a.exception == exception) {
         existing.components.push(label);
         return;
     }
     applied.push(Applied {
-        purl: exception.purl.clone(),
-        reason: exception.reason.clone(),
+        exception: exception.clone(),
         components: vec![label],
     });
 }

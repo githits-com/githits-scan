@@ -60,45 +60,7 @@ pub(super) fn write(
     out: &mut dyn Write,
     palette: Palette,
 ) -> io::Result<()> {
-    if let Some(analysis) = &view.analysis {
-        writeln!(out, "Saved analysis from {}", safe(&analysis.generated_at))?;
-    }
-    let headline = if !view.vulnerabilities.is_empty()
-        || !view.deprecated.is_empty()
-        || !view.outdated.is_empty()
-        || !view.duplicates.is_empty()
-        || !view.manifest_lock_mismatches.is_empty()
-    {
-        "Audit findings"
-    } else if view.incomplete {
-        "Audit results"
-    } else {
-        "No audit findings in checked dependencies"
-    };
-    writeln!(out, "{}", palette.bold(headline))?;
-    if let Some(s) = &view.summary {
-        writeln!(
-            out,
-            "{} {}; {} {}, {} deprecated, {} outdated, {} duplicate {}{}",
-            s.dependencies,
-            noun(s.dependencies, "dependency", "dependencies"),
-            s.vulnerabilities,
-            noun(s.vulnerabilities, "vulnerability", "vulnerabilities"),
-            s.deprecated,
-            s.outdated,
-            s.duplicates,
-            noun(s.duplicates, "package", "packages"),
-            s.manifest_lock_mismatches
-                .map_or_else(String::new, |count| format!(
-                    "; {count} manifest/lock {}",
-                    if count == 1 {
-                        "disagreement"
-                    } else {
-                        "disagreements"
-                    }
-                ))
-        )?;
-    }
+    header(view, out, palette)?;
     file_list("Manifests", &view.manifests, "", out)?;
     file_list(
         "Resolved from manifest constraints",
@@ -107,6 +69,21 @@ pub(super) fn write(
         out,
     )?;
     vulnerability_section(view, out, palette)?;
+    let ignored: Vec<_> = view
+        .vulnerabilities
+        .iter()
+        .filter(|finding| finding.ignored)
+        .collect();
+    if !ignored.is_empty() {
+        heading("Ignored vulnerabilities", ignored.len(), out, palette)?;
+        for item in ignored {
+            finding(item, out)?;
+        }
+        writeln!(
+            out,
+            "  Ignored advisories do not cause failure. Mitigation guidance below retains producer evidence, including ignored advisories."
+        )?;
+    }
     remediation::write(view, out, palette)?;
     native::mismatches(view, out, palette)?;
     maintenance(view, details, out, palette)?;
@@ -135,6 +112,57 @@ pub(super) fn write(
     }
     Ok(())
 }
+fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
+    if let Some(analysis) = &view.analysis {
+        writeln!(out, "Saved analysis from {}", safe(&analysis.generated_at))?;
+    }
+    let headline = if view.vulnerabilities.iter().any(|finding| !finding.ignored)
+        || !view.deprecated.is_empty()
+        || !view.outdated.is_empty()
+        || !view.duplicates.is_empty()
+        || !view.manifest_lock_mismatches.is_empty()
+    {
+        "Audit findings"
+    } else if view.incomplete {
+        "Audit results"
+    } else if view.vulnerabilities.iter().any(|finding| finding.ignored) {
+        "No unignored audit findings in checked dependencies"
+    } else {
+        "No audit findings in checked dependencies"
+    };
+    writeln!(out, "{}", palette.bold(headline))?;
+    if let Some(s) = &view.summary {
+        writeln!(
+            out,
+            "{} {}; {} {}, {} deprecated, {} outdated, {} duplicate {}{}",
+            s.dependencies,
+            noun(s.dependencies, "dependency", "dependencies"),
+            s.vulnerabilities,
+            noun(s.vulnerabilities, "vulnerability", "vulnerabilities"),
+            s.deprecated,
+            s.outdated,
+            s.duplicates,
+            noun(s.duplicates, "package", "packages"),
+            s.manifest_lock_mismatches
+                .map_or_else(String::new, |count| format!(
+                    "; {count} manifest/lock {}",
+                    if count == 1 {
+                        "disagreement"
+                    } else {
+                        "disagreements"
+                    }
+                ))
+        )?;
+        if let Some(ignored) = s.ignored_vulnerabilities {
+            writeln!(
+                out,
+                "{ignored} ignored vulnerabilities (included in the total)"
+            )?;
+        }
+    }
+    Ok(())
+}
+
 fn maintenance(
     view: &View,
     details: bool,
@@ -174,7 +202,7 @@ fn vulnerability_section(view: &View, out: &mut dyn Write, palette: Palette) -> 
         .vulnerabilities
         .iter()
         .enumerate()
-        .filter(|(index, _)| !view.remediation.covers_finding(*index))
+        .filter(|(index, finding)| !finding.ignored && !view.remediation.covers_finding(*index))
         .map(|(_, finding)| finding)
         .collect();
     if uncovered.is_empty() {
@@ -209,6 +237,9 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     }
     if let Some(id) = &f.advisory {
         write!(out, " — {}", safe(id))?;
+    }
+    if let Some(ignore) = &f.ignore {
+        write!(out, " IGNORED — {}", safe(&ignore.reason))?;
     }
     if let Some(severity) = f.human_severity() {
         write!(out, " ({})", safe(&severity))?;

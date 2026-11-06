@@ -55,7 +55,7 @@ enum Command {
     Detect(DetectArgs),
     /// Audit dependency vulnerabilities, maintenance findings and native input disagreements
     #[command(
-        long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Exit 0 only for fully checked selected evidence. Versions are source evidence, not constraint-compatible upgrade guarantees."
+        long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Advisories ignored by [[audit.ignore]] stay visible with reasons. Exit 0 only for fully checked selected evidence without unignored findings. Versions are source evidence, not constraint-compatible upgrade guarantees."
     )]
     Audit(AuditArgs),
     /// Software bill of materials commands
