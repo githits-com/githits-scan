@@ -5,6 +5,7 @@ use std::io::{self, Write};
 use crate::commands::{Escape, push_safe};
 
 pub(super) const DETAIL: usize = 240;
+pub(super) const GROUP: usize = 48;
 pub(super) const PACKAGE: usize = 160;
 pub(super) const LICENSE: usize = 80;
 pub(super) const PACKAGE_PADDING: usize = 48;
@@ -213,28 +214,36 @@ pub(super) fn identity(
     purl: Option<&str>,
     marker: &str,
     distinguish: bool,
+    groups: Option<&str>,
 ) -> Identity {
     let raw_suffix = purl
         .and_then(|value| value.find(['?', '#']).map(|at| &value[at..]))
         .unwrap_or("");
     let suffix = Text::new(raw_suffix, QUALIFIERS);
     let suffix_width = suffix.value.chars().count();
-    let overhead = marker.len()
+    let groups = groups.map(|value| Text::parts([" [", value, "]"], GROUP));
+    let group_width = groups.as_ref().map_or(0, |text| text.value.chars().count());
+    let overhead = marker.chars().count()
+        + group_width
         + suffix_width
         + usize::from(!marker.is_empty())
         + usize::from(suffix_width > 0);
     let base = Text::parts(coordinate(name, version), PACKAGE - overhead);
-    let shortened = base.shortened || suffix.shortened;
+    let identity_shortened = base.shortened || suffix.shortened;
+    let shortened = identity_shortened || groups.as_ref().is_some_and(|text| text.shortened);
     let mut value = base.value;
     if !marker.is_empty() {
         value.push(' ');
         value.push_str(marker);
     }
+    if let Some(groups) = groups {
+        value.push_str(&groups.value);
+    }
     if !suffix.value.is_empty() {
         value.push(' ');
         value.push_str(&suffix.value);
     }
-    let continuation = (shortened || distinguish).then(|| {
+    let continuation = (identity_shortened || distinguish).then(|| {
         purl.map_or_else(
             || ("identity", Text::parts(coordinate(name, version), DETAIL)),
             |url| ("package URL", Text::new(url, DETAIL)),
@@ -340,6 +349,7 @@ mod tests {
             Some("pkg:gem/a@1?platform=arm64-darwin"),
             "",
             false,
+            None,
         );
         assert!(id.text.value.ends_with("?platform=arm64-darwin"));
         assert!(id.text.value.chars().count() <= PACKAGE);

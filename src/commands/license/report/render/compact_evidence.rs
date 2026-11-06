@@ -270,7 +270,7 @@ fn coverage_owner(
     let Some(c) = owners.get(owner) else {
         return write!(out, "unresolved reference {}", safe(owner));
     };
-    write!(out, "{}", label(&Row::Compact(c), false).text.value)?;
+    write!(out, "{}", label(&Row::Compact(c), false, None).text.value)?;
     let paths: BTreeSet<_> = c
         .inputs
         .manifest_paths
