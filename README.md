@@ -36,14 +36,14 @@ work without a token or network access.
 
 ## Quick start
 
-1. Install from the repository with Rust 1.99 or newer:
+1. Install from crates.io with Rust 1.99 or newer:
 
    ```bash
-   cargo install --git https://github.com/githits-com/githits-scan --branch main githits-scan --locked
+   cargo install githits-scan --version 0.3.0 --locked
    ```
 
-   This builds the current development snapshot. For reproducible installations,
-   use a [released tag](#installation) once available.
+   This builds the pinned release from its published source. See
+   [installation](#installation) for prebuilt binaries and Git alternatives.
 
 2. Sign in or create an account at [app.githits.com](https://app.githits.com),
    then create an API token in [Settings → Tokens](https://app.githits.com/settings/tokens).
@@ -308,7 +308,7 @@ jobs:
         with:
           toolchain: 1.99.1
       - name: Install githits-scan
-        run: cargo install --git https://github.com/githits-com/githits-scan --tag v0.3.0 githits-scan --locked
+        run: cargo install githits-scan --version 0.3.0 --locked
       - name: Generate the SBOM (fails on inventory drift)
         env:
           GITHITS_API_TOKEN: ${{ secrets.GITHITS_API_TOKEN }}
@@ -328,17 +328,23 @@ failed jobs in a retry loop.
 
 ## Installation
 
-**From source:** Rust 1.99 or newer and Git are required. The quickstart installs
-`main`. To install from an existing checkout (including before the first tag):
+**From crates.io:** Rust 1.99 or newer is required:
 
 ```bash
-cargo install --path . --locked
+cargo install githits-scan --version 0.3.0 --locked
 ```
 
-To pin the 0.3.0 release, install from its tag:
+**From Git:** Git is also required. To install the same release from its tag:
 
 ```bash
 cargo install --git https://github.com/githits-com/githits-scan --tag v0.3.0 githits-scan --locked
+```
+
+For the current development snapshot, replace `--tag v0.3.0` with `--branch main`.
+To install from an existing checkout:
+
+```bash
+cargo install --path . --locked
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)
@@ -356,8 +362,7 @@ Verify that your downloaded archive is marked `OK`. On Windows, use `Get-FileHas
 SHA256` on the downloaded ZIP and compare it with the matching `SHA256SUMS` entry.
 Extract the verified archive and put the executable in a directory on `PATH`.
 Build baselines are Ubuntu 24.04, macOS 15, and Windows Server 2025; older systems
-are not tested. A crates.io release is planned; `cargo install githits-scan` is
-not currently an installation method.
+are not tested.
 
 ### Uninstall
 
