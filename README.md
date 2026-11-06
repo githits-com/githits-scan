@@ -36,14 +36,13 @@ work without a token or network access.
 
 ## Quick start
 
-1. Install from the repository with Rust 1.99 or newer:
+1. Install from [crates.io](https://crates.io/crates/githits-scan) with Rust 1.99 or newer:
 
    ```bash
-   cargo install --git https://github.com/githits-com/githits-scan --branch main githits-scan --locked
+   cargo install githits-scan --locked
    ```
 
-   This builds the current development snapshot. For reproducible installations,
-   use a [released tag](#installation) once available.
+   For pinned installations and prebuilt binaries, see [Installation](#installation).
 
 2. Sign in or create an account at [app.githits.com](https://app.githits.com),
    then create an API token in [Settings → Tokens](https://app.githits.com/settings/tokens).
@@ -294,8 +293,8 @@ inclusion overrides remain unless the CLI excludes them. See
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
-secret named `GITHITS_API_TOKEN`. The pinned `v0.3.0` install requires that tag to
-be published first. Save as `.github/workflows/dependencies.yml`:
+secret named `GITHITS_API_TOKEN`. It installs version `0.3.0` from crates.io.
+Save as `.github/workflows/dependencies.yml`:
 
 ```yaml
 name: Dependency checks
@@ -313,7 +312,7 @@ jobs:
         with:
           toolchain: 1.99.1
       - name: Install githits-scan
-        run: cargo install --git https://github.com/githits-com/githits-scan --tag v0.3.0 githits-scan --locked
+        run: cargo install githits-scan --locked --version 0.3.0
       - name: Generate the SBOM (fails on inventory drift)
         env:
           GITHITS_API_TOKEN: ${{ secrets.GITHITS_API_TOKEN }}
@@ -333,17 +332,16 @@ failed jobs in a retry loop.
 
 ## Installation
 
-**From source:** Rust 1.99 or newer and Git are required. The quickstart installs
-`main`. To install from an existing checkout (including before the first tag):
+**Cargo (crates.io):** Rust 1.99 or newer is required:
 
 ```bash
-cargo install --path . --locked
+cargo install githits-scan --locked
 ```
 
-To pin the 0.3.0 release, install from its tag:
+For a pinned installation, including CI, specify the release version:
 
 ```bash
-cargo install --git https://github.com/githits-com/githits-scan --tag v0.3.0 githits-scan --locked
+cargo install githits-scan --locked --version 0.3.0
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)
@@ -361,8 +359,13 @@ Verify that your downloaded archive is marked `OK`. On Windows, use `Get-FileHas
 SHA256` on the downloaded ZIP and compare it with the matching `SHA256SUMS` entry.
 Extract the verified archive and put the executable in a directory on `PATH`.
 Build baselines are Ubuntu 24.04, macOS 15, and Windows Server 2025; older systems
-are not tested. A crates.io release is planned; `cargo install githits-scan` is
-not currently an installation method.
+are not tested.
+
+**From a checkout:** Rust 1.99 or newer is required. In the repository checkout:
+
+```bash
+cargo install --path . --locked
+```
 
 ### Uninstall
 
