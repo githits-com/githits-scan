@@ -16,6 +16,56 @@ configuration and admission errors use 2; execution/output failures use 3. Git a
 `GITHITS_API_TOKEN` are required, including identical or empty selected inputs.
 The service can assess unchanged dependencies against current evidence.
 
+## Output destinations
+
+The original `--format human|json|markdown` selects one representation (default
+`human`); `-o/--output PATH` selects its file, with stdout when omitted or `-`.
+To select destinations by format instead:
+
+```sh
+githits-scan diff --base HEAD~1 --head HEAD --output-json diff.json --output-markdown diff.md
+githits-scan diff --base HEAD --output-json - --output-markdown diff.md
+githits-scan diff --base HEAD --output-json diff.json --output-markdown -
+```
+
+`--output-json PATH` and `--output-markdown PATH` may be used together or individually.
+Each implies its representation; repeated `--format` flags are not needed or accepted.
+Named outputs emit only requested documents, with no implicit human report on stdout.
+They conflict with explicitly supplied `--format` (even `human`) and `-o/--output`.
+`-` means stdout for either flag, but at most one destination may use it. Empty
+paths, mixed flag styles and two stdout destinations are usage errors (exit 2).
+Paths are relative to the process working directory, not the scanned repository.
+
+Both representations consume the same returned report: no second submission,
+audit or review. JSON preserves the producer bytes exactly, including when a
+future schema cannot be interpreted; Markdown then contains the existing explicit
+unsupported-schema/unassessed notice. Partial, unavailable and unknown evidence
+keeps its qualifications. Exit 0 remains informational, never safe/passed.
+
+When both outputs are requested, preflight checks run before snapshot reads,
+credentials or charged submission. File destinations must be distinct: existing
+canonical aliases (including symlinks), equal canonical-parent/filename paths for
+new files, and Unix hard-link aliases fail with exit 2. Missing parents,
+directories, dangling symlinks and destination inspection failures use the usual
+output error (exit 3). No files are opened or truncated by preflight. Hard-link
+identity is not checked on non-Unix systems. Destinations are checked again after
+JSON is written: case aliases between previously absent files may only become
+resolvable then. Such a conflict exits 2 after analysis, retaining JSON without
+opening Markdown. Keep redirected stdout separate from
+the other destination: Scan cannot identify shell redirection or prevent concurrent
+path replacement. These checks cannot guarantee subsequent write success.
+
+After successful analysis/validation, files overwrite their destinations using the
+shared buffered writer. With two outputs, JSON is written first, then Markdown;
+flag order does not affect this. Each completed file write produces a `saved`
+diagnostic unless `--quiet`. Service/invalid-report errors leave destinations
+untouched. Any write/flush failure exits 3, stops remaining writes and never
+resubmits. Earlier completed output remains; a failing file can be partially written.
+There is no transaction or rollback across destinations. Avoid automatically
+rerunning a charged analysis to recover a local output error. There is no saved-JSON
+replay command. Omitting the named flags restores the original single-output
+contract; existing report files need no migration.
+
 ## Inputs and ownership
 
 `repository.rs` enumerates immutable commit trees or tracked/nonignored untracked

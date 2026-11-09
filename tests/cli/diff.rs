@@ -46,6 +46,8 @@ fn diff_help_marks_experimental_and_documents_working_tree() {
         "--head",
         "working tree",
         "--format",
+        "--output-json",
+        "--output-markdown",
         "--lockfiles-only",
     ] {
         assert!(stdout(&output).contains(text), "missing {text}");
@@ -466,3 +468,6 @@ fn diff_lockfiles_only_retains_companions_and_sets_recorded_only() {
     assert!(!body.contains("filename=\"other/package.json\""));
     assert_eq!(body.matches("filename=\"package.json\"").count(), 2);
 }
+
+#[path = "diff/dual_output.rs"]
+mod dual_output;
