@@ -32,9 +32,12 @@ fn audit_blocker_dependency_name_human_uses_only_supplied_identity() {
         let mut input = remediation_report();
         input["remediation"]["recommendations"][0]["blockers"] = json!([b]);
         let text = human_report(&input);
-        assert!(text.contains(&format!(
-            "    blocker: express@5.1.0 {requirement} [package-lock.json]; parent dependency excludes the target\n"
-        )), "{text}");
+        assert!(
+            text.contains(&format!(
+                "    requirement conflict: express@5.1.0 {requirement} [package-lock.json]\n"
+            )),
+            "{text}"
+        );
         assert!(!text.contains('\u{1b}'));
     }
 }
@@ -149,13 +152,19 @@ fn audit_blocker_dependency_name_saved_explanation_preserves_distinct_names() {
         let text = stdout(&output);
         for requirement in ["cookie ^0.7.1", "@demo/alias ^0.7.1", "^0.7.1"] {
             assert_eq!(
-                text.matches(&format!("blocker: express@5.1.0 requires {requirement} ["))
-                    .count(),
+                text.matches(&format!(
+                    "requirement conflict: express@5.1.0 requires {requirement} ["
+                ))
+                .count(),
                 1,
                 "{text}"
             );
         }
-        assert_eq!(text.matches("blocker: express@5.1.0").count(), 3, "{text}");
+        assert_eq!(
+            text.matches("requirement conflict: express@5.1.0").count(),
+            3,
+            "{text}"
+        );
         let mut flags = flags.to_vec();
         flags.push("--json");
         let output = offline(&path, &flags);

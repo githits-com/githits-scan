@@ -62,6 +62,7 @@ pub(in crate::commands::audit) fn guidance(
 ) -> io::Result<()> {
     let supported = supported_fix(r, planning_known);
     if !matches!(r.outcome.as_str(), "proposed" | "partial") || r.changes.is_empty() {
+        writeln!(out)?;
         writeln!(out, "    {}", outcome(r, planning_known))?;
     }
     if !r.changes.is_empty() {
@@ -87,26 +88,26 @@ pub(in crate::commands::audit) fn guidance(
     if let Some(files) = common.filter(|files| files != &displayed_files || files != &own_files) {
         file_list("Change in", &files, "    ", out)?;
     }
-    let addressed: BTreeSet<_> = r.addressed_findings.iter().collect();
-    let fully_addressed = r.outcome == "proposed"
-        && r.remaining_findings.is_empty()
-        && r.findings.iter().collect::<BTreeSet<_>>() == addressed
-        && context.matches(&r.findings);
-    if !fully_addressed && !r.addressed_findings.is_empty() {
+    for request in &r.recorded_requests {
         writeln!(
             out,
-            "    would address: {}",
-            finding_names(&r.addressed_findings, &r.subject)
+            "    recorded request for {}: {}; owner {} [{}]",
+            safe(&request.target.to_string()),
+            safe(&request.requirement),
+            owner(&request.owner_name, request.owner_version.as_deref()),
+            safe(&request.path)
         )?;
     }
-    if !r.remaining_findings.is_empty() {
-        writeln!(
-            out,
-            "    remaining: {}",
-            finding_names(&r.remaining_findings, &r.subject)
-        )?;
-    }
+    impact(r, supported, context, out)?;
     blockers(&r.blockers, out)?;
+    if r.changes.iter().any(|c| c.strategy == "override")
+        && r.checks.native_resolution == "not_checked"
+    {
+        writeln!(
+            out,
+            "    override not verified: package-manager support and build not checked"
+        )?;
+    }
     checks(r, out)?;
     for limitation in &r.limitations {
         if limitation == "withdrawal_not_observed" {
@@ -117,14 +118,52 @@ pub(in crate::commands::audit) fn guidance(
     Ok(())
 }
 
-fn finding_names(findings: &[Finding], subject: &str) -> String {
+fn impact(
+    r: &Record,
+    supported: bool,
+    context: &ProblemContext<'_>,
+    out: &mut dyn Write,
+) -> io::Result<()> {
+    let addressed: BTreeSet<_> = r.addressed_findings.iter().collect();
+    let fully_addressed = supported
+        && r.outcome == "proposed"
+        && r.remaining_findings.is_empty()
+        && r.findings.iter().collect::<BTreeSet<_>>() == addressed
+        && context.matches(&r.findings);
+    if !fully_addressed && !r.addressed_findings.is_empty() {
+        writeln!(
+            out,
+            "    would address: {}",
+            finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
+        )?;
+    }
+    if r.outcome == "partial" && r.addressed_findings.is_empty() {
+        writeln!(out, "    would address: none reported")?;
+    }
+    if !r.remaining_findings.is_empty() {
+        writeln!(
+            out,
+            "    still unresolved: {}",
+            finding_names(&r.remaining_findings, &r.addressed_findings, &r.subject)
+        )?;
+    }
+    Ok(())
+}
+
+fn finding_names(findings: &[Finding], other: &[Finding], subject: &str) -> String {
+    let overlapping: BTreeSet<_> = other.iter().map(|f| (&f.package, &f.advisory)).collect();
     findings
         .iter()
         .map(|f| {
-            if f.package == subject {
-                safe(&f.advisory)
+            let qualifier = if overlapping.contains(&(&f.package, &f.advisory)) {
+                " (partly)"
             } else {
-                format!("{} ({})", safe(&f.advisory), safe(&f.package))
+                ""
+            };
+            if f.package == subject {
+                format!("{}{qualifier}", safe(&f.advisory))
+            } else {
+                format!("{} ({}){qualifier}", safe(&f.advisory), safe(&f.package))
             }
         })
         .collect::<BTreeSet<_>>()
@@ -145,7 +184,7 @@ fn outcome(r: &Record, planning_known: bool) -> String {
                     && d.release_scope == "observed_catalog_upgrades"
             }) =>
         {
-            "no upgrade path within observed releases and represented requests".into()
+            "No upgrade path found within observed releases and represented requests.".into()
         }
         "no_upgrade_path" => "unrecognized search scope; no conclusion".into(),
         _ => format!("unrecognized outcome: {}", safe(&r.outcome)),
@@ -213,11 +252,12 @@ fn common_paths(changes: &[Change]) -> Option<BTreeSet<String>> {
     .then_some(paths)
 }
 
+fn owner(name: &str, version: Option<&str>) -> String {
+    version.map_or_else(|| safe(name), |v| format!("{}@{}", safe(name), safe(v)))
+}
+
 fn blocker_line(b: &Blocker, out: &mut dyn Write) -> io::Result<()> {
-    let owner = b.owner.version.as_ref().map_or_else(
-        || safe(&b.owner.name),
-        |v| format!("{}@{}", safe(&b.owner.name), safe(v)),
-    );
+    let owner = owner(&b.owner.name, b.owner.version.as_deref());
     let mut requirement = match (
         b.dependency_name.as_deref(),
         b.requested_requirement.as_deref(),
@@ -236,12 +276,23 @@ fn blocker_line(b: &Blocker, out: &mut dyn Write) -> io::Result<()> {
         requirement.push_str(&requirement_status(&b.requirement_status));
         requirement.push(')');
     }
-    writeln!(
-        out,
-        "    blocker: {owner} {requirement} [{}]; {}",
-        safe(&b.path),
-        explanation(&b.reason)
-    )?;
+    if matches!(
+        b.reason.as_str(),
+        "third_party_request_excludes_target" | "required_request_excludes_target"
+    ) {
+        writeln!(
+            out,
+            "    requirement conflict: {owner} {requirement} [{}]",
+            safe(&b.path)
+        )?;
+    } else {
+        writeln!(
+            out,
+            "    constraint: {owner} {requirement} [{}]; {}",
+            safe(&b.path),
+            explanation(&b.reason)
+        )?;
+    }
     if !b.other_target_versions.is_empty() {
         writeln!(
             out,
