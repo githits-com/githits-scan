@@ -114,7 +114,16 @@ SPDX 2.3 tag-value, or service text. It has no Scan JSON wrapper or `--json` fla
 
 ## Experimental diff service report
 
-`diff --format json` writes the exact service result bytes. There is no Scan
+`diff --format json` or `diff --output-json PATH` writes the exact service result
+bytes. `--output-json diff.json --output-markdown diff.md` writes both exact JSON
+and Scan-rendered Markdown from one paired analysis. Named destinations imply the
+format, conflict with explicit `--format`/`--output`, and emit only requested
+documents. Either named destination can be `-` for stdout, but not both. JSON is
+written first; a later Markdown write failure exits 3 and retains completed JSON.
+See [diff output destinations](dependency-diff.md#output-destinations) for preflight,
+partial-write and path-alias rules.
+
+The JSON result has no Scan
 wrapper or reconstruction. The versioned report uses `kind: diff` and includes
 `accepted_request`, generated time, snapshots, source-local `changes`,
 `declaration_changes`, `advisories`, `direct_reviews`, coverage, summary and notices.

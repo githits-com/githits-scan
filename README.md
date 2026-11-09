@@ -221,6 +221,7 @@ its ignore policy for offline replay.
 ```sh
 githits-scan diff --base "$(git merge-base origin/main HEAD)" --head HEAD
 githits-scan diff --base HEAD --format json
+githits-scan diff --base HEAD~1 --head HEAD --output-json diff.json --output-markdown diff.md
 ```
 
 Compare direct and transitive dependencies through one service job without changing
@@ -231,7 +232,12 @@ The pair shares 256 files and an 8 MB full multipart limit. One admission is wei
 as two audits; identical/empty inputs also require a token and analysis. Partial or
 unfamiliar reports exit 0 informationally. Configuration is ignored in favor of
 explicit `--exclude` and `--lockfiles-only` flags.
-See [dependency diff](docs/implementation/dependency-diff.md) for scope and limits.
+Use `--output-json PATH` and `--output-markdown PATH` together to save both from
+the same analysis, or use either alone. Named outputs emit only the requested
+documents; `-` selects stdout for at most one. They cannot be combined with
+`--format` or `-o/--output`. Existing single-format invocations are unchanged.
+See [dependency diff](docs/implementation/dependency-diff.md) for scope, output
+failure behavior and limits.
 
 ### License reports and policy checks
 

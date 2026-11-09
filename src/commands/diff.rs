@@ -7,6 +7,7 @@ use clap::ValueEnum;
 use std::io::Write;
 use std::path::Path;
 
+mod output;
 mod render;
 
 /// Experimental report representation.
@@ -20,6 +21,24 @@ pub enum Format {
     Markdown,
 }
 
+/// Representations selected for one paired analysis.
+pub enum Output {
+    /// One document, including the original `--format` / `--output` contract.
+    Single {
+        /// Selected representation.
+        format: Format,
+        /// Selected destination.
+        destination: sbom::Output,
+    },
+    /// Exact JSON followed by Markdown rendered from the same report.
+    JsonAndMarkdown {
+        /// Exact producer JSON destination.
+        json: sbom::Output,
+        /// Scan-rendered Markdown destination, distinct from JSON.
+        markdown: sbom::Output,
+    },
+}
+
 /// A two-point comparison; omitted head selects actual working-tree bytes.
 pub struct Request<'a> {
     /// Git repository root.
@@ -28,16 +47,14 @@ pub struct Request<'a> {
     pub base: &'a str,
     /// Head revision, or the working tree when absent.
     pub head: Option<&'a str>,
-    /// Report representation.
-    pub format: Format,
     /// Explicit exclusions shared by both sides.
     pub exclude: &'a [String],
     /// Include and resolve manifest-only projects.
     pub include_manifests: bool,
     /// Suppress progress.
     pub quiet: bool,
-    /// Report destination.
-    pub output: sbom::Output,
+    /// Selected report representations and destinations.
+    pub output: Output,
 }
 
 struct Input {
@@ -101,6 +118,7 @@ pub fn run<A: DiffApi>(
     stdout: &mut dyn Write,
     stderr: &mut dyn Write,
 ) -> Result<Outcome, Error> {
+    output::validate(&request.output)?;
     let base = prepare(request, Some(request.base))?;
     let head = prepare(request, request.head)?;
     let mode = if request.include_manifests {
@@ -121,11 +139,19 @@ pub fn run<A: DiffApi>(
         }
         super::progress::write_diff(event, stderr)
     })?;
-    super::write_report(&request.output, stdout, Palette::PLAIN, |out, _| {
-        render::write(&report, request.format, (&base.label, &head.label), out)
-            .map_err(Error::Output)
-    })?;
-    super::saved_report(&request.output, request.quiet, stderr)?;
+    for (format, destination) in output::reports(&request.output) {
+        super::write_report(destination, stdout, Palette::PLAIN, |out, _| {
+            render::write(&report, format, (&base.label, &head.label), out).map_err(Error::Output)
+        })?;
+        if matches!(destination, sbom::Output::Stdout) {
+            stdout.flush().map_err(Error::Output)?;
+        }
+        super::saved_report(destination, request.quiet, stderr)?;
+        if matches!(format, Format::Json) {
+            // Creating JSON makes previously absent case aliases resolvable.
+            output::validate(&request.output)?;
+        }
+    }
     Ok(Outcome::Success)
 }
 
