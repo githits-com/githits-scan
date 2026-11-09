@@ -33,11 +33,15 @@ version or changelog generator. Only the root `githits-scan` package is released
    and ensure all consumed fragments are removed. Preserve historical sections
    except for demonstrable factual corrections. Do not advertise a pending
    version in pinned crates.io install examples before registry publication.
+   If main advances after preparation, integrate it under repository history
+   rules, reconcile its new fragments into the pending section, and consume
+   them. Recheck the highest impact against the last published version. Do not
+   rerun `prepare` on the already bumped manifest: it would bump a second time.
 5. Run `cargo xtask release audit --release --base-ref origin/main` and
    `cargo xtask release notes`. Verify package contents with
    `cargo package --locked -p githits-scan --allow-dirty --list`; maintainer skills
-   and tooling must stay excluded. Use targeted local checks for changed surfaces and leave
-   the full workspace/platform checks to PR CI. Documentation and metadata
+   and tooling must stay excluded. Use targeted local checks for changed surfaces;
+   leave the full workspace/platform checks to PR CI. Documentation and metadata
    changes receive inline review under the repository review guidelines.
 6. Commit with a Conventional Commit title and explanatory body, push, and open
    the release PR with the `maintenance` label. Include the previous tag, version
@@ -52,11 +56,16 @@ every stage and bring the next approval when ready; it does not bypass a gate.
 
 ## Follow the automated release
 
-- Once the approved PR merges, resolve its exact main SHA. Dispatch the **Release**
-  workflow at that SHA with `release_candidate=true`; it validates without
+- Once the approved PR merges, record its exact main SHA. Dispatch the **Release**
+  workflow with `--ref main` and `release_candidate=true`; dispatch accepts
+  branch/tag names, not commit SHAs. Verify the created run's `headSha` equals
+  the intended release SHA before using its evidence. If main advanced, review
+  the newer commits: when no fragments remain and notes are complete, adopt the
+  run's `headSha` as the release SHA; otherwise reconcile through a
+  release-preparation PR and rehearse again. Never use evidence for a different
+  commit. The workflow pins checkouts to the resolved SHA and validates without
   publishing. Wait for every gate, including live API tests and five native
-  archives. If main changes, recheck that the selected commit has complete notes
-  and no fragments. Record the tested SHA and run URL on the PR.
+  archives. Record the tested SHA and run URL on the PR.
 - Before the first automated publication, verify the configured repository
   secret's presence by name only, release-tag protection, Homebrew App/environment
   wiring, and crates.io ownership/trusted publisher/environment settings. The

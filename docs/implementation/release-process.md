@@ -20,8 +20,9 @@ the GitHub tag source tarball and opens a tap PR with a short-lived GitHub App
 token. The job runs in the `homebrew-tap` environment, never for manual rehearsals
 or `release_candidate` dispatches. The environment currently requires maintainer
 approval, so approve that job to continue the tagged release's tap handoff.
-Failure is tolerated independently of the already published release. The App token is passed through the step environment
-to `gh`; the handoff never puts it in process arguments or writes it to disk.
+Failure is tolerated independently of the already published release. The App
+token is passed through the step environment to `gh`; the handoff never puts it
+in process arguments or writes it to disk.
 
 The handoff updates only the formula's source URL/checksum, removes prior bottle
 metadata and leaves fresh bottles to tap CI. A stable branch per version makes
@@ -68,8 +69,7 @@ environment. The App is used only for Scan's version-update PRs.
    reviewer approval only if unattended post-tag delivery is explicitly intended.
    Keeping the current reviewer gate makes the handoff wait for a maintainer.
    The implementation does not change Scan's settings or create environment
-   secrets. Never put the key in chat, source,
-   logs or process arguments.
+   secrets. Never put the key in chat, source, logs or process arguments.
 3. Ensure GitHub Actions is enabled on the tap. Review the initial formula PR's
    three successful bottle checks and artifacts, then a maintainer applies `pr-pull`
    for the first publication/merge. Do not merge formula PRs with GitHub's merge
@@ -116,6 +116,11 @@ tracking each stage and requesting its approval when the preceding gate passes.
    historical sections except for blatant, demonstrable factual corrections.
    Leave README's pinned crates.io examples on the published version until the
    new registry publication is verified.
+   If main advances while the release PR is open, integrate it under the
+   repository's history rules and reconcile newly arrived fragments into the
+   pending release section. Consume them and recheck the aggregate bump against
+   the last published version. Do not rerun `prepare` on the already bumped
+   manifest, which would calculate another bump from the pending version.
 4. Validate with `cargo xtask release audit --release --base-ref origin/main`,
    render `cargo xtask release notes`, inspect the full diff, and verify source
    package contents with `cargo package --locked -p githits-scan --allow-dirty --list`.
@@ -133,17 +138,25 @@ tracking each stage and requesting its approval when the preceding gate passes.
 6. Obtain clean review, green required CI, and separate explicit human approval
    identifying the existing release PR before merging. Earlier release requests
    do not satisfy this gate; do not enable auto-merge as a substitute.
-7. After the approved merge, resolve its exact main SHA and dispatch **Release**
-   at that commit with `release_candidate=true`:
+7. After the approved merge, record its full main commit SHA and dispatch
+   **Release** from `main` with `release_candidate=true`. Dispatch accepts a
+   branch or tag name, not a commit SHA:
 
    ```bash
    gh workflow run release.yml --repo githits-com/githits-scan \
-     --ref "$release_sha" -f release_candidate=true
+     --ref main -f release_candidate=true
    ```
 
-   Set `release_sha` to the full merged commit SHA. This runs every publication
-   gate except tag existence and publication itself. Record the SHA and run URL
-   on the PR and wait for all jobs to pass before tagging.
+   Identify the created run and inspect it with
+   `gh run view <run-id> --repo githits-com/githits-scan --json headSha,url`.
+   Its `headSha` must equal the recorded release commit SHA. If main advanced,
+   review the newer commits: when no fragments remain and notes are still
+   complete, record the run's `headSha` as the release SHA; otherwise reconcile
+   notes and fragments through a release-preparation PR and rehearse again.
+   Never use a run's evidence for a different commit.
+   The workflow pins every checkout to its resolved SHA and runs every
+   publication gate except tag existence and publication itself. Record the
+   matching SHA and run URL on the PR and wait for all jobs before tagging.
 8. Obtain explicit authorization for tagging and GitHub publication, then create
    and push `vX.Y.Z` at that rehearsed SHA. The tag must match the root manifest,
    resolve to the checked-out commit, and belong to `origin/main`. Merging alone

@@ -25,6 +25,11 @@ that section describe 0.2.0 only; use the README for current commands and the
   the complete pair shares 256 files and an 8 MB multipart limit. Configuration
   is ignored; use explicit exclusions. Exit 0 is informational, including for
   partial or unknown evidence, and is not a policy pass.
+- **Diff JSON and Markdown from one analysis** - Use `diff --output-json diff.json
+  --output-markdown diff.md` to save exact JSON and Scan-rendered Markdown from
+  the same report, or either named output alone. `-` selects stdout for at most
+  one destination. Named outputs conflict with `--format` and `-o/--output`;
+  existing single-output invocations are unchanged.
 - **Reviewed policy exceptions** - License checks accept exact named Git-source
   exceptions with optional full revisions. Advisory ignores retain findings and
   reasons in text, JSON and saved replay without causing failure themselves;
@@ -58,8 +63,7 @@ that section describe 0.2.0 only; use the README for current commands and the
   per-occurrence details, policy results and JSON inventory.
 - **Installation guidance** - Homebrew is the recommended macOS/Linux install;
   crates.io is the primary Cargo installation method. Prebuilt binaries and
-  checkout installs remain supported. Pinned registry examples stay on 0.3.0
-  until the new version is published.
+  checkout installs remain supported.
 - **Automated release procedure** - Add a maintainer release skill, full
   previous-tag range review and explicit approval gates. The first automated
   release follows the manually published 0.3.0. Protected crates.io dispatches
