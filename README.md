@@ -193,11 +193,25 @@ githits-scan audit --save-analysis analysis.json
 githits-scan audit --from-analysis analysis.json     # offline replay
 ```
 
-Any audit finding or incomplete check exits 1. A clean audit covers only the
+Any unignored audit finding or incomplete check exits 1. A clean audit covers only the
 selected evidence, not proof of an installed build's safety. JSON and saved
 analyses retain findings independently of human presentation. Scan proposes
 changes when the service supplies them; it does not edit dependencies.
 See [audit design](docs/implementation/audit.md) for evidence and replay semantics.
+
+To record a reviewed advisory decision in `githits-scan.toml`:
+
+```toml
+[[audit.ignore]]
+id = "RUSTSEC-2024-0436"
+reason = "Reviewed for this deployment"
+```
+
+Use the exact reported ID, not an alias. Ignored findings stay visible with their
+reason and do not cause failure; maintenance and incomplete evidence still do.
+There is no category-specific failure switch. Automation can evaluate its own
+policy from complete JSON, preserving exits 2/3 as errors. Saved analysis retains
+its ignore policy for offline replay.
 
 ### License reports and policy checks
 
@@ -232,6 +246,22 @@ unrecognized licenses, policy violations, and unresolved projects are findings.
 Project-root and local-source markers exclude their own nodes, not their children;
 a local path alone does not prove first-party ownership. See
 [license policy](docs/implementation/license-check.md) for scope and exceptions.
+
+For a non-registry Git package, copy the recorded source URL and full revision
+from a failing `license check --json` (`--details` shows bounded previews), then add:
+
+```toml
+[[licenses.exceptions]]
+name = "grammar"
+git = "https://example.invalid/grammar"
+rev = "0123456789abcdef0123456789abcdef01234567"
+reason = "Selected source reviewed; license evidence unavailable"
+```
+
+`name` and `git` match exactly; optional `rev` constrains the exception to that
+exact revision. Short hashes and `.git` URL variants do not match. This is a
+visible policy exception, never license evidence. Existing PURL exceptions remain
+supported. Every exception requires a nonblank reason.
 
 Checks warn on stderr when no components were evaluated or dependency resolution
 is incomplete. Offline SBOMs without `githits:completeness` also warn that inventory
@@ -288,7 +318,7 @@ inclusion overrides remain unless the CLI excludes them. See
 
 | Exit | Meaning | Action |
 | --- | --- | --- |
-| 0 | Success; checks have no findings; license reports are informational | Continue |
+| 0 | Success; checks have no unignored findings or blocking gaps; license reports are informational | Continue |
 | 1 | Findings, incomplete audit, inventory drift, violations, unresolved license projects, or nothing selected | Review the repository or selection |
 | 2 | Invalid invocation/configuration/input, upload limits, missing/rejected token, or account access | Correct the diagnostic's cause |
 | 3 | Network, I/O, rate limit, service, or protocol failure | Investigate; respect `Retry-After` before a deliberate retry |

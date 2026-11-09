@@ -39,15 +39,9 @@ pub struct Licenses {
     pub exceptions: Vec<Exception>,
 }
 
-/// One package exempted from the license policy.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Exception {
-    /// Package URL without a version.
-    pub purl: String,
-    /// Why the exception exists; shown in every report that applies it.
-    pub reason: String,
-}
+mod policy;
+
+pub use policy::{AdvisoryIgnore, Audit, Exception};
 
 /// The file as written, before validation.
 #[derive(Debug, Deserialize)]
@@ -57,6 +51,8 @@ struct RawConfig {
     #[serde(default)]
     lockfiles: RawLockfiles,
     licenses: Option<Licenses>,
+    #[serde(default)]
+    audit: Audit,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -83,6 +79,8 @@ pub struct Config {
     pub manifests: Vec<String>,
     /// License policy, when present.
     pub licenses: Option<Licenses>,
+    /// Local advisory ignores, independent of evidence assessment.
+    pub audit: Audit,
     excluded: GlobSet,
 }
 
@@ -295,6 +293,10 @@ pub fn parse(path: &Path, text: &str) -> Result<Config, ConfigError> {
             reason,
         })?;
     }
+    raw.audit.validate().map_err(|message| ConfigError::Parse {
+        path: path.to_path_buf(),
+        message,
+    })?;
     let excluded = exclude_set(&raw.lockfiles.exclude, path)?;
     Ok(Config {
         path: path.to_path_buf(),
@@ -302,6 +304,7 @@ pub fn parse(path: &Path, text: &str) -> Result<Config, ConfigError> {
         exclude: raw.lockfiles.exclude,
         manifests: raw.lockfiles.manifests,
         licenses: raw.licenses,
+        audit: raw.audit,
         excluded,
     })
 }
@@ -647,6 +650,18 @@ manifests = []
 # [[licenses.exceptions]]
 # purl = "pkg:cargo/example"
 # reason = "reviewed 2026-09"
+#
+# # Or except a named Git source; copy the full URL/revision from license check --json.
+# [[licenses.exceptions]]
+# name = "grammar"
+# git = "https://example.invalid/grammar"
+# rev = "0123456789abcdef0123456789abcdef01234567" # optional; exact match
+# reason = "Selected source reviewed"
+#
+# # Ignored advisories stay visible and do not cause failure themselves.
+# [[audit.ignore]]
+# id = "RUSTSEC-2024-0436"
+# reason = "Reviewed for this deployment"
 "#;
 
 /// Write `include` and `manifests` to the file at `path`.
@@ -818,6 +833,16 @@ allow = ["MIT", "Apache-2.0 WITH LLVM-exception"]
 [[licenses.exceptions]]
 purl = "pkg:cargo/ring"
 reason = "reviewed"
+
+[[licenses.exceptions]]
+name = "grammar"
+git = "https://example.invalid/grammar"
+rev = "0123456789abcdef"
+reason = "reviewed source"
+
+[[audit.ignore]]
+id = "RUSTSEC-2024-0436"
+reason = "reviewed advisory"
 "#,
         );
 
@@ -828,7 +853,15 @@ reason = "reviewed"
         assert!(!config.is_excluded("Cargo.lock"));
         let licenses = config.licenses.expect("licenses");
         assert_eq!(licenses.allow, ["MIT", "Apache-2.0 WITH LLVM-exception"]);
-        assert_eq!(licenses.exceptions[0].purl, "pkg:cargo/ring");
+        assert!(
+            matches!(&licenses.exceptions[0], Exception::Package { purl, .. } if purl == "pkg:cargo/ring")
+        );
+        assert!(
+            matches!(&licenses.exceptions[1], Exception::Git { name, git, rev, .. }
+            if name == "grammar" && git == "https://example.invalid/grammar" && rev.as_deref() == Some("0123456789abcdef"))
+        );
+        assert_eq!(config.audit.ignore[0].id, "RUSTSEC-2024-0436");
+        assert_eq!(config.audit.ignore[0].reason, "reviewed advisory");
     }
 
     #[test]

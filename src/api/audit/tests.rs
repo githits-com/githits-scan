@@ -235,12 +235,14 @@ fn audit_objects_reject_positional_arrays_and_accept_additional_fields() {
     let report =
         Report::from_bytes(&serde_json::to_vec(&value).expect("json")).expect("additional fields");
     assert!(
-        crate::audit::assess(&report)
+        crate::audit::assess(&report, &crate::config::Audit::default())
             .expect("known")
             .unverified
             .is_empty(),
         "{:?}",
-        crate::audit::assess(&report).expect("known").unverified
+        crate::audit::assess(&report, &crate::config::Audit::default())
+            .expect("known")
+            .unverified
     );
 }
 
@@ -306,12 +308,14 @@ fn audit_v2_rejects_wrong_containers_without_closing_additive_vocabulary() {
     v["future_inventory"] = serde_json::json!({"native_id":"must not escape"});
     let report = Report::from_bytes(&serde_json::to_vec(&v).expect("json")).expect("open fields");
     assert!(
-        crate::audit::assess(&report)
+        crate::audit::assess(&report, &crate::config::Audit::default())
             .expect("known")
             .unverified
             .is_empty(),
         "{:?}",
-        crate::audit::assess(&report).expect("known").unverified
+        crate::audit::assess(&report, &crate::config::Audit::default())
+            .expect("known")
+            .unverified
     );
 }
 

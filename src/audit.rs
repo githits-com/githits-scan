@@ -26,13 +26,24 @@ pub(crate) struct Summary {
 }
 
 /// Interpret known producer versions without treating future payloads as v1/v2.
-pub(crate) fn assess(report: &crate::api::audit::Report) -> Option<Assessment> {
+pub(crate) fn assess(
+    report: &crate::api::audit::Report,
+    policy: &crate::config::Audit,
+) -> Option<Assessment> {
     use crate::api::audit::Body;
     match &report.body {
-        Body::V1(r) => Some(assess_v1(r)),
-        Body::V2(r) => Some(v2::assess(r)),
+        Body::V1(r) => Some(assess_v1(r, policy)),
+        Body::V2(r) => Some(v2::assess(r, policy)),
         Body::Future(_) => None,
     }
+}
+
+/// Only exact producer advisory IDs select local ignores; aliases stay evidence.
+pub(crate) fn ignored<'a>(
+    policy: &'a crate::config::Audit,
+    id: &str,
+) -> Option<&'a crate::config::AdvisoryIgnore> {
+    policy.ignore.iter().find(|ignore| ignore.id == id)
 }
 
 pub(crate) struct Assessment {
@@ -43,7 +54,7 @@ pub(crate) struct Assessment {
 }
 
 /// Reconcile report attribution and coverage without changing producer assessments.
-fn assess_v1(report: &V1) -> Assessment {
+fn assess_v1(report: &V1, policy: &crate::config::Audit) -> Assessment {
     let occurrences: Occurrences<'_> = report
         .occurrences
         .iter()
@@ -97,7 +108,11 @@ fn assess_v1(report: &V1) -> Assessment {
     }
     let incomplete = has_gaps(report) || !unverified.is_empty();
     let attention = incomplete
-        || !report.findings.vulnerabilities.is_empty()
+        || report
+            .findings
+            .vulnerabilities
+            .iter()
+            .any(|finding| ignored(policy, &finding.advisory_id).is_none())
         || !report.findings.deprecated.is_empty()
         || !report.findings.outdated.is_empty()
         || !duplicates.is_empty();

@@ -17,9 +17,10 @@ use crate::commands::{self, ErrorKind, Outcome, audit, detect, license, sbom};
 use crate::env;
 use crate::style::Palette;
 
-/// Exit code for a successful run; for checks, no findings.
+/// Exit code for a successful run; checks have no unignored findings or blocking gaps.
 pub const EXIT_SUCCESS: u8 = 0;
-/// Exit code for findings: empty/drift, policy violations, audit findings or unassessed evidence.
+/// Exit code for findings: empty/drift, policy violations, unignored audit findings
+/// or unassessed evidence.
 ///
 /// A pipeline blocks on this code; it means the repository, not the tool, needs
 /// attention.
@@ -55,7 +56,7 @@ enum Command {
     Detect(DetectArgs),
     /// Audit dependency vulnerabilities, maintenance findings and native input disagreements
     #[command(
-        long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Exit 0 only for fully checked selected evidence. Versions are source evidence, not constraint-compatible upgrade guarantees."
+        long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Advisories ignored by [[audit.ignore]] stay visible with reasons. Exit 0 only for fully checked selected evidence without unignored findings. Versions are source evidence, not constraint-compatible upgrade guarantees."
     )]
     Audit(AuditArgs),
     /// Software bill of materials commands

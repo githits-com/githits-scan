@@ -7,7 +7,7 @@ use crate::api::audit::wire::Coordinate;
 
 type Warnings = BTreeSet<&'static str>;
 
-pub(super) fn assess(r: &V2) -> Assessment {
+pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
     let mut unverified = Warnings::new();
     coverage(r, &mut unverified);
     counts(r, &mut unverified);
@@ -24,7 +24,10 @@ pub(super) fn assess(r: &V2) -> Assessment {
         duplicates: r.findings.duplicates.len() as u64,
     };
     let attention = incomplete
-        || summary.vulnerabilities != 0
+        || r.findings
+            .vulnerabilities
+            .iter()
+            .any(|finding| super::ignored(policy, &finding.advisory_id).is_none())
         || summary.deprecated != 0
         || summary.outdated != 0
         || summary.duplicates != 0

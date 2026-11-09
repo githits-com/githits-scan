@@ -28,6 +28,7 @@ pub(crate) struct Analysis {
     pub report: Report,
     pub selected_manifests: BTreeSet<String>,
     pub provenance: Provenance,
+    pub audit_policy: crate::config::Audit,
 }
 
 #[derive(Debug, Serialize)]
@@ -45,6 +46,8 @@ struct Envelope<'a> {
     writer_version: &'static str,
     producer_report: Producer<'a>,
     selected_manifests: &'a BTreeSet<String>,
+    #[serde(skip_serializing_if = "crate::config::Audit::is_empty")]
+    audit_policy: &'a crate::config::Audit,
 }
 
 #[derive(Serialize)]
@@ -71,9 +74,15 @@ struct Input {
     writer_version: String,
     producer_report: serde_json::Value,
     selected_manifests: BTreeSet<String>,
+    #[serde(default)]
+    audit_policy: crate::config::Audit,
 }
 
-pub(crate) fn encode(report: &Report, manifests: &BTreeSet<String>) -> Result<Vec<u8>, Error> {
+pub(crate) fn encode(
+    report: &Report,
+    manifests: &BTreeSet<String>,
+    policy: &crate::config::Audit,
+) -> Result<Vec<u8>, Error> {
     let Body::V2(body) = &report.body else {
         return Err(Error::UnsupportedProducer);
     };
@@ -89,6 +98,7 @@ pub(crate) fn encode(report: &Report, manifests: &BTreeSet<String>) -> Result<Ve
             report: body,
         },
         selected_manifests: manifests,
+        audit_policy: policy,
     };
     let mut output = Limited {
         bytes: Vec::new(),
@@ -124,6 +134,7 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Analysis, Error> {
         });
     }
     let input: Input = serde_json::from_slice(bytes).map_err(|_| Error::Invalid)?;
+    input.audit_policy.validate().map_err(|_| Error::Invalid)?;
     let producer = serde_json::to_vec(&input.producer_report).map_err(|_| Error::Invalid)?;
     drop(input.producer_report);
     let report = Report::from_bytes(&producer).map_err(|_| Error::Invalid)?;
@@ -140,6 +151,7 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Analysis, Error> {
         },
         report,
         selected_manifests: input.selected_manifests,
+        audit_policy: input.audit_policy,
     })
 }
 

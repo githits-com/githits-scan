@@ -7,7 +7,7 @@ fn policy(allow: &[&str], exceptions: &[(&str, &str)]) -> Policy {
         allow: allow.iter().map(|s| (*s).to_owned()).collect(),
         exceptions: exceptions
             .iter()
-            .map(|(purl, reason)| Exception {
+            .map(|(purl, reason)| Exception::Package {
                 purl: (*purl).to_owned(),
                 reason: (*reason).to_owned(),
             })
@@ -58,7 +58,7 @@ fn policy_rejects_guessing_and_scoped_exceptions() {
         assert_eq!(
             Policy::new(&Licenses {
                 allow: vec![],
-                exceptions: vec![Exception {
+                exceptions: vec![Exception::Package {
                     purl: purl.into(),
                     reason: "reviewed".into()
                 }]
@@ -487,8 +487,10 @@ fn exceptions_match_by_purl_without_version_and_are_reported() {
     assert_eq!(
         report.exceptions_applied,
         vec![Applied {
-            purl: "pkg:cargo/ring".into(),
-            reason: "reviewed 2026-09".into(),
+            exception: Exception::Package {
+                purl: "pkg:cargo/ring".into(),
+                reason: "reviewed 2026-09".into()
+            },
             components: vec!["ring 0.17.8".into(), "ring 0.16.20".into()],
         }]
     );
@@ -601,4 +603,148 @@ fn strips_versions_qualifiers_and_subpaths_from_package_urls() {
         without_version("pkg:maven/org.example/lib@1.0"),
         "pkg:maven/org.example/lib"
     );
+}
+
+fn git_component() -> Value {
+    serde_json::json!({"type":"library","bom-ref":"fork","name":"grammar","version":"1.0.0",
+    "properties":[
+        {"name":"githits:source_kind","value":"LOCKED_PACKAGE_SOURCE_KIND_GIT"},
+        {"name":"githits:source_locations","value":r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"}]"#},
+        {"name":"githits:source_revision","value":"0123456789abcdef"}
+    ]})
+}
+
+fn git_policy(revision: bool) -> Policy {
+    let revision = if revision {
+        "rev = '0123456789abcdef'\n"
+    } else {
+        ""
+    };
+    let text = format!(
+        "version = 1\n[licenses]\n[[licenses.exceptions]]\nname = 'grammar'\ngit = 'https://example.invalid/grammar'\n{revision}reason = 'Selected source reviewed'\n"
+    );
+    let config = crate::config::parse(std::path::Path::new("policy.toml"), &text).expect("config");
+    Policy::new(&config.licenses.expect("licenses")).expect("policy")
+}
+
+fn altered_git_component(mutation: &str) -> Value {
+    let mut component = git_component();
+    match mutation {
+                "name" => component["name"] = "different".into(),
+                "kind" => component["properties"][0]["value"] = "registry".into(),
+                "url" => component["properties"][1]["value"] = r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/other"}]"#.into(),
+                "owner" => component["properties"][1]["value"] = r#"[{"kind":"vcs_repository","owner":{"type":"package"},"url":"https://example.invalid/grammar"}]"#.into(),
+                "malformed" => component["properties"][1]["value"] = "{".into(),
+                "missing" => { component["properties"].as_array_mut().expect("properties").remove(1); },
+                "ambiguous" => component["properties"][1]["value"] = r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"},{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/other"}]"#.into(),
+                _ => unreachable!(),
+            }
+    component
+}
+
+#[test]
+fn git_exceptions_require_exact_source_name_and_optional_revision() {
+    let original = git_component();
+    for revision in [false, true] {
+        let policy = git_policy(revision);
+        let document = |component: &Value| {
+            serde_json::to_vec(
+                &serde_json::json!({"bomFormat":"CycloneDX","components":[component]}),
+            )
+            .expect("document")
+        };
+        let report = check(&document(&original), &policy).expect("check");
+        assert_eq!(report.violations, []);
+        assert_eq!(report.components, 1);
+        assert_eq!(report.exceptions_applied.len(), 1);
+        assert!(original.get("licenses").is_none(), "no license fabricated");
+        for mutation in [
+            "name",
+            "url",
+            "kind",
+            "owner",
+            "malformed",
+            "missing",
+            "ambiguous",
+        ] {
+            let component = altered_git_component(mutation);
+            assert_eq!(
+                check(&document(&component), &policy)
+                    .expect("check")
+                    .violations
+                    .len(),
+                1,
+                "{mutation}"
+            );
+        }
+        for value in ["", "0123456", "other"] {
+            let mut component = original.clone();
+            component["properties"][2]["value"] = value.into();
+            assert_eq!(
+                check(&document(&component), &policy)
+                    .expect("check")
+                    .violations
+                    .len(),
+                usize::from(revision)
+            );
+        }
+    }
+}
+
+#[test]
+fn git_exceptions_validate_selectors_without_guessing_or_accepting_credentials() {
+    for git in [
+        "relative",
+        "file:///repo",
+        "https:///",
+        "https://example.invalid/repo?branch=main",
+        "https://example.invalid/repo#rev",
+        "https://user:password@example.invalid/repo",
+        "https://git@example.invalid/repo",
+    ] {
+        let text = format!(
+            "version=1\n[licenses]\n[[licenses.exceptions]]\nname='grammar'\ngit='{git}'\nreason='reviewed'\n"
+        );
+        let config = crate::config::parse(std::path::Path::new("policy.toml"), &text)
+            .expect("structural config");
+        assert!(
+            Policy::new(&config.licenses.expect("licenses")).is_err(),
+            "{git}"
+        );
+    }
+    for git in [
+        "https://example.invalid/repo",
+        "ssh://git@example.invalid/repo",
+        "git://example.invalid/repo",
+        "http://example.invalid/repo",
+    ] {
+        let text = format!(
+            "version=1\n[licenses]\n[[licenses.exceptions]]\nname='grammar'\ngit='{git}'\nreason='reviewed'\n"
+        );
+        let config =
+            crate::config::parse(std::path::Path::new("policy.toml"), &text).expect("config");
+        assert!(
+            Policy::new(&config.licenses.expect("licenses")).is_ok(),
+            "{git}"
+        );
+    }
+}
+
+#[test]
+fn git_exception_source_diagnostics_omit_unsafe_or_ambiguous_urls() {
+    for locations in [
+        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://user:password@example.invalid/grammar"}]"#,
+        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"},{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/other"}]"#,
+        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://user:password@example.invalid/grammar"},{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"}]"#,
+    ] {
+        let mut component = git_component();
+        component["properties"][1]["value"] = locations.into();
+        let bytes = serde_json::to_vec(
+            &serde_json::json!({"bomFormat":"CycloneDX","components":[component]}),
+        )
+        .expect("document");
+        let report = check(&bytes, &git_policy(false)).expect("check");
+        assert_eq!(report.violations.len(), 1);
+        assert!(report.violations[0].source.is_none());
+    }
 }

@@ -5,7 +5,7 @@ use serde_json::{Value, json};
 
 fn interpreted(v: &Value) -> Assessment {
     let report = Report::from_bytes(&serde_json::to_vec(v).expect("json")).expect("report");
-    super::super::assess(&report).expect("known")
+    super::super::assess(&report, &crate::config::Audit::default()).expect("known")
 }
 
 #[test]

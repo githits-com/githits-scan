@@ -18,7 +18,12 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
         "context":{"future_information":{"value":"opaque-existing-context"}}
     }]);
     let original = report(&input);
-    let bytes = encode(&original, &BTreeSet::from(["package.json".into()])).expect("encode");
+    let bytes = encode(
+        &original,
+        &BTreeSet::from(["package.json".into()]),
+        &crate::config::Audit::default(),
+    )
+    .expect("encode");
     assert!(!String::from_utf8_lossy(&bytes).contains("never-export"));
     let stored: serde_json::Value = serde_json::from_slice(&bytes).expect("archive");
     assert_eq!(
@@ -39,13 +44,20 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
         input["generated_at"].as_str().expect("time")
     );
     assert_eq!(
-        crate::audit::assess(&original).expect("known").attention,
-        crate::audit::assess(&decoded.report)
+        crate::audit::assess(&original, &crate::config::Audit::default())
+            .expect("known")
+            .attention,
+        crate::audit::assess(&decoded.report, &crate::config::Audit::default())
             .expect("known")
             .attention
     );
     assert_eq!(
-        encode(&decoded.report, &decoded.selected_manifests).expect("again"),
+        encode(
+            &decoded.report,
+            &decoded.selected_manifests,
+            &decoded.audit_policy
+        )
+        .expect("again"),
         bytes
     );
 }
@@ -60,7 +72,12 @@ fn audit_saved_schema_one_compatibility_and_optional_absence() {
     assert_eq!(analysis.provenance.producer_schema_version, 2);
     let mut input = value();
     input.as_object_mut().expect("report").remove("remediation");
-    let bytes = encode(&report(&input), &BTreeSet::new()).expect("without remediation");
+    let bytes = encode(
+        &report(&input),
+        &BTreeSet::new(),
+        &crate::config::Audit::default(),
+    )
+    .expect("without remediation");
     let restored = decode(&bytes).expect("older optional absence");
     assert!(matches!(restored.report.body, Body::V2(body) if body.remediation.is_none()));
     assert!(!String::from_utf8_lossy(&bytes).contains("\"remediation\":null"));
@@ -106,7 +123,11 @@ fn audit_saved_exact_byte_cap_and_oversize_are_distinct() {
     let overhead = serde_json::to_vec(&input).expect("JSON").len();
     input["generated_at"] = "x".repeat(MAX_RESPONSE_BYTES - overhead).into();
     assert!(matches!(
-        encode(&report(&input), &BTreeSet::new()),
+        encode(
+            &report(&input),
+            &BTreeSet::new(),
+            &crate::config::Audit::default()
+        ),
         Err(Error::TooLarge)
     ));
 }
@@ -115,7 +136,7 @@ fn audit_saved_exact_byte_cap_and_oversize_are_distinct() {
 fn audit_saved_unsupported_producer_cannot_be_saved() {
     let future = Report::from_bytes(br#"{"schema_version":99}"#).expect("future");
     assert!(matches!(
-        encode(&future, &BTreeSet::new()),
+        encode(&future, &BTreeSet::new(), &crate::config::Audit::default()),
         Err(Error::UnsupportedProducer)
     ));
 }

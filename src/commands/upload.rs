@@ -27,6 +27,7 @@ pub(super) struct Prepared {
     pub upload: UploadSet,
     pub summary: String,
     pub manifests: Vec<String>,
+    pub audit_policy: config::Audit,
 }
 
 pub(super) fn prepare(
@@ -115,6 +116,7 @@ pub(super) fn prepare(
         upload,
         summary: plan.summary(palette),
         manifests: plan.manifests,
+        audit_policy: config.map(|config| config.audit).unwrap_or_default(),
     }))
 }
 

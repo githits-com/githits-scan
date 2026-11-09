@@ -21,13 +21,19 @@ pub(super) fn preflight(path: &Path) -> Result<(), Error> {
     }
 }
 
-pub(super) fn save(path: &Path, report: &Report, manifests: &[String]) -> Result<(), Error> {
-    let bytes = saved::encode(report, &manifests.iter().cloned().collect()).map_err(|error| {
-        Error::SaveAnalysis {
-            path: path.to_path_buf(),
-            reason: error.to_string(),
-        }
-    })?;
+pub(super) fn save(
+    path: &Path,
+    report: &Report,
+    manifests: &[String],
+    policy: &crate::config::Audit,
+) -> Result<(), Error> {
+    let bytes =
+        saved::encode(report, &manifests.iter().cloned().collect(), policy).map_err(|error| {
+            Error::SaveAnalysis {
+                path: path.to_path_buf(),
+                reason: error.to_string(),
+            }
+        })?;
     let write = || {
         let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
         file.write_all(&bytes)?;
@@ -56,6 +62,7 @@ pub(super) fn replay(
     let (mut result, outcome) = super::project(
         &analysis.report,
         analysis.selected_manifests.into_iter().collect(),
+        &analysis.audit_policy,
     );
     if let Some(package) = request.explain {
         let mut selected =
