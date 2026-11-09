@@ -335,8 +335,9 @@ A scoped negative is separated from source metadata by a blank line and reads
 search scope stays explicit; it does not establish that no fix exists.
 
 Joint actions can show `recorded request for TARGET: REQUIREMENT; owner OWNER
-[request path]` immediately after changes and their file locations. The pure
-audit trace selector owns this context and reuses explanation source/reference
+[request path]` immediately after changes and their file locations, unless the
+checked reasons described below supersede this context. The pure audit trace
+selector owns this context and reuses explanation source/reference
 validation. Both trace and recommendation detail must be retained; both relation
 endpoints must be exact occurrence references of changes whose typed coordinates
 match their from versions. Only standard dependency relations with a recorded,
