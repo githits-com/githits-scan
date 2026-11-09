@@ -21,12 +21,12 @@ This document records the contract every command shares: the audiences it serves
 | `githits-scan license check [PATH]` | Generate (or read with `--sbom`) a CycloneDX document and evaluate the component inventory and nested assemblies against explicit policy; root/local markers exclude their own nodes | One submission plus reads, or none with `--sbom` |
 | `githits-scan audit [PATH]` | Audit vulnerabilities, deprecated releases, outdated and duplicate versions, preserving evidence gaps | One submission, events and result reads |
 | `githits-scan audit --from-analysis FILE [--explain PACKAGE]` | Re-display a saved audit or inspect recorded requests for an exact vulnerable coordinate | None; no token or repository/config reads |
-| `githits-scan diff [PATH] --base REF [--head REF]` | Experimental repository dependency/advisory comparison; `--format human|json|markdown` | Up to four analysis submissions plus direct upgrade-review batches; none for identical selected inputs |
+| `githits-scan diff [PATH] --base REF [--head REF]` | Experimental repository dependency/advisory comparison; `--format human|json|markdown` | One paired diff submission, events and result reads, including identical/empty inputs |
 
 The experimental `diff` command ignores configuration, requires a Git root and
 uses explicit exclusions/manifest flags. It returns 0 for a completed informational
-report, including unavailable audits or reviews, with JSON `incomplete` and null
-unassessed deltas. Required inventory and output failures retain the usual 2/3
+report, including unavailable sections or unfamiliar evidence, with independent
+producer statuses and coverage. Required core and output failures retain the usual 2/3
 classification. It is not a policy check. See [dependency diff](dependency-diff.md).
 
 ### Shared arguments

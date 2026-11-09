@@ -15,89 +15,56 @@ pub fn files(head: bool) -> (&'static str, &'static str) {
     }
 }
 
-pub fn inventory(head: bool) -> Value {
-    let (manifest, lock) = files(head);
-    let manifest: Value = serde_json::from_str(manifest).expect("manifest fixture");
-    let lock: Value = serde_json::from_str(lock).expect("lock fixture");
-    let packages = lock["packages"].as_object().expect("packages");
-    let components: Vec<_> = packages.iter().filter(|(name, _)| !name.is_empty()).map(|(path, package)| {
-        json!({"type":"library", "name":path.strip_prefix("node_modules/").expect("fixture package"), "version":package["version"], "properties":[
-            {"name":"githits:registry","value":"npm"}, {"name":"githits:source_kind","value":"LOCKED_PACKAGE_SOURCE_KIND_REGISTRY"}, {"name":"githits:record_kind","value":"locked_package"},
-            {"name":"githits:lockfile_path","value":"package-lock.json"}
-        ]})
-    }).collect();
-    let declarations: Vec<_> = manifest["dependencies"]
-        .as_object()
-        .expect("dependencies")
-        .keys()
-        .map(|name| json!({"name":name,"manifest_path":"package.json","source_type":"registry"}))
-        .collect();
-    let agreements: Vec<_> = manifest["dependencies"].as_object().expect("dependencies").keys().map(|name| {
-        json!({"name":name,"path":"package-lock.json","declaration_path":"package.json","status":"matched",
-            "matched_versions":[packages[&format!("node_modules/{name}")]["version"]]})
-    }).collect();
-    json!({"bomFormat":"CycloneDX", "specVersion":"1.7", "components":components,"properties":[
-        {"name":"githits:completeness","value":"recorded_lockfile_inventory"},
-        {"name":"githits:declarations","value":declarations_to_string(&declarations)},
-        {"name":"githits:declaration_agreement","value":declarations_to_string(&agreements)}
-    ]})
-}
-
-fn declarations_to_string(values: &[Value]) -> String {
-    serde_json::to_string(values).expect("fixture JSON")
-}
-
-pub fn audit(head: bool) -> Value {
-    let mut report = super::audit::v2_clean();
-    let mut findings = vec![finding(
-        "leaf",
-        if head { "1.0.0" } else { "2.0.0" },
-        "GHSA-unchanged",
-    )];
-    if head {
-        findings.push(finding("leaf", "1.0.0", "GHSA-introduced"));
-    } else {
-        findings.push(finding("minimist", "1.2.5", "GHSA-fixed"));
-    }
-    report["findings"]["vulnerabilities"] = json!(findings);
-    report["summary"]["dependencies"] = 4.into();
-    report["summary"]["vulnerabilities"] = 2.into();
-    for category in ["vulnerabilities", "deprecation", "outdated"] {
-        report["coverage"][category]["candidates_count"] = 4.into();
-        report["coverage"][category]["checked_count"] = 4.into();
-    }
-    report
-}
-
-fn finding(name: &str, version: &str, id: &str) -> Value {
-    json!({"coordinate":{"registry":"npm","name":name,"version":version},"paths":["package-lock.json"],
-        "advisory_id":id,"aliases":[],"summary":null,"severity_score":null,"severity_type":null,"malicious":false,
-        "fixed_in_versions":[],"verified_remedies":[]})
-}
-
-pub fn review(name: &str, from: &str, to: &str) -> Value {
-    json!({"registry":"npm","name":name,"current_version":from,"target_version":to,"version_delta":"patch",
-        "unknown_details":[],"security":{"current":{"version":from,"assessment_status":"affected","unknown_count":0},
-            "target":{"version":to,"assessment_status":"non_affecting","unknown_count":0},"fixed":[{"id":"GHSA-fixed"}],"introduced":[],"unchanged":[]},
-        "changelog":{"source":"releases","entries":[{"version":to,"html_url":"https://example.invalid/releases/1.2.8"}],"total_entries":1,"truncated":false}})
-}
-
-pub fn exchanges(head: bool, audit: bool) -> Vec<Vec<u8>> {
-    let mut snapshot = super::jobs::snapshot("succeeded", "succeeded", 1);
-    let (media, body) = if audit {
-        snapshot["kind"] = "audit".into();
-        snapshot["format"] = "json".into();
-        ("application/json", self::audit(head))
-    } else {
-        ("application/vnd.cyclonedx+json", inventory(head))
+pub fn report() -> Value {
+    let request = json!({"schema_version":1,"base":{"state":"supplied"},"head":{"state":"supplied"},
+        "selection":{"groups":["all"],"unlocked_manifests":"resolve"},"analysis":{"advisories":true,"direct_reviews":true}});
+    let snapshot = |side: &str| {
+        json!({"side":side,"accepted_files":[],"sources":[],"resolution_units":[],
+        "declarations":[{"id":format!("{side}:d1"),"declared_name":"helper","declaring_manifest":"package.json"}],
+        "bindings":[],"occurrences":[],"coverage":{"scope":"selected_inputs_only","sources":[],"resolution":[],"excluded_dependencies":[]},
+        "selection":{},"parser_versions":null,"reachability":[]})
     };
+    let assessment = |status: &str| json!({"status":status,"occurrence_ids":[],"reasons":[]});
+    let delta = |kind: &str| json!({"finding_id":"finding:1","kind":kind,"base":assessment("affected"),"head":assessment(if kind=="unchanged" {"affected"} else {"non_affecting"})});
+    json!({"schema_version":1,"kind":"diff","accepted_request":request,"generated_at":"2026-11-09T12:00:00Z","outcome":"complete",
+        "snapshots":{"base":snapshot("base"),"head":snapshot("head")},
+        "changes":[{"id":"change:1","source_key":"package-lock.json","unit_key":["recorded_source","package-lock.json"],
+            "package":{"registry":"npm","name":"minimist"},"ownership":"recorded","before_ids":[],"after_ids":[],
+            "before_versions":["1.2.5"],"after_versions":["1.2.8"],"kind":"upgraded","pairing_basis":"unique_remaining_versions",
+            "directness":{"base":"direct","head":"direct"},"retained":{"base":[],"head":[]},
+            "retained_elsewhere":[{"source_key":"tools/package-lock.json","versions":["1.2.8"]}]}],
+        "declaration_changes":[{"id":"declaration:1","kind":"changed","match_key":["package.json","helper"],"before_id":"base:d1","after_id":"head:d1",
+            "binding_transitions":[{"source_key":"package-lock.json","package":{"registry":"npm","name":"minimist"},"declared_package":null,
+                "base_target":{"package":{"registry":"npm","name":"minimist"},"version":"1.2.5"},
+                "head_target":{"package":{"registry":"npm","name":"minimist"},"version":"1.2.8"},
+                "before_versions":["1.2.5"],"after_versions":["1.2.8"],"recorded_before_versions":["1.2.5"],"resolved_before_versions":[],
+                "base_status":"matched","head_status":"matched","review_eligibility":{"status":"eligible"}}]}],
+        "advisories":{"status":"complete","data":{"assessments":[],
+            "findings":[{"id":"finding:1","osv_id":"EXAMPLE-1","package":{"registry":"npm","name":"minimist"},"summary":"Illustrative advisory"}],
+            "coordinate_transitions":[{"change_id":"change:1","deltas":[delta("fixed")]}],
+            "exposures":[{"scope":{"kind":"source","source_key":"package-lock.json","qualifier":"recorded"},"deltas":[delta("fixed")],"coverage":{}},
+                {"scope":{"kind":"repository_union","qualifier":"recorded"},"deltas":[delta("unchanged")],"coverage":{}}]},
+            "coverage":{"coordinates":2,"checked":2,"unknown":0,"unsupported":0,"scope":"selected_inputs_only"}},
+        "direct_reviews":{"status":"complete","data":[review()],"coverage":{"eligible":1,"completed":1,"returned":1,"not_assessed":0,"unavailable":0,"omitted":0}},
+        "coverage":{"scope":"selected_inputs_only","partial":false},"summary":{"changed_source_package_contexts":1,"changed_declarations":1},
+        "notices":["Synthetic comparison, not real package intelligence."]})
+}
+
+pub fn review() -> Value {
+    json!({"id":"review:1","registry":"npm","name":"minimist","current_version":"1.2.5","target_version":"1.2.8", "declaration_change_ids":["declaration:1"],
+        "source_keys":["package-lock.json"],"status":"complete","reason":null,"data":{
+            "security":{"current":{"assessment_status":"affected","unknown_vulnerability_count":0},"target":{"assessment_status":"non_affecting","unknown_vulnerability_count":0}},
+            "unknown_details":[],"changelog":{"entries":[{"version":"1.2.8","html_url":"https://example.invalid/releases/1.2.8","headline":"Illustrative migration note","signals":["migration"]}],
+                "breaking_signals":["breaking"],"migration_signals":["migration"],"coverage":{"status":"partial","returned_entries":1,"total_entries":56,"truncated":true}}}})
+}
+
+pub fn exchanges(bytes: &[u8]) -> Vec<Vec<u8>> {
+    let mut snapshot = super::jobs::snapshot("succeeded", "succeeded", 1);
+    snapshot["kind"] = "diff".into();
+    snapshot["format"] = "json".into();
     vec![
         super::jobs::accept_response(),
         super::jobs::events_response(&[snapshot]),
-        super::response(
-            "200 OK",
-            &[("Content-Type", media)],
-            &serde_json::to_vec(&body).expect("fixture JSON"),
-        ),
+        super::response("200 OK", &[("Content-Type", "application/json")], bytes),
     ]
 }

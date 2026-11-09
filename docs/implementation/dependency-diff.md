@@ -1,8 +1,8 @@
 # Experimental dependency diff
 
 `githits-scan diff [PATH] --base REF [--head REF]` compares literal Git revisions;
-without `--head` it reads actual working-tree bytes. PATH must be the repository
-root. For a PR, explicitly choose its merge-base:
+without `--head` it reads actual working-tree bytes. PATH must be the Git root.
+For a PR, explicitly choose the merge-base:
 
 ```sh
 githits-scan diff --base "$(git merge-base origin/main HEAD)" --head HEAD
@@ -11,90 +11,101 @@ githits-scan diff --base HEAD~1 --head HEAD --format markdown
 ```
 
 The command is experimental and informational. Exit 0 means a report was produced,
-including partial results; inspect `incomplete`, per-row assessments and notices
-before using it to enforce a policy. Input/configuration errors use 2; failures
-preventing the inventory comparison and output failures use 3.
+including partial or unfamiliar evidence; it is never a policy pass. Local input,
+configuration and admission errors use 2; execution/output failures use 3. Git and
+`GITHITS_API_TOKEN` are required, including identical or empty selected inputs.
+The service can assess unchanged dependencies against current evidence.
 
 ## Inputs and ownership
 
 `repository.rs` enumerates immutable commit trees or tracked/nonignored untracked
-working-tree files. It never changes the index or checkout, follows symlinks,
-executes package managers, or fetches missing objects. Git subprocesses receive no
-`GITHITS_API_TOKEN`, disable fsmonitor and transports, and suppress raw diagnostics.
-Missing partial-clone objects require an explicit fetch outside Scan. Sparse or
-unmerged working trees require an explicit committed head or resolution first.
-Working-tree reads preserve actual bytes, so checkout line-ending conversions can
-make otherwise unchanged files differ from committed blobs.
+working-tree files. It never mutates the index/checkout, follows symlinks, executes
+package managers, or fetches missing objects. Git children receive no API token,
+disable fsmonitor/replacement objects/transports/lazy fetch, and suppress raw
+diagnostics. Missing objects need an explicit fetch outside Scan. Sparse/unmerged
+working trees require an explicit committed head or resolution first.
+Working-tree bytes can differ from committed blobs through line-ending conversion.
 
-The catalog alone recognizes package evidence. Discovery pairs the metadata through
-its normal pure rules; upload preparation uses the existing bounded selection and
-Cargo/npm workspace expansion with an injected snapshot reader. Hidden and
-installed-dependency paths are omitted. Tracked-but-ignored files remain tracked;
-Git ignores exclude untracked working-tree files. Default fixture exclusions and
-`--exclude` apply to both sides. `--lockfiles-only` skips manifest-only resolution.
-This command ignores `githits-scan.toml` and reports its presence as a notice; use
-explicit flags. Unsupported, ambiguous and unselected evidence remains a notice,
-including when selected inputs are identical. Deliberate exclusions are omitted.
+The catalog owns recognition. Discovery pairs metadata and the existing bounded
+upload selector includes owning companions and Cargo/npm workspace manifests through
+an injected snapshot reader. Hidden/installed paths and default fixture exclusions
+are omitted. Tracked ignored files remain tracked; Git ignores exclude untracked
+files. `--exclude` applies to both sides. Diff deliberately ignores
+`githits-scan.toml`; its presence and other selection limitations are diagnostics on
+stderr, including with `--quiet`, without altering returned JSON.
 
-## Comparison and evidence
+By default, manifest-only projects are selected and `unlocked_manifests=resolve`.
+`--lockfiles-only` excludes those projects, retains lock companions/workspace
+evidence and requests `recorded_only`. Groups are `all`; both advisories and direct
+reviews are requested. Scan sends explicit supplied/empty side states. It never
+silently removes a selected file that the service rejects, including marker-only
+manifests. Parser errors retain the rejected side, path and status.
 
-The full CycloneDX inventory supplies dependency versions. Compact audit findings
-supply advisory identities; the remediation trace is finding-focused and cannot
-replace a complete inventory. License-report DTOs lack the complete registry and
-adjacency evidence required here. Missing registry/version evidence stays unknown.
-The current producer's extensible `githits:registry` property supplies registry
-identity; missing properties and unmatched audit coordinates qualify the result.
+## Comparison and presentation
 
-Changes aggregate version sets across the repository by registry/name. Row scope
-describes changed versions; an unchanged direct version does not label a changed
-transitive version direct. Mixed subsets remain explicit. A transitive
-version already present elsewhere is not a new repository-wide version when added
-to another project. This is not a per-project exposure diff. Stable numeric X.Y.Z
-transitions are ordered locally; unfamiliar version schemes remain `changed`.
+The service owns canonical package/declaration identity, alias resolution, source
+ownership, directness, version pairing, advisory assessments and upgrade enrichment.
+Scan does not infer them from SBOM properties or recompute a repository version union.
+All selected recorded sources remain visible, including auxiliary locks. Ownership
+qualifies a recorded transition rather than proving an effective workspace upgrade.
+Only proven recorded direct old/new transitions are eligible for upgrade review;
+transitive changes remain visible without client review requests. Additions,
+removals, ambiguity and mismatches retain actual eligibility reasons and nullable
+targets. Backend review batching has no first-30 total cap.
 
-Directness comes from registry declarations joined to declaration agreement by
-source path, package name and matched versions. Ambiguous joins, aliases without
-an exact identity, empty matched-version lists and missing scope evidence remain
-unknown. Direct membership is compared independently, so a promotion to direct at
-the same version is visible. Per-manifest direct transitions are paired before
-identical transitions are deduplicated. Only a unique old/new direct pair is sent
-to upgrade review; transitive changes never cause a review request.
+Human/Markdown output groups changes by source and preserves before/after versions
+and retained-elsewhere notes. Declaration-only edits remain visible. Human/Markdown show changed-coordinate and recorded repository-union advisory
+deltas, including non-affecting coordinate rows. Empty delta arrays are labelled
+without inferring a clean assessment; coverage qualifications still apply. The
+complete source, resolution-unit and project scopes remain in JSON.
+Incomplete scope qualifications are still shown. A local fix can coexist with an affected repository union.
+The comparison uses current shared advisory evidence, not knowledge at commit time;
+a reported fix is not proof of runtime reachability or exploitability.
 
-Audit advisory sets span all reported versions of each package. Fixed means absent
-from the head set, introduced means absent from the base set, and unchanged means
-present in both. If a reported coordinate's vulnerability assessment is unavailable or unverified,
-these three sets are null, and observed findings remain separately available.
-`assessed` concerns the reported versions: source/declaration gaps still qualify
-the overall report without erasing completed coordinate checks. A partial report
-is not a clean vulnerability assessment of the whole repository.
+Assessment gaps, partial source inventory, exclusions, unknown ownership, unrequested
+sections and failed enrichment remain distinct. Completed coordinate evidence can
+survive unrelated source gaps. Security assessments and changelog truncation are
+separate: returned headlines/signals are attention evidence, not an exhaustive
+migration checklist. Links are validated credential-free HTTP(S) URLs supplied by
+the service and labelled as changelog entries, never invented full-history URLs.
+The compact view shows the first three returned entries and every entry carrying
+producer signals, with an explicit additional-entry count; JSON retains all entries.
 
-Markdown text escapes formatting and URL syntax and breaks `@`/`#` tokens
-with a zero-width separator, because GitHub applies those filters after decoding
-entities. Terminal text and JSON remain exact. Validated producer changelog URLs
-are intentionally formatted as links.
+Markdown escapes untrusted formatting/mentions and terminal text escapes control
+characters. Human/Markdown explicitly decline unsupported future report structures.
+JSON preserves original result bytes, including whitespace, additive fields, nullable
+targets and unfamiliar vocabulary. No Git-label wrapper or client notices are added.
+See [JSON output](json-output.md#experimental-diff-service-report).
 
-## HTTP and cost
+## HTTP, limits and cost
 
-Nonidentical nonempty inputs use base SBOM, head SBOM, base audit, head audit, in
-that order. Empty sides skip their calls. Identical selected uploads make no calls
-and explicitly state that vulnerabilities were not assessed. API upload/response
-limits, authentication, redirect prohibition and retry policy remain shared.
+One `POST /v1/experimental/dependency-diffs` sends a text `request` JSON part plus
+literal repeated `base_files[]` and `head_files[]` with relative filenames/original
+UTF-8 bytes. Required controls are closed; no query kind/format, refs, URLs,
+completeness receipts or enforcement rules are submitted. The returned shared
+job links drive SSE and the result read: ordinarily three requests. No separate
+SBOM, audit or upgrade-review request is made. Redirects, submission/result retries,
+polling and old comparison fallbacks are disabled. Existing established-stream
+reconnection behavior is shared with other commands.
 
-At documented default policy, four analyses cost 400 weighted daily units, plus
-upgrade-review requests. The personal short-rate limit is two analysis submissions
-per minute, and the organization/project default is five; runtime policy can vary.
-Audit failure stops further audits and retains the inventory diff with unavailable
-security evidence. Upgrade failures retain scan results; a 429 stops later review
-batches. There are no sleeps or retries.
+The complete pair is limited to 256 files, 5,242,880 bytes per file, 1,024 UTF-8
+bytes per path and 8,000,000 full multipart bytes including framing, inclusive.
+Duplicate paths within a side are rejected; the same path across sides is valid.
+Two individually valid uploads can exceed the pair limit. Validation precedes
+credential acquisition; do not chunk, silently prune or increase bounds. Successful
+responses are capped at 16,777,216 bytes. Path/security/transport rules remain owned
+by [the shared API boundary](sbom-api-contract.md).
 
-`POST /v1/package-upgrade-reviews?fields=security.direct,changelog` accepts up to
-30 transitions per batch. Returned direct security evidence stays separate from
-repository audit deltas. Unknown qualifications and nullable/truncated changelog
-evidence are retained; links come only from returned `html_url` values. No URL is
-constructed for an index route. Direct additions have no previous direct version,
-which this endpoint requires, so the report records an API gap. Unsupported review
-registries and ambiguous version pairs also remain explicit gaps.
+One admission is weighted as two audits (currently 200 daily units at policy
+defaults). Runtime quotas can vary. Reads and stream reconnects do not resubmit.
+A completed partial result remains a report; admission or required core failure
+produces an error and no document. Service 429 responses preserve Retry-After.
 
-See the [public OpenAPI](https://api.githits.dev/v1/openapi.json) for current fields
-and policy defaults. [JSON output](json-output.md#experimental-diff-schema-1)
-describes the report representation.
+## Prototype migration
+
+This replaces the earlier experimental local schema and four-analysis composition.
+Consumers should read the producer's versioned `kind=diff` report and its independent
+section statuses/coverage. Identical inputs now require a real charged analysis.
+Flags and informational exits remain stable. There is no persisted repository data
+migration; an earlier binary can be restored, with its documented semantic limitations.
+Future configurable scan composition and enforcement are outside this command.

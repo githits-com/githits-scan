@@ -53,9 +53,6 @@ pub enum Error {
     /// Git snapshot input could not be read.
     #[error(transparent)]
     Repository(#[from] crate::repository::Error),
-    /// The producer inventory cannot be interpreted safely.
-    #[error("invalid diff evidence: {0}")]
-    Diff(&'static str),
     /// Diff selection exceeded the shared upload count limit.
     #[error(
         "{count} files exceed the {}-file upload limit; narrow both diff inputs with --exclude GLOB or --lockfiles-only",
@@ -236,7 +233,6 @@ impl Error {
                 ErrorKind::Usage
             }
             Self::Repository(_)
-            | Self::Diff(_)
             | Self::Api(_)
             | Self::Discover(_)
             | Self::Output(_)

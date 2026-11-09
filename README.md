@@ -223,12 +223,14 @@ githits-scan diff --base "$(git merge-base origin/main HEAD)" --head HEAD
 githits-scan diff --base HEAD --format json
 ```
 
-Compare direct and transitive dependencies without changing the checkout. Only
-proven direct version transitions request upgrade reviews; audit evidence supplies
-all package vulnerability deltas. This informational command can make four charged
-analysis submissions, which may exceed current personal short-rate limits.
-Partial reports retain explicit unknowns and exit 0. Git is required; configuration
-files are ignored in favor of explicit `--exclude` and `--lockfiles-only` flags.
+Compare direct and transitive dependencies through one service job without changing
+the checkout. Source-local transitions, recorded/effective ownership, advisory deltas
+and direct upgrade evidence remain qualified. Human/Markdown output includes returned
+changelog attention items and entry links; JSON preserves the exact service report.
+The pair shares 256 files and an 8 MB full multipart limit. One admission is weighted
+as two audits; identical/empty inputs also require a token and analysis. Partial or
+unfamiliar reports exit 0 informationally. Configuration is ignored in favor of
+explicit `--exclude` and `--lockfiles-only` flags.
 See [dependency diff](docs/implementation/dependency-diff.md) for scope and limits.
 
 ### License reports and policy checks

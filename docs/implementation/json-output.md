@@ -87,26 +87,23 @@ see [license report](license-report.md). It is the input to `--from-report`.
 SPDX 2.3 tag-value, or service text. It has no Scan JSON wrapper or `--json` flag.
 `license check --sbom` accepts CycloneDX JSON, not the other report formats.
 
-## Experimental diff (schema 1)
+## Experimental diff service report
 
-`diff --format json` emits `schema_version: 1`, `base`/`head` (resolved commit IDs
-or `working-tree`), `comparison_scope`, `analysis_performed`, `incomplete`,
-`notices`, and ordered `changes`. This is informational data, not a policy result.
+`diff --format json` writes the exact service result bytes. There is no Scan
+wrapper or reconstruction. The versioned report uses `kind: diff` and includes
+`accepted_request`, generated time, snapshots, source-local `changes`,
+`declaration_changes`, `advisories`, `direct_reviews`, coverage, summary and notices.
+Git revision labels and local selection notices are not added to JSON; the latter
+are stderr diagnostics.
 
-Each change has nullable `registry`, `name`, `kind`, nullable `base`/`head` package
-facts, `base_scope`/`head_scope` (scope of changed versions: direct, transitive, mixed,
-unknown, or null when that side has no changed version), `vulnerabilities`, `upgrade_reviews`, and `review_gaps`. Package facts retain
-version/path sets, per-manifest exact `direct` versions, `direct_unknown` sources
-and `scope_unknown`. Mixed means some changed versions are direct and others are transitive or unknown.
-Unchanged direct versions do not make a transitive version change direct.
-`kind` is added, removed, upgraded, downgraded, changed, or scope_changed.
+Snapshots preserve accepted-file digests, canonical declarations/bindings, occurrence
+multiplicity and recorded/effective ownership. Changes retain source-local versions,
+directness and versions retained elsewhere. Null targets mean absent or unqualified
+evidence, not an invented old version. Advisory coordinate and exposure scopes remain
+separate, as do review security and changelog qualifications.
 
-`vulnerabilities` has `assessed`, nullable fixed/introduced/unchanged advisory sets,
-and `base_observed`/`head_observed` sets. Null means unknown, not zero. `assessed`
-concerns checks for the reported version sets; overall source/declaration gaps
-remain explicit through `incomplete` and notices. Repository
-version unions and source-local direct comparison are described in
-[dependency diff](dependency-diff.md); this does not detect every per-project
-transitive exposure change. Upgrade reviews retain selected producer facts,
-including unknown qualifications, nullable security lists and changelog links.
-They do not replace the scan deltas. Human and Markdown formatting are presentation.
+`outcome` and independent section statuses describe evidence. Partial, unavailable,
+unrequested and unfamiliar statuses never mean pass/safe or zero findings. Additive
+fields and positive future schemas remain byte-preserved for pipelines; this binary's
+human/Markdown renderer explicitly declines unsupported structures. This replaces the
+earlier experimental Scan-owned schema; see [dependency diff](dependency-diff.md).

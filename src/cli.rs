@@ -61,7 +61,7 @@ enum Command {
     Audit(AuditArgs),
     /// Compare repository dependencies (experimental, informational)
     #[command(
-        long_about = "Compare base and head dependency evidence (experimental). Omitted --head reads the working tree. Requires Git and GITHITS_API_TOKEN unless selected inputs are identical. Reads historical package files without changing the checkout. Four analysis submissions plus direct upgrade reviews may be charged; current API limits can leave a partial report. Exit 0 means a report was produced, including incomplete evidence; use JSON qualifications before applying a policy."
+        long_about = "Compare base and head dependency evidence through the service (experimental). Omitted --head reads the working tree. Requires Git and GITHITS_API_TOKEN, including identical or empty selected inputs. Reads package files without changing the checkout. One paired analysis is charged at twice the audit weight. Partial and unknown evidence remains explicit. Exit 0 means a report was produced, not a policy pass. JSON preserves the original service result."
     )]
     Diff(DiffArgs),
     /// Software bill of materials commands

@@ -1,211 +1,202 @@
 use super::*;
-use crate::api::upgrade::{Package, Review};
-use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet};
+use crate::api::diff::Report;
+use crate::test_support::diff as fixture;
+use serde_json::json;
 
-struct Reviews {
-    batches: RefCell<Vec<usize>>,
-    limited: bool,
+fn rendered(value: &serde_json::Value, format: Format) -> String {
+    let report = Report::from_bytes(serde_json::to_vec(value).expect("json")).expect("report");
+    let mut out = Vec::new();
+    render::write(&report, format, ("base", "head"), &mut out).expect("render");
+    String::from_utf8(out).expect("text")
 }
-impl UpgradeApi for Reviews {
-    fn review(&self, packages: &[Package]) -> Result<Vec<Review>, api::ApiError> {
-        self.batches.borrow_mut().push(packages.len());
-        if self.limited {
-            return Err(api::ApiError::Unexpected {
-                status: 429,
-                request_id: None,
-            });
-        }
-        Ok(packages
-            .iter()
-            .map(|p| {
-                serde_json::from_value(crate::test_support::diff::review(
-                    &p.name,
-                    &p.current_version,
-                    &p.target_version,
-                ))
-                .expect("review")
-            })
-            .collect())
+
+#[test]
+fn diff_render_preserves_source_transition_retained_versions_and_advisory_scopes() {
+    let text = rendered(&fixture::report(), Format::Human);
+    for expected in [
+        "Source: package-lock.json",
+        "1.2.5 → 1.2.8",
+        "Retained elsewhere: 1.2.8 in tools/package-lock.json",
+        "npm:minimist in package-lock.json: fixed",
+        "repository union [recorded]: unchanged",
+        "helper in package.json",
+        "Breaking signals: breaking",
+        "Migration signals: migration",
+        "1/56 entries, truncated",
+        "changelog entry",
+    ] {
+        assert!(text.contains(expected), "missing {expected}: {text}");
+    }
+    assert!(!text.contains("full changelog"));
+}
+
+#[test]
+fn diff_render_unknown_partial_and_nullable_evidence_is_explicit() {
+    let mut value = fixture::report();
+    value["outcome"] = "partial".into();
+    value["changes"][0]["directness"]["base"] = "unknown".into();
+    value["changes"][0]["ownership"] = "auxiliary".into();
+    value["declaration_changes"][0]["binding_transitions"][0]["base_target"] =
+        serde_json::Value::Null;
+    value["declaration_changes"][0]["binding_transitions"][0]["review_eligibility"] =
+        json!({"status":"not_applicable","reason":"base_declaration_mismatch"});
+    value["advisories"] = json!({"status":"future_evidence","data":["different"]});
+    let text = rendered(&value, Format::Human);
+    for expected in [
+        "partial",
+        "unknown → direct",
+        "auxiliary",
+        "base review target: unavailable",
+        "base_declaration_mismatch",
+        "future_evidence",
+        "No assessment is inferred",
+    ] {
+        assert!(text.contains(expected), "{expected}");
     }
 }
 
-fn changes() -> Vec<diff::Change> {
-    let inventory = |version: &str| diff::Inventory {
-        packages: (0..31)
+#[test]
+fn diff_render_does_not_truncate_31_returned_reviews_or_16_notices() {
+    let mut value = fixture::report();
+    value["direct_reviews"]["data"] = json!(
+        (0..31)
             .map(|i| {
-                (
-                    diff::Key {
-                        registry: Some("npm".into()),
-                        name: format!("package-{i}"),
-                    },
-                    diff::Package {
-                        versions: BTreeSet::from([version.into()]),
-                        direct: BTreeMap::from([(
-                            "package.json".into(),
-                            BTreeSet::from([version.into()]),
-                        )]),
-                        ..diff::Package::default()
-                    },
-                )
+                let mut r = fixture::review();
+                r["name"] = format!("package-{i}").into();
+                r
             })
-            .collect(),
-        notices: Vec::new(),
-    };
-    diff::compare(
-        &inventory("1.0.0"),
-        &inventory("2.0.0"),
-        (&diff::Audit::empty(), &diff::Audit::empty()),
-    )
-}
-
-#[test]
-fn diff_reviews_thirty_plus_one_direct_transitions_in_bounded_batches() {
-    let api = Reviews {
-        batches: RefCell::new(Vec::new()),
-        limited: false,
-    };
-    let mut changes = changes();
-    enrich(&mut changes, &api);
-    assert_eq!(*api.batches.borrow(), [30, 1]);
-    assert!(changes.iter().all(|c| c.upgrade_reviews.len() == 1));
-}
-
-#[test]
-fn diff_stops_upgrade_batches_after_rate_limit_and_retains_all_scan_rows() {
-    let api = Reviews {
-        batches: RefCell::new(Vec::new()),
-        limited: true,
-    };
-    let mut changes = changes();
-    enrich(&mut changes, &api);
-    assert_eq!(*api.batches.borrow(), [30]);
-    assert_eq!(changes.len(), 31);
-    assert!(
-        changes
-            .iter()
-            .all(|c| c.review_gaps.len() == 1 && c.upgrade_reviews.is_empty())
+            .collect::<Vec<_>>()
     );
+    value["direct_reviews"]["coverage"] = json!({"eligible":31,"completed":31,"returned":31,"not_assessed":0,"unavailable":0,"omitted":0});
+    value["notices"] = json!((0..16).map(|i| format!("notice-{i}")).collect::<Vec<_>>());
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("npm:package-30"));
+    assert!(text.contains("Note: notice-15"));
+    assert_eq!(text.matches("Direct security current:").count(), 31);
 }
 
 #[test]
-fn diff_markdown_escapes_names_keeps_rows_together_and_omits_unsafe_links() {
-    let mut changes = changes();
-    changes.truncate(2);
-    changes[0].key.name = "evil|<script>\nname".into();
-    changes[0]
-        .base
-        .as_mut()
-        .expect("base")
-        .versions
-        .insert("9.9.9".into());
-    changes[0]
-        .head
-        .as_mut()
-        .expect("head")
-        .versions
-        .insert("9.9.9".into());
-    let mut review: Review =
-        serde_json::from_value(crate::test_support::diff::review("x", "1.0.0", "2.0.0"))
-            .expect("review");
-    review.changelog.as_mut().expect("changelog").entries[0].html_url =
-        Some("javascript:alert(1)".into());
-    changes[0].upgrade_reviews.push(review);
-    let report = diff::Report {
-        schema_version: 1,
-        comparison_scope: "repository",
-        base: "base".into(),
-        head: "head".into(),
-        analysis_performed: true,
-        incomplete: false,
-        notices: vec![],
-        changes,
-    };
-    let mut bytes = Vec::new();
-    render::write(&report, Format::Markdown, &mut bytes).expect("render");
-    let text = String::from_utf8(bytes).expect("UTF-8");
-    assert!(text.contains("evil&#124;&lt;script&gt;&#92;nname"));
-    assert!(!text.contains("javascript:"));
-    assert!(!text.contains("9.9.9"));
-    assert!(
-        serde_json::to_string(&report)
-            .expect("JSON")
-            .contains("9.9.9")
-    );
-    assert_eq!(text.lines().filter(|line| line.starts_with('|')).count(), 4);
+fn diff_markdown_escapes_payloads_and_keeps_only_safe_returned_links() {
+    let mut value = fixture::report();
+    value["changes"][0]["package"]["name"] =
+        "evil|![img](https://evil.invalid) @team #12 <script>\nname".into();
+    value["direct_reviews"]["data"][0]["data"]["changelog"]["entries"][0]["html_url"] =
+        "https://user:password@example.invalid/leak".into();
+    let text = rendered(&value, Format::Markdown);
+    assert!(!text.contains("![img]"));
+    assert!(!text.contains("|!["));
+    assert!(!text.contains("<script>"));
+    assert!(!text.contains("@team"));
+    assert!(!text.contains(" #12"));
+    assert!(!text.contains("password"));
+    assert!(text.contains("@&#8203;team"));
+    assert!(text.contains("#&#8203;12"));
+    assert!(text.contains("Entry link omitted"));
 }
 
 #[test]
-fn diff_terminal_changelog_url_keeps_query_parameters_unchanged() {
-    let mut changes = changes();
-    changes.truncate(1);
-    let mut review: Review =
-        serde_json::from_value(crate::test_support::diff::review("x", "1.0.0", "2.0.0"))
-            .expect("review");
-    let link = "https://example.invalid/changelog?a=1&b=2";
-    review.changelog.as_mut().expect("changelog").entries[0].html_url = Some(link.into());
-    changes[0].upgrade_reviews.push(review);
-    let report = diff::Report {
-        schema_version: 1,
-        comparison_scope: "repository",
-        base: "base".into(),
-        head: "head".into(),
-        analysis_performed: true,
-        incomplete: false,
-        notices: vec![],
-        changes,
-    };
-    let mut bytes = Vec::new();
-    render::write(&report, Format::Human, &mut bytes).expect("render");
-    let text = String::from_utf8(bytes).expect("UTF-8");
-    assert!(text.contains(link));
-    assert!(!text.contains("&amp;"));
+fn diff_links_preserve_queries_and_do_not_escape_returned_url_tokens() {
+    let mut value = fixture::report();
+    value["direct_reviews"]["data"][0]["data"]["changelog"]["entries"][0]["html_url"] =
+        "https://example.invalid/entry?a=1&b=2#release".into();
+    let text = rendered(&value, Format::Markdown);
+    assert!(text.contains("<https://example.invalid/entry?a=1&b=2#release>"));
 }
 
 #[test]
-fn diff_markdown_package_text_cannot_create_links_images_or_mentions() {
-    let mut changes = changes();
-    changes.truncate(1);
-    changes[0].key.name =
-        "[click](https://evil.invalid) ![](https://evil.invalid/pixel) @someone #1 owner/repo#1 a@b.invalid *bold* _italic_"
-            .into();
-    let report = diff::Report {
-        schema_version: 1,
-        comparison_scope: "repository",
-        base: "base".into(),
-        head: "head".into(),
-        analysis_performed: true,
-        incomplete: false,
-        notices: vec![],
-        changes,
-    };
-    let mut bytes = Vec::new();
-    render::write(&report, Format::Markdown, &mut bytes).expect("render");
-    let text = String::from_utf8(bytes).expect("UTF-8");
-    for markup in ["[click]", "![](", "@someone", "*bold*", "_italic_"] {
-        assert!(!text.contains(markup), "unescaped {markup}");
+fn diff_future_schema_human_and_markdown_decline_but_json_is_exact() {
+    let bytes = br#" {"schema_version":99,"kind":"diff","new":true} "#.to_vec();
+    let report = Report::from_bytes(bytes.clone()).expect("future");
+    for format in [Format::Human, Format::Markdown] {
+        let mut out = Vec::new();
+        render::write(&report, format, ("a", "b"), &mut out).expect("render");
+        let text = String::from_utf8(out).expect("text");
+        assert!(text.contains("cannot be rendered"));
+        assert!(!text.contains("No reported"));
     }
-    assert!(text.contains("&#91;click&#93;"));
-    assert!(text.contains("@&#8203;someone"));
-    assert!(text.contains("https&#58;//evil"));
-    assert!(text.contains("#&#8203;1"));
-    assert!(text.contains("a@&#8203;b&#46;invalid"));
+    let mut out = Vec::new();
+    render::write(&report, Format::Json, ("a", "b"), &mut out).expect("JSON");
+    assert_eq!(out, bytes);
 }
 
 #[test]
-fn diff_empty_markdown_message_is_separate_from_the_table() {
-    let report = diff::Report {
-        schema_version: 1,
-        comparison_scope: "repository",
-        base: "base".into(),
-        head: "head".into(),
-        analysis_performed: false,
-        incomplete: false,
-        notices: vec![],
-        changes: vec![],
-    };
-    let mut bytes = Vec::new();
-    render::write(&report, Format::Markdown, &mut bytes).expect("render");
-    let text = String::from_utf8(bytes).expect("UTF-8");
-    assert!(text.contains("| --- | --- | --- | --- | --- | --- |\n\nNo changes"));
+fn diff_compact_changelog_keeps_flagged_entries_and_explains_display_limit() {
+    let mut value = fixture::report();
+    let entries=(0..7).map(|i|json!({"version":format!("1.2.{i}"),"headline":format!("entry-{i}"),"html_url":format!("https://example.invalid/{i}"),"signals":if i==6 {vec!["migration"]} else {vec![]}})).collect::<Vec<_>>();
+    value["direct_reviews"]["data"][0]["data"]["changelog"]["entries"] = json!(entries);
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("entry-0"));
+    assert!(text.contains("entry-2"));
+    assert!(text.contains("entry-6"));
+    assert!(!text.contains("entry-4"));
+    assert!(text.contains("3 additional returned changelog entries"));
+}
+
+#[test]
+fn diff_partial_counts_name_unqualified_occurrences_and_reachability() {
+    let mut value = fixture::report();
+    value["outcome"] = "partial".into();
+    value["advisories"]["data"]["exposures"][0]["coverage"] = json!({"base":{"inventory":"complete","assessment":"partial","checked":2,"coordinates":2,"unqualified_occurrences":1}});
+    value["snapshots"]["base"]["coverage"]["reachability"] = json!([{"complete":false,"manifest_path":"Cargo.toml","source_key":"Cargo.lock","basis":"declaration_and_root_graph"}]);
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("2/2 coordinates checked; 1 unqualified occurrences"));
+    assert!(text.contains("project reachability not established for Cargo.toml via Cargo.lock"));
+}
+
+#[test]
+fn diff_added_scope_uses_head_proof_without_qualifying_absent_base() {
+    let mut value = fixture::report();
+    let row = &mut value["changes"][0];
+    row["kind"] = "added".into();
+    row["before_versions"] = json!([]);
+    row["directness"] = json!({"base":"unknown","head":"transitive"});
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("(added, transitive, recorded)"));
+    assert!(!text.contains("unknown → transitive"));
+}
+
+#[test]
+fn diff_mismatched_binding_names_recorded_base_without_inventing_a_review_target() {
+    let mut value = fixture::report();
+    let b = &mut value["declaration_changes"][0]["binding_transitions"][0];
+    b["before_versions"] = json!([]);
+    b["base_target"] = serde_json::Value::Null;
+    b["base_status"] = "version_mismatch".into();
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("unmatched → 1.2.8"));
+    assert!(text.contains("Recorded base versions: 1.2.5 (not a qualified direct review target)"));
+}
+
+#[test]
+fn diff_unfamiliar_review_data_stays_raw_and_unassessed() {
+    for changed_shape in [false, true] {
+        let mut value = fixture::report();
+        let r = &mut value["direct_reviews"]["data"][0];
+        r["status"] = "future_review".into();
+        if changed_shape {
+            r["data"] = json!({"security":{"current":{"new_shape":true}}});
+        }
+        let text = rendered(&value, Format::Human);
+        assert!(text.contains("future_review"));
+        assert!(text.contains("Review detail not interpreted"));
+        assert!(!text.contains("Direct security target:"));
+        assert!(!text.contains("changelog entry:"));
+        let report = Report::from_bytes(serde_json::to_vec(&value).expect("json")).expect("report");
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(report.bytes()).expect("JSON"),
+            value
+        );
+    }
+}
+
+#[test]
+fn diff_every_changed_coordinate_has_its_returned_advisory_evidence() {
+    let mut value = fixture::report();
+    value["advisories"]["data"]["coordinate_transitions"][0]["deltas"][0]["kind"] =
+        "non_affecting".into();
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("npm:minimist in package-lock.json: non_affecting"));
+    value["advisories"]["data"]["coordinate_transitions"][0]["deltas"] = json!([]);
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("npm:minimist in package-lock.json: no advisory deltas returned; coverage qualifications still apply."));
 }

@@ -33,6 +33,16 @@ pub(super) fn write_licenses(event: &ProgressEvent, out: &mut dyn Write) -> std:
     }
 }
 
+pub(super) fn write_diff(event: &ProgressEvent, out: &mut dyn Write) -> std::io::Result<()> {
+    match event {
+        ProgressEvent::Downloading => message("dependency comparison ready; downloading...", out),
+        ProgressEvent::Snapshot(progress) if progress.phase == Phase::Rendering => {
+            message("rendering dependency comparison...", out)
+        }
+        _ => write_audit(event, out),
+    }
+}
+
 fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::Result<()> {
     let counts = &progress.counts;
     match progress.phase {

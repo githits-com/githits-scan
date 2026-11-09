@@ -53,9 +53,8 @@ fn diff_help_marks_experimental_and_documents_working_tree() {
 }
 
 #[test]
-fn diff_identical_inputs_need_no_token_and_preserve_checkout() {
-    let repo = tempfile::tempdir().expect("repository");
-    fs::write(repo.path().join("Cargo.lock"), "version = 4\n").expect("lockfile");
+fn diff_identical_inputs_require_a_real_assessment_and_credentials() {
+    let repo = super::support::repository(&[("Cargo.lock", "version = 4\n")]);
     committed(repo.path());
     let before = git(repo.path(), &["status", "--porcelain=v1"]);
     let output = githits_scan()
@@ -63,14 +62,11 @@ fn diff_identical_inputs_need_no_token_and_preserve_checkout() {
         .arg(repo.path())
         .args(["--base", "HEAD", "--head", "HEAD", "--format", "json"])
         .env_remove("GITHITS_API_TOKEN")
-        .env_remove("GITHITS_API_URL")
         .output()
         .expect("diff");
-    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["schema_version"], 1);
-    assert_eq!(report["analysis_performed"], false);
-    assert_eq!(report["changes"], serde_json::json!([]));
+    assert_eq!(output.status.code(), Some(2));
+    assert!(stderr(&output).contains("GITHITS_API_TOKEN"));
+    assert_eq!(output.stdout, [] as [u8; 0]);
     assert_eq!(git(repo.path(), &["status", "--porcelain=v1"]), before);
 }
 
@@ -116,96 +112,82 @@ fn online(root: &Path, origin: &str) -> std::process::Output {
         .expect("online diff")
 }
 
-fn upgrade_response() -> Vec<u8> {
-    super::support::response("200 OK", &[("Content-Type","application/json")],
-        &serde_json::to_vec(&serde_json::json!({"total":1,"reviews":[super::support::diff::review("minimist","1.2.5","1.2.8")]})).expect("JSON"))
-}
-
 #[test]
-fn diff_binary_uploads_base_head_and_reviews_only_the_direct_upgrade() {
+fn diff_binary_uses_one_paired_job_and_preserves_original_json() {
     use super::support::{diff as fixture, jobs::ScriptedServer};
     let repo = pair();
     let before = git(repo.path(), &["status", "--porcelain=v1"]);
-    let server = ScriptedServer::respond_with(
-        [
-            fixture::exchanges(false, false),
-            fixture::exchanges(true, false),
-            fixture::exchanges(false, true),
-            fixture::exchanges(true, true),
-            vec![upgrade_response()],
-        ]
-        .concat(),
-    );
+    let bytes = serde_json::to_vec_pretty(&fixture::report()).expect("report");
+    let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
     let output = online(repo.path(), &server.origin());
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["changes"].as_array().expect("changes").len(), 4);
-    assert_eq!(report["changes"][1]["head_scope"], "transitive");
-    assert_eq!(report["changes"][2]["head_scope"], "direct");
-    assert_eq!(
-        report["changes"][1]["vulnerabilities"]["introduced"],
-        serde_json::json!(["GHSA-introduced"])
-    );
+    assert_eq!(output.stdout, bytes);
     let requests = server.requests();
-    assert_eq!(requests.len(), 13);
-    for (index, head) in [(0, false), (3, true), (6, false), (9, true)] {
-        let body = String::from_utf8_lossy(&requests[index]);
-        assert!(body.contains(fixture::files(head).1));
+    assert_eq!(requests.len(), 3);
+    let body = String::from_utf8_lossy(&requests[0]);
+    assert!(body.starts_with("POST /v1/experimental/dependency-diffs HTTP/1.1"));
+    for field in ["base_files[]", "head_files[]", "request"] {
+        assert!(body.contains(&format!("name=\"{field}\"")));
     }
-    let upgrade = String::from_utf8_lossy(&requests[12]);
-    assert!(
-        upgrade.starts_with("POST /v1/package-upgrade-reviews?fields=security.direct,changelog ")
-    );
-    let body: serde_json::Value =
-        serde_json::from_str(upgrade.split("\r\n\r\n").nth(1).expect("body"))
-            .expect("upgrade request");
-    assert_eq!(body["packages"].as_array().expect("packages").len(), 1);
-    assert_eq!(body["packages"][0]["name"], "minimist");
+    for side in [false, true] {
+        let (manifest, lock) = fixture::files(side);
+        assert!(body.contains(manifest));
+        assert!(body.contains(lock));
+    }
+    assert!(body.contains("\"unlocked_manifests\":\"resolve\""));
     assert_eq!(git(repo.path(), &["status", "--porcelain=v1"]), before);
 }
 
 #[test]
-fn diff_audit_rate_limit_retains_inventory_and_unknown_security_without_retry() {
-    use super::support::{diff as fixture, jobs::ScriptedServer, response};
-    let repo = pair();
-    let limited = response("429 Too Many Requests", &[("Content-Type","application/problem+json"),("Retry-After","65")],
-        br#"{"status":429,"code":"RATE_LIMITED","detail":"Slow down.","instance":"fixture-request"}"#);
-    let server = ScriptedServer::respond_with(
-        [
-            fixture::exchanges(false, false),
-            fixture::exchanges(true, false),
-            vec![limited, upgrade_response()],
-        ]
-        .concat(),
-    );
-    let output = online(repo.path(), &server.origin());
-    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["incomplete"], true);
-    assert_eq!(
-        report["changes"][2]["vulnerabilities"]["fixed"],
-        serde_json::Value::Null
-    );
-    assert!(stderr(&output).contains("retry after: 65s"));
-    assert_eq!(server.requests().len(), 8);
+fn diff_binary_retains_partial_and_future_reports_without_a_safe_claim() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
+    for future in [false, true] {
+        let repo = pair();
+        let mut value = fixture::report();
+        value["outcome"] = "partial".into();
+        value["advisories"] =
+            serde_json::json!({"status":"unavailable","reason":"provider_unavailable"});
+        if future {
+            value = serde_json::json!({"schema_version":99,"kind":"diff","new_shape":true});
+        }
+        let bytes = serde_json::to_vec(&value).expect("report");
+        let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
+        let output = online(repo.path(), &server.origin());
+        assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+        assert_eq!(output.stdout, bytes);
+        assert_eq!(server.requests().len(), 3);
+    }
 }
 
 #[test]
-fn diff_empty_base_and_working_tree_edits_are_compared_without_checkout_changes() {
+fn diff_binary_side_qualified_admission_failure_writes_no_document_or_retry() {
+    use super::support::{jobs::ScriptedServer, response};
+    let repo = pair();
+    let server=ScriptedServer::respond_with(vec![response("422 Unprocessable Content",&[("Content-Type","application/problem+json")],
+        br#"{"status":422,"code":"UNUSABLE_MANIFEST","side":"head","instance":"request-fixture","files":[{"path":"package.json","status":"unparsed"}]}"#)]);
+    let output = online(repo.path(), &server.origin());
+    assert_eq!(output.status.code(), Some(2), "{}", stderr(&output));
+    assert_eq!(output.stdout, [] as [u8; 0]);
+    for expected in ["head", "package.json", "unparsed", "request-fixture"] {
+        assert!(stderr(&output).contains(expected));
+    }
+    assert_eq!(server.requests().len(), 1);
+}
+
+#[test]
+fn diff_empty_base_and_working_tree_bytes_are_sent_with_explicit_states() {
     use super::support::{diff as fixture, jobs::ScriptedServer};
-    let repo = super::support::repository(&[("README.md", "fixture")]);
+    let repo = super::support::repository(&[("README.md", "empty base")]);
     committed(repo.path());
-    let (manifest, lock) = fixture::files(true);
-    fs::write(repo.path().join("package.json"), manifest).expect("manifest");
-    fs::write(repo.path().join("package-lock.json"), lock).expect("lock");
-    let before = git(repo.path(), &["status", "--porcelain=v1"]);
-    let server = ScriptedServer::respond_with(
-        [
-            fixture::exchanges(true, false),
-            fixture::exchanges(true, true),
-        ]
-        .concat(),
-    );
+    fs::write(repo.path().join("package.json"), fixture::files(true).0).expect("working manifest");
+    fs::write(
+        repo.path().join("package-lock.json"),
+        fixture::files(true).1,
+    )
+    .expect("working lock");
+    let server = ScriptedServer::respond_with(fixture::exchanges(
+        &serde_json::to_vec(&fixture::report()).expect("json"),
+    ));
     let output = githits_scan()
         .arg("diff")
         .arg(repo.path())
@@ -215,42 +197,37 @@ fn diff_empty_base_and_working_tree_edits_are_compared_without_checkout_changes(
         .output()
         .expect("diff");
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["head"], "working-tree");
-    assert!(
-        report["changes"]
-            .as_array()
-            .expect("changes")
-            .iter()
-            .all(|c| c["kind"] == "added")
-    );
-    assert_eq!(server.requests().len(), 6);
-    assert_eq!(git(repo.path(), &["status", "--porcelain=v1"]), before);
+    let requests = server.requests();
+    assert_eq!(requests.len(), 3);
+    let body = String::from_utf8_lossy(&requests[0]);
+    assert!(body.contains("\"base\":{\"state\":\"empty\"}"));
+    assert!(!body.contains("name=\"base_files[]\""));
+    assert!(body.contains(fixture::files(true).1));
 }
 
 #[test]
-fn diff_omitted_evidence_remains_in_json_on_the_identical_input_path() {
-    let repo = super::support::repository(&[
-        ("pom.xml", "<project/>"),
-        ("githits-scan.toml", "version=1"),
-    ]);
-    committed(repo.path());
+fn diff_local_selection_notices_stay_on_stderr_and_json_stays_exact() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
+    let repo = pair();
+    fs::write(
+        repo.path().join("githits-scan.toml"),
+        "unread configuration",
+    )
+    .expect("config");
+    let bytes = serde_json::to_vec(&fixture::report()).expect("json");
+    let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
     let output = githits_scan()
         .arg("diff")
         .arg(repo.path())
-        .args(["--base", "HEAD", "--head", "HEAD", "--format", "json"])
-        .env_remove("GITHITS_API_TOKEN")
+        .args(["--base", "HEAD", "--format", "json", "--quiet"])
+        .env("GITHITS_API_TOKEN", "test-token")
+        .env("GITHITS_API_URL", server.origin())
         .output()
         .expect("diff");
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["incomplete"], true);
-    assert!(report["notices"].to_string().contains("pom.xml"));
-    assert!(
-        report["notices"]
-            .to_string()
-            .contains("ignores githits-scan.toml")
-    );
+    assert_eq!(output.stdout, bytes);
+    assert!(stderr(&output).contains("ignores githits-scan.toml"));
+    assert_eq!(server.requests().len(), 3);
 }
 
 #[test]
@@ -300,7 +277,8 @@ fn diff_rejects_sparse_working_tree_and_accepts_explicit_committed_head() {
         .env_remove("GITHITS_API_TOKEN")
         .output()
         .expect("committed diff");
-    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(output.status.code(), Some(2), "{}", stderr(&output));
+    assert!(stderr(&output).contains("GITHITS_API_TOKEN"));
 }
 
 #[test]
@@ -435,48 +413,56 @@ fn diff_ignores_non_utf8_unrelated_names_but_rejects_non_utf8_package_paths() {
             .env_remove("GITHITS_API_TOKEN")
             .output()
             .expect("diff");
-        assert_eq!(
-            output.status.code(),
-            Some(if package { 2 } else { 0 }),
-            "{}",
-            stderr(&output)
-        );
+        assert_eq!(output.status.code(), Some(2), "{}", stderr(&output));
     }
 }
 
 #[test]
-fn diff_future_audit_schema_preserves_inventory_and_stops_later_audits() {
-    use super::support::{diff as fixture, jobs::ScriptedServer, response};
+fn diff_pair_aggregate_count_fails_before_credentials() {
+    let repo = tempfile::tempdir().expect("repo");
+    for i in 0..129 {
+        let dir = repo.path().join(format!("p{i}"));
+        fs::create_dir(&dir).expect("dir");
+        fs::write(dir.join("Cargo.lock"), "version = 4\n").expect("lock");
+    }
+    committed(repo.path());
+    let output = githits_scan()
+        .arg("diff")
+        .arg(repo.path())
+        .args(["--base", "HEAD", "--head", "HEAD"])
+        .env_remove("GITHITS_API_TOKEN")
+        .output()
+        .expect("diff");
+    assert_eq!(output.status.code(), Some(2));
+    assert!(stderr(&output).contains("258 files"));
+    assert!(!stderr(&output).contains("GITHITS_API_TOKEN"));
+}
+
+#[test]
+fn diff_lockfiles_only_retains_companions_and_sets_recorded_only() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
     let repo = pair();
-    let mut future = fixture::exchanges(false, true);
-    future.pop().expect("audit body");
-    future.push(response(
-        "200 OK",
-        &[("Content-Type", "application/json")],
-        br#"{"schema_version":99}"#,
+    fs::create_dir(repo.path().join("other")).expect("directory");
+    fs::write(
+        repo.path().join("other/package.json"),
+        r#"{"name":"manifest-only","version":"1.0.0"}"#,
+    )
+    .expect("manifest");
+    let server = ScriptedServer::respond_with(fixture::exchanges(
+        &serde_json::to_vec(&fixture::report()).expect("json"),
     ));
-    let server = ScriptedServer::respond_with(
-        [
-            fixture::exchanges(false, false),
-            fixture::exchanges(true, false),
-            future,
-            vec![upgrade_response()],
-        ]
-        .concat(),
-    );
-    let output = online(repo.path(), &server.origin());
+    let output = githits_scan()
+        .arg("diff")
+        .arg(repo.path())
+        .args(["--base", "HEAD", "--lockfiles-only", "--format", "json"])
+        .env("GITHITS_API_TOKEN", "test-token")
+        .env("GITHITS_API_URL", server.origin())
+        .output()
+        .expect("diff");
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-    let report: serde_json::Value = serde_json::from_str(&stdout(&output)).expect("report");
-    assert_eq!(report["changes"].as_array().expect("changes").len(), 4);
-    assert_eq!(report["incomplete"], true);
-    assert_eq!(
-        report["changes"][2]["vulnerabilities"]["fixed"],
-        serde_json::Value::Null
-    );
-    assert!(
-        report["notices"]
-            .to_string()
-            .contains("unsupported audit schema version")
-    );
-    assert_eq!(server.requests().len(), 10);
+    let requests = server.requests();
+    let body = String::from_utf8_lossy(&requests[0]);
+    assert!(body.contains("\"unlocked_manifests\":\"recorded_only\""));
+    assert!(!body.contains("filename=\"other/package.json\""));
+    assert_eq!(body.matches("filename=\"package.json\"").count(), 2);
 }

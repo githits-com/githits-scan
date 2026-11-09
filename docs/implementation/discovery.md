@@ -168,4 +168,5 @@ the same pure pairing rules and bounded upload selector through an injected read
 Its enumeration policy intentionally keeps tracked-but-ignored files and skips
 ignored untracked files, hidden paths and installed-dependency directories. No
 historical tree is checked out or materialized. Configuration is not loaded; its
-presence and non-deliberately omitted evidence are report notices.
+presence and non-deliberately omitted evidence are stderr diagnostics. Both selected
+sides share the paired API upload limits.

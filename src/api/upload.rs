@@ -74,6 +74,12 @@ pub enum UploadError {
     /// Nothing was selected.
     #[error("nothing to upload")]
     NoFiles,
+    /// Two file parts in the same side have the same logical path.
+    #[error("duplicate upload filename: {}", path.escape_debug())]
+    DuplicatePath {
+        /// Repeated repository-relative path.
+        path: String,
+    },
     /// More files than one request may carry.
     #[error(
         "{count} files exceed the limit of {MAX_FILES} files per upload; use --exclude GLOB to omit unrelated projects, --lockfiles-only to skip manifest-only projects, or `githits-scan detect --save --exclude GLOB` to save a narrower inventory"
@@ -163,7 +169,35 @@ const PART_TYPE: &str = "\"\r\nContent-Type: application/octet-stream\r\n\r\n";
 /// Bytes one part adds beyond its contents: boundary line, headers, and the
 /// trailing line break.
 const fn part_overhead(path: &str) -> u64 {
-    2 + BOUNDARY_BYTES + 2 + PART_HEAD.len() as u64 + path.len() as u64 + PART_TYPE.len() as u64 + 2
+    named_part_overhead("files[]", path)
+}
+
+const fn named_part_overhead(field: &str, path: &str) -> u64 {
+    2 + BOUNDARY_BYTES + 2 + PART_HEAD.len() as u64 - "files[]".len() as u64
+        + field.len() as u64
+        + path.len() as u64
+        + PART_TYPE.len() as u64
+        + 2
+}
+
+/// Multipart accounting shared by paired uploads and the single-side format.
+pub(super) fn estimate_named_body<'a>(
+    entries: impl IntoIterator<Item = (&'a str, &'a str, u64)>,
+    text: Option<(&str, u64)>,
+) -> u64 {
+    let parts: u64 = entries
+        .into_iter()
+        .map(|(field, path, bytes)| named_part_overhead(field, path) + bytes)
+        .sum();
+    let text = text.map_or(0, |(field, bytes)| {
+        2 + BOUNDARY_BYTES
+            + 2
+            + "Content-Disposition: form-data; name=\"\"\r\n\r\n".len() as u64
+            + field.len() as u64
+            + bytes
+            + 2
+    });
+    parts + text + 2 + BOUNDARY_BYTES + 4
 }
 
 /// Estimated multipart body size for `(path, bytes)` entries.

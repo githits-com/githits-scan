@@ -57,7 +57,7 @@ Discovery owns repository reads; the API owns HTTP. Command handlers orchestrate
 | Informational license reports | `src/api/licenses.rs`, `src/commands/license/report.rs` | API validates the public wire contract and retains bytes; the command presents separate evidence without policy interpretation |
 | Audit interpretation and saved-analysis format | `src/audit/` | Pure projection of service evidence, attribution, and bounded versioned encoding/decoding |
 | Local Git snapshots | `src/repository.rs` | Owns immutable enumeration and bounded reads; reuses discovery pairing and command upload selection |
-| Dependency comparison | `src/diff.rs`, `src/commands/diff.rs` | Pure inventory/direct/advisory comparison is separate from orchestration and presentation |
+| Dependency comparison | The service; `src/api/diff` and `src/commands/diff` consume it | Canonical source-local meaning/enrichment stays service-owned; Scan validates paired uploads, retains exact JSON and renders facts |
 | Styling | `src/style.rs` | Pure palette supplied by command layer; never decides terminal capabilities |
 | Token and API origin resolution | `src/env.rs` | Reads `GITHITS_API_TOKEN` and `GITHITS_API_URL` through an injected source so parsing is testable without mutating the process environment |
 

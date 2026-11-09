@@ -22,11 +22,11 @@ use super::{
 };
 use crate::env::{Environment, Token};
 
-mod upgrade;
+mod diff;
 
 const REQUEST_ID: &str = "x-request-id";
 
-/// HTTP client for asynchronous SBOM generation and audit.
+/// HTTP client for authenticated asynchronous dependency analyses.
 pub struct HttpSbomApi {
     client: Client,
     events: Client,
@@ -132,7 +132,7 @@ impl HttpSbomApi {
     ) -> Result<T, ApiError> {
         let path = match operation {
             Operation::Licenses => format!("{LICENSES_PATH}/{}", job.id),
-            Operation::Sbom(_) | Operation::Audit => job.result_url.clone(),
+            Operation::Sbom(_) | Operation::Audit | Operation::Diff => job.result_url.clone(),
         };
         let url = Accepted::resolve(&self.endpoint, &path)?;
         let response = self
@@ -325,7 +325,7 @@ fn require_media(response: &Response, expected: &str) -> Result<(), ApiError> {
 
 const fn media(operation: Operation) -> &'static str {
     match operation {
-        Operation::Audit | Operation::Licenses => "application/json",
+        Operation::Audit | Operation::Licenses | Operation::Diff => "application/json",
         Operation::Sbom(OutputFormat::CycloneDx) => "application/vnd.cyclonedx+json",
         Operation::Sbom(OutputFormat::Spdx) => "text/spdx",
         Operation::Sbom(OutputFormat::Text) => "text/plain",
