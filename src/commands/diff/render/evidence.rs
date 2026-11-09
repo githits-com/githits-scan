@@ -122,9 +122,8 @@ pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Resul
     ] {
         for row in rows {
             d.item(&format!(
-                "{side} {kind}: {} {}; {}",
-                row.path.unwrap_or_default(),
-                row.name.unwrap_or_default(),
+                "{side} {kind}: {}; {}",
+                gap_context(&row),
                 row.reason.unwrap_or_else(|| row.reasons.join(", "))
             ))?;
         }
@@ -136,4 +135,20 @@ pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Resul
         ))?;
     }
     Ok(())
+}
+
+fn gap_context(row: &view::Gap) -> String {
+    let name = row.name.as_deref().unwrap_or("");
+    let version = row
+        .version
+        .as_ref()
+        .map_or(String::new(), |v| format!("@{v}"));
+    let paths = row
+        .path
+        .iter()
+        .chain(&row.paths)
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .join(", ");
+    format!("{name}{version} {paths}").trim().to_owned()
 }

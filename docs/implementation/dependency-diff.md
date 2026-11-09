@@ -73,6 +73,9 @@ producer signals, with an explicit additional-entry count; JSON retains all entr
 
 Markdown escapes untrusted formatting/mentions and terminal text escapes control
 characters. Human/Markdown explicitly decline unsupported future report structures.
+Review detail is an open service object: unfamiliar detail stays in JSON and is
+labelled uninterpreted in human output, without blocking export. The pinned report
+and section structure still validates before output.
 JSON preserves original result bytes, including whitespace, additive fields, nullable
 targets and unfamiliar vocabulary. No Git-label wrapper or client notices are added.
 See [JSON output](json-output.md#experimental-diff-service-report).

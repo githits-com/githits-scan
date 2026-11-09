@@ -22,6 +22,7 @@ pub(super) fn write(
     let mut display = Display {
         markdown: matches!(format, Format::Markdown),
         out,
+        in_list: false,
     };
     display.line(&format!(
         "Experimental dependency diff: {} → {}",
@@ -49,6 +50,7 @@ pub(super) fn write(
     declarations(view, &mut display)?;
     evidence::write(view, &mut display)?;
     reviews::write(view, &mut display)?;
+    display.heading("Coverage qualifications")?;
     for (side, snapshot) in view.snapshots.iter() {
         if side != snapshot.side {
             display.line("Unfamiliar snapshot side; consult JSON evidence.")?;
@@ -68,15 +70,23 @@ pub(super) fn write(
 struct Display<'a> {
     markdown: bool,
     out: &'a mut dyn Write,
+    in_list: bool,
 }
 impl Display<'_> {
     fn line(&mut self, text: &str) -> io::Result<()> {
+        if self.in_list {
+            writeln!(self.out)?;
+        }
+        self.in_list = false;
         writeln!(self.out, "{}", cell(text, self.markdown))
     }
     fn item(&mut self, text: &str) -> io::Result<()> {
-        writeln!(self.out, "- {}", cell(text, self.markdown))
+        self.in_list = true;
+        let (prefix, text) = item_parts(text);
+        writeln!(self.out, "{prefix}{}", cell(text, self.markdown))
     }
     fn heading(&mut self, text: &str) -> io::Result<()> {
+        self.in_list = false;
         writeln!(self.out)?;
         let prefix = if self.markdown { "### " } else { "" };
         writeln!(self.out, "{prefix}{}", cell(text, self.markdown))?;
@@ -86,17 +96,24 @@ impl Display<'_> {
         let Some(url) = safe_url(url) else {
             return self.item("Entry link omitted: unsupported or credential-bearing URL.");
         };
+        self.in_list = true;
+        let (prefix, label) = item_parts(label);
         let label = cell(label, self.markdown);
         if self.markdown {
             writeln!(
                 self.out,
-                "- {label}: <{}>",
+                "{prefix}{label}: <{}>",
                 url.replace('<', "%3C").replace('>', "%3E")
             )
         } else {
-            writeln!(self.out, "- {label}: {url}")
+            writeln!(self.out, "{prefix}{label}: {url}")
         }
     }
+}
+
+fn item_parts(text: &str) -> (&str, &str) {
+    text.strip_prefix("  ")
+        .map_or(("- ", text), |text| ("  - ", text))
 }
 
 fn package(p: &view::Package) -> String {

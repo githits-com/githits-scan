@@ -21,14 +21,7 @@ pub(crate) struct View {
 impl View {
     pub(super) fn validate(&self) -> Result<(), ApiError> {
         self.advisories.decode::<Advisories>()?;
-        for row in self
-            .direct_reviews
-            .decode::<Vec<Review>>()?
-            .into_iter()
-            .flatten()
-        {
-            row.evidence()?;
-        }
+        self.direct_reviews.decode::<Vec<Review>>()?;
         if let Some(raw) = &self.advisories.coverage
             && matches!(self.advisories.status.as_str(), "complete" | "partial")
         {
@@ -203,14 +196,15 @@ pub(crate) struct Review {
 }
 
 impl Review {
-    pub(crate) fn evidence(&self) -> Result<Option<ReviewData>, ApiError> {
+    // Review detail is an open object, not a pinned report schema. A changed
+    // detail shape must remain exportable without implying an assessment.
+    pub(crate) fn evidence(&self) -> Option<ReviewData> {
         if !matches!(self.status.as_str(), "complete" | "partial") {
-            return Ok(None);
+            return None;
         }
         self.data
             .as_ref()
-            .map(|raw| serde_json::from_str(raw.get()).map_err(|_| invalid()))
-            .transpose()
+            .and_then(|raw| serde_json::from_str(raw.get()).ok())
     }
 }
 
@@ -295,7 +289,10 @@ pub(crate) struct Reachability {
 #[derive(Deserialize)]
 pub(crate) struct Gap {
     pub path: Option<String>,
+    #[serde(default)]
+    pub paths: Vec<String>,
     pub name: Option<String>,
+    pub version: Option<String>,
     pub reason: Option<String>,
     #[serde(default)]
     pub reasons: Vec<String>,

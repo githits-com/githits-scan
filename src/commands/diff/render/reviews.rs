@@ -30,7 +30,7 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
                 .map_or(String::new(), |s| format!(" ({s})"))
         ))?;
         d.item(&format!("  Sources: {}", r.source_keys.join(", ")))?;
-        if let Some(data) = r.evidence().map_err(io::Error::other)? {
+        if let Some(data) = r.evidence() {
             detail(&data, d)?;
         } else {
             d.item(

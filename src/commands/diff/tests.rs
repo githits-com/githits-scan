@@ -200,3 +200,46 @@ fn diff_every_changed_coordinate_has_its_returned_advisory_evidence() {
     let text = rendered(&value, Format::Human);
     assert!(text.contains("npm:minimist in package-lock.json: no advisory deltas returned; coverage qualifications still apply."));
 }
+
+#[test]
+fn diff_open_review_detail_drift_preserves_json_and_qualifies_human_output() {
+    let mut value = fixture::report();
+    value["direct_reviews"]["data"][0]["data"]["security"]["current"] =
+        json!({"assessment_status":"non_affecting","new_count_field":0});
+    let bytes = serde_json::to_vec_pretty(&value).expect("json");
+    let report = Report::from_bytes(bytes.clone()).expect("open review detail");
+    let mut out = Vec::new();
+    render::write(&report, Format::Json, ("base", "head"), &mut out).expect("json");
+    assert_eq!(out, bytes);
+    for format in [Format::Human, Format::Markdown] {
+        let text = rendered(&value, format);
+        assert!(text.contains("Review detail not interpreted"));
+        assert!(!text.contains("Direct security current:"));
+        assert!(!text.contains("changelog entry:"));
+    }
+}
+
+#[test]
+fn diff_markdown_separates_lists_summaries_and_coverage_qualifications() {
+    let mut value = fixture::report();
+    value["outcome"] = "partial".into();
+    let text = rendered(&value, Format::Markdown);
+    assert!(text.contains("\n\nCoordinate checks"));
+    assert!(text.contains("\n\nReview tuples"));
+    assert!(text.contains("### Coverage qualifications"));
+    assert!(text.contains("\n  - Sources"));
+    assert!(!text.contains("\n-   Sources"));
+    assert!(text.contains("\n  - Retained elsewhere"));
+}
+
+#[test]
+fn diff_excluded_dependency_keeps_its_version_and_all_source_paths() {
+    let mut value = fixture::report();
+    value["snapshots"]["base"]["coverage"]["excluded_dependencies"] = json!([
+        {"name":"local-helper","version":"0.1.0","paths":["Cargo.lock","tools/Cargo.lock"],"reason":"non_registry_source"}
+    ]);
+    let text = rendered(&value, Format::Human);
+    assert!(text.contains("local-helper@0.1.0"));
+    assert!(text.contains("Cargo.lock, tools/Cargo.lock"));
+    assert!(text.contains("non_registry_source"));
+}
