@@ -362,7 +362,8 @@ Ordinary output shows a concise `why` line. A single-change advisory explanation
 is omitted when its finding identities equal the record's addressed findings,
 which are already explained by the problem and impact lines. Joint changes keep
 per-change attribution. The displayed source path is omitted only when the same
-single path is already displayed beside that change. Identical reason text
+single path belongs to that change and is already displayed by `Found in`,
+`Change in` or its `files` line. Identical reason text
 within a change is shown once; distinct paths remain separate.
 
 `--explain` also shows original and replacement requests, keeping their explicit

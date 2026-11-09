@@ -92,7 +92,7 @@ pub(in crate::commands::audit) fn guidance(
             common.is_none(),
             out,
         )?;
-        reasons::write(change, r, reason_detail, common.is_none(), out)?;
+        reasons::write(change, r, reason_detail, out)?;
     }
     let displayed_files = context.files();
     let own_files = ProblemContext::record(r).files();

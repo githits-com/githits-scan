@@ -19,13 +19,12 @@ pub(super) fn write(
     change: &Change,
     record: &Record,
     detail: ReasonDetail,
-    paths_shown: bool,
     out: &mut dyn Write,
 ) -> io::Result<()> {
     let mut seen = BTreeSet::new();
     for reason in change.reasons.iter().flatten() {
         let mut text = Vec::new();
-        reason_line(reason, change, record, detail, paths_shown, &mut text)?;
+        reason_line(reason, change, record, detail, &mut text)?;
         if seen.insert(text.clone()) {
             out.write_all(&text)?;
         }
@@ -37,7 +36,6 @@ fn reason_line(
     change: &Change,
     record: &Record,
     detail: ReasonDetail,
-    paths_shown: bool,
     out: &mut dyn Write,
 ) -> io::Result<()> {
     match reason {
@@ -62,7 +60,7 @@ fn reason_line(
                 out,
                 "        why: accepts {}, which the current request excludes{}",
                 safe(&dependency.to_string()),
-                file(path, change, paths_shown)
+                file(path, change)
             )?;
             evidence("original request", original_requests, detail, out)?;
             evidence("replacement request", replacement_requests, detail, out)?;
@@ -76,7 +74,7 @@ fn reason_line(
                 out,
                 "        why: removes a route to {}{}",
                 safe(&dependency.to_string()),
-                file(path, change, paths_shown)
+                file(path, change)
             )?;
             evidence("original request", original_requests, detail, out)?;
         }
@@ -95,8 +93,8 @@ fn redundant(findings: &[Finding], record: &Record, detail: ReasonDetail) -> boo
         && record.changes.len() == 1
         && findings.iter().collect::<BTreeSet<_>>() == record.addressed_findings.iter().collect()
 }
-fn file(path: &str, change: &Change, shown: bool) -> String {
-    if shown && change.data.paths.len() == 1 && change.data.paths[0] == path {
+fn file(path: &str, change: &Change) -> String {
+    if change.data.paths.len() == 1 && change.data.paths[0] == path {
         String::new()
     } else {
         format!(" [{}]", safe(path))

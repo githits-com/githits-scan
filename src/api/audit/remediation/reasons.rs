@@ -138,7 +138,7 @@ pub(crate) struct Enables {
     pub(crate) _additional: Additional,
     /// The resulting dependency coordinate.
     pub(crate) dependency: Coordinate,
-    /// The input lockfile path checked by the service.
+    /// The input file path checked by the service.
     pub(crate) path: String,
     /// Requests recorded before the change.
     pub(crate) original_requests: Vec<Request>,
@@ -154,7 +154,7 @@ pub(crate) struct Removes {
     pub(crate) _additional: Additional,
     /// The dependency coordinate on the removed route.
     pub(crate) dependency: Coordinate,
-    /// The input lockfile path checked by the service.
+    /// The input file path checked by the service.
     pub(crate) path: String,
     /// Requests recorded before the change.
     pub(crate) original_requests: Vec<Request>,
@@ -170,7 +170,7 @@ pub(crate) struct Request {
     pub(crate) owner: Owner,
     /// The owner category recorded by the service.
     pub(crate) owner_role: String,
-    /// The input lockfile path containing the request.
+    /// The input file path containing the request.
     pub(crate) path: String,
     /// The dependency kind recorded by the service.
     pub(crate) kind: String,

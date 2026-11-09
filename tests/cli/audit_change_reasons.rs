@@ -49,9 +49,7 @@ fn audit_change_reason_summary_explains_parent_target_without_request_dump() {
     let text = human_report(&input);
     assert!(text.contains("Upgrade npm:parent 2.0.0 -> 2.1.0"), "{text}");
     assert!(
-        text.contains(
-            "why: accepts npm:demo@1.1.1, which the current request excludes [package-lock.json]"
-        ),
+        text.contains("why: accepts npm:demo@1.1.1, which the current request excludes"),
         "{text}"
     );
     for noise in [
@@ -83,7 +81,7 @@ fn audit_change_reason_removal_and_advisory_effects_are_independent_and_scoped()
         .push(reasons()[0].clone());
     let text = human_report(&input);
     assert!(
-        text.contains("why: removes a route to npm:demo@1.0.0 [package-lock.json]"),
+        text.contains("why: removes a route to npm:demo@1.0.0"),
         "{text}"
     );
     assert!(text.contains("why: addresses GHSA-example"), "{text}");
@@ -318,4 +316,77 @@ fn audit_change_reason_proof_limits_are_readable_and_do_not_change_findings_exit
         );
         assert!(stdout(&explain(&input, false)).contains(text));
     }
+}
+
+#[test]
+fn audit_change_reason_path_omits_repetition_and_keeps_distinct_locations() {
+    for (paths, expected) in [
+        (json!(["package-lock.json"]), ""),
+        (json!(["other/package-lock.json"]), " [package-lock.json]"),
+        (
+            json!(["package-lock.json", "other/package-lock.json"]),
+            " [package-lock.json]",
+        ),
+        (json!([]), " [package-lock.json]"),
+    ] {
+        let mut input = with_reasons(reasons()[1].clone(), 1);
+        input["remediation"]["recommendations"][0]["changes"][1]["paths"] = paths;
+        let text = human_report(&input);
+        let line = text
+            .lines()
+            .find(|line| line.contains("why: accepts"))
+            .expect("reason");
+        assert_eq!(
+            line.trim(),
+            format!("why: accepts npm:demo@1.1.1, which the current request excludes{expected}"),
+            "{text}"
+        );
+    }
+    let mut input = with_reasons(reasons()[1].clone(), 1);
+    input["remediation"]["recommendations"][0]["changes"][0]["paths"] =
+        json!(["other/package-lock.json"]);
+    let text = human_report(&input);
+    assert!(text.contains("files: package-lock.json"), "{text}");
+    assert!(
+        text.lines()
+            .any(|line| line.trim()
+                == "why: accepts npm:demo@1.1.1, which the current request excludes"),
+        "{text}"
+    );
+}
+
+#[test]
+fn audit_change_reason_deduplicates_identical_effects_but_keeps_distinct_paths() {
+    let reason = reasons()[1].clone();
+    let mut other = reason.clone();
+    other["path"] = "other/package-lock.json".into();
+    let mut input = graph();
+    input["remediation"]["recommendations"][0]["changes"][1]["reasons"] =
+        json!([reason, reason, other]);
+    let text = human_report(&input);
+    assert_eq!(text.matches("why: accepts").count(), 2, "{text}");
+    assert_eq!(
+        text.matches("which the current request excludes\n").count(),
+        1,
+        "{text}"
+    );
+    assert_eq!(
+        text.matches("which the current request excludes [other/package-lock.json]")
+            .count(),
+        1,
+        "{text}"
+    );
+}
+
+#[test]
+fn audit_change_reason_empty_advisory_keeps_recorded_request_context() {
+    let mut input = with_reasons(reasons()[1].clone(), 1);
+    input["remediation"]["recommendations"][0]["changes"][0]["reasons"] =
+        json!([{"code":"advisory_remediation", "finding_refs":[]}]);
+    let text = human_report(&input);
+    assert!(!text.contains("why: addresses"), "{text}");
+    assert!(text.contains("recorded request for"), "{text}");
+    let detail = stdout(&explain(&input, false));
+    assert!(!detail.contains("why: addresses"), "{detail}");
+    assert!(detail.contains("recorded request for"), "{detail}");
 }
