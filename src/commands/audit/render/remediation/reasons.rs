@@ -58,7 +58,7 @@ fn reason_line(
         } => {
             writeln!(
                 out,
-                "        why: accepts {}, which the current request excludes{}",
+                "        why: accepts {}, which the current requested range excludes{}",
                 safe(&dependency.to_string()),
                 file(path, change)
             )?;

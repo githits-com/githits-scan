@@ -49,7 +49,7 @@ fn audit_change_reason_summary_explains_parent_target_without_request_dump() {
     let text = human_report(&input);
     assert!(text.contains("Upgrade npm:parent 2.0.0 -> 2.1.0"), "{text}");
     assert!(
-        text.contains("why: accepts npm:demo@1.1.1, which the current request excludes"),
+        text.contains("why: accepts npm:demo@1.1.1, which the current requested range excludes"),
         "{text}"
     );
     for noise in [
@@ -146,7 +146,7 @@ fn audit_change_reason_traceless_inline_evidence_stays_useful_and_escaped() {
     let text = human_report(&input);
     assert!(
         text.contains(
-            "why: accepts npm:demo\\n\\u{1b}[2J@1.1.1, which the current request excludes [lock\\nfile]"
+            "why: accepts npm:demo\\n\\u{1b}[2J@1.1.1, which the current requested range excludes [lock\\nfile]"
         ),
         "{text}"
     );
@@ -338,7 +338,9 @@ fn audit_change_reason_path_omits_repetition_and_keeps_distinct_locations() {
             .expect("reason");
         assert_eq!(
             line.trim(),
-            format!("why: accepts npm:demo@1.1.1, which the current request excludes{expected}"),
+            format!(
+                "why: accepts npm:demo@1.1.1, which the current requested range excludes{expected}"
+            ),
             "{text}"
         );
     }
@@ -348,9 +350,8 @@ fn audit_change_reason_path_omits_repetition_and_keeps_distinct_locations() {
     let text = human_report(&input);
     assert!(text.contains("files: package-lock.json"), "{text}");
     assert!(
-        text.lines()
-            .any(|line| line.trim()
-                == "why: accepts npm:demo@1.1.1, which the current request excludes"),
+        text.lines().any(|line| line.trim()
+            == "why: accepts npm:demo@1.1.1, which the current requested range excludes"),
         "{text}"
     );
 }
@@ -366,12 +367,13 @@ fn audit_change_reason_deduplicates_identical_effects_but_keeps_distinct_paths()
     let text = human_report(&input);
     assert_eq!(text.matches("why: accepts").count(), 2, "{text}");
     assert_eq!(
-        text.matches("which the current request excludes\n").count(),
+        text.matches("which the current requested range excludes\n")
+            .count(),
         1,
         "{text}"
     );
     assert_eq!(
-        text.matches("which the current request excludes [other/package-lock.json]")
+        text.matches("which the current requested range excludes [other/package-lock.json]")
             .count(),
         1,
         "{text}"
