@@ -289,6 +289,7 @@ pub(crate) struct Reachability {
 #[derive(Deserialize)]
 pub(crate) struct Gap {
     pub path: Option<String>,
+    pub required_path: Option<String>,
     #[serde(default)]
     pub paths: Vec<String>,
     pub name: Option<String>,

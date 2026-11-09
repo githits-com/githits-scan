@@ -36,6 +36,10 @@ fn diff_named_outputs_write_exact_json_and_escaped_markdown_from_one_job() {
     let mut value = fixture::report();
     value["additive_field"] = serde_json::json!({"future":true});
     value["changes"][0]["package"]["name"] = "evil|<script> @team".into();
+    value["snapshots"]["head"]["coverage"]["resolution"] = serde_json::json!([
+        {"path":"package-lock.json","reason":"required_input_not_supplied",
+         "required_path":"packages/worker @team/package.json"}
+    ]);
     let bytes = format!(
         " \n{}\n ",
         serde_json::to_string_pretty(&value).expect("JSON")
@@ -57,6 +61,12 @@ fn diff_named_outputs_write_exact_json_and_escaped_markdown_from_one_job() {
     assert!(text.contains("@&#8203;team"));
     assert!(!text.contains("<script>"));
     assert!(text.contains("changelog entry"));
+    assert!(
+        text.contains(
+            "required input packages/worker @&#8203;team/package&#46;json was not supplied"
+        ),
+        "{text}"
+    );
     assert_eq!(stderr(&output).matches("saved ").count(), 2);
     assert_one_job(server);
 }
