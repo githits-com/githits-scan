@@ -62,6 +62,9 @@ pub enum Error {
         /// Selected file count.
         count: usize,
     },
+    /// The paired diff destinations would overwrite or mix documents.
+    #[error("diff outputs must use distinct destinations (at most one may be stdout)")]
+    DiffOutputConflict,
     /// The scan could not complete.
     #[error(transparent)]
     Discover(#[from] DiscoverError),
@@ -209,6 +212,7 @@ impl Error {
                 ),
             )
             | Self::DiffFileLimit { .. }
+            | Self::DiffOutputConflict
             | Self::Discover(
                 DiscoverError::NotADirectory { .. }
                 | DiscoverError::FileTooLarge { .. }

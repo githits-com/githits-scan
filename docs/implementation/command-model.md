@@ -27,7 +27,12 @@ The experimental `diff` command ignores configuration, requires a Git root and
 uses explicit exclusions/manifest flags. It returns 0 for a completed informational
 report, including unavailable sections or unfamiliar evidence, with independent
 producer statuses and coverage. Required core and output failures retain the usual 2/3
-classification. It is not a policy check. See [dependency diff](dependency-diff.md).
+classification. It is not a policy check. Diff also accepts `--output-json PATH` and
+`--output-markdown PATH` together or separately instead of `--format`/`--output`.
+Named outputs emit only requested documents; at most one may be `-` for stdout.
+Both consume the same report, with JSON written first. Conflicting destinations
+fail before submission where locally detectable; write failures exit 3 and leave
+previously completed output intact. See [dependency diff](dependency-diff.md#output-destinations).
 
 ### Shared arguments
 

@@ -93,6 +93,12 @@ struct DiffArgs {
     /// Report destination ('-' means stdout)
     #[arg(short, long)]
     output: Option<PathBuf>,
+    /// Write exact JSON to PATH ('-' means stdout); combine with --output-markdown
+    #[arg(long, value_name = "PATH", conflicts_with_all = ["format", "output"])]
+    output_json: Option<PathBuf>,
+    /// Write Markdown to PATH ('-' means stdout); combine with --output-json
+    #[arg(long, value_name = "PATH", conflicts_with_all = ["format", "output"])]
+    output_markdown: Option<PathBuf>,
     /// Suppress progress
     #[arg(short, long)]
     quiet: bool,
@@ -463,16 +469,37 @@ fn run_detect(args: &DetectArgs) -> Result<Outcome, commands::Error> {
     Ok(outcome)
 }
 
+fn diff_output(args: &DiffArgs) -> commands::diff::Output {
+    use commands::diff::{Format, Output};
+    match (&args.output_json, &args.output_markdown) {
+        (Some(json), Some(markdown)) => Output::JsonAndMarkdown {
+            json: output_destination(Some(json)),
+            markdown: output_destination(Some(markdown)),
+        },
+        (Some(path), None) => Output::Single {
+            format: Format::Json,
+            destination: output_destination(Some(path)),
+        },
+        (None, Some(path)) => Output::Single {
+            format: Format::Markdown,
+            destination: output_destination(Some(path)),
+        },
+        (None, None) => Output::Single {
+            format: args.format,
+            destination: output_destination(args.output.as_deref()),
+        },
+    }
+}
+
 fn run_diff(args: &DiffArgs) -> Result<Outcome, commands::Error> {
     let request = commands::diff::Request {
         root: &args.path,
         base: &args.base,
         head: args.head.as_deref(),
-        format: args.format,
         exclude: &args.exclude,
         include_manifests: !args.lockfiles_only,
         quiet: args.quiet,
-        output: output_destination(args.output.as_deref()),
+        output: diff_output(args),
     };
     commands::diff::run(
         &request,
