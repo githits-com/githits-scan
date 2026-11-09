@@ -157,8 +157,6 @@ reason. Existing IDs permit exact joins; they do not explain why a proof failed.
 An unknown dependency type must not be described as direct, transitive or safe by
 inferring from unrelated bindings or source gaps. Additions/removals have no
 occurrence on one side; that absence is not a failed assessment.
-The remaining producer explanation requirement is recorded in the
-[open backlog](../plans/open-backlog.md#dependency-diff-causal-explanations).
 
 ## HTTP, limits and cost
 
