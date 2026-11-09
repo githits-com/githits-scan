@@ -354,8 +354,8 @@ saved explanations; it does not add JSON or saved-report fields. Availability of
 
 Optional `changes[].reasons` carries service-owned checked effects. Human output
 attaches each effect directly to its change: acceptance of a dependency target
-that the current requested range excludes, removal of a represented route, or addressed
-advisories. These are not proofs of unique necessity, global range widening,
+that the current requested range excludes, removal of a represented route, or
+addressed advisories. These are not proofs of unique necessity, global range widening,
 removal of every installed copy, or native resolver/build success. Strategy,
 blockers, advisory coverage and verification checks retain their own meanings.
 
