@@ -88,6 +88,8 @@ See [Testing](docs/guidelines/TESTING.md) for isolation, live verification, loca
 
 ## Commit & PR Guidelines
 
+- Use the repository-local [`githits-scan-release` skill](.agents/skills/githits-scan-release/SKILL.md)
+  for release preparation, release-readiness reviews, and approved release execution.
 - Use Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`) with a descriptive title and a body explaining context; no single-line messages.
 - Follow [Review Guidelines](docs/guidelines/REVIEW_GUIDELINES.md). Do not amend or rebase unless specifically asked.
 - Keep PR titles descriptive and label PRs `feature`, `bug`, `documentation`, `maintenance`, or `skip-changelog`.

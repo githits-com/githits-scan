@@ -40,6 +40,11 @@ with `cargo xtask release prepare --date YYYY-MM-DD` (UTC date), then review the
 result. Malformed inputs are rejected before edits; I/O failures leave a visible
 partial diff to inspect. Multi-line bullet continuations must be indented.
 
-Preparing a release PR alone does not authorize merge, tag, or publication.
-Those steps require explicit user authorization, which may condition them on
-clean review and green checks. See `docs/implementation/release-process.md`.
+Use the repository-local `githits-scan-release` skill for release preparation
+and approved execution. Reconcile the complete previous-tag-to-HEAD delta with
+fragments before preparing; fragments alone are not the release audit.
+
+Preparing a release PR alone does not authorize merge, auto-merge, tag, or
+publication. Merge approval must identify the existing PR; tagging, GitHub
+publication, and crates.io publication require separate explicit approvals.
+See `docs/implementation/release-process.md`.

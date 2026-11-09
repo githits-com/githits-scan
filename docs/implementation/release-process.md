@@ -18,8 +18,9 @@ version must remain compatible with Homebrew's Rust formula.
 A pushed `vX.Y.Z` tag publishes the GitHub release, then the `homebrew` job hashes
 the GitHub tag source tarball and opens a tap PR with a short-lived GitHub App
 token. The job runs in the `homebrew-tap` environment, never for manual rehearsals
-or `release_candidate` dispatches. Failure is tolerated independently of the
-already published release. The App token is passed through the step environment
+or `release_candidate` dispatches. The environment currently requires maintainer
+approval, so approve that job to continue the tagged release's tap handoff.
+Failure is tolerated independently of the already published release. The App token is passed through the step environment
 to `gh`; the handoff never puts it in process arguments or writes it to disk.
 
 The handoff updates only the formula's source URL/checksum, removes prior bottle
@@ -64,9 +65,10 @@ environment. The App is used only for Scan's version-update PRs.
 2. In Scan's `homebrew-tap` environment, set variable `HOMEBREW_TAP_APP_ID` and
    secret `HOMEBREW_TAP_APP_PRIVATE_KEY`. The workflow reads `vars` and `secrets`
    respectively. Restrict deployment refs to release tags and remove required
-   reviewer approval for unattended post-tag delivery. An approval gate would
-   make the handoff wait for a person. The implementation does not change Scan's
-   settings or create environment secrets. Never put the key in chat, source,
+   reviewer approval only if unattended post-tag delivery is explicitly intended.
+   Keeping the current reviewer gate makes the handoff wait for a maintainer.
+   The implementation does not change Scan's settings or create environment
+   secrets. Never put the key in chat, source,
    logs or process arguments.
 3. Ensure GitHub Actions is enabled on the tap. Review the initial formula PR's
    three successful bottle checks and artifacts, then a maintainer applies `pr-pull`
@@ -85,29 +87,95 @@ Unmerged formula changes do not affect installed users.
 
 ## Preparation and approval
 
-1. Run `cargo xtask release audit` during development. CI also compares the root
-   version to the tested commit's first parent; a version bump requires a complete
-   release with matching manifest/lock versions, dated notes and no fragments.
-   A root commit in a complete checkout has no earlier version, so the comparison
-   is skipped; a shallow checkout without the parent still fails.
-2. Run `cargo xtask release prepare --date YYYY-MM-DD`, supplying the UTC date.
-   The maximum fragment impact determines the bump; before 1.0, major means minor.
-   None-only fragments do not trigger a release. Entries are grouped by category
-   and sorted by filename. Review and curate the generated notes to describe the
-   behavior that actually ships, then open a release PR; its CI runs the full gate
-   and packages a clean checkout. `scripts/check.sh` packages the working tree with
-   `--allow-dirty` for a contributor who runs the gate locally.
-3. Obtain clean review and green required CI before merging. After merge, dispatch
-   **Release** on that exact main commit with `release_candidate=true`. This runs
-   every publication gate except tag existence and publication itself. Wait for
-   all jobs to pass before creating an immutable version tag.
-4. With explicit authorization for tagging and GitHub publication, tag that tested
-   commit `vX.Y.Z` and push it. A tag must match the root manifest, resolve to the
-   checked-out commit, and belong to `origin/main`.
+Use the repository-local
+[`githits-scan-release` skill](../../.agents/skills/githits-scan-release/SKILL.md)
+for release preparation, readiness review, and approved execution. The root
+manifest and lockfile identify the single released crate; `xtask` remains
+unpublished. This document owns the procedure and the skill guides its use.
 
-Preparing a PR alone does not authorize merge, tag or publication. A maintainer's
-explicit authorization may cover those steps conditionally on clean review and
-successful checks. Crates.io publication is always a separate decision.
+A request to audit, prepare, create, cut, or release a version authorizes work
+through opening the release PR. It does not authorize merging, enabling
+auto-merge, tagging, or publishing. Following a release to completion includes
+tracking each stage and requesting its approval when the preceding gate passes.
+
+1. Fetch origin and tags, inspect the working tree, and verify the branch's
+   merge base and ahead/behind state against `origin/main`. Identify the last
+   published `vX.Y.Z` tag and review its complete delta to HEAD, including merged
+   PRs, against every file in `changes/`. Fragments do not replace range review.
+   Reconcile omissions, superseded behavior, and impacts before preparation.
+2. Run `cargo xtask release audit`. Check impacts against the actual public CLI,
+   JSON, configuration, saved-report, library API, runtime-dependency and
+   distribution surfaces. Confirm migration and rollback guidance for changes
+   requiring callers to adjust. The highest impact determines the bump; before
+   1.0, major means minor. None-only fragments do not trigger a release.
+3. Run `cargo xtask release prepare --date YYYY-MM-DD` with the UTC preparation
+   date. It updates the root `Cargo.toml` and matching `Cargo.lock` version,
+   inserts a dated changelog section, and deletes all consumed fragments.
+   Entries are grouped by category and sorted by filename. Curate the new notes
+   to describe what actually ships; combine overlapping entries. Preserve dated
+   historical sections except for blatant, demonstrable factual corrections.
+   Leave README's pinned crates.io examples on the published version until the
+   new registry publication is verified.
+4. Validate with `cargo xtask release audit --release --base-ref origin/main`,
+   render `cargo xtask release notes`, inspect the full diff, and verify source
+   package contents with `cargo package --locked -p githits-scan --allow-dirty --list`.
+   Maintainer tooling and `.agents/` skills are excluded from the source crate.
+   Run targeted local checks for changed surfaces; PR CI owns the full gate and
+   clean-checkout packaging. `scripts/check.sh` packages the working tree with
+   `--allow-dirty` when a complete local gate is explicitly needed.
+5. Commit and push preparation, then open a release PR labeled `maintenance`.
+   Include the previous tag, bump rationale, range/fragment reconciliation,
+   compatibility and rollback notes, exact verification results, and remaining
+   execution gates. Report the URL and check status. CI also compares the root
+   version to the tested commit's first parent: a bump requires matching
+   manifest/lock versions, dated notes and no fragments. A root commit in a
+   complete checkout skips that comparison; a missing shallow parent fails.
+6. Obtain clean review, green required CI, and separate explicit human approval
+   identifying the existing release PR before merging. Earlier release requests
+   do not satisfy this gate; do not enable auto-merge as a substitute.
+7. After the approved merge, resolve its exact main SHA and dispatch **Release**
+   at that commit with `release_candidate=true`:
+
+   ```bash
+   gh workflow run release.yml --repo githits-com/githits-scan \
+     --ref "$release_sha" -f release_candidate=true
+   ```
+
+   Set `release_sha` to the full merged commit SHA. This runs every publication
+   gate except tag existence and publication itself. Record the SHA and run URL
+   on the PR and wait for all jobs to pass before tagging.
+8. Obtain explicit authorization for tagging and GitHub publication, then create
+   and push `vX.Y.Z` at that rehearsed SHA. The tag must match the root manifest,
+   resolve to the checked-out commit, and belong to `origin/main`. Merging alone
+   publishes nothing in this repository. Follow the tag workflow through asset
+   publication and the automatic Homebrew handoff described above. Crates.io
+   publication remains a separate approval and dispatch below.
+
+### First automated release and completion
+
+0.3.0 was published manually; 0.4.0 is the first intended automated release.
+The existing public release does not prove the pipeline's publication setup.
+Before tagging, verify repository-secret presence by name only, release-tag
+protection, and the Homebrew App/environment setup described above. Before the
+first crates.io workflow publication, verify owners, trusted publisher and the
+protected `crates-io` environment as described below. Do not print secret values.
+A successful candidate rehearsal validates builds and API access, but does not
+exercise the GitHub, Homebrew or crates.io publication credentials.
+
+Follow the release through each approved channel. Verify that GitHub's tag
+resolves to the rehearsed SHA, its notes match the reviewed section, and its
+assets contain all five archives plus `SHA256SUMS` with matching checksums.
+Confirm the Homebrew formula points to that version and all three bottle jobs
+and tap publication succeed; the tolerated handoff failure means a green Scan
+run alone is insufficient. For crates.io, verify the exact version is publicly
+available and can be installed with the documented pinned Cargo command before
+updating the installation examples. After the first successful trusted workflow
+publication, check the trusted-publishing-only setting.
+
+Record run links, results, and any incomplete gate on the release PR, including
+post-merge evidence. Keep execution logs out of implementation docs. Diagnose
+failures before recovery; never move/delete a release tag or overwrite a
+published version. Recovery that publishes requires approval for that step.
 
 ### First public release
 
