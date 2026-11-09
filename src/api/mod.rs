@@ -1,10 +1,10 @@
-//! Boundary with GitHits SBOM, audit and license-report operations, `POST /v1/experimental/lockfile-jobs`.
+//! Boundary with GitHits SBOM, audit, license-report and dependency-diff operations.
 //!
 //! Everything the service's contract dictates lives here and nowhere else:
 //! upload limits and filename rules ([`upload`]), the problem-document shape
 //! ([`problem`]), request construction and status interpretation ([`http`]),
-//! and the little the client needs to know about a returned document. Other
-//! modules reach the network only through [`SbomApi`], [`AuditApi`] or [`LicensesApi`] so tests
+//! and dependency comparison ([`diff`]), plus the little the client needs to know about a returned document. Other
+//! modules reach the network through injected traits, including [`diff::DiffApi`], so tests
 //! substitute a fake. See `docs/implementation/sbom-api-contract.md` for the
 //! client rules this module honors.
 
@@ -15,6 +15,7 @@ use std::time::Duration;
 use thiserror::Error;
 
 pub mod audit;
+pub mod diff;
 pub mod http;
 pub mod jobs;
 pub mod licenses;
@@ -180,6 +181,7 @@ pub(super) enum Operation {
     Sbom(OutputFormat),
     Audit,
     Licenses,
+    Diff,
 }
 
 impl Operation {
@@ -187,12 +189,13 @@ impl Operation {
         match self {
             Self::Sbom(_) | Self::Licenses => "sbom",
             Self::Audit => "audit",
+            Self::Diff => "diff",
         }
     }
     const fn format(self) -> &'static str {
         match self {
             Self::Sbom(format) => format.query_value(),
-            Self::Audit => "json",
+            Self::Audit | Self::Diff => "json",
             Self::Licenses => "cyclonedx",
         }
     }
@@ -270,6 +273,7 @@ impl ApiError {
                 | Code::UnsupportedMediaType
                 | Code::UnusableManifest
                 | Code::NoManifestEvidence
+                | Code::InvalidDependencyGroups
                 | Code::UnrepresentableSpdx
                 | Code::SbomOutputTooLarge
                 | Code::LicenseReportTooLarge
@@ -367,6 +371,9 @@ fn describe(problem: &Problem, retry_after: Option<&str>) -> String {
             format_args!("\n  request id: {}", problem.instance),
         );
     }
+    if let Some(side) = &problem.side {
+        let _ = fmt::Write::write_fmt(&mut text, format_args!("\n  side: {}", side.as_str()));
+    }
     for failure in &problem.files {
         let _ = fmt::Write::write_fmt(
             &mut text,
@@ -439,6 +446,40 @@ mod tests {
             text,
             "UNUSABLE_MANIFEST (HTTP 422): One file is unusable.\n  request id: req-1\n  a/b.lock: unparsed\n  action: exclude unrelated projects with --exclude <glob>, or fix the listed files and run again"
         );
+    }
+
+    #[test]
+    fn diff_problem_side_is_preserved_in_diagnostics() {
+        let cases = [
+            (
+                br#"{"status":422,"code":"UNUSABLE_MANIFEST","title":"Unusable manifest","detail":"One file is unusable.","instance":"req-base","side":"base","files":[{"path":"app/package.json","status":"unparsed"}]}"#.as_slice(),
+                "base",
+                "UNUSABLE_MANIFEST (HTTP 422): One file is unusable.\n  request id: req-base\n  side: base\n  app/package.json: unparsed\n  action: exclude unrelated projects with --exclude <glob>, or fix the listed files and run again",
+            ),
+            (
+                br#"{"status":422,"code":"UNUSABLE_MANIFEST","title":"Unusable manifest","detail":"One file is unusable.","instance":"req-head","side":"head","files":[{"path":"app/package.json","status":"unparsed"}]}"#.as_slice(),
+                "head",
+                "UNUSABLE_MANIFEST (HTTP 422): One file is unusable.\n  request id: req-head\n  side: head\n  app/package.json: unparsed\n  action: exclude unrelated projects with --exclude <glob>, or fix the listed files and run again",
+            ),
+            (
+                br#"{"status":422,"code":"NO_MANIFEST_EVIDENCE","title":"No manifest evidence","detail":"No package evidence was found.","instance":"req-future","side":"future-side"}"#.as_slice(),
+                "future-side",
+                "NO_MANIFEST_EVIDENCE (HTTP 422): No package evidence was found.\n  request id: req-future\n  side: future-side\n  action: inspect the selected lockfiles and manifests for package evidence",
+            ),
+        ];
+
+        for (body, expected_side, expected) in cases {
+            let problem = problem::parse(body).expect("problem");
+            assert_eq!(
+                problem.side.as_ref().map(problem::Side::as_str),
+                Some(expected_side)
+            );
+            let error = ApiError::Problem {
+                problem: Box::new(problem),
+                retry_after: None,
+            };
+            assert_eq!(error.to_string(), expected);
+        }
     }
 
     #[test]
@@ -516,6 +557,7 @@ mod caller_error_tests {
             ),
             (Code::RateLimited, 429, None, false),
             (Code::UnrepresentableSpdx, 422, None, true),
+            (Code::InvalidDependencyGroups, 422, None, true),
         ] {
             let problem = Problem {
                 status,
@@ -523,6 +565,7 @@ mod caller_error_tests {
                 title: String::new(),
                 detail: String::new(),
                 instance: String::new(),
+                side: None,
                 files: vec![],
                 failure_code: failure,
                 terms_url: None,

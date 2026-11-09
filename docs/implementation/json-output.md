@@ -86,3 +86,24 @@ see [license report](license-report.md). It is the input to `--from-report`.
 `sbom generate` returns the requested document unchanged: CycloneDX 1.7 JSON,
 SPDX 2.3 tag-value, or service text. It has no Scan JSON wrapper or `--json` flag.
 `license check --sbom` accepts CycloneDX JSON, not the other report formats.
+
+## Experimental diff service report
+
+`diff --format json` writes the exact service result bytes. There is no Scan
+wrapper or reconstruction. The versioned report uses `kind: diff` and includes
+`accepted_request`, generated time, snapshots, source-local `changes`,
+`declaration_changes`, `advisories`, `direct_reviews`, coverage, summary and notices.
+Git revision labels and local selection notices are not added to JSON; the latter
+are stderr diagnostics.
+
+Snapshots preserve accepted-file digests, canonical declarations/bindings, occurrence
+multiplicity and recorded/effective ownership. Changes retain source-local versions,
+directness and versions retained elsewhere. Null targets mean absent or unqualified
+evidence, not an invented old version. Advisory coordinate and exposure scopes remain
+separate, as do review security and changelog qualifications.
+
+`outcome` and independent section statuses describe evidence. Partial, unavailable,
+unrequested and unfamiliar statuses never mean pass/safe or zero findings. Additive
+fields and positive future schemas remain byte-preserved for pipelines; this binary's
+human/Markdown renderer explicitly declines unsupported structures. This replaces the
+earlier experimental Scan-owned schema; see [dependency diff](dependency-diff.md).

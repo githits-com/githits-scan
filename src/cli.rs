@@ -59,10 +59,46 @@ enum Command {
         long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Advisories ignored by [[audit.ignore]] stay visible with reasons. Exit 0 only for fully checked selected evidence without unignored findings. Versions are source evidence, not constraint-compatible upgrade guarantees."
     )]
     Audit(AuditArgs),
+    /// Compare repository dependencies (experimental, informational)
+    #[command(
+        long_about = "Compare base and head dependency evidence through the service (experimental). Omitted --head reads the working tree. Requires Git and GITHITS_API_TOKEN, including identical or empty selected inputs. Reads package files without changing the checkout. One paired analysis is charged at twice the audit weight. Partial and unknown evidence remains explicit. Exit 0 means a report was produced, not a policy pass. JSON preserves the original service result."
+    )]
+    Diff(DiffArgs),
     /// Software bill of materials commands
     Sbom(SbomArgs),
     /// License reports and policy checks
     License(LicenseArgs),
+}
+
+/// Arguments of the experimental repository comparison.
+#[derive(Debug, Args)]
+struct DiffArgs {
+    /// Git repository root
+    #[arg(default_value = ".")]
+    path: PathBuf,
+    /// Literal base revision (use a merge-base for a pull request)
+    #[arg(long)]
+    base: String,
+    /// Literal head revision; omit for the working tree
+    #[arg(long)]
+    head: Option<String>,
+    /// Report representation
+    #[arg(long, value_enum, default_value = "human")]
+    format: commands::diff::Format,
+    #[arg(long, value_name = "GLOB", help = EXCLUDE_GLOB_HELP)]
+    exclude: Vec<String>,
+    /// Skip manifest-only dependency resolution
+    #[arg(long)]
+    lockfiles_only: bool,
+    /// Report destination ('-' means stdout)
+    #[arg(short, long)]
+    output: Option<PathBuf>,
+    /// Suppress progress
+    #[arg(short, long)]
+    quiet: bool,
+    /// Disable color (experimental diff output is currently plain)
+    #[arg(long)]
+    no_color: bool,
 }
 
 /// Arguments of the combined audit command.
@@ -368,6 +404,7 @@ impl Cli {
         let result = match self.command {
             Command::Detect(args) => run_detect(&args),
             Command::Audit(args) => run_audit(&args),
+            Command::Diff(args) => run_diff(&args),
             Command::Sbom(SbomArgs {
                 command: SbomCommand::Generate(args),
             }) => run_generate(&args),
@@ -424,6 +461,29 @@ fn run_detect(args: &DetectArgs) -> Result<Outcome, commands::Error> {
     out.flush().map_err(commands::Error::Output)?;
     commands::saved_report(&request.output, args.quiet, &mut io::stderr().lock())?;
     Ok(outcome)
+}
+
+fn run_diff(args: &DiffArgs) -> Result<Outcome, commands::Error> {
+    let request = commands::diff::Request {
+        root: &args.path,
+        base: &args.base,
+        head: args.head.as_deref(),
+        format: args.format,
+        exclude: &args.exclude,
+        include_manifests: !args.lockfiles_only,
+        quiet: args.quiet,
+        output: output_destination(args.output.as_deref()),
+    };
+    commands::diff::run(
+        &request,
+        || {
+            Ok(HttpSbomApi::new(env::from_source(|name| {
+                std::env::var_os(name)
+            })?)?)
+        },
+        &mut io::stdout().lock(),
+        &mut io::stderr().lock(),
+    )
 }
 
 fn run_generate(args: &GenerateArgs) -> Result<Outcome, commands::Error> {
@@ -610,7 +670,7 @@ mod tests {
     fn detect_args(cli: Cli) -> Option<DetectArgs> {
         match cli.command {
             Command::Detect(args) => Some(args),
-            Command::Sbom(_) | Command::License(_) | Command::Audit(_) => None,
+            Command::Sbom(_) | Command::License(_) | Command::Audit(_) | Command::Diff(_) => None,
         }
     }
 
@@ -619,7 +679,7 @@ mod tests {
             Command::Sbom(SbomArgs {
                 command: SbomCommand::Generate(args),
             }) => Some(args),
-            Command::Detect(_) | Command::License(_) | Command::Audit(_) => None,
+            Command::Detect(_) | Command::License(_) | Command::Audit(_) | Command::Diff(_) => None,
         }
     }
 
@@ -631,6 +691,7 @@ mod tests {
             Command::Detect(_)
             | Command::Sbom(_)
             | Command::Audit(_)
+            | Command::Diff(_)
             | Command::License(LicenseArgs {
                 command: LicenseCommand::Report(_),
             }) => None,

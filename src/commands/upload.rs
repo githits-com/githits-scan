@@ -120,6 +120,23 @@ pub(super) fn prepare(
     }))
 }
 
+/// Select Git evidence using the normal inventory policy and workspace expansion.
+pub(super) fn from_inventory(
+    inventory: &Inventory,
+    include_manifests: bool,
+    exclude: &[String],
+    read: impl FnMut(&str) -> Result<String, Error>,
+) -> Result<Option<UploadSet>, Error> {
+    let evaluation = config::inventory_evaluation(None, exclude, inventory, include_manifests)?;
+    let mut plan = Plan::new(inventory, evaluation.as_ref(), include_manifests);
+    if plan.files.is_empty() {
+        return Ok(None);
+    }
+    api::upload::check_plan(plan.entries())?;
+    let files = read_selected(&mut plan, inventory, evaluation.as_ref(), read)?;
+    Ok(Some(UploadSet::try_new(files)?))
+}
+
 /// Use the upload preparation path offline so preview cannot disagree with submission.
 pub(super) fn preview(
     root: &Path,
@@ -146,6 +163,17 @@ fn read_within_limits(
     inventory: &Inventory,
     evaluation: Option<&Evaluation>,
 ) -> Result<Vec<UploadFile>, Error> {
+    read_selected(plan, inventory, evaluation, |path| {
+        discover::read_file(root, path, api::MAX_FILE_BYTES).map_err(Error::from)
+    })
+}
+
+fn read_selected(
+    plan: &mut Plan,
+    inventory: &Inventory,
+    evaluation: Option<&Evaluation>,
+    mut read: impl FnMut(&str) -> Result<String, Error>,
+) -> Result<Vec<UploadFile>, Error> {
     let initial_manifests = plan.manifests.len();
     let mut workspaces = workspaces(inventory, evaluation, plan);
     let candidates: BTreeMap<_, _> = inventory
@@ -160,7 +188,7 @@ fn read_within_limits(
         .find(|path| !files.contains_key(*path))
         .cloned()
     {
-        let contents = discover::read_file(root, &path, api::MAX_FILE_BYTES)?;
+        let contents = read(&path)?;
         plan.files.insert(path.clone(), contents.len() as u64);
         for workspace in &mut workspaces {
             workspace.record(&path, &contents);

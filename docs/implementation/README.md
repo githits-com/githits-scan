@@ -14,6 +14,7 @@ they do not document the service's implementation. Start with the
 | [Configuration](configuration.md) | Selection, exclusions, drift, and saving |
 | [API boundary](sbom-api-contract.md) | HTTP requests, credentials, limits, and errors |
 | [SBOM generation](sbom-generate.md) | Upload preparation and document output |
+| [Dependency diff](dependency-diff.md) | Experimental Git comparison, direct upgrades and evidence gaps |
 | [Audit](audit.md) | Findings, coverage, fix evidence, and saved analyses |
 | [Audit qualification](audit-qualification.md) | Reproducible live verification procedures |
 | [License reports](license-report.md) | Evidence interpretation and offline replay |

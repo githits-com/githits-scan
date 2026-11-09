@@ -26,6 +26,9 @@ pub struct Problem {
     /// Request trace id, equal to the `X-Request-ID` header.
     #[serde(default)]
     pub instance: String,
+    /// Side of a paired dependency-diff request associated with the problem.
+    #[serde(default)]
+    pub side: Option<Side>,
     /// Rejected files; present only with `UNUSABLE_MANIFEST`.
     #[serde(default)]
     pub files: Vec<FileFailure>,
@@ -38,6 +41,40 @@ pub struct Problem {
     /// Acceptance URL, present with some 403 problems.
     #[serde(default)]
     pub acceptance_url: Option<String>,
+}
+
+/// Side of a paired dependency-diff request.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(from = "String")]
+pub enum Side {
+    /// The base input.
+    Base,
+    /// The head input.
+    Head,
+    /// A side this version does not know.
+    Other(String),
+}
+
+impl Side {
+    /// The wire value.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Base => "base",
+            Self::Head => "head",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+impl From<String> for Side {
+    fn from(value: String) -> Self {
+        match value.as_str() {
+            "base" => Self::Base,
+            "head" => Self::Head,
+            _ => Self::Other(value),
+        }
+    }
 }
 
 /// One rejected upload.
@@ -115,6 +152,8 @@ pub enum Code {
     UnusableManifest,
     /// 422: the files contained no package evidence.
     NoManifestEvidence,
+    /// 422: one or more selected dependency groups are not available.
+    InvalidDependencyGroups,
     /// 422: the inventory cannot be expressed as SPDX.
     UnrepresentableSpdx,
     /// 422: the document would exceed the output limit.
@@ -162,6 +201,7 @@ impl Code {
             Self::UnsupportedMediaType => "UNSUPPORTED_MEDIA_TYPE",
             Self::UnusableManifest => "UNUSABLE_MANIFEST",
             Self::NoManifestEvidence => "NO_MANIFEST_EVIDENCE",
+            Self::InvalidDependencyGroups => "INVALID_DEPENDENCY_GROUPS",
             Self::UnrepresentableSpdx => "UNREPRESENTABLE_SPDX",
             Self::SbomOutputTooLarge => "SBOM_OUTPUT_TOO_LARGE",
             Self::LicenseReportTooLarge => "LICENSE_REPORT_TOO_LARGE",
@@ -216,6 +256,9 @@ impl Code {
             Self::NoManifestEvidence => {
                 "inspect the selected lockfiles and manifests for package evidence"
             }
+            Self::InvalidDependencyGroups => {
+                "select dependency groups available in the uploaded evidence"
+            }
             Self::UnrepresentableSpdx => "run again with --format cyclonedx",
             Self::SbomOutputTooLarge => "scan a smaller tree",
             Self::LicenseReportTooLarge => {
@@ -259,6 +302,7 @@ impl From<String> for Code {
             "UNSUPPORTED_MEDIA_TYPE" => Self::UnsupportedMediaType,
             "UNUSABLE_MANIFEST" => Self::UnusableManifest,
             "NO_MANIFEST_EVIDENCE" => Self::NoManifestEvidence,
+            "INVALID_DEPENDENCY_GROUPS" => Self::InvalidDependencyGroups,
             "UNREPRESENTABLE_SPDX" => Self::UnrepresentableSpdx,
             "SBOM_OUTPUT_TOO_LARGE" => Self::SbomOutputTooLarge,
             "LICENSE_REPORT_TOO_LARGE" => Self::LicenseReportTooLarge,
@@ -301,6 +345,7 @@ mod tests {
         ("UNSUPPORTED_MEDIA_TYPE", 415),
         ("UNUSABLE_MANIFEST", 422),
         ("NO_MANIFEST_EVIDENCE", 422),
+        ("INVALID_DEPENDENCY_GROUPS", 422),
         ("UNREPRESENTABLE_SPDX", 422),
         ("SBOM_OUTPUT_TOO_LARGE", 422),
         ("LICENSE_REPORT_TOO_LARGE", 422),

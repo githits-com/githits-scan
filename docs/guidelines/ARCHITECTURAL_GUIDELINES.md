@@ -56,6 +56,8 @@ Discovery owns repository reads; the API owns HTTP. Command handlers orchestrate
 | License policy | `src/license.rs` | Pure SPDX evaluation over a CycloneDX document; the command only chooses the source and renders |
 | Informational license reports | `src/api/licenses.rs`, `src/commands/license/report.rs` | API validates the public wire contract and retains bytes; the command presents separate evidence without policy interpretation |
 | Audit interpretation and saved-analysis format | `src/audit/` | Pure projection of service evidence, attribution, and bounded versioned encoding/decoding |
+| Local Git snapshots | `src/repository.rs` | Owns immutable enumeration and bounded reads; reuses discovery pairing and command upload selection |
+| Dependency comparison | The service; `src/api/diff` and `src/commands/diff` consume it | Canonical source-local meaning/enrichment stays service-owned; Scan validates paired uploads, retains exact JSON and renders facts |
 | Styling | `src/style.rs` | Pure palette supplied by command layer; never decides terminal capabilities |
 | Token and API origin resolution | `src/env.rs` | Reads `GITHITS_API_TOKEN` and `GITHITS_API_URL` through an injected source so parsing is testable without mutating the process environment |
 
@@ -68,7 +70,7 @@ Before adding or moving a module, helper, field, or abstraction, state who natur
 
 ### Dependencies and Runtime Environment
 
-Adding an operating-system command, native library, or new runtime dependency requires maintainer agreement. The tool must never shell out to `git` or a package manager; use in-process libraries (`ignore` for the walk, `reqwest` for HTTP).
+Adding an operating-system command, native library, or new runtime dependency requires maintainer agreement. The ordinary scan path never shells out to Git or a package manager; use in-process libraries (`ignore` for the walk, `reqwest` for HTTP). Experimental `diff` is the explicit Git exception: `src/repository.rs` enumerates local snapshots and reads bounded cataloged blobs without mutation, remote fetching, fsmonitor helpers or the API token in child environments. Git is required for that command only.
 
 - The binary runs on developer machines and CI runners for Linux, macOS, and Windows. Paths are converted to forward-slash repository-relative form at the discovery boundary; nothing downstream sees platform separators.
 - Declare approved runtime dependencies in the shipped artifact and exercise it on supported platforms; availability on a development host does not prove a downloaded binary can use it. Local temporary files are bounded scratch unless an explicit file format defines persistence.

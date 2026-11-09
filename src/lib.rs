@@ -12,8 +12,8 @@
 //! - [`catalog`] owns the knowledge of which repository files are package
 //!   evidence (lockfiles and the manifests that own them) and which package
 //!   family each belongs to. It is pure data and has no I/O.
-//! - [`api`] owns the contract with `POST /v1/experimental/lockfile-jobs`: upload
-//!   limits and filename rules, problem documents, and the HTTP request.
+//! - [`api`] owns the lockfile-job and paired dependency-diff submission contracts:
+//!   upload limits and filename rules, problem documents, and HTTP requests.
 //!   Nothing else constructs requests or interprets status codes.
 //!   [`api::licenses`] validates license reports and retains their original JSON;
 //!   [`commands::license::report`] selects their source and renders evidence.
@@ -26,6 +26,9 @@
 //! - [`discover`] owns walking a directory tree, applying ignore rules, and
 //!   pairing lockfiles with the manifests that own them. It is the only
 //!   module that reads the filesystem during a scan.
+//! - [`repository`] supplies immutable local Git inputs for experimental diff; it
+//!   reuses discovery pairing and bounded command upload selection.
+//! - Dependency diff consumes source-local comparison and upgrade evidence from the service.
 //! - [`commands`] owns orchestration and rendering for each command; handlers
 //!   write to injected streams and report typed outcomes and errors.
 //! - [`style`] owns terminal styling; renderers receive a palette and never
@@ -46,6 +49,7 @@ pub mod config;
 pub mod discover;
 pub mod env;
 pub mod license;
+pub mod repository;
 pub mod style;
 
 #[cfg(test)]

@@ -20,6 +20,7 @@ use crate::license::DocumentError;
 
 pub mod audit;
 pub mod detect;
+pub mod diff;
 mod evidence;
 pub mod license;
 mod progress;
@@ -49,6 +50,18 @@ pub enum ErrorKind {
 /// Why a command failed.
 #[derive(Debug, Error)]
 pub enum Error {
+    /// Git snapshot input could not be read.
+    #[error(transparent)]
+    Repository(#[from] crate::repository::Error),
+    /// Diff selection exceeded the shared upload count limit.
+    #[error(
+        "{count} files exceed the {}-file upload limit; narrow both diff inputs with --exclude GLOB or --lockfiles-only",
+        crate::api::MAX_FILES
+    )]
+    DiffFileLimit {
+        /// Selected file count.
+        count: usize,
+    },
     /// The scan could not complete.
     #[error(transparent)]
     Discover(#[from] DiscoverError),
@@ -185,7 +198,18 @@ impl Error {
     pub fn kind(&self) -> ErrorKind {
         match self {
             Self::Config(ConfigError::Write { .. }) => ErrorKind::Execution,
-            Self::Discover(
+            Self::Repository(
+                crate::repository::Error::Input(_)
+                | crate::repository::Error::Upload(_)
+                | crate::repository::Error::Discover(
+                    DiscoverError::NotADirectory { .. }
+                    | DiscoverError::FileTooLarge { .. }
+                    | DiscoverError::NotUtf8 { .. }
+                    | DiscoverError::InvalidPath { .. },
+                ),
+            )
+            | Self::DiffFileLimit { .. }
+            | Self::Discover(
                 DiscoverError::NotADirectory { .. }
                 | DiscoverError::FileTooLarge { .. }
                 | DiscoverError::NotUtf8 { .. }
@@ -208,7 +232,8 @@ impl Error {
             Self::ReadDocument { source, .. } if source.kind() == io::ErrorKind::NotFound => {
                 ErrorKind::Usage
             }
-            Self::Api(_)
+            Self::Repository(_)
+            | Self::Api(_)
             | Self::Discover(_)
             | Self::Output(_)
             | Self::ReadDocument { .. }

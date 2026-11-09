@@ -13,6 +13,9 @@ mod support;
 #[path = "cli/config_licenses.rs"]
 mod config_licenses;
 
+#[path = "cli/diff.rs"]
+mod diff;
+
 #[path = "cli/polish.rs"]
 mod polish;
 
