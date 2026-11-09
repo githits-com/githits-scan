@@ -130,6 +130,36 @@ JSON preserves original result bytes, including whitespace, additive fields, nul
 targets and unfamiliar vocabulary. No Git-label wrapper or client notices are added.
 See [JSON output](json-output.md#experimental-diff-service-report).
 
+### Explaining missing evidence
+
+The producer owns causal explanations because it owns binding, reachability and
+review decisions. Scan presents supplied reasons and associated files; it does not
+attribute a nearby coverage gap to a package whose dependency type is unknown.
+For a resolution gap with `reason:required_input_not_supplied`, human/Markdown
+name both the source `path` and the missing `required_path` when supplied. Other
+gaps can omit that field; Scan does not guess a required file.
+
+The [public OpenAPI](https://api.githits.dev/v1/openapi.json) defines the identity
+associations below. The table also includes supported producer details within
+the schema's open coverage/review objects, for consumers of the unchanged JSON:
+
+| Evidence | Exact association and explanation |
+| --- | --- |
+| Changed package | `before_ids` and `after_ids` refer to occurrences in the base and head snapshots respectively; IDs must not be compared across sides. |
+| Ineligible direct review | Each declaration change's `binding_transitions` carries `source_key`, side binding statuses, nullable targets and `review_eligibility.reason`. Its declaration IDs identify the authored dependency and manifest. |
+| Missing or failed eligible review | A deduplicated `direct_reviews.data` row retains package/from/to, `source_keys`, `declaration_change_ids`, status and reason. Coverage counts alone do not explain an individual missing review. |
+| Partial returned review | Returned `data.unknown_details` carries section/code/message; changelog coverage remains separate from direct security evidence. |
+| Incomplete comparison | Side-specific resolution gaps retain source paths, reasons and any required input path. Advisory delta reasons qualify their own scope and side. |
+
+The current directness contract returns strings on changes and occurrences, with
+exposure/reachability qualifications elsewhere, but no per-occurrence causal
+reason. Existing IDs permit exact joins; they do not explain why a proof failed.
+An unknown dependency type must not be described as direct, transitive or safe by
+inferring from unrelated bindings or source gaps. Additions/removals have no
+occurrence on one side; that absence is not a failed assessment.
+The remaining producer explanation requirement is recorded in the
+[open backlog](../plans/open-backlog.md#dependency-diff-causal-explanations).
+
 ## HTTP, limits and cost
 
 One `POST /v1/experimental/dependency-diffs` sends a text `request` JSON part plus

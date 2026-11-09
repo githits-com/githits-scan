@@ -146,6 +146,40 @@ fn diff_partial_counts_name_unqualified_occurrences_and_reachability() {
 }
 
 #[test]
+fn diff_resolution_gap_names_the_required_input_without_guessing_missing_paths() {
+    let mut value = fixture::report();
+    value["snapshots"]["base"]["coverage"]["resolution"] = json!([
+        {"path":"package-lock.json","reason":"required_input_not_supplied",
+         "required_path":"packages/worker/package.json"},
+        {"path":"other.lock","reason":"required_input_not_supplied"},
+        {"path":"future.lock","reason":"future_reason","required_path":null}
+    ]);
+    for (format, expected) in [
+        (
+            Format::Human,
+            [
+                "base resolution: package-lock.json; required input packages/worker/package.json was not supplied",
+                "base resolution: other.lock; required_input_not_supplied",
+                "base resolution: future.lock; future_reason",
+            ],
+        ),
+        (
+            Format::Markdown,
+            [
+                "base resolution&#58; package&#45;lock&#46;json; required input packages/worker/package&#46;json was not supplied",
+                "base resolution&#58; other&#46;lock; required&#95;input&#95;not&#95;supplied",
+                "base resolution&#58; future&#46;lock; future&#95;reason",
+            ],
+        ),
+    ] {
+        let text = rendered(&value, format);
+        for expected in expected {
+            assert!(text.contains(expected), "missing {expected}: {text}");
+        }
+    }
+}
+
+#[test]
 fn diff_added_scope_uses_head_proof_without_qualifying_absent_base() {
     let mut value = fixture::report();
     let row = &mut value["changes"][0];

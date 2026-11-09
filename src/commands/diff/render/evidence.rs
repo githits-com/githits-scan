@@ -124,7 +124,7 @@ pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Resul
             d.item(&format!(
                 "{side} {kind}: {}; {}",
                 gap_context(&row),
-                row.reason.unwrap_or_else(|| row.reasons.join(", "))
+                gap_reason(&row)
             ))?;
         }
     }
@@ -135,6 +135,15 @@ pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Resul
         ))?;
     }
     Ok(())
+}
+
+fn gap_reason(row: &view::Gap) -> String {
+    match (row.reason.as_deref(), row.required_path.as_deref()) {
+        (Some("required_input_not_supplied"), Some(path)) => {
+            format!("required input {path} was not supplied")
+        }
+        _ => row.reason.clone().unwrap_or_else(|| row.reasons.join(", ")),
+    }
 }
 
 fn gap_context(row: &view::Gap) -> String {
