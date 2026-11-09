@@ -13,6 +13,76 @@ pre-public baseline, not a supported installation target. Historical flags in
 that section describe 0.2.0 only; use the README for current commands and the
 0.3.0 migration notes when updating pre-public automation.
 
+## [0.4.0] - 2026-11-09
+
+### Added
+
+- **Experimental dependency diff** - Compare Git revisions or the working tree
+  through one paired analysis. Human and Markdown reports show source-local
+  direct/transitive changes, ownership, scoped advisories and direct upgrade
+  evidence; JSON preserves the service report. Git and a token are required,
+  including for identical/empty inputs. One analysis costs twice the audit weight;
+  the complete pair shares 256 files and an 8 MB multipart limit. Configuration
+  is ignored; use explicit exclusions. Exit 0 is informational, including for
+  partial or unknown evidence, and is not a policy pass.
+- **Diff JSON and Markdown from one analysis** - Use `diff --output-json diff.json
+  --output-markdown diff.md` to save exact JSON and Scan-rendered Markdown from
+  the same report, or either named output alone. `-` selects stdout for at most
+  one destination. Named outputs conflict with `--format` and `-o/--output`;
+  existing single-output invocations are unchanged.
+- **Reviewed policy exceptions** - License checks accept exact named Git-source
+  exceptions with optional full revisions. Advisory ignores retain findings and
+  reasons in text, JSON and saved replay without causing failure themselves;
+  other audit categories and evidence gaps remain strict.
+- **Explain remediation changes** - Audit recommendations show the service's
+  checked effects when available, with request evidence in saved explanations
+  and JSON. Older reports remain usable and unknown future reasons survive replay.
+- **Homebrew distribution** - Install with `brew install githits-com/tap/githits-scan`.
+  Bottles cover macOS 15 ARM64 and Linux x86_64/ARM64; Intel macOS builds from
+  source. Tagged releases open formula updates for tap bottle publication.
+
+### Changed
+
+- **Policy compatibility and migration** - License-exception reasons must now
+  be nonblank. Fill in blank reasons before upgrading. Before returning to an
+  older binary, remove `[[audit.ignore]]` and Git-source exception entries from
+  configuration; older saved-analysis readers may omit ignores and return
+  stricter results. Audit and license-check JSON additions retain schema 1.
+  Rust callers must migrate `config::Exception` from a struct to its `Package`
+  or `Git` variant, access applied selectors/reasons through
+  `license::Applied::exception`, and supply the new `config::Config::audit`,
+  `license::Violation::source` and `api::Problem::side` fields when constructing
+  those values. Update exhaustive matches for new command-error and API-code
+  variants.
+- **License coverage warnings** - License checks warn on stderr for zero evaluated
+  components and incomplete resolution; offline SBOMs also warn when inventory
+  completeness evidence is absent. Warnings remain visible with quiet and JSON
+  modes, without changing verdicts or exit codes.
+- **Compact license group rows** - Human license check/report output combines
+  equivalent default/develop occurrences while preserving differing evidence,
+  per-occurrence details, policy results and JSON inventory.
+- **Installation guidance** - Homebrew is the recommended macOS/Linux install;
+  crates.io is the primary Cargo installation method. Prebuilt binaries and
+  checkout installs remain supported.
+- **Automated release procedure** - Add a maintainer release skill, full
+  previous-tag range review and explicit approval gates. The first automated
+  release follows the manually published 0.3.0. Protected crates.io dispatches
+  use the approved release tag, and Homebrew handoff requires environment approval.
+
+### Fixed
+
+- **Clarify remediation choices** - Audit output separates advisory-reported fix
+  versions from recommendations, explains conflicts and unresolved findings,
+  and shows override coverage and verification limits. Joint changes show
+  retained request context without guessing why the service chose a change.
+- **Identify blocked dependencies** - Remediation blockers show the requested
+  dependency name when supplied and preserve `dependency_name` in JSON and saved
+  analyses. Older reports retain their blocker structure; provider-bound
+  requirements use a readable label.
+- **Detect configuration migration guidance** - Correct the 0.3.0 changelog:
+  `detect --config FILE --save` creates a missing file from the commented template;
+  other commands reject missing explicit configurations with exit 2.
+
 ## [0.3.0] - 2026-11-05
 
 ### Added
