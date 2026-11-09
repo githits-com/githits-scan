@@ -94,7 +94,7 @@ impl Display<'_> {
     }
     fn link(&mut self, label: &str, url: &str) -> io::Result<()> {
         let Some(url) = safe_url(url) else {
-            return self.item("Entry link omitted: unsupported or credential-bearing URL.");
+            return self.item("  Entry link omitted: unsupported or credential-bearing URL.");
         };
         self.in_list = true;
         let (prefix, label) = item_parts(label);
@@ -254,6 +254,7 @@ fn cell(value: &str, markdown: bool) -> String {
     for character in safe.chars() {
         match character {
             '&' => escaped.push_str("&amp;"),
+            '~' => escaped.push_str("&#126;"),
             '<' => escaped.push_str("&lt;"),
             '>' => escaped.push_str("&gt;"),
             '|' => escaped.push_str("&#124;"),

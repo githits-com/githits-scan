@@ -79,7 +79,7 @@ fn diff_render_does_not_truncate_31_returned_reviews_or_16_notices() {
 fn diff_markdown_escapes_payloads_and_keeps_only_safe_returned_links() {
     let mut value = fixture::report();
     value["changes"][0]["package"]["name"] =
-        "evil|![img](https://evil.invalid) @team #12 <script>\nname".into();
+        "evil|![img](https://evil.invalid) @team #12 <script> ~~hidden~~\nname".into();
     value["direct_reviews"]["data"][0]["data"]["changelog"]["entries"][0]["html_url"] =
         "https://user:password@example.invalid/leak".into();
     let text = rendered(&value, Format::Markdown);
@@ -91,7 +91,9 @@ fn diff_markdown_escapes_payloads_and_keeps_only_safe_returned_links() {
     assert!(!text.contains("password"));
     assert!(text.contains("@&#8203;team"));
     assert!(text.contains("#&#8203;12"));
-    assert!(text.contains("Entry link omitted"));
+    assert!(text.contains("\n  - Entry link omitted"));
+    assert!(!text.contains("~~hidden~~"));
+    assert!(text.contains("&#126;&#126;hidden&#126;&#126;"));
 }
 
 #[test]
