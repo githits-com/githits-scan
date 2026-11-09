@@ -159,6 +159,7 @@ fn guidance(
             record,
             matches!(data.status.as_str(), "completed" | "limited"),
             &context,
+            render::remediation::ReasonDetail::Evidence,
             out,
         )?;
         occurrence_scope(record, &names, out)?;
@@ -195,8 +196,8 @@ fn occurrence_scope(
     for (change, refs) in record.changes.iter().zip(&scope.changes) {
         let label = format!(
             "Copies for {}:{}",
-            safe(&change.registry),
-            safe(&change.name)
+            safe(&change.data.registry),
+            safe(&change.data.name)
         );
         if let Some(refs) = refs {
             ref_set(&label, refs, names, out)?;

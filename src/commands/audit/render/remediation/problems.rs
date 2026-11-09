@@ -141,7 +141,13 @@ fn alternatives(
         if records.len() > 1 {
             writeln!(out, "\n    Alternative {}", index + 1)?;
         }
-        super::guidance(record, planning_known, context, out)?;
+        super::guidance(
+            record,
+            planning_known,
+            context,
+            super::ReasonDetail::Summary,
+            out,
+        )?;
     }
     Ok(())
 }

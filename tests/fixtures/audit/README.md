@@ -35,3 +35,9 @@ request and a joint change set. It contains invented packages/advisory text, not
 a captured service report. `analysis-v1.json` wraps the same facts in saved format
 1 and is a compatibility fixture; new optional projection fields must not make it
 unreadable. Both use synthetic evidence and remain compatibility fixtures.
+
+`change-reasons.json` contains small authored examples of the four known optional
+per-change reason variants. Request names deliberately differ from canonical
+targets to protect alias/owner distinctions. Tests mutate this data for unknown
+codes, malformed consumed fields, omitted trace and partial reason coverage;
+these examples make no claim about live advisory applicability.

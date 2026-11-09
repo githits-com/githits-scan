@@ -8,6 +8,9 @@ mod audit_remediation_ux;
 #[path = "audit_remediation_grouping.rs"]
 mod audit_remediation_grouping;
 
+#[path = "audit_change_reasons.rs"]
+mod audit_change_reasons;
+
 use super::*;
 use crate::support::audit::v2_findings;
 use serde_json::{Value, json};

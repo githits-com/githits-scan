@@ -1,5 +1,5 @@
 //! Only consumed reference bounds and scoped-negative prerequisites are checked here.
-use crate::api::audit::v2::V2;
+use crate::api::audit::{remediation::Reason, v2::V2};
 
 pub(crate) const UNVERIFIED: &str =
     "mitigation recommendation references or search domain are unverified";
@@ -14,6 +14,14 @@ pub(super) fn verified(report: &V2) -> bool {
             .chain(&r.addressed_finding_refs)
             .chain(&r.remaining_finding_refs)
             .all(|&index| index < report.findings.vulnerabilities.len())
+            && r.changes
+                .iter()
+                .flat_map(|c| c.reasons.iter().flatten())
+                .flat_map(|reason| match reason {
+                    Reason::Advisory(data) => data.finding_refs.as_slice(),
+                    _ => &[],
+                })
+                .all(|&index| index < report.findings.vulnerabilities.len())
             && (r.outcome != "no_upgrade_path" || r.search_domain.is_some())
     })
 }

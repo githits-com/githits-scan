@@ -6,12 +6,14 @@ use super::{file_list, heading, list, requirement_status, safe};
 use crate::api::audit::remediation::{Blocker, Change, Checks};
 use crate::commands::audit::view::{
     View,
-    remediation::{Finding, Record, Remediation, State},
+    remediation::{Change as ChangeView, Finding, Record, Remediation, State, reasons::Reason},
 };
 use crate::style::Palette;
 
 mod problems;
+mod reasons;
 pub(in crate::commands::audit) use problems::Context as ProblemContext;
+pub(in crate::commands::audit) use reasons::ReasonDetail;
 
 pub(super) fn write(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
     let data = match &view.remediation {
@@ -58,6 +60,7 @@ pub(in crate::commands::audit) fn guidance(
     r: &Record,
     planning_known: bool,
     context: &ProblemContext<'_>,
+    reason_detail: ReasonDetail,
     out: &mut dyn Write,
 ) -> io::Result<()> {
     let supported = supported_fix(r, planning_known);
@@ -81,14 +84,33 @@ pub(in crate::commands::audit) fn guidance(
     }
     let common = common_paths(&r.changes);
     for change in &r.changes {
-        change_line(change, r, planning_known, supported, common.is_none(), out)?;
+        change_line(
+            &change.data,
+            r,
+            planning_known,
+            supported,
+            common.is_none(),
+            out,
+        )?;
+        reasons::write(change, r, reason_detail, out)?;
     }
     let displayed_files = context.files();
     let own_files = ProblemContext::record(r).files();
     if let Some(files) = common.filter(|files| files != &displayed_files || files != &own_files) {
         file_list("Change in", &files, "    ", out)?;
     }
-    for request in &r.recorded_requests {
+    let has_boundary = r
+        .changes
+        .iter()
+        .flat_map(|c| c.reasons.iter().flatten())
+        .any(|reason| matches!(reason, Reason::Enables { .. } | Reason::Removes { .. }));
+    let explained = has_boundary
+        && r.changes.iter().all(|c| {
+            c.reasons
+                .as_ref()
+                .is_some_and(|reasons| reasons.iter().any(Reason::known))
+        });
+    for request in r.recorded_requests.iter().filter(|_| !explained) {
         writeln!(
             out,
             "    recorded request for {}: {}; owner {} [{}]",
@@ -100,7 +122,7 @@ pub(in crate::commands::audit) fn guidance(
     }
     impact(r, supported, context, out)?;
     blockers(&r.blockers, out)?;
-    if r.changes.iter().any(|c| c.strategy == "override")
+    if r.changes.iter().any(|c| c.data.strategy == "override")
         && r.checks.native_resolution == "not_checked"
     {
         writeln!(
@@ -243,12 +265,12 @@ fn change_line(
     Ok(())
 }
 
-fn common_paths(changes: &[Change]) -> Option<BTreeSet<String>> {
-    let paths: BTreeSet<_> = changes.first()?.paths.iter().cloned().collect();
+fn common_paths(changes: &[ChangeView]) -> Option<BTreeSet<String>> {
+    let paths: BTreeSet<_> = changes.first()?.data.paths.iter().cloned().collect();
     (!paths.is_empty()
         && changes
             .iter()
-            .all(|c| c.paths.iter().cloned().collect::<BTreeSet<_>>() == paths))
+            .all(|c| c.data.paths.iter().cloned().collect::<BTreeSet<_>>() == paths))
     .then_some(paths)
 }
 
@@ -256,26 +278,32 @@ fn owner(name: &str, version: Option<&str>) -> String {
     version.map_or_else(|| safe(name), |v| format!("{}@{}", safe(name), safe(v)))
 }
 
-fn blocker_line(b: &Blocker, out: &mut dyn Write) -> io::Result<()> {
-    let owner = owner(&b.owner.name, b.owner.version.as_deref());
-    let mut requirement = match (
-        b.dependency_name.as_deref(),
-        b.requested_requirement.as_deref(),
-    ) {
+fn request_requirement(name: Option<&str>, range: Option<&str>, status: &str) -> String {
+    let mut text = match (name, range) {
         (Some(name), Some(range)) => format!("requires {} {}", safe(name), safe(range)),
         (None, Some(range)) => format!("requires {}", safe(range)),
         (Some(name), None) => format!(
             "requires {} (requirement {})",
             safe(name),
-            requirement_status(&b.requirement_status)
+            requirement_status(status)
         ),
-        (None, None) => format!("requirement {}", requirement_status(&b.requirement_status)),
+        (None, None) => format!("requirement {}", requirement_status(status)),
     };
-    if b.requested_requirement.is_some() && b.requirement_status != "recorded" {
-        requirement.push_str(" (");
-        requirement.push_str(&requirement_status(&b.requirement_status));
-        requirement.push(')');
+    if range.is_some() && status != "recorded" {
+        text.push_str(" (");
+        text.push_str(&requirement_status(status));
+        text.push(')');
     }
+    text
+}
+
+fn blocker_line(b: &Blocker, out: &mut dyn Write) -> io::Result<()> {
+    let owner = owner(&b.owner.name, b.owner.version.as_deref());
+    let requirement = request_requirement(
+        b.dependency_name.as_deref(),
+        b.requested_requirement.as_deref(),
+        &b.requirement_status,
+    );
     if matches!(
         b.reason.as_str(),
         "third_party_request_excludes_target" | "required_request_excludes_target"
@@ -378,10 +406,20 @@ fn checks(r: &Record, out: &mut dyn Write) -> io::Result<()> {
             c.preference_differences
         )?;
     }
-    if c.prerelease_target && !r.changes.iter().any(|c| c.prerelease_target == Some(true)) {
+    if c.prerelease_target
+        && !r
+            .changes
+            .iter()
+            .any(|c| c.data.prerelease_target == Some(true))
+    {
         writeln!(out, "    action includes a prerelease target")?;
     }
-    if c.deprecated_target && !r.changes.iter().any(|c| c.deprecated_target == Some(true)) {
+    if c.deprecated_target
+        && !r
+            .changes
+            .iter()
+            .any(|c| c.data.deprecated_target == Some(true))
+    {
         writeln!(out, "    action includes a deprecated target")?;
     }
     Ok(())
@@ -395,7 +433,7 @@ fn supported_fix(r: &Record, planning_known: bool) -> bool {
         && r.checks.release_availability == "observed"
         && r.checks.advisories == "non_affecting"
         && r.checks.requirements == "matched"
-        && r.changes.iter().all(|c| c.strategy == "upgrade")
+        && r.changes.iter().all(|c| c.data.strategy == "upgrade")
 }
 
 fn known_checks(c: &Checks) -> bool {
@@ -464,6 +502,10 @@ fn check_text(value: &str) -> String {
 fn explanation(value: &str) -> String {
     match value {
         "planning_deadline" => "mitigation planning time limit reached".into(),
+        "change_reason_deadline" => "time limit reached while checking change reasons".into(),
+        "change_reason_membership_limit" => {
+            "requirement-check limit reached while checking change reasons".into()
+        }
         "planning_failed" => "mitigation planning failed; original findings retained".into(),
         "output_limit" => "mitigation data omitted to fit result limit".into(),
         "withdrawal_not_observed" => "withdrawal status unavailable".into(),
