@@ -6,7 +6,7 @@ use super::{file_list, heading, list, requirement_status, safe};
 use crate::api::audit::remediation::{Blocker, Change, Checks};
 use crate::commands::audit::view::{
     View,
-    remediation::{Finding, Record, Remediation, State},
+    remediation::{Change as ChangeView, Finding, Record, Remediation, State, reasons::Reason},
 };
 use crate::style::Palette;
 
@@ -99,13 +99,17 @@ pub(in crate::commands::audit) fn guidance(
     if let Some(files) = common.filter(|files| files != &displayed_files || files != &own_files) {
         file_list("Change in", &files, "    ", out)?;
     }
-    let explained = r.changes.iter().all(|c| {
-        c.reasons.as_ref().is_some_and(|reasons| {
-            reasons
-                .iter()
-                .any(crate::commands::audit::view::remediation::reasons::Reason::known)
-        })
-    });
+    let has_boundary = r
+        .changes
+        .iter()
+        .flat_map(|c| c.reasons.iter().flatten())
+        .any(|reason| matches!(reason, Reason::Enables { .. } | Reason::Removes { .. }));
+    let explained = has_boundary
+        && r.changes.iter().all(|c| {
+            c.reasons
+                .as_ref()
+                .is_some_and(|reasons| reasons.iter().any(Reason::known))
+        });
     for request in r.recorded_requests.iter().filter(|_| !explained) {
         writeln!(
             out,
@@ -261,9 +265,7 @@ fn change_line(
     Ok(())
 }
 
-fn common_paths(
-    changes: &[crate::commands::audit::view::remediation::Change],
-) -> Option<BTreeSet<String>> {
+fn common_paths(changes: &[ChangeView]) -> Option<BTreeSet<String>> {
     let paths: BTreeSet<_> = changes.first()?.data.paths.iter().cloned().collect();
     (!paths.is_empty()
         && changes

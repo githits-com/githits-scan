@@ -390,3 +390,35 @@ fn audit_change_reason_empty_advisory_keeps_recorded_request_context() {
     assert!(!detail.contains("why: addresses"), "{detail}");
     assert!(detail.contains("recorded request for"), "{detail}");
 }
+
+#[test]
+fn audit_change_reason_advisory_only_joint_changes_keep_request_relationship() {
+    let mut input = with_reasons(reasons()[0].clone(), 0);
+    let mut parent_finding = input["findings"]["vulnerabilities"][0].clone();
+    parent_finding["coordinate"] = json!({"registry":"npm", "name":"parent", "version":"2.0.0"});
+    parent_finding["advisory_id"] = "GHSA-parent-example".into();
+    parent_finding["fixed_in_versions"] = json!(["2.1.0"]);
+    input["findings"]["vulnerabilities"]
+        .as_array_mut()
+        .expect("findings")
+        .push(parent_finding);
+    input["summary"]["vulnerabilities"] = 2.into();
+    let record = &mut input["remediation"]["recommendations"][0];
+    record["finding_refs"] = json!([0, 1]);
+    record["addressed_finding_refs"] = json!([0, 1]);
+    record["changes"][1]["reasons"] = json!([{"code":"advisory_remediation", "finding_refs":[1]}]);
+    for limited in [false, true] {
+        if limited {
+            input["remediation"]["status"] = "limited".into();
+            input["remediation"]["limits"]["reasons"] = json!(["change_reason_deadline"]);
+        }
+        for text in [human_report(&input), stdout(&explain(&input, false))] {
+            assert!(text.contains("why: addresses GHSA-example"), "{text}");
+            assert!(
+                text.contains("why: addresses GHSA-parent-example"),
+                "{text}"
+            );
+            assert!(text.contains("recorded request for npm:demo@1.0.0: <1.1.0; owner parent@2.0.0 [package-lock.json]"), "{text}");
+        }
+    }
+}

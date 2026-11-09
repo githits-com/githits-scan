@@ -377,8 +377,10 @@ ordinary explanation; inspection says `reason unavailable` or identifies an
 escaped unrecognized code. Trace omission does not erase the service's inline
 boundary evidence: it still describes a represented route at its source, never
 all matching copies. Existing record-wide request context is suppressed only
-when every change has a substantive known reason; mixed or unavailable reason
-coverage keeps that factual context without attempting identity joins.
+when every change has a substantive known reason and at least one reason describes
+a checked dependency boundary (target acceptance or route removal). Advisory-only,
+mixed or unavailable reason coverage keeps that factual context without attempting
+identity joins: advisory effects do not explain requests between changed packages.
 
 The API decodes consumed known reason fields strictly and ignores unused known
 occurrence references, declaration references and request context. Existing
