@@ -3,6 +3,9 @@ use std::collections::BTreeSet;
 
 use serde::Serialize;
 
+pub(in crate::commands::audit) mod reasons;
+use reasons::Reason;
+
 use super::coordinate;
 use crate::api::audit::{Body, Report, remediation as wire, v2::Vulnerability};
 use crate::audit::{Assessment, remediation::UNVERIFIED};
@@ -79,7 +82,7 @@ pub(in crate::commands::audit) struct Record {
     pub findings: Vec<Finding>,
     pub outcome: String,
     #[serde(serialize_with = "compact_changes")]
-    pub changes: Vec<wire::Change>,
+    pub changes: Vec<Change>,
     pub blockers: Vec<wire::Blocker>,
     pub checks: wire::Checks,
     pub addressed_findings: Vec<Finding>,
@@ -110,6 +113,14 @@ pub(in crate::commands::audit) struct Finding {
     pub verified_advisory_fixes: Vec<String>,
 }
 
+/// A change retains wire facts while projecting its reason references separately.
+pub(in crate::commands::audit) struct Change {
+    /// Original consumed change, including archive-only data.
+    pub data: wire::Change,
+    /// Compact checked effects; None preserves an old report's absence.
+    pub reasons: Option<Vec<Reason>>,
+}
+
 impl Record {
     fn new(r: &wire::Recommendation, findings: &[Vulnerability], trace: &wire::Trace) -> Self {
         Self {
@@ -118,7 +129,19 @@ impl Record {
             recorded_requests: crate::audit::explain::recorded_requests(trace, r),
             findings: resolve(&r.finding_refs, findings),
             outcome: r.outcome.clone(),
-            changes: r.changes.clone(),
+            changes: r
+                .changes
+                .iter()
+                .map(|change| Change {
+                    data: change.clone(),
+                    reasons: change.reasons.as_ref().map(|reasons| {
+                        reasons
+                            .iter()
+                            .map(|reason| Reason::new(reason, findings))
+                            .collect()
+                    }),
+                })
+                .collect(),
             blockers: r.blockers.clone(),
             checks: r.checks.clone(),
             addressed_findings: resolve(&r.addressed_finding_refs, findings),
@@ -150,7 +173,7 @@ fn resolve(refs: &[usize], findings: &[Vulnerability]) -> Vec<Finding> {
 
 // The API DTO also carries saved trace references; compact output owns a narrower contract.
 fn compact_changes<S: serde::Serializer>(
-    changes: &[wire::Change],
+    changes: &[Change],
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
     use serde::ser::SerializeSeq as _;
@@ -161,7 +184,7 @@ fn compact_changes<S: serde::Serializer>(
     sequence.end()
 }
 
-struct CompactChange<'a>(&'a wire::Change);
+struct CompactChange<'a>(&'a Change);
 impl Serialize for CompactChange<'_> {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap as _;
@@ -178,7 +201,8 @@ impl Serialize for CompactChange<'_> {
             availability_source,
             prerelease_target,
             deprecated_target,
-        } = self.0;
+            reasons: _,
+        } = &self.0.data;
         let mut map = serializer.serialize_map(None)?;
         for (key, value) in [
             ("registry", registry),
@@ -203,6 +227,9 @@ impl Serialize for CompactChange<'_> {
         }
         if let Some(value) = deprecated_target {
             map.serialize_entry("deprecated_target", value)?;
+        }
+        if let Some(reasons) = &self.0.reasons {
+            map.serialize_entry("reasons", reasons)?;
         }
         map.end()
     }

@@ -73,6 +73,31 @@ explanation; audit issues retain whole-report gaps. Detailed nested evidence
 contracts live in [audit](audit.md). A saved analysis archive is a separate
 format (`format: githits-scan-analysis`), not compact audit JSON.
 
+### Reasons for remediation changes
+
+Both audit and `audit_explanation` schema 1 use the same optional
+`remediation.recommendations[].changes[].reasons` array. Absence stays omitted;
+order and multiple effects are preserved. Known entries are:
+
+```json
+[
+  {"code":"advisory_remediation","findings":[{"package":"npm:demo@1.0.0","advisory":"GHSA-example","files":["package-lock.json"]}]},
+  {"code":"enables_dependency_target","dependency":{"registry":"npm","name":"demo","version":"1.1.1"},"path":"package-lock.json","original_requests":[{"owner":{"name":"parent","version":"2.0.0"},"owner_role":"third_party","dependency_name":"alias","path":"package-lock.json","kind":"dependency","requested_requirement":"<1.1","requirement_status":"recorded","basis":"lockfile"}],"replacement_requests":[{"owner":{"name":"parent","version":"2.1.0"},"owner_role":"third_party","dependency_name":"alias","path":"package-lock.json","kind":"dependency","requested_requirement":"^1.1.0","requirement_status":"recorded","basis":"exact_parent"}]},
+  {"code":"removes_dependency_route","dependency":{"registry":"npm","name":"demo","version":"1.0.0"},"path":"package-lock.json","original_requests":[]},
+  {"code":"unavailable"},
+  {"code":"future_code"}
+]
+```
+
+The dependency is a canonical coordinate; request `dependency_name` preserves
+an authored alias/capability and is omitted when absent. Owner version and
+requested requirement retain their nullable slots. Advisory findings use the
+existing package/advisory/files shape. No report-local finding, occurrence or
+declaration indices, or opaque request context, appear here. Unknown codes retain
+the code only; their opaque evidence is preserved solely in saved analyses for
+future replay. Causes describe checked effects with represented scope, not
+unique necessity or successful native installation. Examples are synthetic.
+
 ## License report and SBOM documents
 
 `license report --json` emits the exact experimental public API report, preserving

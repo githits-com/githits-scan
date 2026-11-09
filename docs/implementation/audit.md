@@ -217,7 +217,9 @@ projection; later additions must be optional/unavailable when absent. An authore
 schema-1 fixture protects compatibility. Across Scan releases, presentation and
 interpretation can evolve; the source evidence is not refreshed.
 
-Only consumed fields are saved. Unknown properties, native IDs, endpoint subject
+Only consumed fields are saved, except opaque evidence for unknown change-reason
+codes retained for forward replay (see checked reasons below). Other unknown
+properties, native IDs, endpoint subject
 strings and opaque relation/request contexts are ignored. Missing-target requests
 retain only typed condition fields used by the command view. Existing blocker
 `context` remains an opaque open JSON object for established compact replay
@@ -347,6 +349,57 @@ package-name join nor range evaluation, target inference, or a causal explanatio
 for a selected parent upgrade. The same context appears in ordinary and focused
 saved explanations; it does not add JSON or saved-report fields. Availability of the optional context depends on supplied retained evidence.
 
+### Checked reasons beside changes
+
+Optional `changes[].reasons` carries service-owned checked effects. Human output
+attaches each effect directly to its change: acceptance of a dependency target
+that the current request excludes, removal of a represented route, or addressed
+advisories. These are not proofs of unique necessity, global range widening,
+removal of every installed copy, or native resolver/build success. Strategy,
+blockers, advisory coverage and verification checks retain their own meanings.
+
+Ordinary output shows a concise `why` line. A single-change advisory explanation
+is omitted when its finding identities equal the record's addressed findings,
+which are already explained by the problem and impact lines. Joint changes keep
+per-change attribution. The displayed source path is omitted only when the same
+single path is already displayed beside that change. Identical reason text
+within a change is shown once; distinct paths remain separate.
+
+`--explain` also shows original and replacement requests, keeping their explicit
+owners, authored dependency names or capabilities, requirements, statuses and
+source paths. Request owners need not equal changed packages or graph endpoints.
+Empty original-request lists on route removal add no fabricated request. A
+reason's canonical dependency target never replaces an authored alias.
+
+Absent reasons retain earlier output. `unavailable` and unfamiliar codes add no
+ordinary explanation; inspection says `reason unavailable` or identifies an
+escaped unrecognized code. Trace omission does not erase the service's inline
+boundary evidence: it still describes a represented route at its source, never
+all matching copies. Existing record-wide request context is suppressed only
+when every change has a substantive known reason; mixed or unavailable reason
+coverage keeps that factual context without attempting identity joins.
+
+The API decodes consumed known reason fields strictly and ignores unused known
+occurrence references, declaration references and request context. Existing
+type-only array handling remains: empty arrays are tolerated, although current
+producer schemas require some arrays to be nonempty. An invalid consumed advisory
+finding reference follows the existing unverified-remediation rule. Compact and
+explanation JSON resolve finding references to package/advisory/files identities
+and expose no raw reason indices; see [JSON contracts](json-output.md).
+
+Saved analyses retain the consumed known subset. Unknown reason codes are the
+explicit open-evidence exception: their opaque evidence is retained in the saved
+wire projection so a future reader can recognize it. That evidence is neither
+interpreted nor emitted in compact/explanation JSON or human output. Unknown
+fields on known reasons remain ignored. Saved and audit schema versions do not
+change; old reports without reasons remain usable.
+
+The service's `change_reason_deadline` and `change_reason_membership_limit` limits
+read as time or requirement-check limits reached while checking change reasons.
+Some explanations can be unavailable while selected recommendations and their
+independent checks remain intact; Scan does not turn a proof limit into a failed
+recommendation or a new exit condition.
+
 `withdrawal` describes release yanking/retraction, not advisory
 withdrawal. The service excludes withdrawn advisories and known withdrawn release
 targets before mitigation planning; Scan does not reclassify advisory eligibility.
@@ -357,7 +410,7 @@ outcome, changes, blockers, every independent check, resolved findings,
 addressed_findings, remaining_findings, limitations, detail_status and an optional
 search_domain. Finding references become package/advisory/files; no report-local
 indices, trace inventories, declaration refs or search counters are exported.
-Selected change/check/blocker DTOs serialize the exact same facts for the command;
+Selected change/check/blocker projections retain their typed facts for the command;
 their explicit field lists exclude ignored producer data. This avoids parallel
 definitions of identical facts while keeping the whole wire report private.
 
