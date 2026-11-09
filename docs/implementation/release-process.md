@@ -45,7 +45,7 @@ the maintainer's review. PR workflows and auxiliary scripts are not executed.
 stale CI results skip.
 
 Human and Dependabot PRs remain manual: review successful checks and all three
-bottle artifacts, then apply `pr-pull`. The initial 0.3.0 PR uses this path.
+bottle artifacts, then apply `pr-pull`. The initial 0.3.0 PR used this path.
 Homebrew test-bot can skip an unbottled dependency while returning success, so
 the tap treats skipped formulae as failed checks. `pr-pull` does not enforce the
 complete platform set itself; retain the artifact check on the manual path.
@@ -166,8 +166,8 @@ tracking each stage and requesting its approval when the preceding gate passes.
 
 ### First automated release and completion
 
-0.3.0 was published manually; 0.4.0 is the first intended automated release.
-The existing public release does not prove the pipeline's publication setup.
+0.3.0 was published manually; 0.4.0 was the first automated release across
+GitHub, Homebrew and crates.io.
 Before tagging, verify repository-secret presence by name only, release-tag
 protection, and the Homebrew App/environment setup described above. Before the
 first crates.io workflow publication, verify owners, trusted publisher and the
@@ -194,8 +194,8 @@ published version. Recovery that publishes requires approval for that step.
 
 The first public release is 0.3.0. The repository is public. Homebrew is the
 recommended install. crates.io is a supported alternative and the registry
-publication path. The README pins its CI example to
-[crates.io 0.3.0](https://crates.io/crates/githits-scan/0.3.0).
+publication path. The README pins its Cargo and CI examples to a verified
+crates.io release.
 The 0.2.0 changelog is retained as a clearly marked pre-public baseline, including
 its historical flags. It is not a supported public installation target.
 
@@ -252,7 +252,7 @@ retrying publication or deciding how to release a corrected version.
 ## Crates.io publication
 
 Crates.io distributes the source crate; GitHub distributes native binaries.
-`githits-scan` 0.3.0 is published on crates.io. Before dispatching `publish.yml`,
+`githits-scan` is published on crates.io. Before dispatching `publish.yml`,
 verify crate ownership and trusted-publisher configuration; each publication
 requires separate explicit approval.
 

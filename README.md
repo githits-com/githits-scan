@@ -351,7 +351,7 @@ inclusion overrides remain unless the CLI excludes them. See
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
-secret named `GITHITS_API_TOKEN`. The job installs a pinned version, `0.3.0`,
+secret named `GITHITS_API_TOKEN`. The job installs a pinned version, `0.4.0`,
 from crates.io. Save as `.github/workflows/dependencies.yml`:
 
 ```yaml
@@ -370,7 +370,7 @@ jobs:
         with:
           toolchain: 1.99.1
       - name: Install githits-scan
-        run: cargo install githits-scan --locked --version 0.3.0
+        run: cargo install githits-scan --locked --version 0.4.0
       - name: Generate the SBOM (fails on inventory drift)
         env:
           GITHITS_API_TOKEN: ${{ secrets.GITHITS_API_TOKEN }}
@@ -409,7 +409,7 @@ cargo install githits-scan --locked
 For a pinned installation, specify the release version:
 
 ```bash
-cargo install githits-scan --locked --version 0.3.0
+cargo install githits-scan --locked --version 0.4.0
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)
