@@ -16,9 +16,9 @@ owns decoding, evidence consistency, presentation and exit policy. Classificatio
 in Scan would discard source authority; per-dependency inspection requests would
 create a separate acquisition path and are excluded.
 
-Before implementing, qualify a published, actually emitted audit report contract
-that supplies all of the following. These are semantic requirements, not proposed
-HTTP field names or a new schema:
+Before implementing, qualify the producer-owned, actually emitted audit report
+contract that supplies all of the following. These are semantic requirements,
+not proposed HTTP field names or a new schema:
 
 - Native findings with registry/name identity, category, kind, scope, nullable
   affected version, source, source version and observation time where retained.
@@ -38,10 +38,13 @@ HTTP field names or a new schema:
   must explicitly choose additive v2 support or a new report version; Scan must
   not guess. Neither lifecycle counts nor retained warnings are advisory counts.
 
-Public schema publication must also catch up with the existing
-`not_applicable_count` and `not_applicable_registries` coverage fields. The fetched
-OpenAPI omits them even though the current producer and Scan support them; retain
-that compatibility while qualifying any lifecycle addition.
+The HTTP API forwards new producer fields even when OpenAPI does not describe
+them. Schema omission alone is therefore not a Scan adoption blocker; the missing
+audit preparation/report projection is the prerequisite. Public API updates
+belong to the separately assigned API work. Its schema should also describe the
+existing `not_applicable_count` and `not_applicable_registries` coverage fields,
+which the fetched OpenAPI omits even though the producer and Scan support them.
+Retain that compatibility while qualifying any lifecycle addition.
 
 Current submissions produce report version 2; retained version 1 remains readable.
 Scan JSON is independently version 1, and saved-analysis format 1 embeds a typed

@@ -14,13 +14,13 @@ or other worktree modification was needed.
 The [public OpenAPI](https://api.githits.dev/v1/openapi.json) was fetched without
 credentials on 2026-11-10: 1,769,471 bytes, SHA-256
 `ac89cfcbb0b18600dc80e5f1ad8f473e3dfe81eee88a1462cc8b9798dae21ad7`.
-It exposes audit versions 1/2 and new version-2 submissions, but no native
+It describes audit versions 1/2 and new version-2 submissions, but no native
 lifecycle audit findings, independent lifecycle checks, retained warnings or
 native event source/scope fields. `AuditDeprecatedFindingV2` contains only
 `coordinate`, `paths` and `reason`; version 1 uses `occurrence_ids` instead of paths.
 `AuditCoverageV2` contains vulnerabilities, deprecation and outdated checks.
-Upgrade reviews likewise expose legacy deprecation evidence, without the native
-inspection assessment. The unrelated `DependencyLifecycle` schema describes
+Upgrade review schemas likewise describe legacy deprecation evidence, without
+the native inspection assessment. The unrelated `DependencyLifecycle` schema describes
 dependency groups such as runtime/development, not maintenance or withdrawal.
 
 An authorized read-only review of the then-current service source, exported SDL
@@ -41,10 +41,12 @@ this investigation did not repeat it or claim audit end-to-end verification.
 
 The fetched public `AuditMetadataCoverage` omits `not_applicable_count` and
 `not_applicable_registries`, although the current service contract emits them and
-Scan already consumes them optionally. This is a service publication follow-up,
-not grounds to remove Scan's existing PyPI applicability support or reinterpret
-old reports. Public schemas need to describe the actual producer additions before
-contract-dependent generated consumers can rely on them.
+Scan already consumes them optionally. Juha confirmed that the HTTP API forwards
+new producer fields even when they are absent from the described API. OpenAPI
+omission is not proof of runtime field loss and does not block Scan adoption of a
+qualified producer contract. The blocking evidence above is the missing shared
+audit preparation/report projection. Public API updates are separately assigned;
+Scan's existing PyPI applicability support and retained reports remain intact.
 
 ## Local verification
 
