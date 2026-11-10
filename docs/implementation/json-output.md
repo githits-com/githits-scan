@@ -139,7 +139,8 @@ separate, as do review security and changelog qualifications.
 Producer explanation fields remain unchanged in JSON: occurrence
 `directness_reasons`/`directness_proof_ids`, root proof `id`/`reasons`, binding
 `reasons`, coverage `reachability_id` and review `failure`. Human/Markdown follow
-these explicit same-side references and display supplied causes; they do not add
+these explicit same-side references and explain supplied causes in plain language,
+keeping codes, IDs and diagnostic counts in JSON; they do not add
 derived explanations to JSON. Older schema-v1 reports may omit these additive
 fields. Present fields still validate against the supported display structure,
 and malformed known fields produce a protocol error before any output.

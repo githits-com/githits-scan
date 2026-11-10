@@ -1,112 +1,129 @@
-//! Scoped advisory details and distinct source qualifications.
-use super::{Display, View, package, view};
+//! Security changes and file problems in reader-facing language.
+use super::{Display, View, package, revision, view};
 use serde_json::value::RawValue;
 use std::io;
 
 pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
-    d.heading(&format!("Advisories: {}", v.advisories.status))?;
-    if let Some(reason) = &v.advisories.reason {
-        d.line(reason)?;
-    }
     let Some(data) = v
         .advisories
         .decode::<view::Advisories>()
         .map_err(io::Error::other)?
     else {
-        return d.line("No assessment is inferred from this section status; inspect JSON for additional evidence.");
+        return d.line(&super::section_message(
+            &v.advisories,
+            "Security advisory checks",
+        ));
     };
-    d.line("Showing changed-coordinate deltas and the recorded repository union; full source, unit and project scopes remain in JSON.")?;
+    if data.coordinate_transitions.is_empty() && data.exposures.is_empty() {
+        return Ok(());
+    }
+    d.heading("Security advisories")?;
+    d.line("Both revisions are checked against today's security information, rather than what was known when each revision was created.")?;
     for transition in &data.coordinate_transitions {
         let context = v
             .changes
             .iter()
             .find(|c| c.id == transition.change_id)
             .map_or_else(
-                || transition.change_id.clone(),
+                || "A changed package whose name and file were not supplied".into(),
                 |c| format!("{} in {}", package(&c.package), c.source_key),
             );
-        if transition.deltas.is_empty() {
-            d.item(&format!(
-                "{context}: no advisory deltas returned; coverage qualifications still apply."
-            ))?;
-        }
-        deltas(&context, transition.deltas.iter(), &data.findings, d)?;
+        deltas(&context, &transition.deltas, &data.findings, d)?;
     }
     for exposure in &data.exposures {
-        let scope = &exposure.scope;
-        let location = scope
-            .source_key
-            .clone()
-            .or_else(|| scope.manifest_path.clone())
-            .or_else(|| scope.unit_key.as_ref().map(|v| v.join(" / ")))
-            .unwrap_or_default();
-        let scope_label = format!("{} {location}", scope.kind.replace('_', " "));
-        let label = format!("{} [{}]", scope_label.trim(), scope.qualifier);
-        if scope.kind == "repository_union" {
-            deltas(
-                &label,
-                exposure.deltas.iter().filter(|r| r.kind != "non_affecting"),
-                &data.findings,
-                d,
-            )?;
+        let context = scope_label(&exposure.scope);
+        if exposure.scope.kind == "repository_union" {
+            deltas(&context, &exposure.deltas, &data.findings, d)?;
         }
-        for (side, coverage) in exposure
+        for (side, c) in exposure
             .coverage
             .iter()
             .filter(|(_, c)| c.inventory != "complete" || c.assessment != "complete")
         {
-            d.item(&format!(
-                "{label}, {side}: inventory {}; assessment {} ({}/{} coordinates checked; {} unqualified occurrences)",
-                coverage.inventory, coverage.assessment, coverage.checked, coverage.coordinates,
-                number(coverage.unqualified_occurrences)
-            ))?;
+            let problem = coverage_problem(c);
+            d.item(&format!("For {context} in the {} revision, {problem}. Review the file problems below and check security advisories manually.", revision(side)))?;
         }
-    }
-    if let Some(coverage) = &v.advisories.coverage {
-        let c: view::AdvisoryCoverage =
-            serde_json::from_str(coverage.get()).map_err(io::Error::other)?;
-        d.line(&format!(
-            "Coordinate checks: {}; candidates {}; unknown {}; unsupported {}.",
-            number(c.checked),
-            number(c.coordinates),
-            number(c.unknown),
-            number(c.unsupported)
-        ))?;
     }
     Ok(())
 }
 
-fn number(n: Option<u64>) -> String {
-    n.map_or_else(|| "not supplied".into(), |n| n.to_string())
+fn coverage_problem(c: &view::ScopeCoverage) -> &'static str {
+    if c.inventory != "complete" {
+        return "not all package information was available";
+    }
+    if c.unqualified_occurrences.is_some_and(|n| n > 0) {
+        return "some package entries could not be identified for security checks";
+    }
+    "the service did not complete all security checks"
 }
 
-fn deltas<'a>(
+fn scope_label(scope: &view::Scope) -> String {
+    if let Some(path) = &scope.source_key {
+        return path.clone();
+    }
+    if let Some(path) = &scope.manifest_path {
+        return format!("the project declared in {path}");
+    }
+    match scope.qualifier.as_str() {
+        "recorded" => "the supplied project files".into(),
+        "resolved" => "packages selected from the supplied dependency requirements".into(),
+        _ => "the compared packages (the service did not identify their file grouping)".into(),
+    }
+}
+
+fn deltas(
     context: &str,
-    rows: impl Iterator<Item = &'a view::Delta>,
+    rows: &[view::Delta],
     findings: &[view::Finding],
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    for delta in rows {
+    for delta in rows.iter().filter(|r| r.kind != "non_affecting") {
         let finding = findings.iter().find(|f| f.id == delta.finding_id);
         let label = finding.map_or_else(
-            || format!("unresolved finding {}", delta.finding_id),
+            || "an advisory whose public identifier was not supplied".into(),
             |f| format!("{} ({})", f.osv_id, package(&f.package)),
         );
-        d.item(&format!(
-            "{context}: {} {label}; {} → {}",
-            delta.kind, delta.base.status, delta.head.status
-        ))?;
+        let message = match delta.kind.as_str() {
+            "fixed" => format!("{context}: no longer affected by {label} after this change."),
+            "introduced" => format!("{context}: newly affected by {label} after this change."),
+            "unchanged" => format!("{context}: still affected by {label} after this change."),
+            _ => format!(
+                "For {context}, Scan could not determine how exposure to {label} changed. Review the advisory before accepting this change."
+            ),
+        };
+        d.item(&message)?;
         if let Some(summary) = finding.and_then(|f| f.summary.as_ref()) {
             d.item(&format!("  {summary}"))?;
         }
-        for (side, assessment) in [("base", &delta.base), ("head", &delta.head)]
-            .into_iter()
-            .filter(|(_, a)| !a.reasons.is_empty())
-        {
-            d.item(&format!("  {side}: {}", assessment.reasons.join(", ")))?;
+        assessment_qualifications(delta, d)?;
+    }
+    Ok(())
+}
+
+fn assessment_qualifications(delta: &view::Delta, d: &mut Display<'_>) -> io::Result<()> {
+    for (side, a) in [("earlier", &delta.base), ("later", &delta.head)] {
+        for reason in &a.reasons {
+            d.item(&format!(
+                "  In the {side} revision, {}",
+                assessment_reason(reason)
+            ))?;
         }
     }
     Ok(())
+}
+
+fn assessment_reason(reason: &str) -> &'static str {
+    match reason {
+        "source_scope_incomplete" => {
+            "the package information from the supplied files was incomplete, so the service could not establish whether this advisory applies throughout those files."
+        }
+        "coordinate_assessment_incomplete" => {
+            "the service could not finish checking whether this advisory applies to the package versions."
+        }
+        _ => {
+            "the service reported a limitation that this version of Scan cannot explain. Check the advisory manually; this result does not establish that the package is safe."
+        }
+    }
 }
 
 pub(super) fn gaps(
@@ -115,55 +132,81 @@ pub(super) fn gaps(
     explanations: &super::explanations::Evidence<'_>,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    let coverage: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
-    if coverage.partial == Some(true) {
-        d.line(&format!("{side}: source evidence partial."))?;
+    let c: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
+    if c.partial == Some(true) {
+        d.line(&format!(
+            "Some dependency information was unavailable for the {} revision.",
+            revision(side)
+        ))?;
     }
-    for (kind, rows) in [
-        ("source", coverage.sources),
-        ("resolution", coverage.resolution),
-        ("excluded dependency", coverage.excluded_dependencies),
-        ("manifest/lock mismatch", coverage.mismatches),
+    for rows in [
+        &c.sources,
+        &c.resolution,
+        &c.excluded_dependencies,
+        &c.mismatches,
     ] {
         for row in rows {
-            d.item(&format!(
-                "{side} {kind}: {}; {}",
-                gap_context(&row),
-                gap_reason(&row)
-            ))?;
+            write_gap(row, side, d)?;
         }
     }
-    for row in coverage.reachability.iter().filter(|r| !r.complete) {
-        d.item(&format!(
-            "{side}: project reachability not established for {} via {} ({})",
-            row.manifest_path, row.source_key, row.basis
-        ))?;
+    for row in c.reachability.iter().filter(|r| !r.complete) {
+        d.item(&format!("Scan could not establish how the dependencies in {} connect to the packages in {} in the {} revision.",row.manifest_path,row.source_key,revision(side)))?;
         super::explanations::coverage(explanations, side, row.reachability_id.as_deref(), d)?;
+        if side == "Report" {
+            d.item("  The service did not attach a revision-specific explanation to this comparison-wide limitation. Review those files manually.")?;
+        }
     }
     Ok(())
 }
 
-fn gap_reason(row: &view::Gap) -> String {
-    match (row.reason.as_deref(), row.required_path.as_deref()) {
-        (Some("required_input_not_supplied"), Some(path)) => {
-            format!("required input {path} was not supplied")
-        }
-        _ => row.reason.clone().unwrap_or_else(|| row.reasons.join(", ")),
+fn write_gap(row: &view::Gap, side: &str, d: &mut Display<'_>) -> io::Result<()> {
+    let reasons: std::collections::BTreeSet<_> = row
+        .reason
+        .iter()
+        .chain(&row.reasons)
+        .map(String::as_str)
+        .collect();
+    if reasons.is_empty() {
+        return d.item(&gap_message(row, side, None));
     }
+    for reason in reasons {
+        d.item(&gap_message(row, side, Some(reason)))?;
+    }
+    Ok(())
 }
 
-fn gap_context(row: &view::Gap) -> String {
-    let name = row.name.as_deref().unwrap_or("");
-    let version = row
-        .version
-        .as_ref()
-        .map_or(String::new(), |v| format!("@{v}"));
-    let paths = row
+fn gap_message(row: &view::Gap, side: &str, reason: Option<&str>) -> String {
+    let files = row
         .path
         .iter()
         .chain(&row.paths)
         .map(String::as_str)
         .collect::<Vec<_>>()
         .join(", ");
-    format!("{name}{version} {paths}").trim().to_owned()
+    let files = if files.is_empty() {
+        "files not identified by the service"
+    } else {
+        &files
+    };
+    let context = format!("{files} in the {} revision", revision(side));
+    let name = row
+        .name
+        .as_deref()
+        .unwrap_or("a dependency whose name was not supplied");
+    let version = row
+        .version
+        .as_ref()
+        .map_or(String::new(), |v| format!(" {v}"));
+    match reason {
+        Some("dependency_scope_unknown") => format!("The service could not determine which packages from {context} belong in this comparison. Review the dependency declarations and lockfile entries manually."),
+        Some("required_input_not_supplied") => row.required_path.as_ref().map_or_else(
+            || format!("Could not fully compare {context} because a required dependency file was not read. The service did not identify the missing file. Review the dependency files and Scan's exclusions."),
+            |path|format!("Could not fully compare {context} because {path} was not among the files read from that revision. Check that it exists in that revision and is not excluded from Scan.")),
+        Some("non_registry_source") => format!("{name}{version} in {context} comes from outside a public package registry, so it could not be checked against public security advisories. Review its source and security information manually."),
+        Some("locked_version_does_not_satisfy_request") => format!("In the {} revision, {name} requires {} in {}, but {files} lists {}. Review the dependency requirement and lockfile entries.",revision(side),row.requested_requirement.as_deref().unwrap_or("a requirement not supplied in this report"),row.declaration_path.as_deref().unwrap_or("a dependency file not identified by the service"),if row.locked_versions.is_empty() {"no matching versions".into()} else {row.locked_versions.join(", ")}),
+        Some("recorded_dependency_scope_differs") => format!("For {name} in {context}, the dependency declaration and lockfile disagree about how the dependency is used. Review the corresponding entries."),
+        Some("recorded_requirement_differs" | "recorded_provider_requirement_mismatch") => format!("For {name} in {context}, the dependency requirement differs between the declaration and lockfile. Review the corresponding entries."),
+        Some("lockfile_not_supplied" | "missing_lockfile") => format!("Could not check {context} because its lockfile was not read. Check that the lockfile exists in the revision and is not excluded from Scan."),
+        _ => format!("Could not fully check {name}{version} in {context}. The service did not supply a reason that this version of Scan can explain. Review these files manually."),
+    }
 }

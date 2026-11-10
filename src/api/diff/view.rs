@@ -14,7 +14,8 @@ pub(crate) struct View {
     pub advisories: Section,
     pub direct_reviews: Section,
     pub coverage: Box<RawValue>,
-    pub summary: BTreeMap<String, u64>,
+    #[serde(rename = "summary")]
+    pub _summary: BTreeMap<String, u64>,
     pub notices: Vec<String>,
 }
 
@@ -97,7 +98,8 @@ pub(crate) struct Declaration {
 #[derive(Deserialize)]
 pub(crate) struct Package {
     #[serde(deserialize_with = "nullable")]
-    pub registry: Option<String>,
+    #[serde(rename = "registry")]
+    pub _registry: Option<String>,
     #[serde(deserialize_with = "nullable")]
     pub name: Option<String>,
 }
@@ -143,9 +145,11 @@ pub(crate) struct Binding {
     pub head_status: String,
     pub review_eligibility: Eligibility,
     #[serde(deserialize_with = "nullable")]
-    pub base_target: Option<Target>,
+    #[serde(rename = "base_target")]
+    pub _base_target: Option<Target>,
     #[serde(deserialize_with = "nullable")]
-    pub head_target: Option<Target>,
+    #[serde(rename = "head_target")]
+    pub _head_target: Option<Target>,
 }
 
 fn nullable<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
@@ -156,8 +160,10 @@ fn nullable<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
 
 #[derive(Deserialize)]
 pub(crate) struct Target {
-    pub package: Package,
-    pub version: String,
+    #[serde(rename = "package")]
+    pub _package: Package,
+    #[serde(rename = "version")]
+    pub _version: String,
 }
 
 #[derive(Deserialize)]
@@ -198,8 +204,10 @@ pub(crate) struct Exposure {
 pub(crate) struct ScopeCoverage {
     pub inventory: String,
     pub assessment: String,
-    pub coordinates: u64,
-    pub checked: u64,
+    #[serde(rename = "coordinates")]
+    pub _coordinates: u64,
+    #[serde(rename = "checked")]
+    pub _checked: u64,
     pub unqualified_occurrences: Option<u64>,
 }
 
@@ -208,7 +216,8 @@ pub(crate) struct Scope {
     pub kind: String,
     pub qualifier: String,
     pub source_key: Option<String>,
-    pub unit_key: Option<Vec<String>>,
+    #[serde(rename = "unit_key")]
+    pub _unit_key: Option<Vec<String>>,
     pub manifest_path: Option<String>,
 }
 
@@ -222,13 +231,15 @@ pub(crate) struct Delta {
 
 #[derive(Deserialize)]
 pub(crate) struct Assessment {
-    pub status: String,
+    #[serde(rename = "status")]
+    pub _status: String,
     pub reasons: Vec<String>,
 }
 
 #[derive(Deserialize)]
 pub(crate) struct Review {
-    pub registry: String,
+    #[serde(rename = "registry")]
+    pub _registry: String,
     pub name: String,
     pub current_version: String,
     pub target_version: String,
@@ -282,8 +293,10 @@ pub(crate) struct VersionSecurity {
 
 #[derive(Deserialize)]
 pub(crate) struct Unknown {
-    pub section: String,
-    pub code: String,
+    #[serde(rename = "section")]
+    pub _section: String,
+    #[serde(rename = "code")]
+    pub _code: String,
     pub message: String,
 }
 
@@ -301,8 +314,10 @@ pub(crate) struct Changelog {
 #[derive(Deserialize)]
 pub(crate) struct ChangelogCoverage {
     pub status: String,
-    pub returned_entries: u64,
-    pub total_entries: u64,
+    #[serde(rename = "returned_entries")]
+    pub _returned_entries: u64,
+    #[serde(rename = "total_entries")]
+    pub _total_entries: u64,
     pub truncated: bool,
 }
 
@@ -335,7 +350,8 @@ pub(crate) struct ReachabilityGap {
     pub complete: bool,
     pub manifest_path: String,
     pub source_key: String,
-    pub basis: String,
+    #[serde(rename = "basis")]
+    pub _basis: String,
     pub reachability_id: Option<String>,
 }
 
@@ -350,23 +366,37 @@ pub(crate) struct Gap {
     pub reason: Option<String>,
     #[serde(default)]
     pub reasons: Vec<String>,
+    pub declaration_path: Option<String>,
+    pub requested_requirement: Option<String>,
+    #[serde(default)]
+    pub locked_versions: Vec<String>,
 }
 
 #[derive(Deserialize)]
 pub(crate) struct ReviewCoverage {
-    pub eligible: u64,
-    pub completed: u64,
-    pub returned: u64,
-    pub not_assessed: u64,
-    pub unavailable: u64,
-    pub omitted: u64,
+    #[serde(rename = "eligible")]
+    pub _eligible: u64,
+    #[serde(rename = "completed")]
+    pub _completed: u64,
+    #[serde(rename = "returned")]
+    pub _returned: u64,
+    #[serde(rename = "not_assessed")]
+    pub _not_assessed: u64,
+    #[serde(rename = "unavailable")]
+    pub _unavailable: u64,
+    #[serde(rename = "omitted")]
+    pub _omitted: u64,
 }
 #[derive(Deserialize)]
 pub(crate) struct AdvisoryCoverage {
-    pub checked: Option<u64>,
-    pub coordinates: Option<u64>,
-    pub unknown: Option<u64>,
-    pub unsupported: Option<u64>,
+    #[serde(rename = "checked")]
+    pub _checked: Option<u64>,
+    #[serde(rename = "coordinates")]
+    pub _coordinates: Option<u64>,
+    #[serde(rename = "unknown")]
+    pub _unknown: Option<u64>,
+    #[serde(rename = "unsupported")]
+    pub _unsupported: Option<u64>,
 }
 
 #[derive(Deserialize)]

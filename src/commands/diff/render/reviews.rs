@@ -1,4 +1,4 @@
-//! Direct upgrade attention evidence, without inventing migration advice or URLs.
+//! Useful upgrade notes and explicit reasons for missing checks.
 use super::{Display, View, view};
 use std::io;
 
@@ -7,36 +7,25 @@ pub(super) fn write(
     explanations: &super::explanations::Evidence<'_>,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    d.heading(&format!(
-        "Direct upgrade reviews: {}",
-        v.direct_reviews.status
-    ))?;
-    if let Some(reason) = &v.direct_reviews.reason {
-        d.line(reason)?;
-    }
     let Some(rows) = v
         .direct_reviews
         .decode::<Vec<view::Review>>()
         .map_err(io::Error::other)?
     else {
-        return d.line("Review evidence is not interpreted for this section status.");
+        return d.line(&super::section_message(
+            &v.direct_reviews,
+            "Upgrade reviews",
+        ));
     };
     for r in rows {
-        d.item(&format!(
-            "{}:{} {} → {}: {}{}",
-            r.registry,
-            r.name,
-            r.current_version,
-            r.target_version,
-            r.status,
-            r.reason
-                .as_ref()
-                .map_or(String::new(), |s| format!(" ({s})"))
+        d.heading(&format!(
+            "Upgrade review: {} {} → {}",
+            r.name, r.current_version, r.target_version
         ))?;
-        d.item(&format!("  Sources: {}", r.source_keys.join(", ")))?;
-        if r.status != "complete" || r.failure.is_some() {
-            super::explanations::review_context(explanations, &r, d)?;
+        if !r.source_keys.is_empty() {
+            d.item(&format!("Files: {}", r.source_keys.join(", ")))?;
         }
+        super::explanations::review_context(explanations, &r, d)?;
         if let Some(failure) = &r.failure {
             write_failure(failure, d)?;
         }
@@ -46,115 +35,146 @@ pub(super) fn write(
             unavailable_detail(&r, d)?;
         }
     }
-    if let Some(raw) = &v.direct_reviews.coverage {
-        let counts: view::ReviewCoverage =
-            serde_json::from_str(raw.get()).map_err(io::Error::other)?;
-        d.line(&format!("Review tuples: {} eligible, {} completed, {} returned; {} not assessed, {} unavailable, {} omitted.",
-            counts.eligible,counts.completed,counts.returned,counts.not_assessed,counts.unavailable,counts.omitted))?;
-    }
     Ok(())
 }
 
 fn unavailable_detail(review: &view::Review, d: &mut Display<'_>) -> io::Result<()> {
     let text = match review.reason.as_deref() {
-        Some("deadline") => "  The review was not assessed before the analysis deadline.",
+        Some("deadline") => {
+            "The upgrade review was not completed before the comparison's time limit."
+        }
         Some("result_size_limit") => {
-            "  The assessed review detail would exceed the report size limit."
+            "The upgrade was assessed, but its review could not fit within the report's size limit."
         }
-        Some("evidence_unavailable") => "  The evidence required for this review was unavailable.",
+        Some("evidence_unavailable") => {
+            "The information required to review this upgrade was unavailable."
+        }
         Some("review_failed") => {
-            "  Review evidence is unavailable; the report does not supply a failure explanation."
+            "The upgrade review could not be returned. The service did not supply a failure explanation."
         }
-        _ => "  Review detail not interpreted; consult the reported status/reason and JSON.",
-    };
-    d.item(text)
-}
-
-fn write_failure(failure: &view::ReviewFailure, d: &mut Display<'_>) -> io::Result<()> {
-    let label = match failure.scope.as_str() {
-        "batch" => "Batch evidence failure".into(),
-        "review" => "Review failure".into(),
-        scope => format!("Evidence failure ({scope})"),
+        _ => {
+            "Scan cannot display this upgrade review because the service returned no review in a format this version supports."
+        }
     };
     d.item(&format!(
-        "  {label}: {} ({})",
-        failure.message, failure.code
+        "{text} Review the release notes and security advisories before accepting this upgrade."
     ))
+}
+
+fn write_failure(f: &view::ReviewFailure, d: &mut Display<'_>) -> io::Result<()> {
+    let text = match f.scope.as_str() {
+        "batch" => {
+            "The service could not return the upgrade review because preparing the combined report failed. The review for this package may have finished, but its complete result could not be returned."
+        }
+        "review" => match f.code.as_str() {
+            "unexpected_task_exit" => {
+                "The service stopped reviewing this package before it returned a result."
+            }
+            "argument_error" | "review_structure_error" | "review_exception" => {
+                "The upgrade review failed because of an error in the service."
+            }
+            _ => "The upgrade review failed in the service.",
+        },
+        _ => {
+            "The service could not return the upgrade review. It did not identify whether this package's review or preparation of the combined report failed."
+        }
+    };
+    d.item(text)?;
+    if !matches!(
+        f.code.as_str(),
+        "unexpected_task_exit" | "argument_error" | "review_structure_error" | "review_exception"
+    ) && !f.message.trim().is_empty()
+    {
+        d.item(&format!("  {}", f.message))?;
+    }
+    d.item("  Review the release notes and security advisories manually before accepting this upgrade.")
 }
 
 fn detail(data: &view::ReviewData, d: &mut Display<'_>) -> io::Result<()> {
     if let Some(security) = &data.security {
-        for (side, value) in [("current", &security.current), ("target", &security.target)] {
-            let status = security_status(value.as_ref());
-            d.item(&format!("  Direct security {side}: {status}"))?;
-        }
+        security_detail("earlier", security.current.as_ref(), d)?;
+        security_detail("later", security.target.as_ref(), d)?;
     } else {
-        d.item("  Direct security: unavailable in returned evidence")?;
+        d.item("  Security information was not returned for this upgrade. Check security advisories before accepting it.")?;
     }
     for gap in &data.unknown_details {
-        d.item(&format!(
-            "  {}: {} ({})",
-            gap.section, gap.message, gap.code
-        ))?;
+        d.item(&format!("  {}", gap.message))?;
     }
     let Some(log) = &data.changelog else {
-        return d.item("  Changelog: unavailable in returned evidence");
+        return d.item("  Release notes were not returned. Read the package's release notes before accepting this upgrade.");
     };
-    if let Some(c) = &log.coverage {
-        d.item(&format!(
-            "  Changelog: {}, {}/{} entries{}",
-            c.status,
-            c.returned_entries,
-            c.total_entries,
-            if c.truncated { ", truncated" } else { "" }
-        ))?;
-    } else {
-        d.item("  Changelog coverage: not supplied")?;
+    if log
+        .coverage
+        .as_ref()
+        .is_none_or(|c| c.status != "complete" || c.truncated)
+    {
+        d.item("  Release notes are incomplete; additional changes may need attention. Read the package's release notes before accepting this upgrade.")?;
     }
-    for (label, signals) in [
-        ("Breaking signals", &log.breaking_signals),
-        ("Migration signals", &log.migration_signals),
-    ] {
-        if !signals.is_empty() {
-            d.item(&format!("  {label}: {}", signals.join(", ")))?;
-        }
+    if !log.breaking_signals.is_empty() {
+        d.item("  This upgrade may require changes to your code because the release notes flag compatibility changes.")?;
+    }
+    if !log.migration_signals.is_empty() {
+        d.item("  The release notes flag migration work. Review the relevant instructions before accepting this upgrade.")?;
     }
     let displayed: Vec<_> = log
         .entries
         .iter()
         .enumerate()
-        .filter(|(index, entry)| *index < 3 || !entry.signals.is_empty())
-        .map(|(_, entry)| entry)
+        .filter(|(i, e)| *i < 3 || !e.signals.is_empty())
+        .map(|(_, e)| e)
         .collect();
     for entry in &displayed {
-        let version = entry.version.as_deref().unwrap_or("unknown release");
+        let version = entry
+            .version
+            .as_deref()
+            .unwrap_or("release version not supplied");
         if let Some(headline) = &entry.headline {
             d.item(&format!("  {version}: {headline}"))?;
         }
         if !entry.signals.is_empty() {
-            d.item(&format!("  Entry signals: {}", entry.signals.join(", ")))?;
+            d.item(
+                "  Review this release for changes that may require attention in your project.",
+            )?;
         }
         if let Some(url) = &entry.html_url {
-            d.link(&format!("  {version} changelog entry"), url)?;
+            d.link(&format!("  {version} release notes"), url)?;
         }
     }
     if displayed.len() < log.entries.len() {
-        d.item(&format!(
-            "  {} additional returned changelog entries are available in JSON.",
-            log.entries.len() - displayed.len()
-        ))?;
+        d.item("  Additional release notes are available in the JSON report.")?;
     }
     Ok(())
 }
 
-fn security_status(value: Option<&view::VersionSecurity>) -> String {
-    value.map_or_else(
-        || "unavailable".into(),
-        |v| {
-            format!(
-                "{} ({} unknown)",
-                v.assessment_status, v.unknown_vulnerability_count
-            )
-        },
-    )
+fn security_detail(
+    side: &str,
+    value: Option<&view::VersionSecurity>,
+    d: &mut Display<'_>,
+) -> io::Result<()> {
+    let Some(v) = value else {
+        return d.item(&format!(
+            "  The service did not return a security check for the {side} version."
+        ));
+    };
+    let message = match v.assessment_status.as_str() {
+        "affected" => Some(
+            "is affected by security advisories. Review the advisory findings before accepting this upgrade.",
+        ),
+        "non_affecting" => None,
+        "unknown" => Some(
+            "could not be checked conclusively: the service could not determine whether security advisories apply.",
+        ),
+        "not_assessed" => Some("was not checked for security advisories."),
+        "unsupported" => Some(
+            "could not be checked for security advisories because the service does not support this package.",
+        ),
+        _ => Some("has no usable security conclusion in the returned review."),
+    };
+    if let Some(message) = message {
+        d.item(&format!("  The {side} version {message}"))?;
+    }
+    if v.unknown_vulnerability_count > 0 {
+        d.item(&format!("  For the {side} version, the service could not determine whether some advisories apply. Review those advisories manually."))?;
+    }
+    Ok(())
 }

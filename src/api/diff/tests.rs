@@ -220,6 +220,34 @@ fn assert_explanation_projection(view: &view::View) {
 }
 
 #[test]
+fn diff_mismatch_display_fields_validate_without_weakening_metadata() {
+    use serde_json::json;
+    let mut v = crate::test_support::diff::report();
+    v["snapshots"]["head"]["coverage"]["mismatches"] = json!([{
+        "path":"package-lock.json","declaration_path":"package.json","name":"helper",
+        "requested_requirement":"^2.0","locked_versions":["1.0.0"],"reason":"locked_version_does_not_satisfy_request"}]);
+    let bytes = serde_json::to_vec_pretty(&v).expect("JSON");
+    let report = Report::from_bytes(bytes.clone()).expect("mismatch");
+    assert_eq!(report.bytes(), bytes);
+    for pointer in [
+        "/snapshots/head/coverage/mismatches/0/declaration_path",
+        "/snapshots/head/coverage/mismatches/0/requested_requirement",
+        "/snapshots/head/coverage/mismatches/0/locked_versions",
+        "/summary/changed_declarations",
+        "/notices",
+        "/direct_reviews/coverage/eligible",
+        "/declaration_changes/0/binding_transitions/0/base_target/version",
+    ] {
+        let mut invalid = v.clone();
+        *invalid.pointer_mut(pointer).expect("field") = json!(false);
+        assert!(
+            Report::from_bytes(serde_json::to_vec(&invalid).expect("JSON")).is_err(),
+            "{pointer}"
+        );
+    }
+}
+
+#[test]
 fn diff_explanation_projection_preserves_optional_fields_and_validates_shapes() {
     use serde_json::json;
     let v = explanation_projection();

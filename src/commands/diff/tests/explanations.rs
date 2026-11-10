@@ -17,16 +17,16 @@ fn explained() -> serde_json::Value {
     v["changes"][0]["directness"]["base"] = "unknown".into();
     v["changes"][0]["before_ids"] = json!(["shared-occurrence"]);
     v["snapshots"]["base"]["occurrences"] = json!([{"id":"shared-occurrence",
-        "directness":"unknown","directness_reasons":[cause("Local root path is unproved.", None)],
+        "directness":"unknown","directness_reasons":[cause("A dependency entry could not be matched.", None)],
         "directness_proof_ids":["shared-proof"]}]);
     v["snapshots"]["base"]["reachability"] = json!([
-        {"id":"shared-proof","reasons":[cause("Root binding could not be established.", Some("base:d1"))]},
-        {"id":"unrelated-proof","reasons":[cause("UNRELATED proof.", None)]}
+        {"id":"shared-proof","reasons":[cause("The dependency declaration could not be matched.", Some("base:d1"))]},
+        {"id":"unrelated-proof","reasons":[cause("UNRELATED ENTRY.", None)]}
     ]);
     v["snapshots"]["head"]["occurrences"] = json!([{"id":"shared-occurrence",
         "directness":"unknown","directness_proof_ids":["shared-proof"]}]);
     v["snapshots"]["head"]["reachability"] = json!([{"id":"shared-proof",
-        "reasons":[cause("OPPOSITE SIDE proof.", Some("head:d1"))]}]);
+        "reasons":[cause("LATER REVISION ONLY.", Some("head:d1"))]}]);
     v
 }
 
@@ -35,22 +35,24 @@ fn diff_explanations_follow_same_side_proofs() {
     let v = explained();
     let text = rendered(&v, Format::Human);
     assert!(
-        text.contains("base dependency type: Root binding could not be established."),
+        text.contains("The dependency declaration could not be matched."),
         "{text}"
     );
-    assert!(text.contains("base dependency type: Local root path is unproved."));
-    assert!(text.contains("declaration helper"));
-    assert!(text.contains("dependency helper"));
+    assert!(text.contains("A dependency entry could not be matched."));
+    assert!(text.contains("helper in package.json"));
     assert!(text.contains("package.json"));
-    assert!(text.contains("untargeted_requirement"));
-    assert!(!text.contains("OPPOSITE SIDE"));
+    assert!(!text.contains("untargeted_requirement"));
+    assert!(!text.contains("LATER REVISION ONLY"));
     assert!(!text.contains("UNRELATED"));
     let mut v = v;
     v["changes"][0]["directness"]["head"] = "unknown".into();
     v["changes"][0]["after_ids"] = json!(["shared-occurrence"]);
     let text = rendered(&v, Format::Human);
-    assert!(text.contains("head dependency type: OPPOSITE SIDE proof."));
-    assert!(!text.contains("base dependency type: OPPOSITE SIDE"));
+    assert!(text.contains("LATER REVISION ONLY."));
+    let later = text
+        .find("in the later revision")
+        .expect("later explanation");
+    assert!(!text[..later].contains("LATER REVISION ONLY"));
 }
 
 #[test]
@@ -66,12 +68,12 @@ fn diff_explanations_keep_local_and_shared_causes() {
     v["changes"][0]["before_ids"] = json!(["shared-occurrence", "second", "known"]);
     let text = rendered(&v, Format::Human);
     assert_eq!(
-        text.matches("Root binding could not be established.")
+        text.matches("The dependency declaration could not be matched.")
             .count(),
         1
     );
     assert!(text.contains("A second local cause."));
-    assert!(!text.contains("no producer explanation is associated"));
+    assert!(!text.contains("The service did not return its explanation"));
     v["snapshots"]["base"]["occurrences"]
         .as_array_mut()
         .expect("occurrences")
@@ -82,7 +84,7 @@ fn diff_explanations_keep_local_and_shared_causes() {
         .push("legacy".into());
     let text = rendered(&v, Format::Human);
     assert_eq!(
-        text.matches("no producer explanation is associated")
+        text.matches("The service did not return its explanation")
             .count(),
         1
     );
@@ -93,16 +95,20 @@ fn diff_explanations_keep_local_and_shared_causes() {
     v["changes"].as_array_mut().expect("changes").push(change);
     let text = rendered(&v, Format::Human);
     assert_eq!(
-        text.matches("Root binding could not be established.")
+        text.matches("The dependency declaration could not be matched.")
             .count(),
-        2
+        1
     );
+    assert!(text.contains("minimist, second-package are used directly"));
 }
 
 #[test]
 fn diff_explanations_keep_distinct_root_owners() {
     let mut v = explained();
-    let mut other = cause("Root binding could not be established.", Some("base:d2"));
+    let mut other = cause(
+        "The dependency declaration could not be matched.",
+        Some("base:d2"),
+    );
     other["manifest_path"] = "tools/package.json".into();
     v["snapshots"]["base"]["reachability"]
         .as_array_mut()
@@ -116,11 +122,11 @@ fn diff_explanations_keep_distinct_root_owners() {
         .push(json!({"id":"base:d2","declared_name":"helper","declaring_manifest":"tools/package.json"}));
     let text = rendered(&v, Format::Human);
     assert_eq!(
-        text.matches("Root binding could not be established.")
+        text.matches("The dependency declaration could not be matched.")
             .count(),
         2
     );
-    assert!(text.contains("manifest tools/package.json; declaration helper"));
+    assert!(text.contains("helper in tools/package.json"));
 }
 
 #[test]
@@ -134,7 +140,7 @@ fn diff_explanations_distinguish_known_absent_and_legacy() {
             json!({"base":"transitive","head":"unknown"})
         };
         let text = rendered(&v, Format::Human);
-        assert!(!text.contains("dependency type:"), "{text}");
+        assert!(!text.contains("Scan could not tell whether"), "{text}");
     }
     for ids in [json!([]), json!(["declaration-only"]), json!(["known"])] {
         let mut v = explained();
@@ -142,7 +148,7 @@ fn diff_explanations_distinguish_known_absent_and_legacy() {
         v["changes"][0]["before_ids"] = ids;
         let text = rendered(&v, Format::Human);
         assert!(
-            text.contains("base dependency type unknown; no producer explanation is associated"),
+            text.contains("The service did not return its explanation"),
             "{text}"
         );
         assert!(!text.contains("malformed"));
@@ -150,11 +156,12 @@ fn diff_explanations_distinguish_known_absent_and_legacy() {
     let mut v = explained();
     v["snapshots"]["base"]["reachability"] = json!([]);
     let text = rendered(&v, Format::Human);
-    assert!(text.contains("referenced explanation unavailable"));
+    assert!(text.contains("Part of the service's explanation was missing"));
     v["changes"][0]["directness"]["base"] = "future_type".into();
     let text = rendered(&v, Format::Human);
-    assert!(text.contains("future_type"));
-    assert!(!text.contains("dependency type:"));
+    assert!(!text.contains("future_type"));
+    assert!(text.contains("classification that this version of Scan cannot explain"));
+    assert!(text.contains("Scan could not tell whether"));
 }
 
 #[test]
@@ -163,7 +170,7 @@ fn diff_explanations_show_binding_causes_without_occurrence_changes() {
     v["changes"] = json!([]);
     v["snapshots"]["base"]["bindings"] = json!([
         {"declaration_id":"base:d1","source_key":"package-lock.json",
-         "reasons":[cause("The authored request has no exact root link.", Some("base:d1"))]},
+         "reasons":[cause("The declared dependency could not be matched to a package entry.", Some("base:d1"))]},
         {"declaration_id":"base:d1","source_key":"other.lock",
          "reasons":[cause("WRONG SOURCE binding.", None)]},
         {"declaration_id":"unrelated","source_key":"package-lock.json",
@@ -171,16 +178,16 @@ fn diff_explanations_show_binding_causes_without_occurrence_changes() {
     ]);
     let text = rendered(&v, Format::Human);
     assert!(
-        text.contains("base binding cause: The authored request has no exact root link."),
+        text.contains("In the earlier revision: The declared dependency could not be matched to a package entry."),
         "{text}"
     );
     assert!(!text.contains("WRONG SOURCE"));
     assert!(!text.contains("WRONG DECLARATION"));
-    assert!(text.contains("declaration helper"));
+    assert!(text.contains("helper in package.json"));
     // Open status vocabulary must not suppress an explicitly joined cause.
     v["declaration_changes"][0]["binding_transitions"][0]["review_eligibility"] =
         json!({"status":"future_eligibility"});
-    assert!(rendered(&v, Format::Human).contains("base binding cause:"));
+    assert!(rendered(&v, Format::Human).contains("In the earlier revision:"));
 }
 
 #[test]
@@ -195,19 +202,22 @@ fn diff_explanations_use_same_side_declaration_labels() {
     v["direct_reviews"]["data"][0]["status"] = "unavailable".into();
     let text = rendered(&v, Format::Human);
     assert!(
-        text.contains("correct-head in head/package.json: changed"),
+        text.contains("Changed correct-head in head/package.json"),
         "{text}"
     );
-    assert!(text.contains("Declared by: correct-head in head/package.json"));
+    assert!(text.contains("Declared as correct-head in head/package.json"));
     assert!(!text.contains("WRONG-BASE"));
 }
 
 #[test]
 fn diff_explanations_preserve_review_failure_scope() {
     for (scope, label) in [
-        ("batch", "Batch evidence failure"),
-        ("review", "Review failure"),
-        ("future_scope", "Evidence failure (future_scope)"),
+        ("batch", "preparing the combined report failed"),
+        ("review", "upgrade review failed in the service"),
+        (
+            "future_scope",
+            "did not identify whether this package's review",
+        ),
     ] {
         let mut v = fixture::report();
         v["changes"] = json!([]);
@@ -217,20 +227,21 @@ fn diff_explanations_preserve_review_failure_scope() {
         row["reason"] = "review_failed".into();
         row["failure"] = json!({"scope":scope,"code":"future_error","message":"The producer could not collect review evidence."});
         let text = rendered(&v, Format::Human);
-        assert!(
-            text.contains(&format!(
-                "{label}: The producer could not collect review evidence. (future_error)"
-            )),
-            "{text}"
-        );
-        assert!(text.contains("unavailable (review_failed)"));
-        assert!(text.contains("Declared by: helper in package.json"));
+        assert!(text.contains(label), "{text}");
+        assert!(text.contains("The producer could not collect review evidence."));
+        assert!(!text.contains("future_error"));
+        assert!(!text.contains("review_failed"));
+        assert!(text.contains("Declared as helper in package.json"));
         assert!(!text.contains("Review detail not interpreted"));
         v["direct_reviews"]["data"][0]["status"] = "partial".into();
         let text = rendered(&v, Format::Human);
         assert!(text.contains(label));
-        assert!(text.contains("Direct security current:"));
+        assert!(text.contains("The earlier version is affected by security advisories"));
         assert!(text.contains("Illustrative migration note"));
+        if scope == "batch" {
+            assert!(text.contains("its complete result could not be returned"));
+            assert!(!text.contains("its result was not returned"));
+        }
         assert!(!text.contains("Review detail not interpreted"));
     }
 }
@@ -241,22 +252,22 @@ fn diff_explanations_keep_unstarted_omitted_and_legacy_failures_distinct() {
         (
             "not_assessed",
             "deadline",
-            "The review was not assessed before the analysis deadline.",
+            "The upgrade review was not completed before the comparison's time limit.",
         ),
         (
             "omitted",
             "result_size_limit",
-            "The assessed review detail would exceed the report size limit.",
+            "The upgrade was assessed, but its review could not fit within the report's size limit.",
         ),
         (
             "unavailable",
             "review_failed",
-            "Review evidence is unavailable; the report does not supply a failure explanation.",
+            "The upgrade review could not be returned. The service did not supply a failure explanation.",
         ),
         (
             "not_assessed",
             "evidence_unavailable",
-            "The evidence required for this review was unavailable.",
+            "The information required to review this upgrade was unavailable.",
         ),
     ] {
         let mut v = fixture::report();
@@ -268,7 +279,7 @@ fn diff_explanations_keep_unstarted_omitted_and_legacy_failures_distinct() {
             .expect("review")
             .remove("data");
         let text = rendered(&v, Format::Human);
-        assert!(text.contains(&format!("{status} ({reason})")));
+        assert!(!text.contains(reason), "{text}");
         assert!(text.contains(explanation), "{text}");
         assert!(!text.contains("Review detail not interpreted"));
     }
@@ -285,19 +296,21 @@ fn diff_explanations_cover_reachability_proof_causes() {
     v["coverage"]["reachability"] = json!([summary]);
     let text = rendered(&v, Format::Human);
     assert_eq!(
-        text.matches("Root binding could not be established.")
+        text.matches("The dependency declaration could not be matched.")
             .count(),
         1,
         "{text}"
     );
-    assert!(text.contains("base reachability: Root binding could not be established."));
+    assert!(
+        text.contains("In the earlier revision: The dependency declaration could not be matched.")
+    );
     assert!(!text.contains("Report reachability:"));
-    assert!(!text.contains("OPPOSITE SIDE"));
+    assert!(!text.contains("LATER REVISION ONLY"));
     v["snapshots"]["base"]["coverage"]["reachability"][0]
         .as_object_mut()
         .expect("summary")
         .remove("reachability_id");
     let text = rendered(&v, Format::Human);
-    assert!(text.contains("base reachability: producer explanation unavailable"));
-    assert!(!text.contains("Root binding could not be established."));
+    assert!(text.contains("the service did not explain why it could not connect"));
+    assert!(!text.contains("The dependency declaration could not be matched."));
 }

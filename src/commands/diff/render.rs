@@ -25,46 +25,37 @@ pub(super) fn write(
         out,
         in_list: false,
     };
-    display.line(&format!(
-        "Experimental dependency diff: {} → {}",
-        labels.0, labels.1
-    ))?;
+    display.line(&format!("Dependency changes: {} → {}", labels.0, labels.1))?;
     let Some(view) = report.view() else {
-        return display.line(&format!("Report schema {} or kind cannot be rendered by this version; upgrade Scan or use --format json. Evidence is unassessed by this renderer.", report.version()));
+        return display.line("Scan cannot explain this report because its format is newer than this version supports. Update Scan to read it; the original report is available as JSON.");
     };
-    display.line(&format!(
-        "Selected inputs only; report: {}. Informational, no policy enforced.",
-        view.outcome
-    ))?;
-    for (key, label) in [
-        (
-            "changed_source_package_contexts",
-            "Changed source/package contexts",
-        ),
-        ("changed_declarations", "Changed declarations"),
-    ] {
-        if let Some(count) = view.summary.get(key) {
-            display.line(&format!("{label}: {count}"))?;
-        }
+    display.line("This compares the supplied dependency files, not an observed installation.")?;
+    match view.outcome.as_str() {
+        "complete" => {},
+        "partial" => display.line("Some checks could not be completed. Review the limitations below before accepting these changes.")?,
+        _ => display.line("The service did not confirm a complete comparison. Scan cannot explain its completion result; review the original JSON before relying on it.")?,
     }
     let explanations = explanations::new(view);
     changes(view, &explanations, &mut display)?;
     declarations(view, &explanations, &mut display)?;
     evidence::write(view, &mut display)?;
     reviews::write(view, &explanations, &mut display)?;
-    display.heading("Coverage qualifications")?;
     for (side, snapshot) in view.snapshots.iter() {
         if side != snapshot.side {
-            display.line("Unfamiliar snapshot side; consult JSON evidence.")?;
+            display.line("The service returned inconsistent revision labels, so file limitations may be incomplete.")?;
         }
         evidence::gaps(&snapshot.coverage, side, &explanations, &mut display)?;
     }
     evidence::gaps(&view.coverage, "Report", &explanations, &mut display)?;
+    let mut notices = std::collections::BTreeSet::new();
     for notice in &view.notices {
-        display.line(&format!("Note: {notice}"))?;
-    }
-    if view.outcome != "complete" {
-        display.line("Evidence partial or unfamiliar; this report is not a clean assessment.")?;
+        if notice != "Recorded input comparison, not an observed installation or solver ancestry."
+            && notice
+                != "Both sides use current shared advisory evidence; this is not historical advisory knowledge."
+            && notices.insert(notice)
+        {
+            display.line(notice)?;
+        }
     }
     Ok(())
 }
@@ -96,7 +87,7 @@ impl Display<'_> {
     }
     fn link(&mut self, label: &str, url: &str) -> io::Result<()> {
         let Some(url) = safe_url(url) else {
-            return self.item("  Entry link omitted: unsupported or credential-bearing URL.");
+            return self.item("  This release-note link was omitted because its address is unsafe or unsupported.");
         };
         self.in_list = true;
         let (prefix, label) = item_parts(label);
@@ -119,65 +110,80 @@ fn item_parts(text: &str) -> (&str, &str) {
 }
 
 fn package(p: &view::Package) -> String {
-    format!(
-        "{}:{}",
-        p.registry.as_deref().unwrap_or("unknown"),
-        p.name.as_deref().unwrap_or("unknown")
-    )
+    p.name
+        .clone()
+        .unwrap_or_else(|| "package whose name was not supplied".into())
 }
 
 fn versions(v: &[Option<String>]) -> String {
     if v.is_empty() {
-        return "—".into();
+        return "no package version listed".into();
     }
     v.iter()
-        .map(|s| s.as_deref().unwrap_or("unknown"))
+        .map(|s| s.as_deref().unwrap_or("version not supplied"))
         .collect::<Vec<_>>()
         .join(", ")
 }
 
 fn changes(
-    view: &View,
+    v: &View,
     explanations: &explanations::Evidence<'_>,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
     let mut sources = BTreeMap::<&str, Vec<&view::Change>>::new();
-    for change in &view.changes {
+    for change in &v.changes {
         sources.entry(&change.source_key).or_default().push(change);
     }
     if sources.is_empty() {
-        d.line("No reported package version changes in selected inputs.")?;
+        d.line("No package version changes were reported in the supplied files.")?;
     }
     for (source, changes) in sources {
-        d.heading(&format!("Source: {source}"))?;
-        for c in changes {
-            change(c, d)?;
-            explanations::change(explanations, c, d)?;
+        d.heading(&format!("File: {source}"))?;
+        if changes.iter().any(|c| c.ownership == "auxiliary") {
+            d.line("This is a secondary lockfile; the workspace uses another lockfile to choose package versions.")?;
         }
+        if changes
+            .iter()
+            .any(|c| !matches!(c.ownership.as_str(), "recorded" | "effective" | "auxiliary"))
+        {
+            d.line("The service could not establish whether this file controls the workspace's package versions.")?;
+        }
+        for c in &changes {
+            change(c, d)?;
+        }
+        explanations::changes(explanations, &changes, d)?;
     }
     Ok(())
 }
 
 fn change(c: &view::Change, d: &mut Display<'_>) -> io::Result<()> {
-    let base = c.directness.base.as_str();
-    let head = c.directness.head.as_str();
-    let scope = match c.kind.as_str() {
-        "added" => head.to_owned(),
-        "removed" => base.to_owned(),
-        _ if base == head => base.to_owned(),
-        _ => format!("{base} → {head}"),
+    let transition = match c.kind.as_str() {
+        "added" => format!("added {}", versions(&c.after_versions)),
+        "removed" => format!("removed {}", versions(&c.before_versions)),
+        _ => format!(
+            "{} → {}",
+            versions(&c.before_versions),
+            versions(&c.after_versions)
+        ),
     };
-    d.item(&format!(
-        "{}: {} → {} ({}, {scope}, {})",
-        package(&c.package),
-        versions(&c.before_versions),
-        versions(&c.after_versions),
-        c.kind,
-        c.ownership
-    ))?;
+    let base = usage(&c.directness.base);
+    let head = usage(&c.directness.head);
+    let role = match c.kind.as_str() {
+        "added" => head.map(str::to_owned),
+        "removed" => base.map(str::to_owned),
+        _ if base == head => base.map(str::to_owned),
+        _ => match (base, head) {
+            (Some(b), Some(h)) => Some(format!("{b} → {h}")),
+            (Some(b), None) => Some(format!("{b} before this change")),
+            (None, Some(h)) => Some(format!("{h} after this change")),
+            (None, None) => None,
+        },
+    }
+    .map_or(String::new(), |r| format!(" ({r})"));
+    d.item(&format!("{}: {transition}{role}", package(&c.package)))?;
     for retained in &c.retained_elsewhere {
         d.item(&format!(
-            "  Retained elsewhere: {} in {}",
+            "  {} also appears in {}.",
             versions(&retained.versions),
             retained.source_key
         ))?;
@@ -185,66 +191,161 @@ fn change(c: &view::Change, d: &mut Display<'_>) -> io::Result<()> {
     Ok(())
 }
 
+fn section_message(section: &crate::api::diff::Section, checks: &str) -> String {
+    if section.status == "not_requested" {
+        return format!("{checks} were not requested for this comparison.");
+    }
+    let reason = match section.reason.as_deref() {
+        Some("provider_unavailable") => "the service's information provider was unavailable",
+        Some("deadline") => "the comparison's time limit was reached",
+        _ => "the service returned no supported results or explanation this version can display",
+    };
+    format!(
+        "{checks} could not be returned because {reason}. Review the relevant package information manually before accepting these changes."
+    )
+}
+
+fn revision(side: &str) -> &str {
+    match side {
+        "base" => "earlier",
+        "head" => "later",
+        _ => "compared",
+    }
+}
+
+fn usage(status: &str) -> Option<&'static str> {
+    match status {
+        "direct" => Some("direct dependency"),
+        "transitive" => Some("through another package"),
+        _ => None,
+    }
+}
+
 fn declarations(
-    view: &View,
+    v: &View,
     explanations: &explanations::Evidence<'_>,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    if view.declaration_changes.is_empty() {
+    if v.declaration_changes.is_empty() {
         return Ok(());
     }
-    d.heading("Direct declarations")?;
-    for c in &view.declaration_changes {
-        let label = explanations::declaration_label(explanations, c);
-        d.item(&format!("{label}: {}", c.kind))?;
+    d.heading("Dependency declarations")?;
+    for c in &v.declaration_changes {
+        if c.kind == "ambiguous" {
+            d.item("Scan could not compare a dependency declaration because the service could not distinguish matching declarations. Review the dependency declarations in your project files.")?;
+        }
+        let verb = match c.kind.as_str() {
+            "added" => "Added",
+            "removed" => "Removed",
+            _ => "Changed",
+        };
+        d.item(&format!(
+            "{verb} {}",
+            explanations::declaration_label(explanations, c)
+        ))?;
         for b in &c.binding_transitions {
-            binding(b, d)?;
+            binding(c, b, d)?;
             explanations::binding(explanations, c, b, d)?;
         }
     }
     Ok(())
 }
 
-fn binding(b: &view::Binding, d: &mut Display<'_>) -> io::Result<()> {
+fn binding(c: &view::DeclarationChange, b: &view::Binding, d: &mut Display<'_>) -> io::Result<()> {
     let identity = b
         .package
         .as_ref()
-        .map_or_else(|| "unknown package".into(), package);
+        .map_or_else(|| "package name not supplied".into(), package);
+    let before = if c.kind == "added" {
+        "not declared".into()
+    } else if b.before_versions.is_empty() {
+        "no matching version".into()
+    } else {
+        b.before_versions.join(", ")
+    };
+    let after = if c.kind == "removed" {
+        "no longer declared".into()
+    } else if b.after_versions.is_empty() {
+        "no matching version".into()
+    } else {
+        b.after_versions.join(", ")
+    };
     d.item(&format!(
-        "  {}: {identity} {} → {}; binding {} → {}; review {}{}",
-        b.source_key,
-        b.before_versions
-            .first()
-            .map_or_else(|| "unmatched".into(), |_| b.before_versions.join(", ")),
-        b.after_versions
-            .first()
-            .map_or_else(|| "unmatched".into(), |_| b.after_versions.join(", ")),
-        b.base_status,
-        b.head_status,
-        b.review_eligibility.status,
-        b.review_eligibility
-            .reason
-            .as_ref()
-            .map_or(String::new(), |r| format!(" ({r})"))
+        "  {identity} in {}: {before} → {after}",
+        b.source_key
     ))?;
-    if b.before_versions.is_empty() && !b.recorded_before_versions.is_empty() {
+    if c.kind != "added" && b.before_versions.is_empty() && !b.recorded_before_versions.is_empty() {
+        d.item(&format!("  The earlier file lists {}, but these versions could not be matched to the dependency declaration.", b.recorded_before_versions.join(", ")))?;
+    }
+    for (side, id, absent) in [
+        ("earlier", &c.before_id, c.kind == "added"),
+        ("later", &c.after_id, c.kind == "removed"),
+    ] {
+        if !absent && id.is_none() {
+            d.item(&format!("  The service did not identify a unique dependency declaration in the {side} revision. Review the matching declarations manually."))?;
+        }
+    }
+    if b.review_eligibility.status != "eligible" {
         d.item(&format!(
-            "  Recorded base versions: {} (not a qualified direct review target)",
-            b.recorded_before_versions.join(", ")
+            "  No upgrade review: {}",
+            eligibility(b.review_eligibility.reason.as_deref())
         ))?;
     }
-    for (side, target) in [("base", &b.base_target), ("head", &b.head_target)] {
-        if let Some(t) = target {
+    for (side, status) in [("earlier", &b.base_status), ("later", &b.head_status)]
+        .into_iter()
+        .filter(|(side, _)| {
+            if *side == "earlier" {
+                c.kind != "added"
+            } else {
+                c.kind != "removed"
+            }
+        })
+    {
+        if !matches!(status.as_str(), "matched" | "absent") {
             d.item(&format!(
-                "  {side} review target: {}@{}",
-                package(&t.package),
-                t.version
+                "  In the {side} revision, {} Review the declaration and {}.",
+                explanations::binding_reason(status),
+                b.source_key
             ))?;
-        } else {
-            d.item(&format!("  {side} review target: unavailable"))?;
         }
     }
     Ok(())
+}
+
+fn eligibility(reason: Option<&str>) -> &'static str {
+    match reason {
+        Some("base_declaration_mismatch") => {
+            "the earlier package details do not match the dependency declaration."
+        }
+        Some("became_direct") => {
+            "the package was already present, but is now declared directly; there is no earlier direct dependency to compare."
+        }
+        Some("direct_addition") => {
+            "this dependency was added, so there is no earlier declared version to compare."
+        }
+        Some("direct_removal") => {
+            "this dependency was removed, so there is no later declared version to review."
+        }
+        Some("base_binding_unavailable") => {
+            "the earlier dependency declaration could not be matched to a package entry."
+        }
+        Some("head_binding_unavailable") => {
+            "the later dependency declaration could not be matched to a package entry."
+        }
+        Some("binding_not_matched") => {
+            "the earlier or later dependency declaration could not be matched conclusively to a package entry."
+        }
+        Some("target_occurrence_not_qualified") => {
+            "the service could not identify comparable package versions for this dependency."
+        }
+        Some("target_identity_changed") => {
+            "the declaration now refers to a different package, rather than a new version of the same package."
+        }
+        Some("version_unchanged") => "the package version did not change.",
+        _ => {
+            "the service did not identify matching earlier and later versions that it could review, and supplied no more specific explanation Scan can display."
+        }
+    }
 }
 
 fn cell(value: &str, markdown: bool) -> String {

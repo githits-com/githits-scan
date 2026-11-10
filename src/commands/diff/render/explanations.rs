@@ -28,33 +28,101 @@ pub(super) fn new(v: &view::View) -> Evidence<'_> {
     }
 }
 
-pub(super) fn change(
+pub(super) fn changes(
     evidence: &Evidence<'_>,
-    c: &view::Change,
+    rows: &[&view::Change],
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    for (label, side, ids, status) in [
-        (
-            "base",
-            &evidence.base,
-            &c.before_ids,
-            c.directness.base.as_str(),
-        ),
-        (
-            "head",
-            &evidence.head,
-            &c.after_ids,
-            c.directness.head.as_str(),
-        ),
-    ] {
-        if (c.kind == "added" && label == "base") || (c.kind == "removed" && label == "head") {
-            continue;
-        }
-        if status == "unknown" {
-            change_side(side, label, ids, d)?;
-        }
+    let mut groups: Vec<(String, String, Vec<String>)> = Vec::new();
+    for c in rows {
+        group_change(evidence, c, &mut groups);
+    }
+    for (revision, reason, names) in groups {
+        let verb = if names.len() == 1 { "is" } else { "are" };
+        d.item(&format!("Scan could not tell whether {} {verb} used directly or through another package {revision}.",names.join(", ")))?;
+        d.item(&format!("  {reason}"))?;
     }
     Ok(())
+}
+
+fn group_change(
+    evidence: &Evidence<'_>,
+    c: &view::Change,
+    groups: &mut Vec<(String, String, Vec<String>)>,
+) {
+    for (revision, reasons) in change_reasons(evidence, c) {
+        for reason in reasons {
+            group(groups, &revision, reason, super::package(&c.package));
+        }
+    }
+}
+
+fn group(
+    groups: &mut Vec<(String, String, Vec<String>)>,
+    revision: &str,
+    reason: String,
+    name: String,
+) {
+    if let Some((_, _, names)) = groups
+        .iter_mut()
+        .find(|(r, text, _)| r == revision && text == &reason)
+    {
+        if !names.contains(&name) {
+            names.push(name);
+        }
+    } else {
+        groups.push((revision.into(), reason, vec![name]));
+    }
+}
+
+fn change_reasons(e: &Evidence<'_>, c: &view::Change) -> Vec<(String, Vec<String>)> {
+    let before = if c.kind == "added" {
+        Vec::new()
+    } else {
+        usage_reasons(&e.base, &c.before_ids, &c.directness.base)
+    };
+    let after = if c.kind == "removed" {
+        Vec::new()
+    } else {
+        usage_reasons(&e.head, &c.after_ids, &c.directness.head)
+    };
+    let shared = before
+        .iter()
+        .filter(|r| after.contains(r))
+        .cloned()
+        .collect();
+    let earlier = before
+        .iter()
+        .filter(|r| !after.contains(r))
+        .cloned()
+        .collect();
+    let later = after
+        .iter()
+        .filter(|r| !before.contains(r))
+        .cloned()
+        .collect();
+    [
+        ("in either revision", shared),
+        ("in the earlier revision", earlier),
+        ("in the later revision", later),
+    ]
+    .into_iter()
+    .filter(|(_, r): &(_, Vec<String>)| !r.is_empty())
+    .map(|(r, v)| (r.into(), v))
+    .collect()
+}
+
+fn usage_reasons(side: &Side<'_>, ids: &[String], status: &str) -> Vec<String> {
+    if matches!(status, "direct" | "transitive") {
+        return Vec::new();
+    }
+    if status != "unknown" {
+        return vec!["The service returned a dependency classification that this version of Scan cannot explain. Review the dependency declarations and lockfile entries manually.".into()];
+    }
+    let mut reasons = change_side(side, ids);
+    reasons.sort();
+    reasons.dedup();
+    reasons
 }
 
 pub(super) fn declaration_label(evidence: &Evidence<'_>, c: &view::DeclarationChange) -> String {
@@ -67,7 +135,7 @@ pub(super) fn declaration_label(evidence: &Evidence<'_>, c: &view::DeclarationCh
         .as_deref()
         .and_then(|id| evidence.base.declarations.get(id));
     head.or(base).map_or_else(
-        || "no unique declaration".into(),
+        || "a dependency whose name and declaring file were not supplied".into(),
         |decl| format!("{} in {}", decl.declared_name, decl.declaring_manifest),
     )
 }
@@ -87,7 +155,11 @@ pub(super) fn binding(
         for row in rows.into_iter().flatten() {
             collect(&mut causes, &row.reasons);
         }
-        write_causes(&format!("{label} binding cause"), &causes, d)?;
+        write_causes(
+            &format!("In the {} revision", super::revision(label)),
+            &causes,
+            d,
+        )?;
     }
     Ok(())
 }
@@ -107,10 +179,12 @@ pub(super) fn review_context(
         }
     }
     for label in labels {
-        d.item(&format!("  Declared by: {label}"))?;
+        d.item(&format!("  Declared as {label}."))?;
     }
     if missing {
-        d.item("  Authored declaration context is unavailable in this report.")?;
+        d.item(
+            "  The service did not identify which dependency declaration requested this review.",
+        )?;
     }
     Ok(())
 }
@@ -133,10 +207,14 @@ pub(super) fn coverage(
     }
     if causes.is_empty() {
         return d.item(&format!(
-            "  {label} reachability: producer explanation unavailable for this qualification."
+            "  In the {} revision, the service did not explain why it could not connect the dependency declarations to their package entries.", super::revision(label)
         ));
     }
-    write_causes(&format!("{label} reachability"), &causes, d)
+    write_causes(
+        &format!("In the {} revision", super::revision(label)),
+        &causes,
+        d,
+    )
 }
 
 fn side(v: &view::Snapshot) -> Side<'_> {
@@ -159,12 +237,7 @@ fn side(v: &view::Snapshot) -> Side<'_> {
     }
 }
 
-fn change_side(
-    side: &Side<'_>,
-    label: &str,
-    ids: &[String],
-    d: &mut Display<'_>,
-) -> io::Result<()> {
+fn change_side(side: &Side<'_>, ids: &[String]) -> Vec<String> {
     let mut causes = Vec::new();
     let mut proof_ids = BTreeSet::new();
     let mut unknown = false;
@@ -195,18 +268,14 @@ fn change_side(
             unresolved = true;
         }
     }
-    write_causes(&format!("{label} dependency type"), &causes, d)?;
+    let mut text: Vec<_> = causes.into_iter().map(cause_text).collect();
     if !unknown || unexplained {
-        d.item(&format!(
-            "  {label} dependency type unknown; no producer explanation is associated."
-        ))?;
+        text.push("The service did not return its explanation. Review the dependency declarations and corresponding lockfile entries manually.".into());
     }
     if unresolved {
-        d.item(&format!(
-            "  {label} dependency type: referenced explanation unavailable in this snapshot."
-        ))?;
+        text.push("Part of the service's explanation was missing from this report. Review the dependency declarations and corresponding lockfile entries manually.".into());
     }
-    Ok(())
+    text
 }
 
 fn collect<'a>(causes: &mut Vec<&'a view::Cause>, rows: &'a [view::Cause]) {
@@ -219,32 +288,141 @@ fn collect<'a>(causes: &mut Vec<&'a view::Cause>, rows: &'a [view::Cause]) {
 
 fn write_causes(label: &str, causes: &[&view::Cause], d: &mut Display<'_>) -> io::Result<()> {
     for cause in causes {
-        let mut context = vec![format!("source {}", cause.source_key)];
-        if let Some(path) = &cause.manifest_path {
-            context.push(format!("manifest {path}"));
-        }
-        if let Some(name) = &cause.dependency_name {
-            let kind = cause
-                .declaration_id
-                .as_ref()
-                .map_or("dependency", |_| "declaration");
-            context.push(format!("{kind} {name}"));
-        }
-        if let Some(state) = &cause.coverage_state {
-            context.push(format!("coverage {state}"));
-        }
-        if !cause.coverage_reasons.is_empty() {
-            context.push(format!(
-                "coverage reasons: {}",
-                cause.coverage_reasons.join(", ")
-            ));
-        }
-        d.item(&format!(
-            "  {label}: {} ({}); {}",
-            cause.message,
-            cause.code,
-            context.join("; ")
-        ))?;
+        d.item(&format!("  {label}: {}", cause_text(cause)))?;
     }
     Ok(())
+}
+
+fn cause_text(c: &view::Cause) -> String {
+    let declarations = c
+        .manifest_path
+        .as_deref()
+        .unwrap_or("the supplied dependency declarations");
+    let name = c.dependency_name.as_deref().unwrap_or("this dependency");
+    let source = &c.source_key;
+    match c.code.as_str() {
+        "root_dependency_coverage_incomplete" => incomplete_dependencies(c, declarations),
+        "authored_request_not_linked" => format!(
+            "Scan could not match {name} in {declarations} to its package version in {source}."
+        ),
+        "selected_binding_target_missing" => format!(
+            "The package version requested by {name} in {declarations} was not available in the comparison of {source}."
+        ),
+        "native_root_not_linked" => format!(
+            "Scan could not connect the dependency declarations in {declarations} to package entries in {source}."
+        ),
+        "declaration_binding_missing" => format!(
+            "The service did not return a package match for {name} in {declarations} when comparing {source}."
+        ),
+        "root_association_missing" => format!(
+            "The service could not identify the file declaring the project's dependencies for {source}. Check which dependency files were included in the comparison."
+        ),
+        "root_reachability_missing" => format!(
+            "The comparison could not show how {name} is used from {declarations} in {source}. This does not establish that the package is unused."
+        ),
+        "version_mismatch"
+        | "scope_mismatch"
+        | "ambiguous"
+        | "not_recorded"
+        | "unsupported_requirement"
+        | "unresolved_activation" => format!(
+            "For {name} in {declarations}, {} Check the corresponding entries in {source}.",
+            binding_reason(&c.code)
+        ),
+        _ if c.message.trim().is_empty() => format!(
+            "The service did not supply a readable explanation for {name} in {declarations} when comparing {source}. Review those files manually."
+        ),
+        _ => format!(
+            "{} This concerns {name} in {declarations} and {source}.",
+            c.message
+        ),
+    }
+}
+
+fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
+    let has_unmatched = c
+        .coverage_reasons
+        .iter()
+        .any(|r| r == "untargeted_requirement");
+    let mut text = if has_unmatched {
+        format!(
+            "Not every dependency declared in {manifest} could be matched to an entry in {}.",
+            c.source_key
+        )
+    } else {
+        format!(
+            "The dependency information linking {manifest} to {} is incomplete.",
+            c.source_key
+        )
+    };
+    let mut details: Vec<_> = c
+        .coverage_reasons
+        .iter()
+        .filter_map(|r| native_reason(r))
+        .collect();
+    details.sort_unstable();
+    details.dedup();
+    if !details.is_empty() {
+        text.push_str(" This is because ");
+        text.push_str(&details.join("; "));
+        text.push('.');
+    }
+    if c.coverage_reasons.is_empty()
+        || c.coverage_reasons
+            .iter()
+            .any(|r| r != "untargeted_requirement" && native_reason(r).is_none())
+    {
+        text.push_str(
+            " The service did not supply a further reason this version of Scan can explain.",
+        );
+    }
+    if let Some(name) = &c.dependency_name {
+        text.push_str(" The problem concerns ");
+        text.push_str(name);
+        text.push('.');
+    }
+    format!("{text} Review those files to confirm how the package is used.")
+}
+
+fn native_reason(reason: &str) -> Option<&'static str> {
+    match reason {
+        "dependency_list_unavailable" | "replacement_dependency_list_unknown" => {
+            Some("a package's dependency list was unavailable")
+        }
+        "not_expanded" | "reduced_capture" => {
+            Some("some package dependencies were not included in the available information")
+        }
+        "unresolved_dependency" | "unrepresented_endpoint" => {
+            Some("a dependency could not be matched to a package entry")
+        }
+        "unsupported_dependency" => Some("a dependency could not be interpreted"),
+        "unmet_dependency" => Some("a dependency requirement was not met"),
+        "unknown_relationship" => {
+            Some("the service could not determine which package uses a dependency")
+        }
+        "inventory_only" => Some(
+            "the files list packages without enough information about which package uses which",
+        ),
+        _ => None,
+    }
+}
+
+pub(super) fn binding_reason(reason: &str) -> &'static str {
+    match reason {
+        "version_mismatch" => {
+            "the listed package versions do not satisfy the declared requirement."
+        }
+        "scope_mismatch" => "the declared and listed dependency categories disagree.",
+        "ambiguous" => "the dependency declaration matches more than one possible package entry.",
+        "not_recorded" => "no package entry was found for the dependency declaration.",
+        "unsupported_requirement" => {
+            "the declared requirement could not be checked against package versions."
+        }
+        "unresolved_activation" => {
+            "the service could not determine whether the dependency declaration applies."
+        }
+        _ => {
+            "the service did not explain why it could not match the dependency declaration to a package version."
+        }
+    }
 }
