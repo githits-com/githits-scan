@@ -49,6 +49,7 @@ fn diff_help_marks_experimental_and_documents_working_tree() {
         "--output-json",
         "--output-markdown",
         "--lockfiles-only",
+        "Complete escaped Markdown report",
     ] {
         assert!(stdout(&output).contains(text), "missing {text}");
     }

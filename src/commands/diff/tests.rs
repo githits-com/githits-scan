@@ -153,6 +153,42 @@ fn diff_compact_changelog_keeps_flagged_entries_and_explains_display_limit() {
 }
 
 #[test]
+fn diff_markdown_keeps_all_release_notes_and_sparse_entry_identity() {
+    let mut value = fixture::report();
+    let headline = "safe".repeat(100);
+    let entries = (0..7).map(|i| json!({
+        "version": format!("1.2.{i}"), "headline": format!("entry {i}: {headline} @team <script>"),
+        "html_url": format!("https://example.invalid/{i}"), "signals": []
+    })).collect::<Vec<_>>();
+    let changelog = &mut value["direct_reviews"]["data"][0]["data"]["changelog"];
+    changelog["entries"] = json!(entries);
+    changelog["coverage"]["returned_entries"] = json!(7);
+    changelog["entries"][1] = json!({"version":"1.2.1","signals":["migration"]});
+    changelog["entries"][6] =
+        json!({"signals":[],"html_url":"https://user:secret@example.invalid"});
+    changelog["entries"]
+        .as_array_mut()
+        .expect("entries")
+        .push(json!({"signals":[]}));
+    changelog["coverage"]["returned_entries"] = json!(8);
+    let markdown = rendered(&value, Format::Markdown);
+    for i in [0, 2, 3, 4, 5] {
+        assert!(markdown.contains(&format!("entry {i}&#58; {headline}")));
+        assert!(markdown.contains(&format!("<https://example.invalid/{i}>")));
+    }
+    assert!(markdown.contains("1&#46;2&#46;1&#58; Release&#45;note summary was not supplied"));
+    assert!(markdown.contains("release version not supplied&#58; Release&#45;note summary"));
+    assert!(markdown.contains("Release notes are incomplete"));
+    assert!(markdown.contains("@&#8203;team &lt;script&gt;"));
+    assert!(!markdown.contains("secret"));
+    assert_eq!(markdown.matches("summary was not supplied").count(), 3);
+    assert!(!markdown.contains("Additional release notes are available"));
+    let human = rendered(&value, Format::Human);
+    assert!(human.contains("1.2.1: Release-note summary was not supplied"));
+    assert!(!human.contains("entry 4"));
+}
+
+#[test]
 fn diff_partial_counts_name_unqualified_occurrences_and_reachability() {
     let mut value = fixture::report();
     value["outcome"] = "partial".into();
