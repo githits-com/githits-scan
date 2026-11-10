@@ -99,7 +99,7 @@ Every error is a problem document. Branch on `code`, never on `detail`. The `ins
 | 404 | `ANALYSIS_NOT_FOUND` | Missing, expired or another owner's job; no recovery |
 | 409 | `ANALYSIS_PENDING`, `ANALYSIS_FAILED` | Result unavailable; failed may include allowlisted `failure_code` |
 | 503 | `ANALYSIS_UNAVAILABLE` | Admission unavailable; retry manually |
-| 429 | `RATE_LIMITED` | Show `Retry-After` when present (decimal digits use an `s` seconds suffix; other values unchanged) and exit; never sleep and retry |
+| 429 | `RATE_LIMITED` | Honor valid `Retry-After` within the shared five-retry / 300-second waiting budget; otherwise show the final problem and exit 3 |
 | 500 | none (empty body, no request ID) | Service could not create request identity; retry later manually |
 | 502 | `UPSTREAM_ERROR` | Service failure; retry later manually |
 | 503 | `SBOM_UNAVAILABLE`, `UPSTREAM_UNAVAILABLE` | Service unavailable; retry later manually |
@@ -116,7 +116,7 @@ The `UNUSABLE_MANIFEST` problem carries per-file diagnostics:
 
 These follow directly from the contract and are non-negotiable for the API boundary.
 
-- **Submit once.** No submission/result retry, status polling, sync fallback or Last-Event-ID replay. Established event-stream EOF/read loss reopens to obtain the latest snapshot; every opening must deliver a valid first snapshot. Opening transport/HTTP errors, empty streams and malformed data stop immediately. There is no delay or retry counter. A server repeatedly closing after one snapshot can consume admission until 429; no fleet burst has been qualified.
+- **Retry explicit throttling only.** Actual HTTP 429 with a valid `Retry-After` may repeat the rejected submission, event opening/reopening or result read, independent of problem-body parsing/code. One invocation shares five additional attempts and 300 seconds of scheduled waiting; successful requests and event reopenings do not replenish either budget. After acceptance, no downstream failure resubmits that job. Transport errors and other HTTP statuses are not retried. Established event-stream EOF/read loss reopens to obtain the latest snapshot; every opening must deliver a valid first snapshot. Empty streams and malformed data stop immediately. No status polling, sync fallback or Last-Event-ID replay. No fleet burst has been qualified.
 - **No redirects.** A redirect could forward the bearer token to another host. The HTTP client disables redirect following; a 3xx is an error.
 - **Explicit transport budgets.** Both clients limit connection establishment to 15 seconds, independently of their read allowances. Finite submission/result headers and individual reads retain 210 seconds. Events use 60 seconds for headers and each read, above the 30-second opening budget and 15-second keepalive. There is no whole-job timeout. See [Transport budgets](#transport-budgets).
 - **Limits before bytes.** Every upload limit is checked locally before the request is built, with an error that names the limit and the offending files.
@@ -130,7 +130,7 @@ These follow directly from the contract and are non-negotiable for the API bound
 
 `jobs.rs` owns wire validation; `sse.rs` owns incremental framing; `http.rs` owns
 submit/events/result orchestration. Commands receive a fallible `ProgressEvent` callback
-and own display. `Snapshot(Progress)` retains validated replacement measurements;
+and own display. `RateLimited` carries a typed request stage, one-based invocation retry number, exact delay and optional response-header request identity. Commands flush a warning before the wait, including in quiet/JSON modes. `Snapshot(Progress)` retains validated replacement measurements;
 `Reconnecting` announces an established-stream reopening, and `Downloading`
 announces result retrieval after success. These are client transitions, not
 invented server phases. A callback error stops before the next opening/result GET. The existing `HttpSbomApi` is migrated without a second synchronous
@@ -160,6 +160,41 @@ Incomplete frames at EOF are discarded. Success/failure immediately drops the st
 without waiting for EOF. Callback failure also releases it; no job cancellation is sent.
 OS interruption terminates the process normally. Result bytes reach stdout/files only
 after complete media-checked, capped download. Existing output files survive API failures.
+
+## Rate-limit recovery
+
+`http/retry.rs` owns the operation-local budget and Retry-After parsing. Digit-only
+delay-seconds (including zero, after field whitespace trimming) and HTTP dates
+are supported; a past date permits an
+immediate retry. Missing, invalid, overflowing or over-budget delays stop with the
+original final response. A delay is never shortened to fit the budget. Daily and
+minute quotas can share `RATE_LIMITED`; the client does not infer the quota period
+from free-text detail. No invented default delay, exponential backoff or jitter. Eligibility is checked
+first: missing/invalid delay has no stop notice; otherwise retry-count exhaustion
+takes precedence over the remaining wait allowance. HTTP dates use the local clock.
+
+The common HTTP lifecycle creates this budget once for ordinary and paired
+submissions, then shares it with every event opening and result read.
+
+A structured stop notice explains whether all five retries were used or the next
+server delay exceeds the remaining automatic wait allowance (naming both). The
+last response still supplies the final typed error. Raw/non-JSON final 429s carry
+a static rate-limit action; a RATE_LIMITED problem without Retry-After explicitly
+says the service supplied no delay.
+
+Each retry warning names submission, progress opening or result download, the attempt
+out of up to five, delay and request ID when supplied. Zero says “now”; fractional date
+delays display rounded up to whole seconds, while the actual wait retains its
+precision. Wait-limit notices likewise round the requested duration up and the
+remaining allowance down to whole seconds. Callback failure stops before sleeping or sending another request.
+Rejected responses are dropped before notification/waiting. Only terminal errors
+are parsed through the existing bounded error-body path.
+
+Multipart attempts clone the original validated contents and filenames into a
+fresh form, preserving diff controls and base/head field names. Files are not
+reread during recovery. Peak upload storage is the retained input plus one attempt,
+roughly twice the 8,000,000-byte body envelope; retained uploads are released after
+acceptance. Redirects and reqwest automatic protocol retries remain disabled.
 
 ## Transport budgets
 

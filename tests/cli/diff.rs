@@ -528,3 +528,33 @@ fn diff_lockfiles_only_retains_companions_and_sets_recorded_only() {
 
 #[path = "diff/dual_output.rs"]
 mod dual_output;
+
+#[test]
+fn rate_limit_diff_json_quiet_keeps_warning_and_exact_report() {
+    use super::support::{
+        diff as fixture,
+        jobs::{ScriptedServer, rate_limited},
+    };
+    let repo = pair();
+    let bytes = serde_json::to_vec(&fixture::report()).expect("JSON");
+    let mut replies = vec![rate_limited("0")];
+    replies.extend(fixture::exchanges(&bytes));
+    let server = ScriptedServer::respond_with(replies);
+    let output = githits_scan()
+        .arg("diff")
+        .arg(repo.path())
+        .args([
+            "--base", "HEAD~1", "--head", "HEAD", "--format", "json", "--quiet",
+        ])
+        .env("GITHITS_API_TOKEN", "test-token")
+        .env("GITHITS_API_URL", server.origin())
+        .output()
+        .expect("diff");
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(output.stdout, bytes);
+    assert_eq!(
+        stderr(&output),
+        "warning: rate limited while submitting analysis; retry 1 of up to 5 now (request id: req-limit)\n"
+    );
+    assert_eq!(server.requests().len(), 4);
+}

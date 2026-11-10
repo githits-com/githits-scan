@@ -22,7 +22,7 @@ persist credentials. Match the signed-in CLI environment to Scan's explicit API
 origin. A development result does not establish production availability.
 
 One accepted job is one analysis: never automatically resubmit a timed-out or
-failed job. Preserve admission failures and `Retry-After`; a later invocation is
+failed job. Preserve final admission failures and `Retry-After` after bounded HTTP 429 recovery; a later invocation is
 a separate run. A 429 with no report is an execution result, not a clean audit.
 
 ## Check each claim at its owning boundary

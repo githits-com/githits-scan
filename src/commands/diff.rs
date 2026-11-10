@@ -134,7 +134,7 @@ pub fn run<A: DiffApi>(
         writeln!(stderr, "Note: {}", super::safe(notice)).map_err(Error::Output)?;
     }
     let report = create_api()?.diff(paired, &mut |event| {
-        if request.quiet {
+        if !super::progress::visible(event, !request.quiet) {
             return Ok(());
         }
         super::progress::write_diff(event, stderr)

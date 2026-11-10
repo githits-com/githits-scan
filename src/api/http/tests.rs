@@ -310,3 +310,31 @@ fn connect_timeout_bounds_a_stalled_tls_handshake() {
     assert!(error.to_string().contains("proxy"));
     assert!(matches!(error, ApiError::Transport(source) if source.is_timeout()));
 }
+
+#[test]
+fn rate_limit_nonzero_waits_share_the_exact_300_second_budget() {
+    use crate::test_support::jobs::rate_limited;
+    let server = ScriptedServer::respond_with(vec![
+        rate_limited("150"),
+        accept_response(),
+        rate_limited("150"),
+        events_response(&[snapshot("succeeded", "succeeded", 1)]),
+        rate_limited("1"),
+    ]);
+    let mut api = HttpSbomApi::new(environment(&server.origin())).expect("client");
+    api.sleep = |delay| assert_eq!(delay, Duration::from_secs(150));
+    let mut delays = Vec::new();
+    let error = api
+        .generate(upload(), OutputFormat::CycloneDx, &mut |event| {
+            if let ProgressEvent::RateLimited { delay, .. } = event {
+                delays.push(*delay);
+            }
+            Ok(())
+        })
+        .expect_err("waiting budget exhausted");
+    assert!(
+        matches!(error, ApiError::Problem { retry_after, .. } if retry_after.as_deref() == Some("1"))
+    );
+    assert_eq!(delays, vec![Duration::from_secs(150); 2]);
+    assert_eq!(server.requests().len(), 5);
+}

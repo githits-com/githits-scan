@@ -63,7 +63,7 @@ After reading, a contributor should be able to:
 
 If there's one thing readers must not forget, call it out explicitly:
 
-> **Never retry an SBOM request automatically.** The API has no idempotency key; a retry recomputes and consumes quota.
+> **Never resubmit an accepted analysis automatically.** Only explicit HTTP 429 refusals receive bounded Retry-After recovery; a new accepted submission recomputes and consumes quota.
 
 ### Use Tables for Reference Material
 

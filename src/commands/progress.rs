@@ -2,16 +2,32 @@
 
 use std::io::Write;
 
-use crate::api::ProgressEvent;
 use crate::api::jobs::{Phase, Progress};
+use crate::api::{MAX_RATE_LIMIT_RETRIES, ProgressEvent, RateLimitStop, RequestStage};
 
 pub(super) fn message(text: &str, out: &mut dyn Write) -> std::io::Result<()> {
     writeln!(out, "{text}")?;
     out.flush()
 }
 
+/// Throttling is a material warning even when routine progress is suppressed.
+pub(super) const fn visible(event: &ProgressEvent, enabled: bool) -> bool {
+    enabled
+        || matches!(
+            event,
+            ProgressEvent::RateLimited { .. } | ProgressEvent::RateLimitStopped(_)
+        )
+}
+
 pub(super) fn write(event: &ProgressEvent, out: &mut dyn Write) -> std::io::Result<()> {
     match event {
+        ProgressEvent::RateLimitStopped(reason) => rate_limit_stopped(reason, out),
+        ProgressEvent::RateLimited {
+            stage,
+            attempt,
+            delay,
+            request_id,
+        } => rate_limit(*stage, *attempt, *delay, request_id.as_deref(), out),
         ProgressEvent::Reconnecting => message("progress connection lost; reconnecting...", out),
         ProgressEvent::Downloading => message("SBOM ready; downloading...", out),
         ProgressEvent::Snapshot(progress) => snapshot(progress, false, out),
@@ -22,7 +38,9 @@ pub(super) fn write_audit(event: &ProgressEvent, out: &mut dyn Write) -> std::io
     match event {
         ProgressEvent::Downloading => message("audit report ready; downloading...", out),
         ProgressEvent::Snapshot(progress) => snapshot(progress, true, out),
-        ProgressEvent::Reconnecting => write(event, out),
+        ProgressEvent::Reconnecting
+        | ProgressEvent::RateLimited { .. }
+        | ProgressEvent::RateLimitStopped(_) => write(event, out),
     }
 }
 
@@ -41,6 +59,62 @@ pub(super) fn write_diff(event: &ProgressEvent, out: &mut dyn Write) -> std::io:
         }
         _ => write_audit(event, out),
     }
+}
+
+fn rate_limit_stopped(reason: &RateLimitStop, out: &mut dyn Write) -> std::io::Result<()> {
+    match reason {
+        RateLimitStop::RetriesExhausted => {
+            writeln!(
+                out,
+                "warning: automatic rate-limit recovery stopped after {MAX_RATE_LIMIT_RETRIES} retries"
+            )?;
+        }
+        RateLimitStop::WaitExceeded {
+            requested,
+            remaining,
+        } => {
+            let requested = ceil_seconds(*requested);
+            let remaining = remaining.as_secs();
+            writeln!(
+                out,
+                "warning: automatic rate-limit recovery stopped: the server requested {requested}s but only {remaining}s of waiting remain"
+            )?;
+        }
+    }
+    out.flush()
+}
+
+fn rate_limit(
+    stage: RequestStage,
+    attempt: u8,
+    delay: std::time::Duration,
+    request_id: Option<&str>,
+    out: &mut dyn Write,
+) -> std::io::Result<()> {
+    let stage = match stage {
+        RequestStage::Submission => "submitting analysis",
+        RequestStage::Events => "opening progress stream",
+        RequestStage::Result => "downloading result",
+    };
+    write!(
+        out,
+        "warning: rate limited while {stage}; retry {attempt} of up to {MAX_RATE_LIMIT_RETRIES}"
+    )?;
+    if delay.is_zero() {
+        write!(out, " now")?;
+    } else {
+        let seconds = ceil_seconds(delay);
+        write!(out, " in {seconds}s")?;
+    }
+    if let Some(id) = request_id {
+        write!(out, " (request id: {})", super::safe(id))?;
+    }
+    writeln!(out)?;
+    out.flush()
+}
+
+fn ceil_seconds(duration: std::time::Duration) -> u64 {
+    duration.as_secs() + u64::from(duration.subsec_nanos() > 0)
 }
 
 fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::Result<()> {
@@ -268,6 +342,77 @@ mod audit_tests {
             )
             .expect("write");
             assert_eq!(String::from_utf8(out).expect("utf8"), expected);
+        }
+    }
+}
+
+#[cfg(test)]
+mod rate_limit_tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[derive(Default)]
+    struct Output {
+        bytes: Vec<u8>,
+        flushes: usize,
+    }
+    impl Write for Output {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.bytes.extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            self.flushes += 1;
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn rate_limit_warning_names_each_stage_rounds_up_escapes_and_flushes() {
+        for (stage, name) in [
+            (RequestStage::Submission, "submitting analysis"),
+            (RequestStage::Events, "opening progress stream"),
+            (RequestStage::Result, "downloading result"),
+        ] {
+            let event = ProgressEvent::RateLimited {
+                stage,
+                attempt: 2,
+                delay: Duration::from_millis(1_001),
+                request_id: Some("req\nforged".into()),
+            };
+            assert!(visible(&event, false));
+            let mut out = Output::default();
+            write(&event, &mut out).expect("warning");
+            assert_eq!(
+                String::from_utf8(out.bytes).expect("UTF-8"),
+                format!(
+                    "warning: rate limited while {name}; retry 2 of up to 5 in 2s (request id: req\\nforged)\n"
+                )
+            );
+            assert_eq!(out.flushes, 1);
+        }
+    }
+
+    #[test]
+    fn rate_limit_stop_rounds_requested_up_and_remaining_down_to_seconds() {
+        for (requested, remaining, expected_request, expected_remaining) in [
+            (312_483, 0, 313, 0),
+            (300_001, 299_999, 301, 299),
+            (1_001, 750, 2, 0),
+        ] {
+            let event = ProgressEvent::RateLimitStopped(RateLimitStop::WaitExceeded {
+                requested: Duration::from_millis(requested),
+                remaining: Duration::from_millis(remaining),
+            });
+            let mut out = Output::default();
+            write(&event, &mut out).expect("stop warning");
+            assert_eq!(
+                String::from_utf8(out.bytes).expect("UTF-8"),
+                format!(
+                    "warning: automatic rate-limit recovery stopped: the server requested {expected_request}s but only {expected_remaining}s of waiting remain\n"
+                )
+            );
+            assert_eq!(out.flushes, 1);
         }
     }
 }

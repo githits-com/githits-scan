@@ -97,10 +97,10 @@ pub fn run(
         return Ok(Outcome::Findings);
     };
     let report = api.audit(prepared.upload, &mut |event| {
-        if request.json || request.quiet {
-            Ok(())
-        } else {
+        if super::progress::visible(event, !request.json && !request.quiet) {
             super::progress::write_audit(event, stderr)
+        } else {
+            Ok(())
         }
     })?;
     if let Some(path) = request.save_analysis {

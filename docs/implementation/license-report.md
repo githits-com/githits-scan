@@ -15,9 +15,11 @@ evaluate a separate CycloneDX document against an explicit policy.
 submits one `/v1/experimental/lockfile-jobs?kind=sbom&format=cyclonedx` job, follows
 its existing events, and downloads `/v1/experimental/license-reports/{id}` after success.
 The ID and all supplied job links are validated before use. The ordinary SBOM
-result is not downloaded. There is no second analysis, result retry, synchronous
+result is not downloaded. There is no second analysis or synchronous
 fallback or status polling. The synchronous public `POST /v1/experimental/license-reports`
-is available to other clients but is not used by Scan.
+is available to other clients but is not used by Scan. Explicit HTTP 429 refusals
+share the [bounded Retry-After policy](sbom-api-contract.md#rate-limit-recovery)
+across submission, events and report download.
 
 `api::licenses` validates version-1 and version-2 envelopes and typed display
 fields, retaining the original bytes for JSON. Additive fields and unfamiliar vocabulary remain

@@ -103,7 +103,7 @@ fn license_report_failures_keep_request_identity_and_do_not_resubmit() {
             &format!("{status} Error"),
             &[
                 ("Content-Type", "application/problem+json"),
-                ("Retry-After", "60"),
+                ("Retry-After", "301"),
             ],
             body.as_bytes(),
         ));
@@ -166,4 +166,30 @@ fn license_report_still_rejects_foreign_job_links() {
         Err(ApiError::Protocol { .. })
     ));
     assert_eq!(server.requests().len(), 1);
+}
+
+#[test]
+fn rate_limit_license_result_retries_only_the_existing_report_view() {
+    let server = ScriptedServer::respond_with(vec![
+        accept_response(),
+        events_response(&[snapshot("succeeded", "succeeded", 1)]),
+        support::jobs::rate_limited("0"),
+        result(REPORT_V2),
+    ]);
+    let report = client(&server)
+        .report(upload(), &mut |_| Ok(()))
+        .expect("recovered view");
+    assert_eq!(report.bytes(), REPORT_V2);
+    let requests = server.requests();
+    assert_eq!(requests.len(), 4);
+    for request in &requests[2..] {
+        assert!(head(request).starts_with(&format!("get /v1/experimental/license-reports/{ID} ")));
+    }
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|r| head(r).starts_with("post "))
+            .count(),
+        1
+    );
 }

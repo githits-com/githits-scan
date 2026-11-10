@@ -112,7 +112,7 @@ fn write_progress(
     stderr: &mut dyn Write,
     enabled: bool,
 ) -> std::io::Result<()> {
-    if !enabled {
+    if !progress::visible(event, enabled) {
         return Ok(());
     }
     progress::write_licenses(event, stderr)

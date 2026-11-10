@@ -105,7 +105,7 @@ pub fn generate(
         return Ok(Generated::Findings);
     };
     let document = api.generate(prepared.upload, generation.format, &mut |event| {
-        if generation.progress {
+        if super::progress::visible(event, generation.progress) {
             super::progress::write(event, stderr)
         } else {
             Ok(())

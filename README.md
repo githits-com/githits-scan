@@ -347,7 +347,7 @@ inclusion overrides remain unless the CLI excludes them. See
 | 0 | Success; checks have no unignored findings or blocking gaps; license reports are informational | Continue |
 | 1 | Findings, incomplete audit, inventory drift, violations, unresolved license projects, or nothing selected | Review the repository or selection |
 | 2 | Invalid invocation/configuration/input, upload limits, missing/rejected token, or account access | Correct the diagnostic's cause |
-| 3 | Network, I/O, rate limit, service, or protocol failure | Investigate; respect `Retry-After` before a deliberate retry |
+| 3 | Network, I/O, rate limit, service, or protocol failure | Investigate after bounded rate-limit recovery; respect `Retry-After` before a deliberate retry |
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
@@ -494,7 +494,7 @@ See [SECURITY.md](SECURITY.md) for credential and transport safeguards.
 | Unsupported file or `UNUSABLE_MANIFEST` (exit 2 for rejected input) | Check the catalog, actual format, and diagnostic's file paths. Scan does not convert formats. A selected unusable file rejects the whole upload; exclude only evidence you intend to omit. |
 | Inventory drift / nothing selected (exit 1) | Review `detect`, configuration, ignore rules, and the scan root. Save a changed inventory only after reviewing it. |
 | Proxy, TLS, timeout, or connection failure (exit 3) | Check connectivity to the configured origin and your proxy settings. Proxies must permit authenticated HTTPS and streaming progress responses. Redirects are refused. Do not disable TLS checks. |
-| Rate limit or service failure (exit 3) | Keep the request ID and follow `Retry-After` when supplied. Re-running submits a new job; submission/result requests are not retried automatically. |
+| Rate limit or service failure (exit 3) | HTTP 429 is retried at most five times across the invocation, with at most five minutes of total waiting, honoring a valid `Retry-After` (seconds or HTTP date). Each retry is reported on stderr, including with `--quiet` or JSON output. Missing, invalid or over-budget delays stop immediately. Other failures are not retried. Keep the request ID; re-running submits a new job. |
 | Permission denied / unreadable file or output (usually exit 3) | Ensure the scan root and selected files are readable and the output directory is writable. A missing input/configuration instead exits 2. Fix access or selection rather than running Scan as administrator. |
 
 Connections have a 15-second establishment timeout. Submission/result headers

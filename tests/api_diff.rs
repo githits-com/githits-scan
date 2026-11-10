@@ -159,3 +159,65 @@ fn diff_http_rejects_wrong_sse_kind_without_a_result_request() {
     );
     assert_eq!(server.requests().len(), 2);
 }
+
+#[test]
+fn rate_limit_diff_rebuilds_paired_upload_and_recovers_without_a_second_job() {
+    let bytes = serde_json::to_vec(&fixture::report()).expect("JSON");
+    let mut replies = vec![support::jobs::rate_limited("0")];
+    replies.extend(fixture::exchanges(&bytes));
+    let server = ScriptedServer::respond_with(replies);
+    let report = client(&server.origin())
+        .diff(input(), &mut |_| Ok(()))
+        .expect("recovered");
+    assert_eq!(report.bytes(), bytes);
+    let requests = server.requests();
+    assert_eq!(requests.len(), 4);
+    for request in &requests[..2] {
+        let wire = body(request);
+        for (field, name) in [("base_files[]", "a"), ("head_files[]", "b")] {
+            assert!(wire.contains(&format!(
+                "name=\"{field}\"; filename=\"résumé/package.json\""
+            )));
+            assert!(wire.contains(&format!("{{\"name\":\"{name}\"}}")));
+        }
+        assert!(wire.contains("name=\"request\"\r\n\r\n"));
+    }
+    let controls = |request: &[u8]| {
+        body(request)
+            .split("name=\"request\"\r\n\r\n")
+            .nth(1)
+            .expect("controls")
+            .split("\r\n")
+            .next()
+            .expect("JSON")
+            .to_owned()
+    };
+    assert_eq!(controls(&requests[0]), controls(&requests[1]));
+}
+
+#[test]
+fn rate_limit_diff_shares_submission_budget_with_result_download() {
+    let mut replies = vec![support::jobs::rate_limited("0"); 5];
+    let bytes = serde_json::to_vec(&fixture::report()).expect("JSON");
+    let mut accepted = fixture::exchanges(&bytes);
+    accepted[2] = support::jobs::rate_limited("0");
+    replies.extend(accepted);
+    let server = ScriptedServer::respond_with(replies);
+    let error = client(&server.origin())
+        .diff(input(), &mut |_| Ok(()))
+        .map(|_| ())
+        .expect_err("shared budget");
+    assert!(
+        matches!(error, api::ApiError::Problem { problem, .. } if problem.code == api::Code::RateLimited)
+    );
+    let requests = server.requests();
+    assert_eq!(requests.len(), 8);
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|r| head(r).starts_with("post "))
+            .count(),
+        6
+    );
+    assert!(head(&requests[7]).contains("/result "));
+}
