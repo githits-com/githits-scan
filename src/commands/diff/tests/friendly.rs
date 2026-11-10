@@ -273,6 +273,17 @@ fn diff_friendly_output_does_not_equate_unidentified_declarations_with_absence()
     assert!(!text.contains("Changed a dependency whose name and declaring file were not supplied"));
 }
 
+fn assert_security_section_warning_order(text: &str) {
+    let heading = text.find("Security advisories").expect("heading");
+    let warning = text
+        .find("Some security checks could not be completed")
+        .expect("warning");
+    assert!(
+        heading < warning,
+        "warning must belong to the security section: {text}"
+    );
+}
+
 #[test]
 fn diff_friendly_output_keeps_security_limitations_without_findings() {
     for only_clear_rows in [false, true] {
@@ -297,6 +308,10 @@ fn diff_friendly_output_keeps_security_limitations_without_findings() {
             "{text}"
         );
         assert!(text.contains("service does not support checking some package versions"));
+        if only_clear_rows {
+            assert_security_section_warning_order(&text);
+            assert_security_section_warning_order(&rendered(&v, Format::Markdown));
+        }
         for raw in [
             "unknown 1",
             "unsupported 1",

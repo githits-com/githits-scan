@@ -14,12 +14,12 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
             "Security advisory checks",
         ));
     };
-    limitations(&v.advisories, d)?;
     if data.coordinate_transitions.is_empty() && data.exposures.is_empty() {
-        return Ok(());
+        return limitations(&v.advisories, d);
     }
     d.heading("Security advisories")?;
     d.line("Both revisions are checked against today's security information, rather than what was known when each revision was created.")?;
+    limitations(&v.advisories, d)?;
     for transition in &data.coordinate_transitions {
         let context = v
             .changes
