@@ -82,3 +82,38 @@ pub fn v2_unsupported() -> serde_json::Value {
     v["summary"]["incomplete_checks"] = 2.into();
     v
 }
+
+/// Two eligible coordinates without findings, for metadata coverage cases.
+pub fn metadata_coverage(version: u8) -> serde_json::Value {
+    let mut value = if version == 1 { clean() } else { v2_clean() };
+    if version == 1 {
+        value["occurrences"][1]["coordinate"]["name"] = "other".into();
+        value["occurrences"][1]["name"] = "other".into();
+        value["summary"]["dependencies"] = 2.into();
+        for check in ["vulnerabilities", "deprecation", "outdated", "duplicates"] {
+            value["coverage"][check]["candidates_count"] = 2.into();
+        }
+        for check in ["vulnerabilities", "deprecation", "outdated"] {
+            value["coverage"][check]["checked_count"] = 2.into();
+        }
+    }
+    for check in ["deprecation", "outdated"] {
+        value["coverage"][check]["not_applicable_count"] = 0.into();
+        value["coverage"][check]["not_applicable_registries"] = serde_json::json!([]);
+    }
+    value
+}
+
+/// Explicit producer-owned PyPI applicability; no compatibility Boolean is used.
+pub fn pypi_not_applicable(version: u8) -> serde_json::Value {
+    let mut value = metadata_coverage(version);
+    if version == 1 {
+        for occurrence in value["occurrences"].as_array_mut().expect("occurrences") {
+            occurrence["coordinate"]["registry"] = "pypi".into();
+        }
+    }
+    value["coverage"]["deprecation"]["checked_count"] = 0.into();
+    value["coverage"]["deprecation"]["not_applicable_count"] = 2.into();
+    value["coverage"]["deprecation"]["not_applicable_registries"] = serde_json::json!(["pypi"]);
+    value
+}

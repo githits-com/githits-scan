@@ -69,3 +69,40 @@ fn audit_openapi_example_is_usable_without_mandatory_manifest_source_rows() {
     assert!(a.attention);
     assert!(a.unverified.is_empty(), "{:?}", a.unverified);
 }
+
+#[test]
+fn audit_not_applicable_metadata_is_complete_without_claiming_checked() {
+    for version in [1, 2] {
+        let value = crate::test_support::audit::pypi_not_applicable(version);
+        let a = interpreted(&value);
+        assert!(
+            !a.incomplete && !a.attention,
+            "v{version}: {:?}",
+            a.unverified
+        );
+        assert!(a.unverified.is_empty());
+        assert_eq!(a.summary.dependencies, 2);
+        assert_eq!(a.summary.deprecated, 0);
+        let mut mixed = value;
+        mixed["coverage"]["deprecation"]["checked_count"] = 1.into();
+        mixed["coverage"]["deprecation"]["not_applicable_count"] = 1.into();
+        assert!(!interpreted(&mixed).attention, "mixed v{version}");
+    }
+}
+
+#[test]
+fn audit_not_applicable_metadata_partition_must_be_exact_and_not_overflow() {
+    for version in [1, 2] {
+        for (checked, count) in [(0, 0), (0, 1), (0, 3), (3, u64::MAX)] {
+            let mut value = crate::test_support::audit::pypi_not_applicable(version);
+            value["coverage"]["deprecation"]["not_applicable_count"] = count.into();
+            value["coverage"]["deprecation"]["checked_count"] = checked.into();
+            let a = interpreted(&value);
+            assert!(a.incomplete && a.attention, "v{version} count {count}");
+            assert!(
+                a.unverified
+                    .contains("metadata coverage does not account for eligible packages")
+            );
+        }
+    }
+}

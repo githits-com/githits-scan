@@ -1,4 +1,6 @@
 //! Real binary audit contract: streams, findings, evidence gaps and compact output.
+#[path = "audit_applicability.rs"]
+mod audit_applicability;
 #[path = "audit_compact_replay.rs"]
 mod audit_compact_replay;
 #[path = "audit_details.rs"]

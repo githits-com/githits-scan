@@ -15,7 +15,7 @@ pub(crate) struct V2 {
     pub unknowns: Unknowns,
     #[serde(
         default,
-        deserialize_with = "super::remediation::optional",
+        deserialize_with = "super::wire::optional",
         skip_serializing_if = "Option::is_none"
     )]
     pub remediation: Option<super::remediation::Remediation>,

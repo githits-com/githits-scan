@@ -476,15 +476,44 @@ occurrences. The candidate/outcome partitions must account for eligible coordina
 exclusions, sources and resolutions must reconcile. Manifest/structural owners are
 valid but manifest source rows are not mandatory. Unknown resolutions remain gaps.
 
-V2 has no input or occurrence inventory. Scan checks the three coverage partitions
-against `summary.dependencies`, recomputes finding/group/gap counts from available
-rows, and verifies distinct duplicate versions/groups and origin path coherence.
+V2 has no input or occurrence inventory. Scan checks vulnerability and metadata
+coverage partitions against `summary.dependencies`, recomputes finding/group/gap
+counts from available rows, and verifies distinct duplicate versions/groups and
+origin path coherence.
 Each version path must have a recorded parent or explicit absence; unattributed
 requirements intentionally select no target and may name a separate manifest path.
 Input path order is normalized; repeated/empty path evidence is unverified.
 Qualified advisory rows (`affected` or `non_affecting`) do not have to equal
 `unknown_count`; all qualified rows remain visible gaps. Unsupported and
 not-collected partitions are legitimate incomplete outcomes, not accounting errors.
+
+Metadata coverage for both versions partitions candidates into `checked_count`,
+`unknown_count`, `not_collected_count`, and `not_applicable_count`. The sum must
+exactly equal candidates without overflow. The optional
+`not_applicable_registries` names the registries represented by the last partition.
+Current reports supply both new fields; retained immutable reports may omit them.
+Scan preserves their presence or absence in saved v2 analyses and interprets an
+omitted count as zero. Legacy `not_collected` data stays incomplete, including
+PyPI; Scan never reclassifies it based on registry capability.
+
+Applicability belongs to the service. An acquired PyPI release without retained
+positive deprecation evidence is not applicable to that check. Missing metadata
+and failed lookups remain unknown; retained positives remain findings. An empty
+finding list or compatibility `deprecated=false` does not establish checked
+coverage. Not-applicable candidates produce no metadata unknown rows and do not
+contribute to `summary.incomplete_checks`. Fully accounted checked plus
+not-applicable coverage creates no incomplete issue. Unknown, not-collected,
+source and policy gaps keep their existing behavior.
+
+The existing public `limitations` array and human notices show the check name,
+checked/candidate counts, not-applicable count and supplied nonempty registry list.
+These are factual coverage notices, not findings or a new issue category. Real-gap
+aggregate issues also name the not-applicable count. Older Scan binaries ignore
+the new fields and can report unverified/incomplete coverage with exit 1 when
+not-applicable counts are positive. Upgrading Scan corrects interpretation of
+current reports; old retained reports cannot recover applicability facts that
+were never recorded. Project archival, quarantine and release/file yanking are
+separate from deprecation; Scan does not collect or reinterpret lifecycle status.
 
 V2 cannot independently prove that an unreported coordinate or duplicate group is
 absent: it deliberately contains no inventory to reconstruct. Reported coordinates

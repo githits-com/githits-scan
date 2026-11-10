@@ -147,8 +147,21 @@ fn has_gaps(r: &V1) -> bool {
             .any(|s| s.status != "complete" || !s.diagnostics.is_empty())
 }
 
-const fn metadata_gap(c: &MetadataCoverage) -> bool {
-    c.checked_count != c.candidates_count || !c.not_collected_registries.is_empty()
+/// Whether applicable metadata remains unchecked; not-applicable outcomes are coverage.
+pub(crate) fn metadata_gap(c: &MetadataCoverage) -> bool {
+    c.checked_count
+        .checked_add(c.not_applicable_count.unwrap_or(0))
+        != Some(c.candidates_count)
+        || c.unknown_count != 0
+        || c.not_collected_count != 0
+        || !c.not_collected_registries.is_empty()
+}
+
+fn metadata_total(c: &MetadataCoverage) -> Option<u64> {
+    c.checked_count
+        .checked_add(c.unknown_count)
+        .and_then(|n| n.checked_add(c.not_collected_count))
+        .and_then(|n| n.checked_add(c.not_applicable_count.unwrap_or(0)))
 }
 
 fn check_coverage(r: &V1, candidates: u64, warnings: &mut BTreeSet<&'static str>) {
@@ -161,10 +174,7 @@ fn check_coverage(r: &V1, candidates: u64, warnings: &mut BTreeSet<&'static str>
         warnings.insert("vulnerability coverage does not account for eligible packages");
     }
     for c in [&r.coverage.deprecation, &r.coverage.outdated] {
-        let sum = c
-            .checked_count
-            .checked_add(c.unknown_count)
-            .and_then(|n| n.checked_add(c.not_collected_count));
+        let sum = metadata_total(c);
         if c.candidates_count != candidates || sum != Some(candidates) {
             warnings.insert("metadata coverage does not account for eligible packages");
         }

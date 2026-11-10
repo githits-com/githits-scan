@@ -292,7 +292,7 @@ impl View {
             manifest_lock_mismatches: Vec::new(),
             issues: Vec::new(),
             manifests: BTreeSet::new(),
-            limitations: Vec::new(),
+            limitations: coverage_notices(report),
             remediation: remediation::State::Unavailable,
         };
         let Some(a) = assessment else {
@@ -545,32 +545,79 @@ fn coverage_issues(
     outdated: &MetadataCoverage,
     groups: &mut Issues,
 ) {
-    let checks = [
-        ("vulnerabilities", v.checked_count, v.candidates_count),
-        (
-            "deprecation",
-            deprecation.checked_count,
-            deprecation.candidates_count,
-        ),
-        (
-            "outdated",
-            outdated.checked_count,
-            outdated.candidates_count,
-        ),
-    ];
-    for (check, checked, total) in checks {
-        if checked != total {
-            add_issue(
-                groups,
-                Issue {
-                    check: check.into(),
-                    status: "incomplete".into(),
-                    reason: format!("{checked} of {total} packages checked"),
-                    ..Issue::default()
-                },
-            );
-        }
+    coverage_issue(
+        "vulnerabilities",
+        v.checked_count,
+        v.candidates_count,
+        0,
+        v.checked_count != v.candidates_count,
+        groups,
+    );
+    for (check, coverage) in [("deprecation", deprecation), ("outdated", outdated)] {
+        coverage_issue(
+            check,
+            coverage.checked_count,
+            coverage.candidates_count,
+            coverage.not_applicable_count.unwrap_or(0),
+            crate::audit::metadata_gap(coverage),
+            groups,
+        );
     }
+}
+
+fn coverage_issue(
+    check: &str,
+    checked: u64,
+    total: u64,
+    not_applicable: u64,
+    incomplete: bool,
+    groups: &mut Issues,
+) {
+    if !incomplete {
+        return;
+    }
+    let mut reason = format!("{checked} of {total} packages checked");
+    if not_applicable != 0 {
+        reason = format!("{reason}; {not_applicable} not applicable");
+    }
+    add_issue(
+        groups,
+        Issue {
+            check: check.into(),
+            status: "incomplete".into(),
+            reason,
+            ..Issue::default()
+        },
+    );
+}
+
+fn coverage_notices(report: &Report) -> Vec<String> {
+    let (deprecation, outdated) = match &report.body {
+        Body::V1(r) => (&r.coverage.deprecation, &r.coverage.outdated),
+        Body::V2(r) => (&r.coverage.deprecation, &r.coverage.outdated),
+        Body::Future(_) => return Vec::new(),
+    };
+    [("deprecation", deprecation), ("outdated", outdated)]
+        .into_iter()
+        .filter_map(|(check, c)| {
+            let count = c.not_applicable_count.unwrap_or(0);
+            if count == 0 {
+                return None;
+            }
+            let mut notice = format!(
+                "{check} coverage: {} of {} packages checked; {count} not applicable",
+                c.checked_count, c.candidates_count
+            );
+            if let Some(registries) = c
+                .not_applicable_registries
+                .as_ref()
+                .filter(|r| !r.is_empty())
+            {
+                notice = format!("{notice} ({})", registries.join(", "));
+            }
+            Some(notice)
+        })
+        .collect()
 }
 
 fn reason(value: &str) -> &str {
