@@ -76,7 +76,7 @@ fn audit_applicability_keeps_real_unknowns_failures_and_uncollected_issues() {
                 "package metadata missing",
             ),
             ("unknown", Some("lookup_failed"), "lookup_failed"),
-            ("not_collected", None, ""),
+            ("not_collected", None, "not collected"),
         ] {
             let value = gap(version, status, reason);
             let view = result(&value, 1);
@@ -139,6 +139,13 @@ fn audit_applicability_legacy_not_collected_stays_incomplete() {
         let view = result(&value, 1);
         assert_eq!(view["incomplete"], true);
         assert!(view.get("limitations").is_none());
+        assert!(
+            !view["issues"]
+                .as_array()
+                .expect("issues")
+                .iter()
+                .any(|i| i["check"] == "report")
+        );
         assert!(
             view["issues"]
                 .as_array()

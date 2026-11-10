@@ -476,9 +476,10 @@ occurrences. The candidate/outcome partitions must account for eligible coordina
 exclusions, sources and resolutions must reconcile. Manifest/structural owners are
 valid but manifest source rows are not mandatory. Unknown resolutions remain gaps.
 
-V2 has no input or occurrence inventory. Scan checks vulnerability and metadata coverage partitions
-against `summary.dependencies`, recomputes finding/group/gap counts from available
-rows, and verifies distinct duplicate versions/groups and origin path coherence.
+V2 has no input or occurrence inventory. Scan checks vulnerability and metadata
+coverage partitions against `summary.dependencies`, recomputes finding/group/gap
+counts from available rows, and verifies distinct duplicate versions/groups and
+origin path coherence.
 Each version path must have a recorded parent or explicit absence; unattributed
 requirements intentionally select no target and may name a separate manifest path.
 Input path order is normalized; repeated/empty path evidence is unverified.
