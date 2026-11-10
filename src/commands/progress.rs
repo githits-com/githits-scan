@@ -73,9 +73,11 @@ fn rate_limit_stopped(reason: &RateLimitStop, out: &mut dyn Write) -> std::io::R
             requested,
             remaining,
         } => {
+            let requested = ceil_seconds(*requested);
+            let remaining = remaining.as_secs();
             writeln!(
                 out,
-                "warning: automatic rate-limit recovery stopped: the server requested {requested:?} but only {remaining:?} of waiting remain"
+                "warning: automatic rate-limit recovery stopped: the server requested {requested}s but only {remaining}s of waiting remain"
             )?;
         }
     }
@@ -101,7 +103,7 @@ fn rate_limit(
     if delay.is_zero() {
         write!(out, " now")?;
     } else {
-        let seconds = delay.as_secs() + u64::from(delay.subsec_nanos() > 0);
+        let seconds = ceil_seconds(delay);
         write!(out, " in {seconds}s")?;
     }
     if let Some(id) = request_id {
@@ -109,6 +111,10 @@ fn rate_limit(
     }
     writeln!(out)?;
     out.flush()
+}
+
+fn ceil_seconds(duration: std::time::Duration) -> u64 {
+    duration.as_secs() + u64::from(duration.subsec_nanos() > 0)
 }
 
 fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::Result<()> {
@@ -381,6 +387,29 @@ mod rate_limit_tests {
                 String::from_utf8(out.bytes).expect("UTF-8"),
                 format!(
                     "warning: rate limited while {name}; retry 2 of up to 5 in 2s (request id: req\\nforged)\n"
+                )
+            );
+            assert_eq!(out.flushes, 1);
+        }
+    }
+
+    #[test]
+    fn rate_limit_stop_rounds_requested_up_and_remaining_down_to_seconds() {
+        for (requested, remaining, expected_request, expected_remaining) in [
+            (312_483, 0, 313, 0),
+            (300_001, 299_999, 301, 299),
+            (1_001, 750, 2, 0),
+        ] {
+            let event = ProgressEvent::RateLimitStopped(RateLimitStop::WaitExceeded {
+                requested: Duration::from_millis(requested),
+                remaining: Duration::from_millis(remaining),
+            });
+            let mut out = Output::default();
+            write(&event, &mut out).expect("stop warning");
+            assert_eq!(
+                String::from_utf8(out.bytes).expect("UTF-8"),
+                format!(
+                    "warning: automatic rate-limit recovery stopped: the server requested {expected_request}s but only {expected_remaining}s of waiting remain\n"
                 )
             );
             assert_eq!(out.flushes, 1);

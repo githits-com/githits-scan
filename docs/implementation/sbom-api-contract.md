@@ -185,7 +185,8 @@ says the service supplied no delay.
 Each retry warning names submission, progress opening or result download, the attempt
 out of up to five, delay and request ID when supplied. Zero says “now”; fractional date
 delays display rounded up to whole seconds, while the actual wait retains its
-precision. Callback failure stops before sleeping or sending another request.
+precision. Wait-limit notices likewise round the requested duration up and the
+remaining allowance down to whole seconds. Callback failure stops before sleeping or sending another request.
 Rejected responses are dropped before notification/waiting. Only terminal errors
 are parsed through the existing bounded error-body path.
 
