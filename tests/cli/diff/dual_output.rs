@@ -72,6 +72,44 @@ fn diff_named_outputs_write_exact_json_and_escaped_markdown_from_one_job() {
 }
 
 #[test]
+fn diff_named_outputs_keep_every_returned_release_note() {
+    let repo = pair();
+    let outputs = tempfile::tempdir().expect("outputs");
+    let json = outputs.path().join("diff.json");
+    let markdown = outputs.path().join("diff.md");
+    let mut value = fixture::report();
+    let log = &mut value["direct_reviews"]["data"][0]["data"]["changelog"];
+    log["entries"] = serde_json::json!(
+        (0..7)
+            .map(|i| serde_json::json!({
+                "version":format!("1.2.{i}"), "headline":format!("returned entry {i}"),
+                "html_url":format!("https://example.invalid/{i}"), "signals":[]
+            }))
+            .collect::<Vec<_>>()
+    );
+    log["coverage"]["returned_entries"] = serde_json::json!(7);
+    let bytes = serde_json::to_vec_pretty(&value).expect("JSON");
+    let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
+    let output = command(repo.path(), &server.origin())
+        .arg("--output-json")
+        .arg(&json)
+        .arg("--output-markdown")
+        .arg(&markdown)
+        .output()
+        .expect("diff");
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(output.stdout, [] as [u8; 0]);
+    assert_eq!(fs::read(&json).expect("JSON"), bytes);
+    let text = fs::read_to_string(markdown).expect("Markdown");
+    for i in 0..7 {
+        assert!(text.contains(&format!("returned entry {i}")));
+        assert!(text.contains(&format!("<https://example.invalid/{i}>")));
+    }
+    assert!(text.contains("Release notes are incomplete"));
+    assert_one_job(server);
+}
+
+#[test]
 fn diff_named_outputs_render_producer_explanations_from_one_job() {
     use serde_json::json;
 

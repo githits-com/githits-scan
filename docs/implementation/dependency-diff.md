@@ -138,9 +138,13 @@ source, resolution-unit and project scopes.
 
 Security information and release-note completeness are separate. Release-note
 warnings identify possible compatibility changes and migration work, without
-presenting them as a complete migration checklist. The compact view shows the first
-three returned entries and every flagged entry, with a plain notice when more are
-available in JSON. Links use only validated credential-free HTTP(S) addresses
+presenting them as a complete migration checklist. Human output shows the first three returned entries and every flagged entry,
+with a plain notice when more are available in JSON. Markdown includes every
+returned entry in producer order, without shortening supplied text. Entries with
+no summary retain their version (or an explicit missing-version label) and explain
+that the release-note summary was not supplied, in both formats. Producer
+truncation and incomplete-coverage warnings remain explicit; neither format can
+recover entries the service omitted. Links use only validated credential-free HTTP(S) addresses
 supplied by the service; Scan never invents a full-history URL.
 
 Markdown escapes untrusted formatting/mentions and terminal text escapes control

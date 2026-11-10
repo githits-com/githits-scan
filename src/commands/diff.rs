@@ -17,7 +17,7 @@ pub enum Format {
     Human,
     /// Exact backend JSON for automation.
     Json,
-    /// Escaped report suitable for a pull request comment.
+    /// Complete escaped Markdown report.
     Markdown,
 }
 

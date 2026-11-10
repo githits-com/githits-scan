@@ -123,7 +123,7 @@ fn detail(data: &view::ReviewData, d: &mut Display<'_>) -> io::Result<()> {
         .entries
         .iter()
         .enumerate()
-        .filter(|(i, e)| *i < 3 || !e.signals.is_empty())
+        .filter(|(i, e)| d.markdown || *i < 3 || !e.signals.is_empty())
         .map(|(_, e)| e)
         .collect();
     for entry in &displayed {
@@ -131,9 +131,11 @@ fn detail(data: &view::ReviewData, d: &mut Display<'_>) -> io::Result<()> {
             .version
             .as_deref()
             .unwrap_or("release version not supplied");
-        if let Some(headline) = &entry.headline {
-            d.item(&format!("  {version}: {headline}"))?;
-        }
+        let headline = entry
+            .headline
+            .as_deref()
+            .unwrap_or("Release-note summary was not supplied.");
+        d.item(&format!("  {version}: {headline}"))?;
         if !entry.signals.is_empty() {
             d.item(
                 "  Review this release for changes that may require attention in your project.",
