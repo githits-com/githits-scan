@@ -199,3 +199,27 @@ fn diff_security_qualifications_share_one_manual_check_action() {
         assert!(!text.contains("check the advisory manually"));
     }
 }
+
+#[test]
+fn diff_unfamiliar_section_reason_survives_other_security_qualifications() {
+    for unsupported in [0, 1] {
+        let mut v = fixture::report();
+        v["advisories"]["status"] = "partial".into();
+        v["advisories"]["reason"] = "future-section-limit".into();
+        v["advisories"]["coverage"] =
+            json!({"checked":1,"coordinates":2,"unknown":0,"unsupported":unsupported});
+        v["advisories"]["data"]["exposures"][0]["coverage"] = json!({"base":{
+            "inventory":"partial","assessment":"complete","checked":1,"coordinates":1}});
+        let text = rendered(&v, Format::Human);
+        assert!(text.contains("package information was incomplete"));
+        assert!(
+            text.contains("the service supplied no explanation this version of Scan can display")
+        );
+        assert_eq!(
+            text.matches("Check security advisories manually before accepting these changes.")
+                .count(),
+            1
+        );
+        assert!(!text.contains("future-section-limit"));
+    }
+}

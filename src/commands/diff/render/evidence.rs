@@ -235,7 +235,7 @@ fn limitation(section: &crate::api::diff::Section, explained: bool) -> io::Resul
         Some("provider_unavailable") => Some(
             "Some security checks could not be completed because the service's information provider was unavailable.",
         ),
-        _ if explained || unsupported => None,
+        None if explained || unsupported => None,
         _ => Some(
             "Some security checks could not be completed; the service supplied no explanation this version of Scan can display.",
         ),
