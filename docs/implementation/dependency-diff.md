@@ -181,8 +181,9 @@ Unfamiliar failure scope/code stays visible. Failed or partial reviews retain
 authored context through `declaration_change_ids`, including when there is no
 occurrence change; returned interpretable partial detail is still displayed.
 Failure detail replaces the generic uninterpreted-detail line when supplied.
-Existing deadline, unavailable-evidence and size-omission reasons also receive
-plain explanations without changing their status/reason. A legacy `review_failed`
+The service reason strings `deadline`, `evidence_unavailable` and
+`result_size_limit` receive plain explanations without changing their status/reason.
+Other reason strings stay verbatim and uninterpreted. A legacy `review_failed`
 row without structured failure remains explicitly unexplained rather than being
 attributed to an individual package assessment.
 
