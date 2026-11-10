@@ -47,6 +47,14 @@ pub fn events_response(values: &[serde_json::Value]) -> Vec<u8> {
     )
 }
 
+pub fn rate_limited(delay: &str) -> Vec<u8> {
+    response(
+        "429 Too Many Requests",
+        &[("Content-Type", "application/problem+json"), ("Retry-After", delay), ("X-Request-ID", "req-limit")],
+        br#"{"status":429,"code":"RATE_LIMITED","detail":"Too many requests.","instance":"req-limit"}"#,
+    )
+}
+
 pub type Handler = Box<dyn FnOnce(TcpStream) + Send>;
 
 pub struct ScriptedServer {

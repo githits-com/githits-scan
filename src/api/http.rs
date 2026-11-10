@@ -1,8 +1,9 @@
-//! Blocking job transport: one submission, latest-snapshot SSE, one capped result.
+//! Blocking job transport: one accepted submission, latest-snapshot SSE and capped result.
 //!
 //! Finite and streaming clients share security policy but have separate client-level
 //! read allowances. A request-level timeout in locked reqwest would impose a whole-
-//! stream deadline. No redirect, submission retry, polling or result fallback exists.
+//! stream deadline. Only explicit HTTP 429 refusals receive bounded retries.
+//! No redirects, transport-error retries, polling or result fallback exist.
 
 use std::io::{BufReader, Read as _};
 use std::time::Duration;
@@ -18,11 +19,15 @@ use super::sse::Events;
 use super::{
     ApiError, AuditApi, CLIENT_NAME, CLIENT_VERSION, Document, JOBS_PATH, LICENSES_PATH,
     LicensesApi, MAX_EVENT_BYTES, MAX_PROBLEM_BYTES, MAX_RESPONSE_BYTES, Operation, OutputFormat,
-    ProgressEvent, REQUEST_TIMEOUT, STREAM_TIMEOUT, SbomApi, UploadSet, audit, licenses, problem,
+    ProgressEvent, REQUEST_TIMEOUT, RequestStage, STREAM_TIMEOUT, SbomApi, UploadSet, audit,
+    licenses, problem,
 };
 use crate::env::{Environment, Token};
 
 mod diff;
+mod retry;
+
+use retry::{RetryBudget, send};
 
 const REQUEST_ID: &str = "x-request-id";
 
@@ -32,6 +37,7 @@ pub struct HttpSbomApi {
     events: Client,
     endpoint: Url,
     token: Token,
+    sleep: fn(Duration),
 }
 
 impl std::fmt::Debug for HttpSbomApi {
@@ -66,6 +72,7 @@ impl HttpSbomApi {
             events: client(stream)?,
             endpoint,
             token: environment.token,
+            sleep: std::thread::sleep,
         })
     }
 
@@ -75,17 +82,37 @@ impl HttpSbomApi {
         &self.endpoint
     }
 
-    fn execute<T>(
+    fn execute_upload<T>(
         &self,
         upload: UploadSet,
         operation: Operation,
         progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
         decode: impl FnOnce(Vec<u8>) -> Result<T, ApiError>,
     ) -> Result<T, ApiError> {
-        let job = self.submit(upload, operation)?;
-        wait(self, &job, operation, progress)?;
+        self.execute(
+            operation,
+            progress,
+            |retries, progress| self.submit(upload, operation, retries, progress),
+            decode,
+        )
+    }
+
+    /// Own the single retry budget for both ordinary and paired analyses.
+    fn execute<T>(
+        &self,
+        operation: Operation,
+        progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
+        submit: impl FnOnce(
+            &mut RetryBudget,
+            &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
+        ) -> Result<Accepted, ApiError>,
+        decode: impl FnOnce(Vec<u8>) -> Result<T, ApiError>,
+    ) -> Result<T, ApiError> {
+        let mut retries = RetryBudget::default();
+        let job = submit(&mut retries, progress)?;
+        wait(self, &job, operation, &mut retries, progress)?;
         progress(&ProgressEvent::Downloading).map_err(ApiError::Progress)?;
-        self.result(&job, operation, decode)
+        self.result(&job, operation, &mut retries, progress, decode)
     }
 
     fn authenticate(&self, request: RequestBuilder) -> RequestBuilder {
@@ -95,26 +122,28 @@ impl HttpSbomApi {
             .header("X-GitHits-Client-Version", CLIENT_VERSION)
     }
 
-    fn submit(&self, upload: UploadSet, operation: Operation) -> Result<Accepted, ApiError> {
-        let mut form = Form::new().percent_encode_noop();
-        for file in upload.into_files() {
-            let part = Part::text(file.contents)
-                .file_name(file.path)
-                .mime_str("application/octet-stream")
-                .map_err(ApiError::Transport)?;
-            form = form.part("files[]", part);
-        }
+    fn submit(
+        &self,
+        upload: UploadSet,
+        operation: Operation,
+        retries: &mut RetryBudget,
+        progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
+    ) -> Result<Accepted, ApiError> {
         let mut url = self.endpoint.clone();
         url.set_query(Some(&format!(
             "kind={}&format={}",
             operation.kind(),
             operation.format()
         )));
-        let response = self
-            .authenticate(self.client.post(url))
-            .multipart(form)
-            .send()
-            .map_err(ApiError::Transport)?;
+        let response = send(self, retries, RequestStage::Submission, progress, || {
+            let form = multipart(
+                Form::new().percent_encode_noop(),
+                upload.files().iter().map(|file| ("files[]", file)),
+            )?;
+            Ok(self.client.post(url.clone()).multipart(form))
+        })?;
+        // Only job links are needed once submission replay is finished.
+        drop(upload);
         let response = expect_status(response, 202)?;
         let request_id = header(response.headers(), REQUEST_ID);
         let accepted = (|| {
@@ -128,6 +157,8 @@ impl HttpSbomApi {
         &self,
         job: &Accepted,
         operation: Operation,
+        retries: &mut RetryBudget,
+        progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
         decode: impl FnOnce(Vec<u8>) -> Result<T, ApiError>,
     ) -> Result<T, ApiError> {
         let path = match operation {
@@ -135,10 +166,9 @@ impl HttpSbomApi {
             Operation::Sbom(_) | Operation::Audit | Operation::Diff => job.result_url.clone(),
         };
         let url = Accepted::resolve(&self.endpoint, &path)?;
-        let response = self
-            .authenticate(self.client.get(url))
-            .send()
-            .map_err(ApiError::Transport)?;
+        let response = send(self, retries, RequestStage::Result, progress, || {
+            Ok(self.client.get(url.clone()))
+        })?;
         let response = expect_status(response, 200)?;
         let request_id = header(response.headers(), REQUEST_ID);
         require_media(&response, media(operation))
@@ -158,7 +188,7 @@ impl SbomApi for HttpSbomApi {
         format: OutputFormat,
         progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
     ) -> Result<Document, ApiError> {
-        self.execute(upload, Operation::Sbom(format), progress, |bytes| {
+        self.execute_upload(upload, Operation::Sbom(format), progress, |bytes| {
             Ok(Document { bytes })
         })
     }
@@ -170,7 +200,7 @@ impl AuditApi for HttpSbomApi {
         upload: UploadSet,
         progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
     ) -> Result<audit::Report, ApiError> {
-        self.execute(upload, Operation::Audit, progress, |bytes| {
+        self.execute_upload(upload, Operation::Audit, progress, |bytes| {
             audit::Report::from_bytes(&bytes)
         })
     }
@@ -182,7 +212,7 @@ impl LicensesApi for HttpSbomApi {
         upload: UploadSet,
         progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
     ) -> Result<licenses::Report, ApiError> {
-        self.execute(upload, Operation::Licenses, progress, |bytes| {
+        self.execute_upload(upload, Operation::Licenses, progress, |bytes| {
             licenses::Report::from_bytes(bytes).map_err(|error| ApiError::protocol(error.reason()))
         })
     }
@@ -192,6 +222,7 @@ fn wait(
     api: &HttpSbomApi,
     job: &Accepted,
     operation: Operation,
+    retries: &mut RetryBudget,
     progress: &mut dyn FnMut(&ProgressEvent) -> std::io::Result<()>,
 ) -> Result<(), ApiError> {
     let url = Accepted::resolve(&api.endpoint, &job.events_url)?;
@@ -199,11 +230,12 @@ fn wait(
     loop {
         // Every opening constructs a fresh authenticated request. There is no
         // replay promise and no token renewal mechanism in a process environment.
-        let response = api
-            .authenticate(api.events.get(url.clone()))
-            .header(ACCEPT, "text/event-stream")
-            .send()
-            .map_err(ApiError::Transport)?;
+        let response = send(api, retries, RequestStage::Events, progress, || {
+            Ok(api
+                .events
+                .get(url.clone())
+                .header(ACCEPT, "text/event-stream"))
+        })?;
         let response = expect_status(response, 200)?;
         let request_id = header(response.headers(), REQUEST_ID);
         require_media(&response, "text/event-stream")
@@ -257,6 +289,21 @@ fn consume(
             State::Pending => {}
         }
     }
+}
+
+/// Each attempt owns its multipart body; the validated originals remain unchanged.
+fn multipart<'a>(
+    mut form: Form,
+    files: impl Iterator<Item = (&'static str, &'a super::UploadFile)>,
+) -> Result<Form, ApiError> {
+    for (field, file) in files {
+        let part = Part::text(file.contents.clone())
+            .file_name(file.path.clone())
+            .mime_str("application/octet-stream")
+            .map_err(ApiError::Transport)?;
+        form = form.part(field, part);
+    }
+    Ok(form)
 }
 
 fn client(timeout: Duration) -> Result<Client, ApiError> {

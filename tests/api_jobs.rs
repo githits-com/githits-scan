@@ -74,7 +74,10 @@ fn reconnect_applies_equal_revision_latest_state_and_authenticates_each_open() {
     assert_eq!(progress[4], ProgressEvent::Downloading);
     let next = match &progress[2] {
         ProgressEvent::Snapshot(next) => Some(next),
-        ProgressEvent::Reconnecting | ProgressEvent::Downloading => None,
+        ProgressEvent::Reconnecting
+        | ProgressEvent::Downloading
+        | ProgressEvent::RateLimited { .. }
+        | ProgressEvent::RateLimitStopped(_) => None,
     }
     .expect("replacement snapshot");
     assert_eq!(next.phase, Phase::Enriching);
@@ -222,7 +225,7 @@ fn any_opening_without_a_first_snapshot_fails_immediately() {
 }
 
 #[test]
-fn opening_auth_terms_rate_and_absent_errors_do_not_retry() {
+fn opening_auth_terms_absent_and_over_budget_rate_errors_do_not_retry() {
     for (status, code) in [
         ("401 Unauthorized", "AUTHENTICATION_REQUIRED"),
         ("403 Forbidden", "TERMS_ACCEPTANCE_REQUIRED"),
@@ -246,19 +249,19 @@ fn opening_denial(status: &str, code: &str, reopen: bool) {
         status,
         &[
             ("Content-Type", "application/problem+json"),
-            ("Retry-After", "17"),
+            ("Retry-After", "301"),
         ],
         &serde_json::to_vec(&body).expect("json"),
     ));
     let server = ScriptedServer::respond_with(responses);
     let error = generate(&server, OutputFormat::CycloneDx).expect_err("denied opening");
     assert!(
-        matches!(&error, ApiError::Problem { problem, retry_after } if problem.code.as_str() == code && retry_after.as_deref() == Some("17"))
+        matches!(&error, ApiError::Problem { problem, retry_after } if problem.code.as_str() == code && retry_after.as_deref() == Some("301"))
     );
     let text = error.to_string();
     assert!(
         text.contains("req-denial")
-            && text.contains("retry after: 17")
+            && text.contains("retry after: 301")
             && text.contains("terms: https://app.githits.com/terms")
     );
     assert_eq!(server.requests().len(), if reopen { 3 } else { 2 });

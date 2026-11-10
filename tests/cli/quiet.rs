@@ -57,13 +57,14 @@ fn quiet_keeps_missing_token_api_failure_and_blocked_scan_diagnostics() {
         assert_eq!(output.status.code(), Some(2));
         assert!(stderr(&output).contains("GITHITS_API_TOKEN"));
         assert!(output.stdout.is_empty(), "{:?}", output.stdout);
-        let server = MockServer::respond_with(response("429 Too Many Requests", &[("Content-Type", "application/problem+json"), ("Retry-After", "60")], br#"{"type":"about:blank","title":"Rate limited","status":429,"detail":"Too many requests.","instance":"req-quiet","code":"RATE_LIMITED"}"#));
+        let server = MockServer::respond_with(response("429 Too Many Requests", &[("Content-Type", "application/problem+json"), ("Retry-After", "301")], br#"{"type":"about:blank","title":"Rate limited","status":429,"detail":"Too many requests.","instance":"req-quiet","code":"RATE_LIMITED"}"#));
         let output = quiet_command(command, repo.path(), Some(&server.origin()));
         drop(server.request());
         assert_eq!(output.status.code(), Some(3));
-        assert!(stderr(&output).starts_with("error: RATE_LIMITED"));
+        assert!(stderr(&output).starts_with("warning: automatic rate-limit recovery stopped:"));
+        assert!(stderr(&output).contains("error: RATE_LIMITED"));
         assert!(
-            stderr(&output).contains("req-quiet") && stderr(&output).contains("retry after: 60")
+            stderr(&output).contains("req-quiet") && stderr(&output).contains("retry after: 301")
         );
         assert!(output.stdout.is_empty(), "{:?}", output.stdout);
         let empty = repository(&[]);

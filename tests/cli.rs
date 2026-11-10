@@ -45,6 +45,8 @@ mod manifest_ecosystems;
 mod pairing;
 #[path = "cli/quiet.rs"]
 mod quiet;
+#[path = "cli/rate_limits.rs"]
+mod rate_limits;
 
 use std::fs;
 use std::path::Path;
@@ -417,7 +419,7 @@ fn sbom_generate_writes_the_output_file_only_on_success() {
         &[
             ("Content-Type", "application/problem+json"),
             ("X-Request-ID", "req-9"),
-            ("Retry-After", "30"),
+            ("Retry-After", "301"),
         ],
         br#"{"type":"about:blank","title":"Rate limited","status":429,"detail":"Too many requests.","instance":"req-9","code":"RATE_LIMITED"}"#,
     ));
@@ -440,7 +442,7 @@ fn sbom_generate_writes_the_output_file_only_on_success() {
     let stderr_text = stderr(&failed);
     assert_eq!(
         stderr_text,
-        "scanning repository...\npreparing upload...\nsubmitting 1 lockfile and 0 manifests...\nerror: RATE_LIMITED (HTTP 429): Too many requests.\n  request id: req-9\n  retry after: 30s\n  action: wait for the retry-after period and run again\n"
+        "scanning repository...\npreparing upload...\nsubmitting 1 lockfile and 0 manifests...\nwarning: automatic rate-limit recovery stopped: the server requested 301s but only 300s of waiting remain\nerror: RATE_LIMITED (HTTP 429): Too many requests.\n  request id: req-9\n  retry after: 301s\n  action: wait for the retry-after period and run again\n"
     );
 
     let document = b"SPDXVersion: SPDX-2.3\n";

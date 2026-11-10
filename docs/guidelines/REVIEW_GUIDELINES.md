@@ -167,7 +167,7 @@ The command line is a compatibility boundary. Rendering is scan's UI: command ha
 **Watch for**:
 - Swallowing errors silently
 - Matching on `detail` text instead of the stable `code`
-- Retrying submission/result automatically; established stream reconnection only retrieves the latest snapshot
+- Retrying transport failures or non-429 responses, resetting the shared five-retry / 300-second waiting budget, or resubmitting an accepted job; established stream reconnection only retrieves the latest snapshot
 - Logging the same error at several layers
 - Any code path that could print the token
 

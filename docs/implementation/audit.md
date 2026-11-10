@@ -460,7 +460,8 @@ latest state, not replay history. Known terminal states close consumption.
 Unfamiliar phases display a generic stage, and unfamiliar failure codes use a static
 safe diagnostic. Unfamiliar job states stop with a protocol error because their
 terminal semantics are unknown. Each read has the established timeout; there is no
-global reconnect count, new polling fallback or result retry.
+global reconnect count or new polling fallback. Explicit HTTP 429 refusals at any
+request share the [bounded rate-limit policy](sbom-api-contract.md#rate-limit-recovery).
 
 `api::audit::Report` decodes disjoint v1/v2 payloads using a crate-private body
 enum. Required consumed fields and nullable slots are checked; objects cannot be

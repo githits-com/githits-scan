@@ -232,13 +232,14 @@ unavailable proof detail stays qualified. No missing evidence implies safety.
 
 ## HTTP, limits and cost
 
-One `POST /v1/experimental/dependency-diffs` sends a text `request` JSON part plus
+One accepted `POST /v1/experimental/dependency-diffs` sends a text `request` JSON part plus
 literal repeated `base_files[]` and `head_files[]` with relative filenames/original
 UTF-8 bytes. Required controls are closed; no query kind/format, refs, URLs,
 completeness receipts or enforcement rules are submitted. The returned shared
 job links drive SSE and the result read: ordinarily three requests. No separate
-SBOM, audit or upgrade-review request is made. Redirects, submission/result retries,
-polling and old comparison fallbacks are disabled. Existing established-stream
+SBOM, audit or upgrade-review request is made. Redirects, transport-error retries,
+polling and old comparison fallbacks are disabled. Explicit HTTP 429 refusals
+receive bounded Retry-After recovery. Existing established-stream
 reconnection behavior is shared with other commands.
 
 The complete pair is limited to 256 files, 5,242,880 bytes per file, 1,024 UTF-8
@@ -252,7 +253,7 @@ by [the shared API boundary](sbom-api-contract.md).
 One admission is weighted as two audits (currently 200 daily units at policy
 defaults). Runtime quotas can vary. Reads and stream reconnects do not resubmit.
 A completed partial result remains a report; admission or required core failure
-produces an error and no document. Service 429 responses preserve Retry-After.
+produces an error and no document. Service HTTP 429 refusals share the [bounded Retry-After recovery](sbom-api-contract.md#rate-limit-recovery) across paired submission, progress and result requests; final problem errors preserve Retry-After.
 
 ## Prototype migration
 

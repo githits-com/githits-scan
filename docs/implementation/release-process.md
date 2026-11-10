@@ -223,8 +223,11 @@ assertions and multi-project fixtures retain coverage within the documented
 organisation/project default of five submissions per 60-second window. Use an
 organisation/project credential with enough admission and daily budget; a
 personal credential's default two-submission window cannot run the full gate.
-Other traffic sharing the principal can still exhaust its budget. The gate fails
-on 429; it does not delay, retry, resubmit or bypass admission. See the
+Other traffic sharing the principal can still exhaust its budget. The gate uses
+the ordinary binary: short HTTP 429 refusals recover within five retries and
+300 seconds of total waiting per live case. Missing, invalid, over-budget or
+exhausted Retry-After recovery fails the gate. Recovery never resubmits an accepted
+job or bypasses admission. See the
 [service admission policy](https://docs.githits.com/api-reference/v1/experimental/generate-an-sbom-from-uploaded-files).
 
 The live job reads `GITHITS_API_TOKEN` from the repository secret only in its test

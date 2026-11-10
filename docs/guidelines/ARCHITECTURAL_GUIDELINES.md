@@ -91,14 +91,14 @@ pub trait SbomApi {
 
 Implementations:
 
-- Production: `reqwest` blocking client with rustls, redirects and automatic retries disabled, explicit finite/event transport budgets.
+- Production: `reqwest` blocking client with rustls, redirects and reqwest automatic retries disabled, explicit finite/event transport budgets, and authored bounded HTTP 429 recovery.
 - Test: records the upload set it received and returns a fixed document or a fixed problem.
 
 The token is provided to the production implementation at construction time and is never part of the trait, a log line, or a `Debug` impl.
 
 ### Boundary Modules
 
-Within `src/api/`, `upload.rs` owns filename and size validation, `problem.rs` owns problem parsing, `jobs.rs` owns snapshots and canonical links, `sse.rs` owns incremental framing, `licenses.rs` owns license-report decoding, and `http.rs` owns submission/stream/result orchestration.
+Within `src/api/`, `upload.rs` owns filename and size validation, `problem.rs` owns problem parsing, `jobs.rs` owns snapshots and canonical links, `sse.rs` owns incremental framing, `licenses.rs` owns license-report decoding, and `http.rs` owns submission/stream/result orchestration; `http/retry.rs` owns the shared invocation budget and Retry-After interpretation.
 
 External services (file system, network) must be wrapped in modules with deterministic contracts.
 

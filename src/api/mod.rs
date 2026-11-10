@@ -55,6 +55,10 @@ pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 /// Applies through response headers, then independently to each body read;
 /// this is not a single deadline through the complete response body.
 pub const REQUEST_TIMEOUT: Duration = Duration::from_secs(210);
+/// Maximum additional requests after HTTP 429 across one analysis invocation.
+pub const MAX_RATE_LIMIT_RETRIES: u8 = 5;
+/// Maximum aggregate Retry-After waiting across one analysis invocation.
+pub const MAX_RATE_LIMIT_WAIT: Duration = Duration::from_secs(300);
 /// Attribution sent as `X-GitHits-Client-Name` and in the user agent.
 pub const CLIENT_NAME: &str = "githits-scan";
 /// Attribution sent as `X-GitHits-Client-Version` and in the user agent.
@@ -114,6 +118,31 @@ impl Document {
     }
 }
 
+/// The HTTP operation rejected by a rate limit.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RequestStage {
+    /// Uploading files to request a new analysis.
+    Submission,
+    /// Opening or reopening the accepted job's progress stream.
+    Events,
+    /// Downloading the accepted job's result or license report.
+    Result,
+}
+
+/// Why an otherwise valid server retry delay cannot be followed automatically.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RateLimitStop {
+    /// The invocation already made every permitted additional attempt.
+    RetriesExhausted,
+    /// Following the server's delay would exceed the invocation's wait budget.
+    WaitExceeded {
+        /// Delay required by the current response.
+        requested: Duration,
+        /// Scheduled waiting still allowed across the invocation.
+        remaining: Duration,
+    },
+}
+
 /// A validated snapshot or an actual client transport transition.
 ///
 /// Commands own human wording; transport transitions are not server phases.
@@ -123,6 +152,19 @@ pub enum ProgressEvent {
     Snapshot(jobs::Progress),
     /// An established stream was lost; the next operation is a fresh opening.
     Reconnecting,
+    /// A rejected request will be repeated after the server's delay.
+    RateLimited {
+        /// Which request is being retried; accepted jobs are never resubmitted.
+        stage: RequestStage,
+        /// One-based retry number shared across the invocation.
+        attempt: u8,
+        /// Exact waiting duration, including fractional seconds for HTTP dates.
+        delay: Duration,
+        /// The rejected request's trace identity, when supplied in its headers.
+        request_id: Option<String>,
+    },
+    /// The retry or waiting budget prevents another automatic attempt.
+    RateLimitStopped(RateLimitStop),
     /// Execution succeeded; the next operation retrieves the document.
     Downloading,
 }
@@ -131,9 +173,11 @@ pub enum ProgressEvent {
 pub trait SbomApi {
     /// Upload the set and return the generated document.
     ///
-    /// Submit exactly once, consume current snapshots and download only after success.
-    /// Established stream loss reopens with authentication; no submission or result
-    /// retry occurs. The callback receives snapshots plus reconnection and download
+    /// Submit until accepted, consume snapshots and download only after success.
+    /// HTTP 429 retries share five attempts and 300 seconds of waiting, honoring
+    /// a valid Retry-After. Other submission/result failures are not retried.
+    /// Established stream loss reopens with authentication. The callback receives
+    /// snapshots plus rate-limit, reconnection and download
     /// transitions before the corresponding request. A callback error releases the
     /// stream and stops before the next request without cancelling the job.
     ///
@@ -319,6 +363,7 @@ const fn caller_failure(code: jobs::FailureCode) -> bool {
 fn status_action(status: u16) -> String {
     match status {
         401 => "\n  action: the supplied token was not accepted; check GITHITS_API_TOKEN or proxy authentication".into(),
+        429 => "\n  action: the service rate limited this request; reduce request frequency and try again later".into(),
         405 => format!("\n  action: {}", Code::MethodNotAllowed.action()),
         _ => String::new(),
     }
@@ -397,10 +442,12 @@ fn describe(problem: &Problem, retry_after: Option<&str>) -> String {
     if let Some(url) = &problem.acceptance_url {
         let _ = fmt::Write::write_fmt(&mut text, format_args!("\n  accept at: {url}"));
     }
-    let _ = fmt::Write::write_fmt(
-        &mut text,
-        format_args!("\n  action: {}", problem.code.action()),
-    );
+    let action = if problem.code == Code::RateLimited && retry_after.is_none() {
+        "the service supplied no retry delay; reduce request frequency and try again later"
+    } else {
+        problem.code.action()
+    };
+    let _ = fmt::Write::write_fmt(&mut text, format_args!("\n  action: {action}"));
     text
 }
 
