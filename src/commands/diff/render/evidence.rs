@@ -42,7 +42,10 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
             .filter(|(_, c)| c.inventory != "complete" || c.assessment != "complete")
         {
             let problem = coverage_problem(c);
-            d.item(&format!("For {context} in the {} revision, {problem}. Review the file problems below and check security advisories manually.", revision(side)))?;
+            d.item(&format!(
+                "For {context} in the {} revision, {problem}. Check security advisories manually.",
+                revision(side)
+            ))?;
         }
     }
     Ok(())

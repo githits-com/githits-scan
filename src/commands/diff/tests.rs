@@ -226,7 +226,7 @@ fn diff_unfamiliar_review_data_stays_raw_and_unassessed() {
         }
         let text = rendered(&value, Format::Human);
         assert!(!text.contains("future_review"));
-        assert!(text.contains("Scan cannot display this upgrade review"));
+        assert!(text.contains("No usable upgrade review was returned"));
         assert!(!text.contains("Direct security target:"));
         assert!(!text.contains("changelog entry:"));
         let report = Report::from_bytes(serde_json::to_vec(&value).expect("json")).expect("report");

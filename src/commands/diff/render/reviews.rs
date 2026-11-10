@@ -52,8 +52,11 @@ fn unavailable_detail(review: &view::Review, d: &mut Display<'_>) -> io::Result<
         Some("review_failed") => {
             "The upgrade review could not be returned. The service did not supply a failure explanation."
         }
-        _ => {
+        _ if matches!(review.status.as_str(), "complete" | "partial") => {
             "Scan cannot display this upgrade review because the service returned no review in a format this version supports."
+        }
+        _ => {
+            "No usable upgrade review was returned. The service supplied no reason this version of Scan can display."
         }
     };
     d.item(&format!(

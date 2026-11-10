@@ -375,3 +375,35 @@ fn diff_friendly_output_does_not_assign_comparison_wide_problems_to_a_revision()
     assert!(!text.contains("from that revision"));
     assert!(text.contains("revision-specific explanation"));
 }
+
+#[test]
+fn diff_friendly_output_does_not_blame_format_for_an_unreturned_review() {
+    for (status, reason) in [
+        ("not_assessed", None),
+        ("unavailable", None),
+        ("not_assessed", Some("future_reason")),
+        ("unavailable", Some("future_reason")),
+    ] {
+        let mut v = fixture::report();
+        v["direct_reviews"]["status"] = "partial".into();
+        let review = &mut v["direct_reviews"]["data"][0];
+        review["status"] = status.into();
+        review["reason"] = reason.map_or(serde_json::Value::Null, serde_json::Value::from);
+        review["data"] = serde_json::Value::Null;
+        for format in [Format::Human, Format::Markdown] {
+            let text = rendered(&v, format);
+            assert!(
+                text.contains("No usable upgrade review was returned"),
+                "{text}"
+            );
+            assert!(
+                text.contains("The service supplied no reason this version of Scan can display")
+            );
+            assert!(text.contains(
+                "Review the release notes and security advisories before accepting this upgrade"
+            ));
+            assert!(!text.contains("format this version supports"));
+            assert!(!text.contains("future_reason"));
+        }
+    }
+}
