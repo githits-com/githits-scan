@@ -37,10 +37,16 @@ pub(super) fn changes(
     for c in rows {
         group_change(evidence, c, &mut groups);
     }
+    let mut headings = BTreeMap::<_, Vec<_>>::new();
     for (revision, reason, names) in groups {
+        headings.entry((revision, names)).or_default().push(reason);
+    }
+    for ((revision, names), reasons) in headings {
         let verb = if names.len() == 1 { "is" } else { "are" };
         d.item(&format!("Scan could not tell whether {} {verb} used directly or through another package {revision}.",names.join(", ")))?;
-        d.item(&format!("  {reason}"))?;
+        for reason in reasons {
+            d.item(&format!("  {reason}"))?;
+        }
     }
     Ok(())
 }
@@ -146,14 +152,37 @@ pub(super) fn binding(
     binding: &view::Binding,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    for (label, side, id) in [
-        ("base", &evidence.base, c.before_id.as_deref()),
-        ("head", &evidence.head, c.after_id.as_deref()),
+    for (label, side, id, status, absent) in [
+        (
+            "base",
+            &evidence.base,
+            c.before_id.as_deref(),
+            binding.base_status.as_str(),
+            c.kind == "added",
+        ),
+        (
+            "head",
+            &evidence.head,
+            c.after_id.as_deref(),
+            binding.head_status.as_str(),
+            c.kind == "removed",
+        ),
     ] {
         let rows = id.and_then(|id| side.bindings.get(&(id, binding.source_key.as_str())));
         let mut causes = Vec::new();
         for row in rows.into_iter().flatten() {
             collect(&mut causes, &row.reasons);
+        }
+        if !absent
+            && !matches!(status, "matched" | "absent")
+            && !causes.iter().any(|cause| cause.code == status)
+        {
+            d.item(&format!(
+                "  In the {} revision, {} Review the declaration and {}.",
+                super::revision(label),
+                binding_reason(status),
+                binding.source_key
+            ))?;
         }
         write_causes(
             &format!("In the {} revision", super::revision(label)),

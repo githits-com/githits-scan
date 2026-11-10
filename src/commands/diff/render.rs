@@ -213,6 +213,14 @@ fn revision(side: &str) -> &str {
     }
 }
 
+fn revision_context(side: &str) -> &'static str {
+    match side {
+        "base" => "in the earlier revision",
+        "head" => "in the later revision",
+        _ => "in this comparison",
+    }
+}
+
 fn usage(status: &str) -> Option<&'static str> {
     match status {
         "direct" => Some("direct dependency"),
@@ -231,18 +239,14 @@ fn declarations(
     }
     d.heading("Dependency declarations")?;
     for c in &v.declaration_changes {
-        if c.kind == "ambiguous" {
-            d.item("Scan could not compare a dependency declaration because the service could not distinguish matching declarations. Review the dependency declarations in your project files.")?;
-        }
-        let verb = match c.kind.as_str() {
-            "added" => "Added",
-            "removed" => "Removed",
-            _ => "Changed",
+        let label = explanations::declaration_label(explanations, c);
+        let text = match c.kind.as_str() {
+            "ambiguous" => "Scan could not compare a dependency declaration because the service could not distinguish matching declarations. Review the dependency declarations in your project files.".into(),
+            "added" => format!("Added {label}"),
+            "removed" => format!("Removed {label}"),
+            _ => format!("Changed {label}"),
         };
-        d.item(&format!(
-            "{verb} {}",
-            explanations::declaration_label(explanations, c)
-        ))?;
+        d.item(&text)?;
         for b in &c.binding_transitions {
             binding(c, b, d)?;
             explanations::binding(explanations, c, b, d)?;
@@ -290,24 +294,6 @@ fn binding(c: &view::DeclarationChange, b: &view::Binding, d: &mut Display<'_>) 
             "  No upgrade review: {}",
             eligibility(b.review_eligibility.reason.as_deref())
         ))?;
-    }
-    for (side, status) in [("earlier", &b.base_status), ("later", &b.head_status)]
-        .into_iter()
-        .filter(|(side, _)| {
-            if *side == "earlier" {
-                c.kind != "added"
-            } else {
-                c.kind != "removed"
-            }
-        })
-    {
-        if !matches!(status.as_str(), "matched" | "absent") {
-            d.item(&format!(
-                "  In the {side} revision, {} Review the declaration and {}.",
-                explanations::binding_reason(status),
-                b.source_key
-            ))?;
-        }
     }
     Ok(())
 }

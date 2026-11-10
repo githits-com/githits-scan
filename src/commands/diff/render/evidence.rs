@@ -14,6 +14,7 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
             "Security advisory checks",
         ));
     };
+    limitations(&v.advisories, d)?;
     if data.coordinate_transitions.is_empty() && data.exposures.is_empty() {
         return Ok(());
     }
@@ -45,6 +46,47 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
         }
     }
     Ok(())
+}
+
+fn limitations(section: &crate::api::diff::Section, d: &mut Display<'_>) -> io::Result<()> {
+    let coverage = section
+        .coverage
+        .as_ref()
+        .map(|raw| serde_json::from_str::<view::AdvisoryCoverage>(raw.get()))
+        .transpose()
+        .map_err(io::Error::other)?;
+    let unresolved = coverage
+        .as_ref()
+        .is_some_and(|c| c.unknown.is_some_and(|n| n > 0));
+    let unsupported = coverage
+        .as_ref()
+        .is_some_and(|c| c.unsupported.is_some_and(|n| n > 0));
+    if section.status != "partial" && !unresolved && !unsupported {
+        return Ok(());
+    }
+    let reason = match section.reason.as_deref() {
+        Some("deadline") => {
+            "Some security checks could not be completed before the comparison's time limit."
+        }
+        Some("provider_unavailable") => {
+            "Some security checks could not be completed because the service's information provider was unavailable."
+        }
+        _ if unresolved => {
+            "The service did not return conclusive security checks for every package version, and did not explain why."
+        }
+        _ if unsupported => "Some package versions could not be checked for security advisories.",
+        _ => {
+            "Some security checks could not be completed; the service supplied no explanation this version of Scan can display."
+        }
+    };
+    let support = if unsupported {
+        " The service does not support checking some package versions."
+    } else {
+        ""
+    };
+    d.line(&format!(
+        "{reason}{support} Check security advisories manually before accepting these changes."
+    ))
 }
 
 fn coverage_problem(c: &view::ScopeCoverage) -> &'static str {
@@ -135,8 +177,8 @@ pub(super) fn gaps(
     let c: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
     if c.partial == Some(true) {
         d.line(&format!(
-            "Some dependency information was unavailable for the {} revision.",
-            revision(side)
+            "Some dependency information was unavailable {}.",
+            super::revision_context(side)
         ))?;
     }
     for rows in [
@@ -150,7 +192,12 @@ pub(super) fn gaps(
         }
     }
     for row in c.reachability.iter().filter(|r| !r.complete) {
-        d.item(&format!("Scan could not establish how the dependencies in {} connect to the packages in {} in the {} revision.",row.manifest_path,row.source_key,revision(side)))?;
+        d.item(&format!(
+            "Scan could not establish how the dependencies in {} connect to the packages in {} {}.",
+            row.manifest_path,
+            row.source_key,
+            super::revision_context(side)
+        ))?;
         super::explanations::coverage(explanations, side, row.reachability_id.as_deref(), d)?;
         if side == "Report" {
             d.item("  The service did not attach a revision-specific explanation to this comparison-wide limitation. Review those files manually.")?;
@@ -188,7 +235,17 @@ fn gap_message(row: &view::Gap, side: &str, reason: Option<&str>) -> String {
     } else {
         &files
     };
-    let context = format!("{files} in the {} revision", revision(side));
+    let context = format!("{files} {}", super::revision_context(side));
+    let read_context = if matches!(side, "base" | "head") {
+        "from that revision"
+    } else {
+        "for this comparison"
+    };
+    let presence = if matches!(side, "base" | "head") {
+        "that revision"
+    } else {
+        "the compared revisions"
+    };
     let name = row
         .name
         .as_deref()
@@ -201,12 +258,12 @@ fn gap_message(row: &view::Gap, side: &str, reason: Option<&str>) -> String {
         Some("dependency_scope_unknown") => format!("The service could not determine which packages from {context} belong in this comparison. Review the dependency declarations and lockfile entries manually."),
         Some("required_input_not_supplied") => row.required_path.as_ref().map_or_else(
             || format!("Could not fully compare {context} because a required dependency file was not read. The service did not identify the missing file. Review the dependency files and Scan's exclusions."),
-            |path|format!("Could not fully compare {context} because {path} was not among the files read from that revision. Check that it exists in that revision and is not excluded from Scan.")),
+            |path|format!("Could not fully compare {context} because {path} was not among the files read {read_context}. Check that it exists in {presence} and is not excluded from Scan.")),
         Some("non_registry_source") => format!("{name}{version} in {context} comes from outside a public package registry, so it could not be checked against public security advisories. Review its source and security information manually."),
-        Some("locked_version_does_not_satisfy_request") => format!("In the {} revision, {name} requires {} in {}, but {files} lists {}. Review the dependency requirement and lockfile entries.",revision(side),row.requested_requirement.as_deref().unwrap_or("a requirement not supplied in this report"),row.declaration_path.as_deref().unwrap_or("a dependency file not identified by the service"),if row.locked_versions.is_empty() {"no matching versions".into()} else {row.locked_versions.join(", ")}),
+        Some("locked_version_does_not_satisfy_request") => format!("The dependency {name} requires {} in {}, but {files} lists {} {}. Review the dependency requirement and lockfile entries.",row.requested_requirement.as_deref().unwrap_or("a requirement not supplied in this report"),row.declaration_path.as_deref().unwrap_or("a dependency file not identified by the service"),if row.locked_versions.is_empty() {"no matching versions".into()} else {row.locked_versions.join(", ")},super::revision_context(side)),
         Some("recorded_dependency_scope_differs") => format!("For {name} in {context}, the dependency declaration and lockfile disagree about how the dependency is used. Review the corresponding entries."),
         Some("recorded_requirement_differs" | "recorded_provider_requirement_mismatch") => format!("For {name} in {context}, the dependency requirement differs between the declaration and lockfile. Review the corresponding entries."),
-        Some("lockfile_not_supplied" | "missing_lockfile") => format!("Could not check {context} because its lockfile was not read. Check that the lockfile exists in the revision and is not excluded from Scan."),
+        Some("lockfile_not_supplied" | "missing_lockfile") => format!("Could not check {context} because its lockfile was not read. Check that the lockfile exists in {presence} and is not excluded from Scan."),
         _ => format!("Could not fully check {name}{version} in {context}. The service did not supply a reason that this version of Scan can explain. Review these files manually."),
     }
 }

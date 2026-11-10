@@ -270,4 +270,93 @@ fn diff_friendly_output_does_not_equate_unidentified_declarations_with_absence()
     v["declaration_changes"][0] = json!({"id":"ambiguous-change","kind":"ambiguous","before_id":null,"after_id":null,"binding_transitions":[]});
     let text = rendered(&v, Format::Human);
     assert!(text.contains("could not distinguish matching declarations"));
+    assert!(!text.contains("Changed a dependency whose name and declaring file were not supplied"));
+}
+
+#[test]
+fn diff_friendly_output_keeps_security_limitations_without_findings() {
+    for only_clear_rows in [false, true] {
+        let mut v = fixture::report();
+        v["advisories"]["status"] = "partial".into();
+        v["advisories"]["reason"] = "deadline".into();
+        if only_clear_rows {
+            v["advisories"]["data"]["coordinate_transitions"][0]["deltas"][0]["kind"] =
+                "non_affecting".into();
+            v["advisories"]["data"]["exposures"] = json!([]);
+        } else {
+            v["advisories"]["data"] =
+                json!({"findings":[],"coordinate_transitions":[],"exposures":[]});
+        }
+        v["advisories"]["coverage"] =
+            json!({"checked":0,"coordinates":2,"unknown":1,"unsupported":1});
+        let text = rendered(&v, Format::Human);
+        assert!(
+            text.contains(
+                "Some security checks could not be completed before the comparison's time limit"
+            ),
+            "{text}"
+        );
+        assert!(text.contains("service does not support checking some package versions"));
+        for raw in [
+            "unknown 1",
+            "unsupported 1",
+            "Advisories: partial",
+            "non_affecting",
+        ] {
+            assert!(!text.contains(raw));
+        }
+    }
+}
+
+#[test]
+fn diff_friendly_output_shows_joined_binding_causes_without_status_echoes() {
+    let mut v = fixture::report();
+    v["declaration_changes"][0]["binding_transitions"][0]["base_status"] =
+        "version_mismatch".into();
+    v["snapshots"]["base"]["bindings"] = json!([{"declaration_id":"base:d1","source_key":"package-lock.json","reasons":[{
+        "code":"version_mismatch","message":"internal mismatch text","source_key":"package-lock.json","manifest_path":"package.json","dependency_name":"helper"}]}]);
+    let text = rendered(&v, Format::Human);
+    assert_eq!(
+        text.matches("the listed package versions do not satisfy the declared requirement")
+            .count(),
+        1,
+        "{text}"
+    );
+    assert!(text.contains("For helper in package.json"));
+    v["snapshots"]["base"]["bindings"][0]["reasons"][0]["code"] =
+        "authored_request_not_linked".into();
+    let text = rendered(&v, Format::Human);
+    assert!(text.contains("could not match helper in package.json"));
+    assert!(text.contains("the listed package versions do not satisfy the declared requirement"));
+}
+
+#[test]
+fn diff_friendly_output_groups_multiple_reasons_under_one_package_heading() {
+    let mut v = incomplete_usage();
+    for side in ["base", "head"] {
+        v["snapshots"][side]["reachability"][0]["reasons"].as_array_mut().expect("reasons").push(json!({
+            "code":"declaration_binding_missing","message":"internal diagnostic text","source_key":"bun.lock","manifest_path":"tools/package.json","dependency_name":"helper"}));
+    }
+    let text = rendered(&v, Format::Human);
+    assert_eq!(
+        text.matches("Scan could not tell whether @napi-rs/triples")
+            .count(),
+        1,
+        "{text}"
+    );
+    assert!(text.contains("Not every dependency declared in package.json"));
+    assert!(text.contains("helper in tools/package.json"));
+}
+
+#[test]
+fn diff_friendly_output_does_not_assign_comparison_wide_problems_to_a_revision() {
+    let mut v = incomplete_usage();
+    v["coverage"] = json!({"partial":true,"resolution":[{"path":"bun.lock","reason":"required_input_not_supplied","required_path":"package.json"}],
+        "reachability":[{"complete":false,"manifest_path":"package.json","source_key":"bun.lock","basis":"declaration_and_root_graph"}]});
+    let text = rendered(&v, Format::Human);
+    assert!(text.contains("bun.lock in this comparison"), "{text}");
+    assert!(text.contains("Some dependency information was unavailable in this comparison"));
+    assert!(!text.contains("compared revision."));
+    assert!(!text.contains("from that revision"));
+    assert!(text.contains("revision-specific explanation"));
 }

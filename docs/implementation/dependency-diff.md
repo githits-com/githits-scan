@@ -115,6 +115,8 @@ something must say what could not be determined and why. If the service supplies
 usable explanation, Scan says that explicitly and suggests manual review rather
 than inventing a cause, a fix, a retry or a new analysis. Routine all-clear security
 rows and empty advisory changes are omitted; material limitations remain visible.
+An incomplete security-check section remains visible even when it returns no
+findings, including the supplied reason and any unsupported-package limitation.
 
 Changed-version advisory results and results across supplied project files remain
 distinct: a package update can remove an advisory from one file while the project
@@ -184,6 +186,8 @@ Different files, blockers and reasons remain distinct.
 
 Snapshot binding `reasons` join through the enclosing declaration change's same-side
 declaration ID and exact `source_key`, independently of eligibility vocabulary.
+A joined cause replaces the duplicate explanation of its binding status; distinct
+status limitations and legacy reasons without a matching cause remain visible.
 Declaration labels prefer the head's `after_id`, then the base's `before_id`, looking
 up each only in its own snapshot. Missing identity is explained rather than guessed
 from a package name. Legacy ineligibility reasons still receive plain explanations
@@ -197,9 +201,9 @@ context without raw codes or scopes. Reviews retain declaring-file context throu
 `declaration_change_ids`, even without an occurrence change. Interpretable partial
 review details still display beside a failure.
 
-A deadline means the review was not completed in time; unavailable required
-information is a separate cause. `result_size_limit` means assessed detail was
-omitted for size, not that the review was unassessed. Legacy failures without detail
+`deadline` means the review was not completed in time; `evidence_unavailable`
+means the required information was unavailable. `result_size_limit` means assessed detail was
+omitted for size, not that the review was unassessed. Legacy `review_failed` rows without detail
 explicitly say the service supplied no explanation. No missing review or security
 conclusion implies safety, and no output recommends a charged rerun.
 

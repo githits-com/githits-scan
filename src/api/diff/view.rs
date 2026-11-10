@@ -393,10 +393,8 @@ pub(crate) struct AdvisoryCoverage {
     pub _checked: Option<u64>,
     #[serde(rename = "coordinates")]
     pub _coordinates: Option<u64>,
-    #[serde(rename = "unknown")]
-    pub _unknown: Option<u64>,
-    #[serde(rename = "unsupported")]
-    pub _unsupported: Option<u64>,
+    pub unknown: Option<u64>,
+    pub unsupported: Option<u64>,
 }
 
 #[derive(Deserialize)]
