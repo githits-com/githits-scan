@@ -2,7 +2,11 @@
 use super::{Display, View, view};
 use std::io;
 
-pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
+pub(super) fn write(
+    v: &View,
+    explanations: &super::explanations::Evidence<'_>,
+    d: &mut Display<'_>,
+) -> io::Result<()> {
     d.heading(&format!(
         "Direct upgrade reviews: {}",
         v.direct_reviews.status
@@ -30,12 +34,16 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
                 .map_or(String::new(), |s| format!(" ({s})"))
         ))?;
         d.item(&format!("  Sources: {}", r.source_keys.join(", ")))?;
+        if r.status != "complete" || r.failure.is_some() {
+            super::explanations::review_context(explanations, &r, d)?;
+        }
+        if let Some(failure) = &r.failure {
+            write_failure(failure, d)?;
+        }
         if let Some(data) = r.evidence() {
             detail(&data, d)?;
-        } else {
-            d.item(
-                "  Review detail not interpreted; consult the reported status/reason and JSON.",
-            )?;
+        } else if r.failure.is_none() {
+            unavailable_detail(&r, d)?;
         }
     }
     if let Some(raw) = &v.direct_reviews.coverage {
@@ -45,6 +53,33 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
             counts.eligible,counts.completed,counts.returned,counts.not_assessed,counts.unavailable,counts.omitted))?;
     }
     Ok(())
+}
+
+fn unavailable_detail(review: &view::Review, d: &mut Display<'_>) -> io::Result<()> {
+    let text = match review.reason.as_deref() {
+        Some("deadline") => "  The review was not assessed before the analysis deadline.",
+        Some("result_size_limit") => {
+            "  The assessed review detail would exceed the report size limit."
+        }
+        Some("evidence_unavailable") => "  The evidence required for this review was unavailable.",
+        Some("review_failed") => {
+            "  Review evidence is unavailable; the report does not supply a failure explanation."
+        }
+        _ => "  Review detail not interpreted; consult the reported status/reason and JSON.",
+    };
+    d.item(text)
+}
+
+fn write_failure(failure: &view::ReviewFailure, d: &mut Display<'_>) -> io::Result<()> {
+    let label = match failure.scope.as_str() {
+        "batch" => "Batch evidence failure".into(),
+        "review" => "Review failure".into(),
+        scope => format!("Evidence failure ({scope})"),
+    };
+    d.item(&format!(
+        "  {label}: {} ({})",
+        failure.message, failure.code
+    ))
 }
 
 fn detail(data: &view::ReviewData, d: &mut Display<'_>) -> io::Result<()> {

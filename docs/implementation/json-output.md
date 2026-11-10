@@ -136,6 +136,14 @@ directness and versions retained elsewhere. Null targets mean absent or unqualif
 evidence, not an invented old version. Advisory coordinate and exposure scopes remain
 separate, as do review security and changelog qualifications.
 
+Producer explanation fields remain unchanged in JSON: occurrence
+`directness_reasons`/`directness_proof_ids`, root proof `id`/`reasons`, binding
+`reasons`, coverage `reachability_id` and review `failure`. Human/Markdown follow
+these explicit same-side references and display supplied causes; they do not add
+derived explanations to JSON. Older schema-v1 reports may omit these additive
+fields. Present fields still validate against the supported display structure,
+and malformed known fields produce a protocol error before any output.
+
 `outcome` and independent section statuses describe evidence. Partial, unavailable,
 unrequested and unfamiliar statuses never mean pass/safe or zero findings. Additive
 fields and positive future schemas remain byte-preserved for pipelines; this binary's

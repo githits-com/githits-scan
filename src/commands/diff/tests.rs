@@ -279,3 +279,5 @@ fn diff_excluded_dependency_keeps_its_version_and_all_source_paths() {
     assert!(text.contains("Cargo.lock, tools/Cargo.lock"));
     assert!(text.contains("non_registry_source"));
 }
+
+mod explanations;

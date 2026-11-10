@@ -151,12 +151,46 @@ the schema's open coverage/review objects, for consumers of the unchanged JSON:
 | Partial returned review | Returned `data.unknown_details` carries section/code/message; changelog coverage remains separate from direct security evidence. |
 | Incomplete comparison | Side-specific resolution gaps retain source paths, reasons and any required input path. Advisory delta reasons qualify their own scope and side. |
 
-The current directness contract returns strings on changes and occurrences, with
-exposure/reachability qualifications elsewhere, but no per-occurrence causal
-reason. Existing IDs permit exact joins; they do not explain why a proof failed.
-An unknown dependency type must not be described as direct, transitive or safe by
-inferring from unrelated bindings or source gaps. Additions/removals have no
-occurrence on one side; that absence is not a failed assessment.
+For an unknown changed dependency type, Scan joins `before_ids` to base
+occurrences and `after_ids` to head occurrences. It presents the occurrence's
+`directness_reasons` and follows its explicit `directness_proof_ids` to
+`reachability[].id` in that same snapshot. It never compares IDs across sides or
+attaches causes by matching names, paths or neighboring workspace gaps. Individually
+known occurrences inside an aggregate unknown change need no explanation;
+additions/removals do not qualify their absent side as a failed assessment.
+
+Each cause retains its producer message, code, source, supplied manifest and
+coverage detail. When `declaration_id` is present, `dependency_name` names the
+authored declaration blocking proof, which can differ from the changed package.
+Without that ID, the name describes the affected dependency. Equal full causes
+and shared proofs are deduplicated within each change/side; distinct owners remain
+visible. Causes are repeated beside separate affected changes so each explanation
+can be read independently.
+
+Snapshot binding `reasons` are associated with a transition through its enclosing
+declaration change's same-side declaration ID and exact `source_key`. They are
+labelled base/head binding causes, independently of eligibility vocabulary.
+Declaration labels prefer the head's `after_id`, then the base's `before_id`,
+looking up each only in its own snapshot. No unique declaration is labelled
+neutrally rather than guessed from a matching package name.
+
+Review `failure` detail retains the supplied `scope`, `code` and plain `message`
+beside its status/reason. A batch collection/encoding failure is labelled as a
+batch evidence failure, never proof that an individual package assessment failed.
+Unfamiliar failure scope/code stays visible. Failed or partial reviews retain
+authored context through `declaration_change_ids`, including when there is no
+occurrence change; returned interpretable partial detail is still displayed.
+Failure detail replaces the generic uninterpreted-detail line when supplied.
+Existing deadline, unavailable-evidence and size-omission reasons also receive
+plain explanations without changing their status/reason. A legacy `review_failed`
+row without structured failure remains explicitly unexplained rather than being
+attributed to an individual package assessment.
+
+Incomplete snapshot coverage summaries follow `reachability_id` to their own
+side's proof causes. Report-level coverage has no snapshot side and never resolves
+IDs through either snapshot. Older schema-v1 reports can omit the additive cause
+fields; an unknown with no associated cause remains explicitly unexplained, and
+unavailable proof detail stays qualified. No missing evidence implies safety.
 
 ## HTTP, limits and cost
 

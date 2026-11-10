@@ -43,7 +43,48 @@ impl View {
 pub(crate) struct Snapshot {
     pub side: String,
     pub declarations: Vec<Declaration>,
+    pub occurrences: Vec<Occurrence>,
+    pub bindings: Vec<SnapshotBinding>,
+    pub reachability: Vec<RootProof>,
     pub coverage: Box<RawValue>,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct Occurrence {
+    pub id: String,
+    pub directness: String,
+    #[serde(default)]
+    pub directness_reasons: Vec<Cause>,
+    #[serde(default)]
+    pub directness_proof_ids: Vec<String>,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct RootProof {
+    pub id: Option<String>,
+    #[serde(default)]
+    pub reasons: Vec<Cause>,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct SnapshotBinding {
+    pub declaration_id: String,
+    pub source_key: String,
+    #[serde(default)]
+    pub reasons: Vec<Cause>,
+}
+
+#[derive(Deserialize, Debug, PartialEq, Eq)]
+pub(crate) struct Cause {
+    pub code: String,
+    pub message: String,
+    pub source_key: String,
+    pub manifest_path: Option<String>,
+    pub dependency_name: Option<String>,
+    pub declaration_id: Option<String>,
+    pub coverage_state: Option<String>,
+    #[serde(default)]
+    pub coverage_reasons: Vec<String>,
 }
 
 #[derive(Deserialize)]
@@ -68,6 +109,8 @@ pub(crate) struct Change {
     pub package: Package,
     pub ownership: String,
     pub kind: String,
+    pub before_ids: Vec<String>,
+    pub after_ids: Vec<String>,
     pub before_versions: Vec<Option<String>>,
     pub after_versions: Vec<Option<String>>,
     pub directness: Directness,
@@ -190,9 +233,18 @@ pub(crate) struct Review {
     pub current_version: String,
     pub target_version: String,
     pub source_keys: Vec<String>,
+    pub declaration_change_ids: Vec<String>,
     pub status: String,
     pub reason: Option<String>,
+    pub failure: Option<ReviewFailure>,
     pub data: Option<Box<RawValue>>,
+}
+
+#[derive(Deserialize)]
+pub(crate) struct ReviewFailure {
+    pub scope: String,
+    pub code: String,
+    pub message: String,
 }
 
 impl Review {
@@ -275,15 +327,16 @@ pub(crate) struct Coverage {
     #[serde(default)]
     pub mismatches: Vec<Gap>,
     #[serde(default)]
-    pub reachability: Vec<Reachability>,
+    pub reachability: Vec<ReachabilityGap>,
 }
 
 #[derive(Deserialize)]
-pub(crate) struct Reachability {
+pub(crate) struct ReachabilityGap {
     pub complete: bool,
     pub manifest_path: String,
     pub source_key: String,
     pub basis: String,
+    pub reachability_id: Option<String>,
 }
 
 #[derive(Deserialize)]

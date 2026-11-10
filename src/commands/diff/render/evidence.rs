@@ -109,7 +109,12 @@ fn deltas<'a>(
     Ok(())
 }
 
-pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Result<()> {
+pub(super) fn gaps(
+    raw: &RawValue,
+    side: &str,
+    explanations: &super::explanations::Evidence<'_>,
+    d: &mut Display<'_>,
+) -> io::Result<()> {
     let coverage: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
     if coverage.partial == Some(true) {
         d.line(&format!("{side}: source evidence partial."))?;
@@ -133,6 +138,7 @@ pub(super) fn gaps(raw: &RawValue, side: &str, d: &mut Display<'_>) -> io::Resul
             "{side}: project reachability not established for {} via {} ({})",
             row.manifest_path, row.source_key, row.basis
         ))?;
+        super::explanations::coverage(explanations, side, row.reachability_id.as_deref(), d)?;
     }
     Ok(())
 }

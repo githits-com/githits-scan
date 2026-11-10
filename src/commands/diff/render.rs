@@ -8,6 +8,7 @@ use std::collections::BTreeMap;
 use std::io::{self, Write};
 
 mod evidence;
+mod explanations;
 mod reviews;
 
 pub(super) fn write(
@@ -46,18 +47,19 @@ pub(super) fn write(
             display.line(&format!("{label}: {count}"))?;
         }
     }
-    changes(view, &mut display)?;
-    declarations(view, &mut display)?;
+    let explanations = explanations::new(view);
+    changes(view, &explanations, &mut display)?;
+    declarations(view, &explanations, &mut display)?;
     evidence::write(view, &mut display)?;
-    reviews::write(view, &mut display)?;
+    reviews::write(view, &explanations, &mut display)?;
     display.heading("Coverage qualifications")?;
     for (side, snapshot) in view.snapshots.iter() {
         if side != snapshot.side {
             display.line("Unfamiliar snapshot side; consult JSON evidence.")?;
         }
-        evidence::gaps(&snapshot.coverage, side, &mut display)?;
+        evidence::gaps(&snapshot.coverage, side, &explanations, &mut display)?;
     }
-    evidence::gaps(&view.coverage, "Report", &mut display)?;
+    evidence::gaps(&view.coverage, "Report", &explanations, &mut display)?;
     for notice in &view.notices {
         display.line(&format!("Note: {notice}"))?;
     }
@@ -134,7 +136,11 @@ fn versions(v: &[Option<String>]) -> String {
         .join(", ")
 }
 
-fn changes(view: &View, d: &mut Display<'_>) -> io::Result<()> {
+fn changes(
+    view: &View,
+    explanations: &explanations::Evidence<'_>,
+    d: &mut Display<'_>,
+) -> io::Result<()> {
     let mut sources = BTreeMap::<&str, Vec<&view::Change>>::new();
     for change in &view.changes {
         sources.entry(&change.source_key).or_default().push(change);
@@ -146,6 +152,7 @@ fn changes(view: &View, d: &mut Display<'_>) -> io::Result<()> {
         d.heading(&format!("Source: {source}"))?;
         for c in changes {
             change(c, d)?;
+            explanations::change(explanations, c, d)?;
         }
     }
     Ok(())
@@ -178,26 +185,21 @@ fn change(c: &view::Change, d: &mut Display<'_>) -> io::Result<()> {
     Ok(())
 }
 
-fn declarations(view: &View, d: &mut Display<'_>) -> io::Result<()> {
+fn declarations(
+    view: &View,
+    explanations: &explanations::Evidence<'_>,
+    d: &mut Display<'_>,
+) -> io::Result<()> {
     if view.declaration_changes.is_empty() {
         return Ok(());
     }
     d.heading("Direct declarations")?;
     for c in &view.declaration_changes {
-        let declaration = view
-            .snapshots
-            .iter()
-            .flat_map(|(_, s)| &s.declarations)
-            .find(|decl| {
-                Some(&decl.id) == c.after_id.as_ref() || Some(&decl.id) == c.before_id.as_ref()
-            });
-        let label = declaration.map_or_else(
-            || c.id.clone(),
-            |decl| format!("{} in {}", decl.declared_name, decl.declaring_manifest),
-        );
+        let label = explanations::declaration_label(explanations, c);
         d.item(&format!("{label}: {}", c.kind))?;
         for b in &c.binding_transitions {
             binding(b, d)?;
+            explanations::binding(explanations, c, b, d)?;
         }
     }
     Ok(())
