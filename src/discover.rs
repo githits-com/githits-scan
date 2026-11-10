@@ -77,7 +77,7 @@ pub struct ManifestOnly {
 /// with, such as `pyproject.toml` beside `Pipfile.lock`.
 ///
 /// Classification is purely path-based and establishes neither workspace
-/// membership nor recorded dependency coverage. Cargo and supported npm members can
+/// membership nor recorded dependency coverage. Cargo and supported npm/Bun members can
 /// be selected during upload preparation; other candidates require configuration. Service
 /// parsing owns their final association with recorded lock evidence.
 #[derive(Debug, Clone, PartialEq, Eq)]

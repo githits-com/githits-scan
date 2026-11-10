@@ -155,6 +155,9 @@ fn diff_independent_security_coverage_problems_all_remain_visible() {
         let text = rendered(&v, Format::Human);
         assert!(text.contains("some package entries could not be identified for security checks"));
         assert!(text.contains("could not finish checking every relevant package version"));
+        assert!(
+            text.contains("Check security advisories manually before accepting these changes.")
+        );
         if inventory == "partial" {
             assert!(text.contains("package information was incomplete"));
         }
@@ -172,4 +175,27 @@ fn diff_section_unconfirmed_results_survive_unrelated_inventory_qualification() 
     assert!(text.contains("package information was incomplete"));
     assert!(text.contains("Some advisory results could not be confirmed"));
     assert!(!text.contains("service supplied no explanation"));
+}
+
+#[test]
+fn diff_security_qualifications_share_one_manual_check_action() {
+    for scope in ["coordinate", "project", "both"] {
+        let mut v = fixture::report();
+        if scope != "project" {
+            v["advisories"]["data"]["coordinate_transitions"][0]["deltas"][0]["head"]["reasons"] =
+                json!(["future-reason"]);
+        }
+        if scope != "coordinate" {
+            v["advisories"]["data"]["exposures"][1]["deltas"][0]["head"]["reasons"] =
+                json!(["future-reason"]);
+        }
+        let text = rendered(&v, Format::Human);
+        assert!(text.contains("a limitation that this version of Scan cannot explain"));
+        assert_eq!(
+            text.matches("Check security advisories manually before accepting these changes.")
+                .count(),
+            1
+        );
+        assert!(!text.contains("check the advisory manually"));
+    }
 }

@@ -19,6 +19,16 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
     };
     let qualifications = qualifications(&data);
     let limitation = limitation(&v.advisories, !qualifications.is_empty())?;
+    let manual_check = limitation.is_none()
+        && (!qualifications.is_empty()
+            || data
+                .coordinate_transitions
+                .iter()
+                .flat_map(|t| &t.deltas)
+                .any(|r| {
+                    r.kind != "non_affecting"
+                        && (!r.base.reasons.is_empty() || !r.head.reasons.is_empty())
+                }));
     let changed: BTreeSet<_> = data
         .coordinate_transitions
         .iter()
@@ -63,6 +73,9 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
             super::revision_context(sides.first().copied().unwrap_or("Report"))
         };
         d.item(&format!("For {context} {phase}, {message}."))?;
+    }
+    if manual_check {
+        d.line("Check security advisories manually before accepting these changes.")?;
     }
     Ok(())
 }
@@ -338,9 +351,7 @@ fn assessment_reason(reason: &str) -> &'static str {
         "coordinate_assessment_incomplete" => {
             "the service could not finish checking every relevant package version"
         }
-        _ => {
-            "the service reported a limitation that this version of Scan cannot explain; check the advisory manually"
-        }
+        _ => "the service reported a limitation that this version of Scan cannot explain",
     }
 }
 

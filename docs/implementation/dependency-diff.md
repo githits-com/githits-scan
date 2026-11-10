@@ -118,7 +118,8 @@ rows and empty advisory changes are omitted; material limitations remain visible
 Repeated inconclusive project-wide advisory results are grouped by their supplied
 scope, revision and reason. Independent missing-inventory, unfinished-assessment
 and unidentified-package limitations all remain visible. Known affected-before/after
-facts remain visible. When
+facts remain visible. Grouped security limitations include a shared manual-check
+next step. When
 a project result shares the explicit finding ID of a changed-version result, the
 scope qualification attaches to that result instead of repeating the advisory ID;
 unmatched positive project results stay separate. A local fix never implies that

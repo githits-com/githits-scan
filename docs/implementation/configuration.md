@@ -89,7 +89,7 @@ Both policy blocks and comments survive `detect --save`. Informational
 | --- | --- | --- | --- |
 | Lockfile | listed in `include` | matches `exclude` | neither; **drift** |
 | Manifest-only manifest | listed in `manifests` | matches `exclude` | neither; **drift**, or informational under `--lockfiles-only` |
-| Nested manifest | listed in `manifests` | matches `exclude` | no status; may be Cargo or supported npm evidence |
+| Nested manifest | listed in `manifests` | matches `exclude` | no status; may be Cargo or supported npm/Bun evidence |
 
 Default fixture exclusions are soft selection policy in `src/config.rs`, not
 catalog rejection: exact directory components `fixtures`, `__fixtures__`,
@@ -131,7 +131,7 @@ are evaluated here once and consumed by upload preparation and detect. See [Carg
 
 `--save` maintains the discovered inventory; selecting an additional nested or
 uncombined manifest remains an explicit configuration choice apart from native
-Cargo and supported npm evidence added during upload preparation. A save accepts the
+Cargo and supported npm/Bun evidence added during upload preparation. A save accepts the
 detected reality:
 
 - `include` becomes every detected eligible lockfile, sorted. Existing explicit entries retain their override of configured/default exclusions; invocation `--exclude` still wins. Other excluded lockfiles are omitted.
