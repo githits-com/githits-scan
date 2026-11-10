@@ -1,21 +1,14 @@
 //! Consumed recommendation facts; compact output and saved analysis have distinct projections.
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
-use super::wire::{Additional, Coordinate, nullable};
+use super::wire::{Additional, Coordinate, nullable, optional};
 
 /// Checked reason DTOs used by recommendation changes.
 pub(crate) mod reasons;
 /// The wire reason type attached to a recommendation change.
 pub(crate) use reasons::Reason;
-
-// Absence is supported; a supplied null is not an optional object in the contract.
-pub(super) fn optional<'de, D: Deserializer<'de>, T: Deserialize<'de>>(
-    d: D,
-) -> Result<Option<T>, D::Error> {
-    T::deserialize(d).map(Some)
-}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct Remediation {

@@ -8,4 +8,4 @@ too-many-arguments-threshold = 7
 too-many-lines-threshold = 100
 
 # Product and format names that legitimately appear in prose without backticks.
-doc-valid-idents = ["GitHits", "NuGet", "CycloneDX", "OpenAPI", "GitHub", ".."]
+doc-valid-idents = ["GitHits", "NuGet", "PyPI", "CycloneDX", "OpenAPI", "GitHub", ".."]

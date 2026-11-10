@@ -347,3 +347,24 @@ fn audit_v2_required_path_rejects_wrong_types() {
         assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("json")).is_err());
     }
 }
+
+#[test]
+fn audit_not_applicable_fields_reject_malformed_present_values() {
+    for version in [1, 2] {
+        for (field, invalid) in [
+            ("not_applicable_count", serde_json::Value::Null),
+            ("not_applicable_count", serde_json::json!(-1)),
+            ("not_applicable_count", serde_json::json!("2")),
+            ("not_applicable_registries", serde_json::Value::Null),
+            ("not_applicable_registries", serde_json::json!({})),
+            ("not_applicable_registries", serde_json::json!([1])),
+        ] {
+            let mut value = crate::test_support::audit::pypi_not_applicable(version);
+            value["coverage"]["deprecation"][field] = invalid;
+            assert!(
+                Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).is_err(),
+                "v{version} {field}"
+            );
+        }
+    }
+}

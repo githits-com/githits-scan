@@ -40,7 +40,7 @@ pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
     }
 }
 
-const fn has_gaps(r: &V2) -> bool {
+fn has_gaps(r: &V2) -> bool {
     let u = &r.unknowns;
     !u.vulnerabilities.is_empty()
         || !u.metadata.is_empty()
@@ -63,10 +63,7 @@ fn coverage(r: &V2, warnings: &mut Warnings) {
         warnings.insert("vulnerability coverage does not account for eligible packages");
     }
     for c in [&r.coverage.deprecation, &r.coverage.outdated] {
-        let total = c
-            .checked_count
-            .checked_add(c.unknown_count)
-            .and_then(|n| n.checked_add(c.not_collected_count));
+        let total = super::metadata_total(c);
         if c.candidates_count != r.summary.dependencies || total != Some(c.candidates_count) {
             warnings.insert("metadata coverage does not account for eligible packages");
         }

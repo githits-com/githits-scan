@@ -20,6 +20,13 @@ pub(super) fn nullable<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     Option::<T>::deserialize(d)
 }
 
+/// Decode a supplied non-null value; combine with serde default for legacy omission.
+pub(super) fn optional<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    d: D,
+) -> Result<Option<T>, D::Error> {
+    T::deserialize(d).map(Some)
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Coordinate {
     #[serde(flatten, skip_serializing)]
@@ -141,6 +148,20 @@ pub(crate) struct MetadataCoverage {
     pub _additional: Additional,
     pub candidates_count: u64,
     pub checked_count: u64,
+    /// Candidates explicitly outside this check; absent in immutable older reports.
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub not_applicable_count: Option<u64>,
+    /// Registries with not-applicable candidates; preserve legacy absence when saving.
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub not_applicable_registries: Option<Vec<String>>,
     pub not_collected_count: u64,
     pub not_collected_registries: Vec<String>,
     pub unknown_count: u64,
