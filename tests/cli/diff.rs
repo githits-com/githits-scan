@@ -141,6 +141,63 @@ fn diff_binary_uses_one_paired_job_and_preserves_original_json() {
 }
 
 #[test]
+fn diff_binary_uploads_bun_workspace_members_once_per_side_in_both_modes() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
+    let repo = super::support::repository(&[
+        ("bun.lock", "{}"),
+        (
+            "package.json",
+            r#"{"name":"root","workspaces":["packages/*"]}"#,
+        ),
+        (
+            "packages/a/package.json",
+            r#"{"name":"a","version":"1.0.0"}"#,
+        ),
+        (
+            "packages/b/package.json",
+            r#"{"name":"b","version":"1.0.0"}"#,
+        ),
+    ]);
+    committed(repo.path());
+    let bytes = serde_json::to_vec(&fixture::report()).expect("report");
+    for lockfiles_only in [false, true] {
+        let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
+        let mut command = githits_scan();
+        command
+            .arg("diff")
+            .arg(repo.path())
+            .args(["--base", "HEAD", "--head", "HEAD", "--format", "json"])
+            .env("GITHITS_API_TOKEN", "test-token")
+            .env("GITHITS_API_URL", server.origin());
+        if lockfiles_only {
+            command.arg("--lockfiles-only");
+        }
+        let output = command.output().expect("diff");
+        assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+        assert_eq!(output.stdout, bytes);
+        let requests = server.requests();
+        assert_eq!(requests.len(), 3, "one paired job");
+        assert_bun_workspace_parts(&requests[0]);
+    }
+}
+
+fn assert_bun_workspace_parts(request: &[u8]) {
+    let body = String::from_utf8_lossy(request);
+    for path in [
+        "bun.lock",
+        "package.json",
+        "packages/a/package.json",
+        "packages/b/package.json",
+    ] {
+        assert_eq!(
+            body.matches(&format!("filename=\"{path}\"")).count(),
+            2,
+            "one copy per revision: {path}"
+        );
+    }
+}
+
+#[test]
 fn diff_binary_retains_partial_and_future_reports_without_a_safe_claim() {
     use super::support::{diff as fixture, jobs::ScriptedServer};
     for future in [false, true] {

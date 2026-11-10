@@ -1,4 +1,4 @@
-//! Shared upload selection for bounded npm workspace declarations.
+//! Shared upload selection for bounded npm and Bun workspace declarations.
 use super::*;
 use crate::support::audit::v2_clean;
 
@@ -268,7 +268,18 @@ fn automatic_npm_unsupported_declarations_keep_explicit_selection_available() {
             "packages/a/package.json",
         ],
     );
-    for lock in ["pnpm-lock.yaml", "yarn.lock", "bun.lock"] {
+}
+
+#[test]
+fn javascript_workspace_members_follow_supported_lock_families() {
+    for (lock, expected) in [
+        ("pnpm-lock.yaml", &["package.json", "pnpm-lock.yaml"][..]),
+        ("yarn.lock", &["package.json", "yarn.lock"][..]),
+        (
+            "bun.lock",
+            &["bun.lock", "package.json", "packages/a/package.json"][..],
+        ),
+    ] {
         let root = repository(&[
             (lock, "{}"),
             ("package.json", ROOT),
@@ -277,14 +288,7 @@ fn automatic_npm_unsupported_declarations_keep_explicit_selection_available() {
         let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
         let output = run(root.path(), Some(&api.origin()), &[]);
         assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
-        assert_paths(
-            &api.requests(),
-            &[lock, "package.json"]
-                .into_iter()
-                .collect::<std::collections::BTreeSet<_>>()
-                .into_iter()
-                .collect::<Vec<_>>(),
-        );
+        assert_paths(&api.requests(), expected);
     }
 }
 

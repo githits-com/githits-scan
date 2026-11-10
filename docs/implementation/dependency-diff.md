@@ -77,7 +77,7 @@ working trees require an explicit committed head or resolution first.
 Working-tree bytes can differ from committed blobs through line-ending conversion.
 
 The catalog owns recognition. Discovery pairs metadata and the existing bounded
-upload selector includes owning companions and Cargo/npm workspace manifests through
+upload selector includes owning companions and Cargo/npm/Bun workspace manifests through
 an injected snapshot reader. Hidden/installed paths and default fixture exclusions
 are omitted. Tracked ignored files remain tracked; Git ignores exclude untracked
 files. `--exclude` applies to both sides. Diff deliberately ignores
@@ -103,41 +103,73 @@ transitive changes remain visible without client review requests. Additions,
 removals, ambiguity and mismatches retain actual eligibility reasons and nullable
 targets. Backend review batching has no first-30 total cap.
 
-Human/Markdown output groups changes by source and preserves before/after versions
-and retained-elsewhere notes. Declaration-only edits remain visible. Human/Markdown show changed-coordinate and recorded repository-union advisory
-deltas, including non-affecting coordinate rows. Empty delta arrays are labelled
-without inferring a clean assessment; coverage qualifications still apply. The
-complete source, resolution-unit and project scopes remain in JSON.
-Incomplete scope qualifications are still shown. A local fix can coexist with an affected repository union.
-The comparison uses current shared advisory evidence, not knowledge at commit time;
-a reported fix is not proof of runtime reachability or exploitability.
+Human and Markdown output groups changes by file, preserves before/after versions
+and versions retained in other files, and shows a short description of known direct
+or indirect usage. Declaration-only edits remain visible. Secondary workspace locks
+are identified as such; a change in one does not establish a workspace upgrade.
 
-Assessment gaps, partial source inventory, exclusions, unknown ownership, unrequested
-sections and failed enrichment remain distinct. Completed coordinate evidence can
-survive unrelated source gaps. Security assessments and changelog truncation are
-separate: returned headlines/signals are attention evidence, not an exhaustive
-migration checklist. Links are validated credential-free HTTP(S) URLs supplied by
-the service and labelled as changelog entries, never invented full-history URLs.
-The compact view shows the first three returned entries and every entry carrying
-producer signals, with an explicit additional-entry count; JSON retains all entries.
+Reports explain problems in plain language, with the affected package or file and
+a next step only when supported by the returned information. Internal IDs, reason
+codes, diagnostic counters and status tuples stay in JSON. An inability to determine
+something must say what could not be determined and why. If the service supplies no
+usable explanation, Scan says that explicitly and suggests manual review rather
+than inventing a cause, a fix, a retry or a new analysis. Routine all-clear security
+rows and empty advisory changes are omitted; material limitations remain visible.
+Repeated inconclusive project-wide advisory results are grouped by their supplied
+scope, revision and reason. Independent missing-inventory, unfinished-assessment
+and unidentified-package limitations all remain visible. Known affected-before/after
+facts remain visible. Grouped security limitations include a shared manual-check
+next step. When
+a project result shares the explicit finding ID of a changed-version result, the
+scope qualification attaches to that result instead of repeating the advisory ID;
+unmatched positive project results stay separate. A local fix never implies that
+the project-wide result is clear.
+An incomplete security-check section remains visible even when it returns no
+findings, including the supplied reason and any unsupported-package limitation.
+
+Changed-version advisory results and results across supplied project files remain
+distinct: a package update can remove an advisory from one file while the project
+files remain affected. Incomplete file and security information qualifies its own
+revision and scope. The comparison uses today's advisory information, not knowledge
+at commit time; a reported fix does not establish runtime reachability or
+exploitability. Known service notices become these plain caveats; other supplied
+qualifications remain visible once. JSON retains every notice and the complete
+source, resolution-unit and project scopes.
+
+Security information and release-note completeness are separate. Release-note
+warnings identify possible compatibility changes and migration work, without
+presenting them as a complete migration checklist. The compact view shows the first
+three returned entries and every flagged entry, with a plain notice when more are
+available in JSON. Links use only validated credential-free HTTP(S) addresses
+supplied by the service; Scan never invents a full-history URL.
 
 Markdown escapes untrusted formatting/mentions and terminal text escapes control
-characters. Human/Markdown explicitly decline unsupported future report structures.
-Review detail is an open service object: unfamiliar detail stays in JSON and is
-labelled uninterpreted in human output, without blocking export. The pinned report
-and section structure still validates before output.
-JSON preserves original result bytes, including whitespace, additive fields, nullable
-targets and unfamiliar vocabulary. No Git-label wrapper or client notices are added.
+characters. The shared string escaper preserves combining accents and standard
+text/emoji presentation selectors after a literal base. Leading extenders and
+extenders after an escaped control remain escaped; bidi, ZWJ and tag controls remain
+escaped. Identifier text is not stripped or normalized, and JSON is untouched.
+Unsupported report and review formats receive a plain explanation of
+why Scan cannot display them. Required report and section fields still validate
+before output, including machine metadata that human output omits. JSON preserves
+original result bytes, including whitespace, additive fields, nullable targets and
+unfamiliar vocabulary. No Git-label wrapper or client notices are added.
 See [JSON output](json-output.md#experimental-diff-service-report).
 
 ### Explaining missing evidence
 
 The producer owns causal explanations because it owns binding, reachability and
-review decisions. Scan presents supplied reasons and associated files; it does not
+review decisions. Scan translates known supplied reasons into plain language and
+presents their associated file and dependency context; it does not
 attribute a nearby coverage gap to a package whose dependency type is unknown.
 For a resolution gap with `reason:required_input_not_supplied`, human/Markdown
 name both the source `path` and the missing `required_path` when supplied. Other
-gaps can omit that field; Scan does not guess a required file.
+gaps can omit that field; Scan does not guess a required file. File problems have
+their own section. Identical known file-problem rows in both snapshots are combined
+by full projected equality within the same family; different requirements, paths,
+reasons and report-wide scope stay distinct. Reachability references remain
+side-specific. Advice names the unread file and the workspace/exclusion selection
+rules; it does not promise that file existence alone fixes unsupported selection,
+and there is no manual include flag.
 
 The [public OpenAPI](https://api.githits.dev/v1/openapi.json) defines the identity
 associations below. The table also includes supported producer details within
@@ -151,12 +183,52 @@ the schema's open coverage/review objects, for consumers of the unchanged JSON:
 | Partial returned review | Returned `data.unknown_details` carries section/code/message; changelog coverage remains separate from direct security evidence. |
 | Incomplete comparison | Side-specific resolution gaps retain source paths, reasons and any required input path. Advisory delta reasons qualify their own scope and side. |
 
-The current directness contract returns strings on changes and occurrences, with
-exposure/reachability qualifications elsewhere, but no per-occurrence causal
-reason. Existing IDs permit exact joins; they do not explain why a proof failed.
-An unknown dependency type must not be described as direct, transitive or safe by
-inferring from unrelated bindings or source gaps. Additions/removals have no
-occurrence on one side; that absence is not a failed assessment.
+For an unknown changed dependency type, Scan joins `before_ids` to base
+occurrences and `after_ids` to head occurrences. It presents the occurrence's
+`directness_reasons` and follows its explicit `directness_proof_ids` to
+`reachability[].id` in that same snapshot. It never compares IDs across sides or
+attaches causes by matching names, paths or neighboring workspace gaps. Individually
+known occurrences inside an aggregate unknown change need no explanation;
+additions/removals do not qualify their absent side as a failed assessment.
+
+Cause codes and native dependency-information reasons are translated at the command
+renderer, their natural presentation owner; Scan does not recompute dependency
+semantics. Associated paths and dependency names give useful context. When
+`declaration_id` is present, `dependency_name` identifies the declaration blocking
+the result, which can differ from the changed package. Otherwise it names the
+affected dependency. Equal full causes and shared proofs are deduplicated within
+each change/side. Identical visible reasons before and after are combined; within
+a file group, a reason appears once with exactly the affected package names.
+Different files, blockers and reasons remain distinct.
+
+Snapshot binding `reasons` join through the enclosing declaration change's same-side
+declaration ID and exact `source_key`, independently of eligibility vocabulary.
+A joined cause replaces the duplicate explanation of its binding status; distinct
+status limitations and legacy reasons without a matching cause remain visible.
+Declaration labels prefer the head's `after_id`, then the base's `before_id`, looking
+up each only in its own snapshot. Missing identity is explained rather than guessed
+from a package name. Legacy ineligibility reasons still receive plain explanations
+even without the additive cause fields; mismatched listed versions are never
+presented as usable review baselines.
+
+Review failures distinguish a package review failure from failure to prepare the
+combined report. The latter does not prove an individual review failed. Known
+service errors receive plain descriptions; other supplied messages remain useful
+context without raw codes or scopes. Reviews retain declaring-file context through
+`declaration_change_ids`, even without an occurrence change. Interpretable partial
+review details still display beside a failure.
+
+`deadline` means the review was not completed in time; `evidence_unavailable`
+means the required information was unavailable. `result_size_limit` means assessed detail was
+omitted for size, not that the review was unassessed. Legacy `review_failed` rows without detail
+explicitly say the service supplied no explanation. No missing review or security
+conclusion implies safety, and no output recommends a charged rerun.
+
+Incomplete snapshot coverage summaries follow `reachability_id` to their own
+side's proof causes. Report-level coverage has no snapshot side and never resolves
+IDs through either snapshot. Older schema-v1 reports can omit the additive cause
+fields; an unknown with no associated cause remains explicitly unexplained, and
+unavailable proof detail stays qualified. No missing evidence implies safety.
 
 ## HTTP, limits and cost
 

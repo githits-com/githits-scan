@@ -149,3 +149,158 @@ fn diff_additive_fields_inside_open_side_objects_are_preserved() {
     let report = Report::from_bytes(bytes.clone()).expect("open objects");
     assert_eq!(report.bytes(), bytes);
 }
+
+fn explanation_projection() -> serde_json::Value {
+    use serde_json::json;
+    let mut v = crate::test_support::diff::report();
+    let cause = json!({"code":"future_cause","message":"The producer could not link the declaration.",
+        "source_key":"package-lock.json","manifest_path":"package.json",
+        "declaration_id":"base:d1","dependency_name":"helper",
+        "coverage_state":"incomplete","coverage_reasons":["untargeted_requirement"]});
+    v["changes"][0]["before_ids"] = json!(["base:o1"]);
+    v["changes"][0]["after_ids"] = json!(["head:o1"]);
+    v["snapshots"]["base"]["occurrences"] = json!([{"id":"base:o1","directness":"unknown",
+        "directness_reasons":[cause],"directness_proof_ids":["proof:1"]}]);
+    v["snapshots"]["base"]["reachability"] = json!([{"id":"proof:1","reasons":[cause]}]);
+    v["snapshots"]["base"]["bindings"] = json!([{"declaration_id":"base:d1",
+        "source_key":"package-lock.json","reasons":[cause]}]);
+    v["snapshots"]["base"]["coverage"]["reachability"] = json!([{"complete":false,
+        "manifest_path":"package.json","source_key":"package-lock.json",
+        "basis":"declaration_and_root_graph","reachability_id":"proof:1"}]);
+    v["direct_reviews"]["status"] = "partial".into();
+    v["direct_reviews"]["data"][0]["status"] = "unavailable".into();
+    v["direct_reviews"]["data"][0]["failure"] = json!({"scope":"batch",
+        "code":"future_failure","message":"The producer could not encode the review batch."});
+    v
+}
+
+fn assert_explanation_projection(view: &view::View) {
+    assert_eq!(view.changes[0].before_ids, ["base:o1"]);
+    assert_eq!(view.changes[0].after_ids, ["head:o1"]);
+    let snapshot = &view.snapshots.base;
+    let row = &snapshot.occurrences[0];
+    assert_eq!(row.id, "base:o1");
+    assert_eq!(row.directness, "unknown");
+    assert_eq!(row.directness_proof_ids, ["proof:1"]);
+    let reason = &row.directness_reasons[0];
+    assert_eq!(reason.code, "future_cause");
+    assert_eq!(
+        reason.message,
+        "The producer could not link the declaration."
+    );
+    assert_eq!(reason.source_key, "package-lock.json");
+    assert_eq!(reason.manifest_path.as_deref(), Some("package.json"));
+    assert_eq!(reason.declaration_id.as_deref(), Some("base:d1"));
+    assert_eq!(reason.dependency_name.as_deref(), Some("helper"));
+    assert_eq!(reason.coverage_state.as_deref(), Some("incomplete"));
+    assert_eq!(reason.coverage_reasons, ["untargeted_requirement"]);
+    assert_eq!(snapshot.reachability[0].id.as_deref(), Some("proof:1"));
+    assert_eq!(snapshot.reachability[0].reasons, row.directness_reasons);
+    assert_eq!(snapshot.bindings[0].declaration_id, "base:d1");
+    assert_eq!(snapshot.bindings[0].source_key, "package-lock.json");
+    assert_eq!(snapshot.bindings[0].reasons, row.directness_reasons);
+    let reviews = view
+        .direct_reviews
+        .decode::<Vec<view::Review>>()
+        .expect("reviews")
+        .expect("rows");
+    assert_eq!(reviews[0].declaration_change_ids, ["declaration:1"]);
+    let failure = reviews[0].failure.as_ref().expect("failure");
+    assert_eq!(failure.scope, "batch");
+    assert_eq!(failure.code, "future_failure");
+    assert_eq!(
+        failure.message,
+        "The producer could not encode the review batch."
+    );
+    let coverage: view::Coverage = serde_json::from_str(snapshot.coverage.get()).expect("coverage");
+    assert_eq!(
+        coverage.reachability[0].reachability_id.as_deref(),
+        Some("proof:1")
+    );
+}
+
+#[test]
+fn diff_mismatch_display_fields_validate_without_weakening_metadata() {
+    use serde_json::json;
+    let mut v = crate::test_support::diff::report();
+    v["snapshots"]["head"]["coverage"]["mismatches"] = json!([{
+        "path":"package-lock.json","declaration_path":"package.json","name":"helper",
+        "requested_requirement":"^2.0","locked_versions":["1.0.0"],"reason":"locked_version_does_not_satisfy_request"}]);
+    let bytes = serde_json::to_vec_pretty(&v).expect("JSON");
+    let report = Report::from_bytes(bytes.clone()).expect("mismatch");
+    assert_eq!(report.bytes(), bytes);
+    for pointer in [
+        "/snapshots/head/coverage/mismatches/0/declaration_path",
+        "/snapshots/head/coverage/mismatches/0/requested_requirement",
+        "/snapshots/head/coverage/mismatches/0/locked_versions",
+        "/summary/changed_declarations",
+        "/notices",
+        "/direct_reviews/coverage/eligible",
+        "/declaration_changes/0/binding_transitions/0/base_target/version",
+    ] {
+        let mut invalid = v.clone();
+        *invalid.pointer_mut(pointer).expect("field") = json!(false);
+        assert!(
+            Report::from_bytes(serde_json::to_vec(&invalid).expect("JSON")).is_err(),
+            "{pointer}"
+        );
+    }
+}
+
+#[test]
+fn diff_explanation_projection_preserves_optional_fields_and_validates_shapes() {
+    use serde_json::json;
+    let v = explanation_projection();
+    let bytes = serde_json::to_vec_pretty(&v).expect("JSON");
+    let report = Report::from_bytes(bytes.clone()).expect("new explanation projection");
+    assert_eq!(report.bytes(), bytes);
+    assert_explanation_projection(report.view().expect("view"));
+    for pointer in [
+        "/snapshots/base/occurrences/0/directness_reasons",
+        "/snapshots/base/occurrences/0/directness_proof_ids",
+        "/snapshots/base/reachability/0/reasons",
+        "/snapshots/base/bindings/0/reasons",
+        "/direct_reviews/data/0/failure/message",
+        "/snapshots/base/coverage/reachability/0/reachability_id",
+    ] {
+        let mut invalid = v.clone();
+        *invalid.pointer_mut(pointer).expect("field") = json!(42);
+        assert!(
+            Report::from_bytes(serde_json::to_vec(&invalid).expect("JSON")).is_err(),
+            "{pointer}"
+        );
+    }
+    let legacy = crate::test_support::diff::report();
+    let legacy = Report::from_bytes(serde_json::to_vec(&legacy).expect("JSON")).expect("legacy");
+    assert!(
+        legacy
+            .view()
+            .expect("view")
+            .snapshots
+            .base
+            .occurrences
+            .is_empty()
+    );
+    let mut optional = v;
+    optional["snapshots"]["base"]["occurrences"][0] = json!({"id":"base:o1","directness":"unknown",
+        "directness_reasons":[{"code":"local","message":"No associated root.",
+        "source_key":"package-lock.json","dependency_name":null}]});
+    optional["snapshots"]["base"]["reachability"] = json!([{}]);
+    optional["snapshots"]["base"]["bindings"][0]
+        .as_object_mut()
+        .expect("binding")
+        .remove("reasons");
+    optional["direct_reviews"]["data"][0]
+        .as_object_mut()
+        .expect("review")
+        .remove("failure");
+    optional["snapshots"]["base"]["coverage"]["reachability"][0]
+        .as_object_mut()
+        .expect("summary")
+        .remove("reachability_id");
+    let optional =
+        Report::from_bytes(serde_json::to_vec(&optional).expect("JSON")).expect("optional fields");
+    let row = &optional.view().expect("view").snapshots.base.occurrences[0];
+    assert_eq!(row.directness_proof_ids, [] as [String; 0]);
+    assert!(row.directness_reasons[0].dependency_name.is_none());
+}

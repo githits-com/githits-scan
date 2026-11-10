@@ -34,7 +34,6 @@ pub trait DiffApi {
 /// An immutable producer report plus its supported presentation projection.
 pub struct Report {
     bytes: Vec<u8>,
-    version: u64,
     view: Option<view::View>,
 }
 
@@ -62,11 +61,7 @@ impl Report {
         } else {
             None
         };
-        Ok(Self {
-            bytes,
-            version: header.schema_version,
-            view,
-        })
+        Ok(Self { bytes, view })
     }
 
     /// Original bytes, including additive and unfamiliar evidence.
@@ -77,9 +72,6 @@ impl Report {
 
     pub(crate) const fn view(&self) -> Option<&view::View> {
         self.view.as_ref()
-    }
-    pub(crate) const fn version(&self) -> u64 {
-        self.version
     }
 }
 

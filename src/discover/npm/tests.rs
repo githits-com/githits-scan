@@ -19,6 +19,28 @@ fn selected(patterns: &serde_json::Value) -> BTreeSet<String> {
     workspace.members()
 }
 
+fn bun_selected(patterns: &serde_json::Value) -> BTreeSet<String> {
+    let mut workspace = Workspace::bun(
+        "package.json".into(),
+        [
+            "packages/package.json",
+            "packages/a/package.json",
+            "packages/b/package.json",
+            "packages/c/package.json",
+            "packages/pkg-1/package.json",
+            "packages/pkg-a/package.json",
+            "packages/pkg-b/package.json",
+            "packages/sub/a/package.json",
+            "packages/sub/deep/a/package.json",
+            "#packages/a/package.json",
+        ]
+        .into_iter()
+        .map(str::to_owned),
+    );
+    workspace.record("package.json", &json!({"workspaces":patterns}).to_string());
+    workspace.members()
+}
+
 fn paths(names: &[&str]) -> BTreeSet<String> {
     names
         .iter()
@@ -304,5 +326,66 @@ fn npm_evidence_comments_and_literal_marker_components_match_native() {
         );
         workspace.record("package.json", &json!({"workspaces":patterns}).to_string());
         assert_eq!(workspace.members(), paths(&expected));
+    }
+}
+
+#[test]
+fn bun_evidence_supported_patterns_match_verified_directory_examples() {
+    const DIRECT: &[&str] = &[
+        "packages/a",
+        "packages/b",
+        "packages/c",
+        "packages/pkg-1",
+        "packages/pkg-a",
+        "packages/pkg-b",
+    ];
+    const RECURSIVE: &[&str] = &[
+        "packages",
+        "packages/a",
+        "packages/b",
+        "packages/c",
+        "packages/pkg-1",
+        "packages/pkg-a",
+        "packages/pkg-b",
+        "packages/sub/a",
+        "packages/sub/deep/a",
+    ];
+    const ENDS_A: &[&str] = &["packages/a", "packages/sub/a", "packages/sub/deep/a"];
+    for (pattern, expected) in [
+        ("packages/*", DIRECT),
+        ("packages/**", RECURSIVE),
+        ("./packages/*", DIRECT),
+        ("!!packages/*", DIRECT),
+        ("#packages/*", &["#packages/a"][..]),
+        (
+            "packages/?",
+            &["packages/a", "packages/b", "packages/c"][..],
+        ),
+        ("packages/[ab]", &["packages/a", "packages/b"][..]),
+        ("packages/[a-b]", &["packages/a", "packages/b"][..]),
+        ("packages/{a,b}", &["packages/a", "packages/b"][..]),
+        ("packages/**/a", ENDS_A),
+        ("packages/**/**/a", ENDS_A),
+    ] {
+        assert_eq!(
+            bun_selected(&json!([pattern])),
+            paths(expected),
+            "{pattern}"
+        );
+    }
+}
+
+#[test]
+fn bun_evidence_rejects_root_slashes_brace_slashes_and_odd_negation() {
+    for pattern in [
+        "/packages/*",
+        "packages/{a,sub/a}",
+        "!packages/*",
+        "!!!packages/*",
+    ] {
+        assert!(
+            bun_selected(&json!(["packages/*", pattern])).is_empty(),
+            "{pattern}"
+        );
     }
 }

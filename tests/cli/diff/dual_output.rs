@@ -57,17 +57,101 @@ fn diff_named_outputs_write_exact_json_and_escaped_markdown_from_one_job() {
     assert_eq!(output.stdout, [] as [u8; 0]);
     assert_eq!(fs::read(&json).expect("JSON"), bytes);
     let text = fs::read_to_string(&markdown).expect("Markdown");
-    assert!(text.contains("Experimental dependency diff"));
+    assert!(text.contains("Dependency changes"));
     assert!(text.contains("@&#8203;team"));
     assert!(!text.contains("<script>"));
-    assert!(text.contains("changelog entry"));
+    assert!(text.contains("release notes"));
+    assert!(text.contains(
+        "packages/worker @&#8203;team/package&#46;json was not among the files read from that revision"
+    ));
     assert!(
-        text.contains(
-            "required input packages/worker @&#8203;team/package&#46;json was not supplied"
-        ),
-        "{text}"
+        text.contains("Check the file, workspace declarations and &#45;&#45;exclude settings&#46;")
     );
     assert_eq!(stderr(&output).matches("saved ").count(), 2);
+    assert_one_job(server);
+}
+
+#[test]
+fn diff_named_outputs_render_producer_explanations_from_one_job() {
+    use serde_json::json;
+
+    let repo = pair();
+    let outputs = tempfile::tempdir().expect("outputs");
+    let json = outputs.path().join("diff.json");
+    let markdown = outputs.path().join("diff.md");
+    let mut value = fixture::report();
+    value["changes"][0]["directness"]["head"] = "unknown".into();
+    value["changes"][0]["after_ids"] = json!(["head:o1"]);
+    value["snapshots"]["head"]["occurrences"] = json!([{
+        "id":"head:o1",
+        "directness":"unknown",
+        "directness_proof_ids":["head:proof"]
+    }]);
+    value["snapshots"]["head"]["reachability"] = json!([{
+        "id":"head:proof",
+        "reasons":[{
+            "code":"unproved_link",
+            "message":"The dependency could not be matched @team <script>",
+            "source_key":"package-lock.json",
+            "manifest_path":"packages/worker @team/package.json",
+            "declaration_id":"head:d1",
+            "dependency_name":"helper @team"
+        }]
+    }]);
+    value["snapshots"]["head"]["declarations"][0]["declared_name"] = "helper @team".into();
+    value["snapshots"]["head"]["declarations"][0]["declaring_manifest"] =
+        "packages/worker @team/package.json".into();
+    value["direct_reviews"]["status"] = "partial".into();
+    value["direct_reviews"]["data"][0]["status"] = "unavailable".into();
+    value["direct_reviews"]["data"][0]["reason"] = "review_failed".into();
+    value["direct_reviews"]["data"][0]["failure"] = json!({
+        "scope":"batch",
+        "code":"safe_batch_error",
+        "message":"The combined review report could not be prepared @team <script>"
+    });
+    let bytes = format!(
+        " \n{}\n ",
+        serde_json::to_string_pretty(&value).expect("JSON")
+    )
+    .into_bytes();
+    let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
+    let output = command(repo.path(), &server.origin())
+        .arg("--output-json")
+        .arg(&json)
+        .arg("--output-markdown")
+        .arg(&markdown)
+        .output()
+        .expect("diff");
+
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(output.stdout, [] as [u8; 0]);
+    assert_eq!(fs::read(&json).expect("JSON"), bytes);
+    let text = fs::read_to_string(&markdown).expect("Markdown");
+    assert!(text.contains("The dependency could not be matched @&#8203;team &lt;script&gt;"));
+    assert!(text.contains("packages/worker @&#8203;team/package&#46;json"));
+    assert!(text.contains(
+        "Declared as helper @&#8203;team in packages/worker @&#8203;team/package&#46;json&#46;"
+    ));
+    assert!(text.contains("preparing the combined report failed"));
+    assert!(
+        text.contains(
+            "The combined review report could not be prepared @&#8203;team &lt;script&gt;"
+        )
+    );
+    for unpublished in [
+        "safe_batch_error",
+        "safe&#95;batch&#95;error",
+        "unproved_link",
+        "unproved&#95;link",
+        "review_failed",
+        "review&#95;failed",
+        "unknown",
+    ] {
+        assert!(!text.contains(unpublished), "{unpublished}");
+    }
+    assert!(!text.contains("<script>"));
+    assert!(!text.contains("@team"));
+    assert!(!text.contains("Review detail not interpreted"));
     assert_one_job(server);
 }
 
@@ -94,7 +178,7 @@ fn diff_named_outputs_support_either_stdout_direction_and_quiet() {
             (&saved, &output.stdout)
         };
         assert_eq!(*json, bytes);
-        assert!(String::from_utf8_lossy(markdown).contains("Experimental dependency diff"));
+        assert!(String::from_utf8_lossy(markdown).contains("Dependency changes"));
         assert!(output.stderr.is_empty(), "{}", stderr(&output));
         assert_one_job(server);
     }
@@ -128,7 +212,7 @@ fn diff_named_single_outputs_emit_only_the_selected_document() {
         if flag == "--output-json" {
             assert_eq!(document, bytes);
         } else {
-            assert!(String::from_utf8_lossy(&document).contains("Experimental dependency diff"));
+            assert!(String::from_utf8_lossy(&document).contains("Dependency changes"));
         }
         assert_one_job(server);
     }
@@ -159,17 +243,22 @@ fn diff_named_outputs_preserve_partial_unknown_and_future_schema_qualifications(
         assert_eq!(output.stdout, bytes);
         let text = fs::read_to_string(&markdown).expect("Markdown");
         let expected: &[&str] = if future {
-            &["cannot be rendered", "unassessed"]
+            &["Scan cannot explain this report", "format is newer"]
         } else {
             &[
-                "partial",
-                "unknown",
-                "unavailable",
-                "not a clean assessment",
+                "Some checks could not be completed",
+                "The service did not return its explanation",
+                "the service's information provider was unavailable",
             ]
         };
         for expected in expected {
             assert!(text.contains(expected), "{expected}: {text}");
+        }
+        if !future {
+            assert!(!text.contains("no supported results"));
+            assert!(!text.contains("provider_unavailable"));
+            assert!(!text.contains("provider&#95;unavailable"));
+            assert!(!text.contains("unknown"));
         }
         assert_one_job(server);
     }
@@ -400,7 +489,7 @@ fn diff_legacy_single_format_file_outputs_remain_unchanged() {
         if format == "json" {
             assert_eq!(document, bytes);
         } else {
-            assert!(String::from_utf8_lossy(&document).contains("Experimental dependency diff"));
+            assert!(String::from_utf8_lossy(&document).contains("Dependency changes"));
         }
         assert_one_job(server);
     }
@@ -437,7 +526,7 @@ fn diff_named_output_case_aliases_keep_json_when_identity_resolves_after_creatio
         assert!(
             fs::read_to_string(&markdown)
                 .expect("Markdown")
-                .contains("Experimental dependency diff")
+                .contains("Dependency changes")
         );
     }
     assert_one_job(server);

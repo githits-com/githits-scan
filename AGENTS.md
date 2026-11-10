@@ -20,6 +20,14 @@ This document contains the most important instructions that need to be kept alwa
 - Remember your MCP tools and use them when needed.
 - Fix minor in-scope findings immediately. Defer only work that genuinely requires a larger effort, explain why, and record it in the active plan or durable documentation.
 
+### Human-facing output
+
+- Human and Markdown output must help the reader make a decision or take a useful action. Describe what happened in plain language, name the affected dependency or file, explain why, and give a next step when the evidence supports one.
+- Never use `unknown`, a status label, a reason code or a counter as the answer. If something cannot be determined, explain what could not be determined and the actual reason. If the service supplied no reason, say that explicitly; do not invent one or imply safety.
+- Keep internal IDs, codes, graph/proof terminology, coverage metadata and diagnostic counters in JSON. Do not dump the service contract into prose. Public advisory identifiers and concrete versions/requirements belong in human output only when they help identify or resolve a finding.
+- Omit routine bookkeeping and repeated all-clear messages. Preserve material limitations and failures; hiding them is not simplification. Never prescribe a file change, retry or paid analysis unless the supplied evidence justifies it.
+- Review representative rendered examples before accepting output changes. Tests must check the reader-facing explanation and useful context, and verify that internal jargon and diagnostic fields do not leak into human or Markdown output.
+
 ### Quality Standards
 
 - Do not cut corners. This tool handles credentials and uploads user files; correctness at every layer matters.

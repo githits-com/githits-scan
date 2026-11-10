@@ -86,7 +86,7 @@ catalog, Git history, or the Scan configuration file.
 
 `detect` lists candidates and configured selections and reads selected
 package-file contents locally to preview the upload. It uses the same preparation
-path as upload commands, including eligible Cargo/npm workspace member expansion.
+path as upload commands, including eligible Cargo/npm/Bun workspace member expansion.
 
 `detect`, `audit --from-analysis`, `license report --from-report`, and
 `license check --sbom` do not contact the API. Saved reports contain dependency
@@ -128,7 +128,7 @@ Manifest-only projects are included by default. The service resolves declared
 constraints, so the result can differ from an installed or previously locked
 build. Resolution and audit coverage vary by ecosystem; incomplete evidence
 remains visible. `--lockfiles-only` skips unconfigured manifest-only projects,
-while retaining owning companions and eligible Cargo/npm workspace members.
+while retaining owning companions and eligible Cargo/npm/Bun workspace members.
 See the [catalog](docs/implementation/package-file-catalog.md) and
 [selection rules](docs/implementation/discovery.md).
 
@@ -175,7 +175,7 @@ githits-scan sbom generate --format text              # text on stdout
 ```
 
 `detect` reads selected package files locally through the same bounded preparation
-as upload commands, including declared Cargo/npm workspace members. It separates
+as upload commands, including declared Cargo/npm/Bun workspace members. It separates
 selected files from unselected candidates and counts discovered exclusions
 separately. Pruned subtrees have unknown file counts and are shown as patterns.
 Test-looking suggestions show at most ten paths; JSON retains the complete list.

@@ -35,7 +35,7 @@ Files are grouped by project directory and ecosystem. Each lockfile attaches to 
 - `pyproject.toml` beside `Pipfile.lock`, `Gemfile` beside `gems.locked`, and `build.gradle` beside `gradle.lockfile` are uncombined: they are not cataloged owners of the nearby lockfile, so they are not uploaded by default. Proximity does not prove dependency coverage. `detect` lists them with that explanation.
 - `package.json` next to `Cargo.lock` is manifest-only; ecosystems never pair across each other.
 - `vcpkg.json` next to `conan.lock` and `go.mod` next to `Gopkg.lock` are manifest-only, as the service requires. Go modules, vcpkg, and Zig have no cataloged lockfile, so `go.mod`, `vcpkg.json`, and `build.zig.zon` are never nested either: a nested Go module is an independent project.
-- `crates/core/Cargo.toml` under a root `Cargo.lock` is nested. This is directory containment, not proof of membership. Upload preparation reads the selected lock's owning Cargo manifest and selects native member candidates as described below. Supported npm members can also be added from declarations; other nested inputs still require explicit configuration. An uncovered manifest may trigger independent registry resolution, so Scan does not upload every nested candidate automatically. The service owns final native association.
+- `crates/core/Cargo.toml` under a root `Cargo.lock` is nested. This is directory containment, not proof of membership. Upload preparation reads the selected lock's owning Cargo manifest and selects native member candidates as described below. Supported npm/Bun members can also be added from declarations; other nested inputs still require explicit configuration. An uncovered manifest may trigger independent registry resolution, so Scan does not upload every nested candidate automatically. The service owns final native association.
 
 ## Cargo member evidence
 
@@ -81,12 +81,13 @@ This is selection of evidence, not native resolution or proof of applicability.
 Missing inputs and incompatible local path evidence remain explicit service gaps.
 See the [workspace evidence boundary](audit.md#workspace-evidence-boundary).
 
-## npm member evidence
+## JavaScript workspace member evidence
 
-Shared upload preparation also adds declared npm members under selected
-`package-lock.json` or `npm-shrinkwrap.json` owners, for audit, SBOM generation,
-license checks and license reports. pnpm, Yarn and Bun locks do not enable this
-expansion. Array declarations and `{ "packages": [...] }` objects are supported.
+Shared upload preparation adds declared members under selected npm
+(`package-lock.json` or `npm-shrinkwrap.json`) and text Bun (`bun.lock`) owners.
+This applies to audit, SBOM generation, license checks/reports, diff and detect's
+upload preview, including `--lockfiles-only`. pnpm and Yarn locks do not enable
+this expansion. Array declarations and `{ "packages": [...] }` objects are supported.
 
 The pure `src/discover/npm.rs` selector reads only the owning `package.json`,
 matching admitted member directories relative to that owner. Supported positive
@@ -94,10 +95,21 @@ patterns use literals, `*`, `?`, whole-segment `**`, non-negated bracket sets/ra
 and non-nested comma braces with nonempty literal alternatives. Trailing `/**`
 includes the base directory. Classes use separate ranges (`[a-z0-9]`); a literal
 `-` belongs at a class edge. Matching is case-sensitive and `*`/`?` do not cross
-path separators. A leading run of `/`, optionally preceded by `.`, is root-relative; even leading `!` parity is
-positive. Supported positive comment patterns starting with `#` contribute no
-members. A leading `!` left after root-prefix removal requires explicit selection.
+path separators. For npm, a leading run of `/`, optionally preceded by `.`, is root-relative;
+even leading `!` parity is positive. Supported npm comment patterns starting with
+`#` contribute no members. A leading `!` left after root-prefix removal requires explicit selection.
 No package-manager command or lockfile parser runs in Scan.
+
+Bun uses the same bounded positive-pattern selector with its verified differences:
+`#` is a literal path character, a leading `/` is unsupported, and comma-brace
+alternatives containing `/` are unsupported. The supported constructs were checked
+against Bun 1.4.4 using offline, script-free lock generation, including `?`, classes,
+ranges, simple braces, middle/repeated `**`, trailing `/**` including its base,
+`./` and even leading `!` parity. Odd negation, paths outside the owner and the
+other unsupported syntax retain the conservative no-automatic-additions behavior.
+Bun's wider native workspace features are not an installation or applicability
+claim by Scan; this selects already admitted manifest evidence. See the
+[official Bun workspace format](https://bun.com/docs/pm/workspaces).
 
 Character-sensitive patterns (`?` or bracket classes) require ASCII declarations
 and admitted member directories. Combining them with Unicode disables automatic
@@ -115,9 +127,9 @@ because native mapper versions and host case policies differ; case-only positive
 matches are not added automatically. Available manifests can be listed in
 `[lockfiles].manifests`; service-supplied input gaps remain visible.
 
-Candidates share the nearest lock-owning directory with the selected npm owner.
+Candidates share the nearest lock-owning directory with the selected npm or Bun owner.
 Several same-directory JavaScript locks do not change that boundary: an excluded
-representative lock cannot hide members of a selected npm lock. A closer child
+representative lock cannot hide members of a selected npm or Bun lock. A closer child
 lock remains independent even when it is excluded. Each selected owner expands
 its own candidates; reading a member never recursively interprets its workspaces.
 CLI/config exclusion precedence, admitted walk paths, read-once preparation and
