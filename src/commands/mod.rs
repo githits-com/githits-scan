@@ -453,14 +453,34 @@ pub(crate) fn diagnostic(value: &str) -> String {
 
 fn escaped(value: &str, mode: Escape, multiline: bool) -> String {
     let mut text = String::with_capacity(value.len());
+    let mut raw_base = false;
     for ch in value.chars() {
-        if multiline && ch == '\n' {
+        let before = text.len();
+        if (multiline && ch == '\n') || (raw_base && extender_after_base(ch)) {
             text.push(ch);
         } else {
             push_safe(&mut text, ch, mode);
         }
+        raw_base = !ch.is_control() && text.len() - before == ch.len_utf8();
     }
     text
+}
+
+fn extender_after_base(ch: char) -> bool {
+    // Standard text/emoji presentation selectors are safe only after the
+    // caller has established a literal base; Debug escapes them unconditionally.
+    if matches!(ch, '\u{fe0e}' | '\u{fe0f}') {
+        return true;
+    }
+    if ch.is_ascii() || ch.escape_debug().len() == 1 {
+        return false;
+    }
+    // The standard string escaper distinguishes non-leading grapheme extenders
+    // from controls. Only consult it after a literal base, never after an escape.
+    let mut context = String::with_capacity(5);
+    context.push('a');
+    context.push(ch);
+    context.escape_debug().count() == 2
 }
 
 pub(crate) fn safe_names(values: &[String]) -> String {
@@ -473,7 +493,7 @@ pub(crate) fn safe_names(values: &[String]) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{diagnostic, plural, safe_path};
+    use super::{diagnostic, plural, safe, safe_path};
 
     #[test]
     fn non_utf8_upload_paths_require_caller_action() {
@@ -494,6 +514,26 @@ mod tests {
             safe_path(std::path::Path::new("C:\\Users\\someone")),
             "C:\\Users\\someone"
         );
+    }
+
+    #[test]
+    fn text_escaping_keeps_visible_combining_sequences_and_escapes_controls() {
+        for value in ["cafe\u{301}", "⚠\u{fe0f}", "☀\u{fe0e}", "a\u{301}\u{302}"] {
+            assert_eq!(safe(value), value);
+        }
+        for (value, expected) in [
+            ("\u{301}", r"\u{301}"),
+            ("\u{fe0f}", r"\u{fe0f}"),
+            ("a\n\u{301}", r"a\n\u{301}"),
+            ("a\t\u{301}", r"a\t\u{301}"),
+            ("a\u{1b}\u{301}", r"a\u{1b}\u{301}"),
+            ("a\u{202e}", r"a\u{202e}"),
+            ("a\u{200d}", r"a\u{200d}"),
+            ("a\u{e0061}", r"a\u{e0061}"),
+        ] {
+            assert_eq!(safe(value), expected);
+        }
+        assert_eq!(diagnostic("line\n\u{301}"), "line\n\\u{301}");
     }
 
     #[test]

@@ -275,6 +275,9 @@ fn workspaces(
                 WorkspaceFamily::Npm => {
                     Workspace::Npm(npm::Workspace::new(root.path.clone(), candidates))
                 }
+                WorkspaceFamily::Bun => {
+                    Workspace::Npm(npm::Workspace::bun(root.path.clone(), candidates))
+                }
             }
         })
         .collect()
@@ -287,7 +290,7 @@ fn candidate_owned(member: &CoveredManifest, lock: &Lockfile, family: WorkspaceF
     match family {
         WorkspaceFamily::Cargo => member.lockfile == lock.path,
         // Several JavaScript locks can share an owner; discovery names just one representative.
-        WorkspaceFamily::Npm => {
+        WorkspaceFamily::Npm | WorkspaceFamily::Bun => {
             catalog::owning_directory(Path::new(&member.lockfile))
                 == catalog::owning_directory(Path::new(&lock.path))
         }
@@ -542,19 +545,71 @@ mod native_tests {
     use std::fs;
 
     #[test]
+    fn bun_workspace_members_are_selected_in_default_and_lockfiles_only_modes() {
+        let repo = repository(&[
+            ("bun.lock", "{}"),
+            (
+                "package.json",
+                r#"{"name":"root","workspaces":["packages/*"]}"#,
+            ),
+            (
+                "packages/a/package.json",
+                r#"{"name":"a","version":"1.0.0"}"#,
+            ),
+            (
+                "packages/b/package.json",
+                r#"{"name":"b","version":"1.0.0"}"#,
+            ),
+            ("packages/excluded/package.json", r#"{"name":"excluded"}"#),
+            ("other/package.json", r#"{"name":"unrelated"}"#),
+        ]);
+        let inventory = discover::scan(repo.path()).expect("inventory");
+        let exclude = ["packages/excluded/**".into()];
+        for include_manifests in [false, true] {
+            let evaluation =
+                config::inventory_evaluation(None, &exclude, &inventory, include_manifests)
+                    .expect("selection");
+            let mut plan = Plan::new(&inventory, evaluation.as_ref(), include_manifests);
+            let files = read_within_limits(repo.path(), &mut plan, &inventory, evaluation.as_ref())
+                .expect("upload");
+            let paths: Vec<_> = files.iter().map(|f| f.path.as_str()).collect();
+            assert_eq!(
+                paths,
+                [
+                    "bun.lock",
+                    "package.json",
+                    "packages/a/package.json",
+                    "packages/b/package.json"
+                ]
+            );
+        }
+    }
+
+    #[test]
+    fn bun_workspace_expansion_checks_limits_before_reading_members() {
+        for (count, bytes, message) in [
+            (255, 0, "256-file upload limit"),
+            (1, api::MAX_FILE_BYTES + 1, "over the"),
+            (2, 4_000_000, "upload would be about"),
+        ] {
+            assert_workspace_expansion_limit("bun.lock", count, bytes, message);
+        }
+    }
+
+    #[test]
     fn npm_evidence_expansion_checks_limits_before_reading_members() {
         for (count, bytes, message) in [
             (255, 0, "256-file upload limit"),
             (1, api::MAX_FILE_BYTES + 1, "over the"),
             (2, 4_000_000, "upload would be about"),
         ] {
-            assert_npm_expansion_limit(count, bytes, message);
+            assert_workspace_expansion_limit("package-lock.json", count, bytes, message);
         }
     }
 
-    fn assert_npm_expansion_limit(count: usize, bytes: u64, message: &str) {
+    fn assert_workspace_expansion_limit(lockfile: &str, count: usize, bytes: u64, message: &str) {
         let repo = repository(&[
-            ("package-lock.json", "{}"),
+            (lockfile, "{}"),
             ("package.json", r#"{"workspaces":["packages/*"]}"#),
         ]);
         let mut paths = Vec::new();

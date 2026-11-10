@@ -44,9 +44,8 @@ pub(super) fn write(
         if side != snapshot.side {
             display.line("The service returned inconsistent revision labels, so file limitations may be incomplete.")?;
         }
-        evidence::gaps(&snapshot.coverage, side, &explanations, &mut display)?;
     }
-    evidence::gaps(&view.coverage, "Report", &explanations, &mut display)?;
+    evidence::file_problems(view, &explanations, &mut display)?;
     let mut notices = std::collections::BTreeSet::new();
     for notice in &view.notices {
         if notice != "Recorded input comparison, not an observed installation or solver ancestry."
@@ -217,6 +216,7 @@ fn revision_context(side: &str) -> &'static str {
     match side {
         "base" => "in the earlier revision",
         "head" => "in the later revision",
+        "both" => "in both revisions",
         _ => "in this comparison",
     }
 }

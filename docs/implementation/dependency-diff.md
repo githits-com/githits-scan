@@ -77,7 +77,7 @@ working trees require an explicit committed head or resolution first.
 Working-tree bytes can differ from committed blobs through line-ending conversion.
 
 The catalog owns recognition. Discovery pairs metadata and the existing bounded
-upload selector includes owning companions and Cargo/npm workspace manifests through
+upload selector includes owning companions and Cargo/npm/Bun workspace manifests through
 an injected snapshot reader. Hidden/installed paths and default fixture exclusions
 are omitted. Tracked ignored files remain tracked; Git ignores exclude untracked
 files. `--exclude` applies to both sides. Diff deliberately ignores
@@ -115,6 +115,14 @@ something must say what could not be determined and why. If the service supplies
 usable explanation, Scan says that explicitly and suggests manual review rather
 than inventing a cause, a fix, a retry or a new analysis. Routine all-clear security
 rows and empty advisory changes are omitted; material limitations remain visible.
+Repeated inconclusive project-wide advisory results are grouped by their supplied
+scope, revision and reason. Independent missing-inventory, unfinished-assessment
+and unidentified-package limitations all remain visible. Known affected-before/after
+facts remain visible. When
+a project result shares the explicit finding ID of a changed-version result, the
+scope qualification attaches to that result instead of repeating the advisory ID;
+unmatched positive project results stay separate. A local fix never implies that
+the project-wide result is clear.
 An incomplete security-check section remains visible even when it returns no
 findings, including the supplied reason and any unsupported-package limitation.
 
@@ -135,7 +143,11 @@ available in JSON. Links use only validated credential-free HTTP(S) addresses
 supplied by the service; Scan never invents a full-history URL.
 
 Markdown escapes untrusted formatting/mentions and terminal text escapes control
-characters. Unsupported report and review formats receive a plain explanation of
+characters. The shared string escaper preserves combining accents and standard
+text/emoji presentation selectors after a literal base. Leading extenders and
+extenders after an escaped control remain escaped; bidi, ZWJ and tag controls remain
+escaped. Identifier text is not stripped or normalized, and JSON is untouched.
+Unsupported report and review formats receive a plain explanation of
 why Scan cannot display them. Required report and section fields still validate
 before output, including machine metadata that human output omits. JSON preserves
 original result bytes, including whitespace, additive fields, nullable targets and
@@ -150,9 +162,13 @@ presents their associated file and dependency context; it does not
 attribute a nearby coverage gap to a package whose dependency type is unknown.
 For a resolution gap with `reason:required_input_not_supplied`, human/Markdown
 name both the source `path` and the missing `required_path` when supplied. Other
-gaps can omit that field; Scan does not guess a required file. Because Scan selects
-companions automatically, advice checks that the file exists in that revision and
-is not excluded; there is no manual include flag.
+gaps can omit that field; Scan does not guess a required file. File problems have
+their own section. Identical known file-problem rows in both snapshots are combined
+by full projected equality within the same family; different requirements, paths,
+reasons and report-wide scope stay distinct. Reachability references remain
+side-specific. Advice names the unread file and the workspace/exclusion selection
+rules; it does not promise that file existence alone fixes unsupported selection,
+and there is no manual include flag.
 
 The [public OpenAPI](https://api.githits.dev/v1/openapi.json) defines the identity
 associations below. The table also includes supported producer details within

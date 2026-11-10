@@ -113,7 +113,7 @@ fn diff_friendly_output_names_file_problems() {
         ),
         "{text}"
     );
-    assert!(text.contains("Check that it exists in that revision and is not excluded from Scan."));
+    assert!(text.contains("Check the file, workspace declarations and --exclude settings."));
     assert!(
         text.contains("helper requires ^2.0 in package.json, but bun.lock lists 1.0.0"),
         "{text}"
@@ -370,7 +370,8 @@ fn diff_friendly_output_does_not_assign_comparison_wide_problems_to_a_revision()
         "reachability":[{"complete":false,"manifest_path":"package.json","source_key":"bun.lock","basis":"declaration_and_root_graph"}]});
     let text = rendered(&v, Format::Human);
     assert!(text.contains("bun.lock in this comparison"), "{text}");
-    assert!(text.contains("Some dependency information was unavailable in this comparison"));
+    assert!(text.contains("Files that need attention"));
+    assert!(!text.contains("Some dependency information was unavailable"));
     assert!(!text.contains("compared revision."));
     assert!(!text.contains("from that revision"));
     assert!(text.contains("revision-specific explanation"));

@@ -5,7 +5,7 @@ inventory. It uses the same discovery, configuration, exclusions, drift gate and
 bounded upload as `sbom generate`. Configuration is optional; `[licenses]` is not
 required. The service owns resolution, license identification and applicability
 of evidence. Shared preparation includes admitted Cargo and supported npm member manifests
-under the [workspace selection rules](discovery.md#npm-member-evidence).
+under the [workspace selection rules](discovery.md#javascript-workspace-member-evidence).
 Scan owns selection and presentation; `license check` continues to
 evaluate a separate CycloneDX document against an explicit policy.
 

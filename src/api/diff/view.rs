@@ -231,8 +231,7 @@ pub(crate) struct Delta {
 
 #[derive(Deserialize)]
 pub(crate) struct Assessment {
-    #[serde(rename = "status")]
-    pub _status: String,
+    pub status: String,
     pub reasons: Vec<String>,
 }
 
@@ -355,7 +354,7 @@ pub(crate) struct ReachabilityGap {
     pub reachability_id: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Gap {
     pub path: Option<String>,
     pub required_path: Option<String>,

@@ -64,7 +64,9 @@ fn diff_named_outputs_write_exact_json_and_escaped_markdown_from_one_job() {
     assert!(text.contains(
         "packages/worker @&#8203;team/package&#46;json was not among the files read from that revision"
     ));
-    assert!(text.contains("Check that it exists in that revision and is not excluded from Scan"));
+    assert!(
+        text.contains("Check the file, workspace declarations and &#45;&#45;exclude settings&#46;")
+    );
     assert_eq!(stderr(&output).matches("saved ").count(), 2);
     assert_one_job(server);
 }

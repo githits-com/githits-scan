@@ -299,3 +299,5 @@ fn diff_excluded_dependency_keeps_its_version_and_all_source_paths() {
 mod explanations;
 
 mod friendly;
+
+mod realistic;

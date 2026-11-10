@@ -219,6 +219,7 @@ const CARGO_MANIFEST: &str = "Cargo.toml";
 
 const CARGO_LOCKFILE: &str = "Cargo.lock";
 const NPM_PACKAGE_LOCKFILE: &str = "package-lock.json";
+const BUN_LOCKFILE: &str = "bun.lock";
 const NPM_SHRINKWRAP_LOCKFILE: &str = "npm-shrinkwrap.json";
 /// Cataloged name of the npm package and workspace manifest.
 const NPM_MANIFEST: &str = "package.json";
@@ -242,7 +243,7 @@ const RULES: &[Rule] = &[
     lockfile(NPM_SHRINKWRAP_LOCKFILE, Ecosystem::JavaScript, PACKAGE_JSON),
     lockfile("pnpm-lock.yaml", Ecosystem::JavaScript, PACKAGE_JSON),
     lockfile("yarn.lock", Ecosystem::JavaScript, PACKAGE_JSON),
-    lockfile("bun.lock", Ecosystem::JavaScript, PACKAGE_JSON),
+    lockfile(BUN_LOCKFILE, Ecosystem::JavaScript, PACKAGE_JSON),
     manifest(NPM_MANIFEST, Ecosystem::JavaScript),
     lockfile("uv.lock", Ecosystem::Python, PYPROJECT),
     lockfile("poetry.lock", Ecosystem::Python, PYPROJECT),
@@ -354,6 +355,8 @@ pub(crate) enum WorkspaceFamily {
     Cargo,
     /// npm workspaces declared in `package.json`.
     Npm,
+    /// Bun workspaces declared in `package.json`.
+    Bun,
 }
 
 /// Identify the cataloged lockfile family that supports workspace expansion.
@@ -361,6 +364,7 @@ pub(crate) fn workspace_family(relative_path: &str) -> Option<WorkspaceFamily> {
     match Path::new(relative_path).file_name()?.to_str()? {
         CARGO_LOCKFILE => Some(WorkspaceFamily::Cargo),
         NPM_PACKAGE_LOCKFILE | NPM_SHRINKWRAP_LOCKFILE => Some(WorkspaceFamily::Npm),
+        BUN_LOCKFILE => Some(WorkspaceFamily::Bun),
         _ => None,
     }
 }
@@ -676,11 +680,18 @@ mod tests {
 
     #[test]
     fn npm_evidence_catalog_workspace_families() {
-        let supported_lockfiles = ["Cargo.lock", "package-lock.json", "npm-shrinkwrap.json"];
+        let supported_lockfiles = [
+            "Cargo.lock",
+            "package-lock.json",
+            "npm-shrinkwrap.json",
+            "bun.lock",
+        ];
         for (path, expected) in [
             ("Cargo.lock", Some(WorkspaceFamily::Cargo)),
             ("package-lock.json", Some(WorkspaceFamily::Npm)),
             ("npm-shrinkwrap.json", Some(WorkspaceFamily::Npm)),
+            ("bun.lock", Some(WorkspaceFamily::Bun)),
+            ("services/api/bun.lock", Some(WorkspaceFamily::Bun)),
             ("services/api/Cargo.lock", Some(WorkspaceFamily::Cargo)),
             ("services/api/package-lock.json", Some(WorkspaceFamily::Npm)),
             (

@@ -115,17 +115,17 @@ matched by invocation exclusions are excluded even when absent, never missing dr
 
 ## Selection With a Configuration
 
-`audit`, `sbom generate`, `license report` and generated-input `license check` share one upload selection: included lockfiles with their owning manifests, Cargo and supported npm member evidence covered by those locks, and every manifest listed in `manifests` (manifest-only, nested, or uncombined). Unlisted lockfiles and unlisted manifest-only projects are never uploaded even under `--no-check`: the flag ignores drift, it does not widen the inventory. Excluded files are neither uploaded nor reported as skipped; they are a recorded decision.
+`audit`, `sbom generate`, `license report` and generated-input `license check` share one upload selection: included lockfiles with their owning manifests, Cargo and supported npm/Bun member evidence covered by those locks, and every manifest listed in `manifests` (manifest-only, nested, or uncombined). Unlisted lockfiles and unlisted manifest-only projects are never uploaded even under `--no-check`: the flag ignores drift, it does not widen the inventory. Excluded files are neither uploaded nor reported as skipped; they are a recorded decision.
 
 Declared Cargo members and used in-workspace path members are added automatically
 from admitted nested candidates, even when `manifests` is empty. Supported positive
-npm workspace declarations add candidates in the same upload phase. The service
+npm and Bun workspace declarations add candidates in the same upload phase. The service
 establishes final association from native files; directory nesting alone proves
 nothing. A shared workspace does not require fictional member-local lockfiles.
 File exclusions suppress automatic members unless explicitly listed in `manifests`;
 CLI exclusions win for all files, including owning companions. Companion statuses
 are evaluated here once and consumed by upload preparation and detect. See [Cargo](discovery.md#cargo-member-evidence) and
-[npm evidence selection](discovery.md#npm-member-evidence) for the exact boundaries; other nested evidence remains an explicit choice.
+[JavaScript evidence selection](discovery.md#javascript-workspace-member-evidence) for the exact boundaries; other nested evidence remains an explicit choice.
 
 ## `detect --save`
 

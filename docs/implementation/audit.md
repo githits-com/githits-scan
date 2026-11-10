@@ -555,7 +555,7 @@ reports omit release-only unlinked declarations; retained older reports may stil
 include them. Uploaded/native gaps remain visible in either case. V1 still emits its no-origin limitation
 once; v2 drops that obsolete line.
 Multiple versions and overlapping ranges do not establish conflicts, satisfaction
-or reachability. Native missing-input diagnostics and automatic Cargo/npm member
+or reachability. Native missing-input diagnostics and automatic Cargo/npm/Bun member
 evidence follow the [workspace evidence boundary](#workspace-evidence-boundary).
 
 Source fixed-version proposals and verified remedies are labelled separately.
@@ -648,7 +648,7 @@ registry source. An unproved Git/path dependency remains an explicit gap. Shared
 workspace locks must not be replaced by fictional member-local locks.
 
 Automatic Cargo evidence follows [discovery's member selection contract](discovery.md#cargo-member-evidence).
-Supported npm evidence follows [its bounded declaration contract](discovery.md#npm-member-evidence).
+Supported npm/Bun evidence follows [its bounded declaration contract](discovery.md#javascript-workspace-member-evidence).
 Other native families still require a qualified admission contract that associates
 members with their owning locks without independently resolving unrelated projects.
 Missing-input diagnostics name only producer-supplied paths; ignored/missing/excluded

@@ -1,15 +1,22 @@
-//! Bounded npm declaration hints over admitted paths, without lock parsing or I/O.
+//! Bounded package declaration hints over admitted paths, without lock parsing or I/O.
 use std::collections::{BTreeMap, BTreeSet};
 use std::str::Chars;
 
 use globset::{GlobBuilder, GlobMatcher};
 use serde_json::Value;
 
-/// One selected npm owner's declaration and already admitted candidate paths.
+/// One selected package owner's declaration and already admitted candidate paths.
 pub(crate) struct Workspace {
     root: String,
     candidates: BTreeMap<String, String>,
     members: BTreeSet<String>,
+    dialect: Dialect,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Dialect {
+    Npm,
+    Bun,
 }
 
 impl Workspace {
@@ -26,7 +33,15 @@ impl Workspace {
             root,
             candidates,
             members: BTreeSet::new(),
+            dialect: Dialect::Npm,
         }
+    }
+
+    /// Interpret a Bun package manifest with its verified workspace glob rules.
+    pub(crate) fn bun(root: String, candidates: impl Iterator<Item = String>) -> Self {
+        let mut workspace = Self::new(root, candidates);
+        workspace.dialect = Dialect::Bun;
+        workspace
     }
 
     /// Interpret only the owning manifest; member manifests never recursively expand.
@@ -51,8 +66,8 @@ impl Workspace {
             .iter()
             .map(Value::as_str)
             .collect::<Option<Vec<_>>>()?;
-        // Globset counts bytes for ?/classes; npm counts characters. Keep this
-        // verified incompatible combination on the explicit-selection path.
+        // Keep the existing conservative Unicode boundary for both dialects:
+        // globset counts bytes for ?/classes, while npm counts characters.
         if patterns.iter().any(|pattern| pattern.contains(['?', '[']))
             && (patterns.iter().any(|pattern| !pattern.is_ascii())
                 || self.candidates.keys().any(|path| !path.is_ascii()))
@@ -61,7 +76,7 @@ impl Workspace {
         }
         let globs = patterns
             .iter()
-            .map(|pattern| matchers(pattern))
+            .map(|pattern| matchers(pattern, self.dialect))
             .collect::<Option<Vec<_>>>()?;
         Some(
             self.candidates
@@ -86,30 +101,32 @@ fn directory(path: &str) -> &str {
     path.rsplit_once('/').map_or("", |(directory, _)| directory)
 }
 
-fn matchers(pattern: &str) -> Option<Vec<GlobMatcher>> {
+fn matchers(pattern: &str, dialect: Dialect) -> Option<Vec<GlobMatcher>> {
     let bangs = pattern.bytes().take_while(|&b| b == b'!').count();
     if bangs % 2 != 0 {
         return None;
     }
     let pattern = &pattern[bangs..];
-    let pattern = pattern
-        .strip_prefix("./")
-        .unwrap_or(pattern)
-        .trim_start_matches('/');
+    let pattern = pattern.strip_prefix("./").unwrap_or(pattern);
+    let pattern = match dialect {
+        Dialect::Npm => pattern.trim_start_matches('/'),
+        Dialect::Bun if pattern.starts_with('/') => return None,
+        Dialect::Bun => pattern,
+    };
     let mut parts: Vec<_> = pattern.split('/').collect();
     if pattern.starts_with('!')
         || parts
             .iter()
             .any(|p| matches!(*p, "" | "." | "..") || p.contains("**") && *p != "**")
-        || !syntax_supported(pattern)
+        || !syntax_supported(pattern, dialect)
     {
         return None;
     }
     // Native npm's member filter ignores supported positive comment patterns.
-    if pattern.starts_with('#') {
+    if dialect == Dialect::Npm && pattern.starts_with('#') {
         return Some(Vec::new());
     }
-    // Globset's trailing /** requires a slash; npm also includes the base directory.
+    // Globset's trailing /** requires a slash; both dialects include its base directory.
     parts.dedup_by(|a, b| *a == "**" && *b == "**");
     let pattern = parts.join("/");
     let mut globs = vec![compile(&pattern)?];
@@ -128,7 +145,7 @@ fn compile(pattern: &str) -> Option<GlobMatcher> {
         .map(|glob| glob.compile_matcher())
 }
 
-fn syntax_supported(pattern: &str) -> bool {
+fn syntax_supported(pattern: &str, dialect: Dialect) -> bool {
     if pattern.contains("${") || pattern.chars().any(char::is_control) {
         return false;
     }
@@ -137,7 +154,10 @@ fn syntax_supported(pattern: &str) -> bool {
         let valid = match ch {
             '[' => group(&mut chars, ']').is_some_and(|inner| class_supported(&inner)),
             '{' => group(&mut chars, '}').is_some_and(|inner| {
-                inner.contains(',') && inner.split(',').all(literal_alternative)
+                inner.contains(',')
+                    && inner
+                        .split(',')
+                        .all(|alternative| literal_alternative(alternative, dialect))
             }),
             ']' | '}' | '(' | ')' | '\\' => false,
             _ => true,
@@ -188,8 +208,9 @@ fn group(chars: &mut Chars<'_>, closing: char) -> Option<String> {
     None
 }
 
-fn literal_alternative(value: &str) -> bool {
-    !value.is_empty()
+fn literal_alternative(value: &str, dialect: Dialect) -> bool {
+    (dialect == Dialect::Npm || !value.contains('/'))
+        && !value.is_empty()
         && value
             .split('/')
             .all(|part| !matches!(part, "" | "." | ".."))
