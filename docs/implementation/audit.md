@@ -330,7 +330,7 @@ the target or requirements. Target-check warnings require an actual proposed
 change; a scoped no-upgrade result does not print checks for an absent target.
 It adds no generic follow-up instructions.
 A scoped negative is separated from source metadata by a blank line and reads
-`No upgrade path found among the recorded releases and dependency requirements.` The
+`No upgrade path found among releases known to the service, under the dependency requirements considered.` The
 search scope stays explicit; it does not establish that no fix exists.
 
 Joint actions can show `recorded request for TARGET: REQUIREMENT; owner OWNER

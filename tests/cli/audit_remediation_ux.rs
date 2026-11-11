@@ -164,7 +164,7 @@ fn audit_ux_negative_conclusion_is_separated_and_keeps_its_scope() {
     let text = human_report(&value);
     assert!(
         text.contains(
-            "\n\n    No upgrade path found among the recorded releases and dependency requirements.\n"
+            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements considered.\n"
         ),
         "{text}"
     );
@@ -389,4 +389,28 @@ fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
         !partial.contains("would address all listed advisories"),
         "{partial}"
     );
+}
+
+#[test]
+fn audit_ux_shared_search_limits_preserve_the_requiring_package_scope() {
+    for (cause, detail) in [
+        ("parent_candidate_limit", "service limit"),
+        ("assignment_limit", "combinations"),
+        ("parent_evidence_incomplete", "information"),
+        ("parent_exact_lookup_limit", "metadata checks"),
+    ] {
+        let mut value = remediation_report();
+        value["remediation"]["status"] = "limited".into();
+        value["remediation"]["limits"]["reasons"] = json!([cause]);
+        let text = human_report(&value);
+        let shared = text.split_once("planning limit:").expect("shared limit").1;
+        assert!(
+            shared.contains("packages requiring vulnerable dependencies"),
+            "{cause}: {shared}"
+        );
+        assert!(
+            shared.contains(detail) && !shared.contains(cause),
+            "{cause}: {shared}"
+        );
+    }
 }

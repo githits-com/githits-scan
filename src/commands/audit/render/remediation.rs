@@ -207,7 +207,7 @@ fn outcome(r: &Record, planning_known: bool) -> String {
                     && d.release_scope == "observed_catalog_upgrades"
             }) =>
         {
-            "No upgrade path found among the recorded releases and dependency requirements.".into()
+            "No upgrade path found among releases known to the service, under the dependency requirements considered.".into()
         }
         "no_upgrade_path" => "unrecognized search scope; no conclusion".into(),
         _ => format!("unrecognized outcome: {}", safe(&r.outcome)),
@@ -519,13 +519,13 @@ fn explanation(value: &str) -> String {
         "project_request_change" => "project requirement must change".into(),
         "third_party_request_excludes_target" => "parent dependency excludes the target".into(),
         "required_request_excludes_target" => "dependency requirement excludes the target".into(),
-        "parent_candidate_limit" => "upgrade checks stopped at the service's search limit".into(),
-        "assignment_limit" => "not all combinations of dependency changes could be checked".into(),
+        "parent_candidate_limit" => "upgrade checks for packages requiring vulnerable dependencies reached the service limit".into(),
+        "assignment_limit" => "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked".into(),
         "parent_evidence_incomplete" => {
-            "some dependency information needed to check related upgrades was unavailable".into()
+            "some information about packages requiring vulnerable dependencies was unavailable".into()
         }
         "parent_exact_lookup_limit" => {
-            "metadata checks for related upgrades reached the service limit".into()
+            "metadata checks for packages requiring vulnerable dependencies reached the service limit".into()
         }
         "introduction_not_recorded" => "how the dependency was introduced is not recorded".into(),
         "unsupported_selector" => "dependency requirement could not be evaluated".into(),
@@ -533,7 +533,7 @@ fn explanation(value: &str) -> String {
         "new_dependency_not_checked" => "a new dependency was not checked".into(),
         "represented_routes_cut" => "proposal removes represented dependency paths".into(),
         "no_checked_parent_upgrade" => {
-            "no upgrade of the package requiring this dependency was verified".into()
+            "no upgrade of a package requiring this dependency was verified".into()
         }
         "no_checked_leaf" => "no upgrade of this vulnerable dependency was verified".into(),
         "project_preference_change" => "project preference must change".into(),

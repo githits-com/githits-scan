@@ -91,9 +91,9 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
         "{text}"
     );
     for expected in [
-        "not all combinations of dependency changes could be checked",
-        "some dependency information needed to check related upgrades was unavailable",
-        "metadata checks for related upgrades reached the service limit",
+        "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked",
+        "some information about packages requiring vulnerable dependencies was unavailable",
+        "metadata checks for packages requiring vulnerable dependencies reached the service limit",
         "how the dependency was introduced is not recorded",
         "dependency requirement could not be evaluated",
         "target release availability not verified",

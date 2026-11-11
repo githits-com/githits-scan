@@ -613,7 +613,7 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
     input["remediation"]["recommendations"][0]["search_domain"] = json!({"constraint_scope":"represented_requests","release_scope":"observed_catalog_upgrades","packages":[{"coordinate":{"registry":"npm","name":"demo","version":"1.0.0"},"versions":["1.0.0"]}]});
     assert!(
         human_report(&input).contains(
-            "No upgrade path found among the recorded releases and dependency requirements"
+            "No upgrade path found among releases known to the service, under the dependency requirements considered"
         )
     );
     let text = human_report(&input);
