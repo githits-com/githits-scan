@@ -2,12 +2,12 @@
 
 This receipt records the 2026-11-10 snapshot. See the
 [current v3 readiness receipt](2026-11-11-lifecycle-v3-readiness.md) for the
-qualified producer contract and remaining public request-admission prerequisite.
+qualified producer and public request-admission contracts.
 
 At that snapshot, the readiness investigation was complete, consumer adoption
 had not shipped and the producer prerequisite was absent. Current follow-up
 requirements, receiving paths and acceptance cases are recorded in the
-[repository backlog](../../BACKLOG.md#adopt-audit-v3-after-public-version-forwarding-is-available).
+[repository backlog](../../BACKLOG.md#adopt-qualified-native-lifecycle-audit-v3).
 
 ## Qualified boundary
 

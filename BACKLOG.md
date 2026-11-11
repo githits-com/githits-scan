@@ -1,15 +1,16 @@
 # Open work
 
-## Adopt audit v3 after public version forwarding is available
+## Adopt qualified native lifecycle audit v3
 
-The service now provides opt-in audit v3 with native lifecycle evidence, verified
-in development. Scan cannot request it through its public experimental endpoint:
-the current gateway rejects the required `report_version` control in both query
-and multipart input. Public request admission/forwarding is the remaining external
-prerequisite. Scan adoption has not shipped. Current evidence is in the
+The native lifecycle producer and public version admission/forwarding are now
+qualified. Gateway delivery and free inspection smoke passed in development and
+production; the published production contract matches that delivery. The prior
+external blocker is removed. Scan adoption has not shipped; consumer selection,
+policy and archive compatibility still need an implementation plan within the
+existing no-default-change constraints. Current evidence is in the
 [readiness receipt](docs/reports/2026-11-11-lifecycle-v3-readiness.md).
 
-### Qualified producer contract and remaining admission boundary
+### Qualified public producer and admission contract
 
 The service owns native classification and bounded shared metadata preparation;
 its report projection must reuse that authority for selected dependencies. Scan
@@ -19,11 +20,13 @@ create a separate acquisition path and are excluded.
 
 The qualified service contract accepts `report_version=3` for audit jobs through
 query or multipart; multipart wins. Omission or `2` keeps v2. Other values and
-non-audit uses are rejected before admission. Scan uses
-`/v1/experimental/lockfile-jobs`; service admission alone does not qualify that
-route. The separately assigned API work owns admission/forwarding and public
-schema adoption. Response passthrough does not admit a new request control.
-OpenAPI omission alone remains insufficient evidence of a runtime failure.
+non-audit uses are rejected before admission. Scan's public
+`/v1/experimental/lockfile-jobs` route now admits and forwards that control.
+Query and multipart values are independently validated, including invalid values
+shadowed by the other location. Omission remains omission upstream; do not
+silently default to v3. No status/SSE requested-version field is added. Runtime
+response handling preserves immutable native report bytes, while the public
+schema explicitly describes v1/v2/v3 and leaves versions 4+ opaque.
 
 Audit v3 has a canonical `lifecycle` subtree with `findings`, `retained_warnings`,
 `coverage`, `unknowns` and `content_safety`. It replaces `findings.deprecated`,
@@ -50,6 +53,11 @@ Audit v3 has a canonical `lifecycle` subtree with `findings`, `retained_warnings
   do not prove improved evidence. `content_safety.filtered` qualifies publisher
   text; replacement advice is not a verified upgrade.
 
+The public response vocabulary is open: accept unfamiliar native categories,
+kinds, scopes, check names, statuses and reasons without inventing a known meaning
+or rejecting an otherwise structurally valid report. Preserve untrusted source
+and publisher text with the existing output-safety rules.
+
 Dispatch on the returned version: a v3 request may return v2 during rollout or
 rollback. Never resubmit an accepted job to obtain v3. Immutable v1/v2 reports
 retain their meanings. Scan JSON is independently version 1; saved format 1
@@ -59,11 +67,11 @@ case. Do not widen exact `Coordinate.version` to represent package events.
 Both archival facets remain uncollected; collection and future archive kinds
 remain service work. Quarantine is excluded.
 
-### Receiving paths once that prerequisite is met
+### Consumer implementation boundaries
 
 | Owner | Existing path and required follow-up |
 | --- | --- |
-| Version dispatch and transport | `src/api/http.rs` (`submit`, `AuditApi::audit`) currently sends only kind/format; request version 3 for audit only after public admission is qualified. `src/api/audit.rs` (`Report::from_bytes`, `Body`) currently treats 3 as future/unassessed. Add explicit v3 dispatch while retaining v1/v2 and future handling. `src/api/audit/wire.rs` and `src/api/audit/v2.rs` own existing typed fields; additional fields are discarded, including on save. |
+| Version dispatch and transport | `src/api/http.rs` (`submit`, `AuditApi::audit`) currently sends only kind/format. Settle explicit v3 selection without changing omission/default semantics. `src/api/audit.rs` (`Report::from_bytes`, `Body`) currently treats 3 as future/unassessed. Add explicit v3 dispatch while retaining v1/v2 and opaque future handling for 4+. `src/api/audit/wire.rs` and `src/api/audit/v2.rs` own existing typed fields; additional fields are discarded, including on save. |
 | Pure assessment | `src/audit.rs` and `src/audit/v2.rs`; reconcile consumed attribution, summary and coverage against the qualified producer contract. Keep native event counts separate from vulnerabilities and legacy deprecation. |
 | Shared command view | `src/commands/audit/view.rs` and `src/commands/audit/view/v2.rs`; project scope, source qualifications, useful reasons and retained warnings once for both human output and JSON. Existing maintenance rows contain an exact coordinate and reason only. |
 | Human presentation | `src/commands/audit/render.rs`; show meaningful native warnings and limitations without relabelling package/file events as deprecated releases. Respect compact/detail behavior, escape publisher text and avoid a clean headline when warnings exist. |
@@ -115,9 +123,12 @@ move their future case beyond the supported version when v3 is implemented.
 
 ### Delivery and remaining decisions
 
-Requalify public version admission/forwarding and the actual producer contract
-before creating the consumer implementation plan. No new CLI flag, public Rust
-signature, schema version or runtime dependency is chosen by this investigation.
+External contract readiness is complete. The next work is a consumer
+implementation plan covering explicit version selection, native positive-warning
+exit semantics under the no-default-gate-change constraint, and decode/save/replay
+compatibility. The existing CLI has no report-version selector; this readiness
+investigation chooses no new flag, public Rust signature, consumer/archive schema
+version or runtime dependency. Keep gateway omission/default semantics intact.
 No new infrastructure, local registry fetching, automatic resubmission or
 default scan gate is authorized. Any future default gate requires a separate
 product decision; warning-only adoption is the current scope.

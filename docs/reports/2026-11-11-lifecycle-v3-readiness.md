@@ -1,10 +1,10 @@
 # Audit v3 consumer readiness
 
-The native lifecycle audit producer is now qualified and verified in development.
-Scan adoption remains unshipped: the public experimental job endpoint still
-rejects the `report_version=3` request control. The
-[backlog](../../BACKLOG.md#adopt-audit-v3-after-public-version-forwarding-is-available)
-owns the remaining prerequisite, receiving paths and consumer acceptance cases.
+The native lifecycle producer and public gateway contracts are qualified. The
+gateway admission blocker is removed, with delivery and free inspection smoke
+verified in development and production. Scan adoption remains unshipped. The
+[backlog](../../BACKLOG.md#adopt-qualified-native-lifecycle-audit-v3)
+owns the remaining consumer work, receiving paths and acceptance cases.
 The [earlier receipt](2026-11-10-lifecycle-report-readiness.md) records the prior
 inspection-only contract.
 
@@ -26,17 +26,27 @@ limits and prepared upgrade lifecycle independent of advisory success. This is
 upstream evidence, not a paid end-to-end audit or this consumer's live verification.
 No new authenticated service call or paid job was submitted here.
 
-Read-only review of current public gateway source confirms that query controls
-admit kind/format only, and multipart admits files plus kind/format. Both paths
-reject the report-version control before an audit can request v3. Response-side
-handling can preserve future-version bytes; it does not supply missing request
-admission. Public API updates remain with their separately assigned owner.
+Read the deployed gateway's lifecycle contract and admission implementation.
+The public experimental job endpoint now accepts audit-only `report_version=2`
+or `3` through query or multipart text. Each input is validated independently;
+multipart takes precedence only after validation. Omission preserves default v2.
+Clients inspect the returned version, including v2 in response to a v3 request;
+retained v1/v2/v3 bytes keep their original meanings and future versions 4+ remain
+opaque. Native response vocabularies remain open.
+
+The supplied gateway delivery receipt confirms both strict deployed smoke jobs,
+free lifecycle inspection smoke in development and production, and matching
+served schemas. Audit forwarding/result handling and upgrade lifecycle have
+reviewed deterministic router/provider/producer-fixture and CI coverage. This
+does not establish a paid live audit, diff or Scan run. No upstream approval is
+treated as merge, release, publication or deployment authorization for Scan.
 
 The [public OpenAPI](https://api.githits.dev/v1/openapi.json) was fetched without
-credentials on 2026-11-11: 1,769,471 bytes, SHA-256
-`ac89cfcbb0b18600dc80e5f1ad8f473e3dfe81eee88a1462cc8b9798dae21ad7`.
-It still describes audit v1/v2 and lacks report-version admission. The runtime
-blocker is verified in input validation, independently of this publication gap.
+credentials on 2026-11-11: 1,804,616 bytes, SHA-256
+`ecd39dbc10f8244deb9d7b0a606756b75e6ce4541b349a39ec81388ba27149ea`.
+The hash exactly matches the supplied gateway verification receipt. The fetched
+document describes query and multipart version controls, audit v3 and opaque
+future versions from 4. Runtime admission was independently checked in source.
 
 ## Scan boundary
 
@@ -48,10 +58,14 @@ Scan currently submits kind/format only. Its decoder treats version 3 as a futur
 report, renders an incomplete unsupported-version result with exit 1, and does
 not forward opaque fields. Saved format 1 currently accepts only producer v2.
 The backlog names transport, decoder, assessment, shared view, rendering and
-save/replay changes needed after gateway qualification. It records the version-2
-response case for a v3 request without resubmitting an accepted job.
+save/replay changes still needed in Scan. It records the version-2 response case
+for a v3 request without resubmitting an accepted job. Explicit consumer version
+selection, positive-warning exit policy and archive compatibility remain design
+work; this readiness update does not select a new default, gate or schema.
 
-The following debug-build command ran 3 existing tests: 3 passed, 771 skipped.
+Before this gateway evidence update, the following debug-build command ran 3
+existing tests: 3 passed, 771 skipped. Runtime code is unchanged, so the tests
+were not repeated for this documentation-only update.
 They establish current version-3 unsupported/incomplete behavior, malformed-version
 rejection and saved-archive compatibility, not native lifecycle support.
 
