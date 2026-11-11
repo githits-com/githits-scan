@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use serde::Serialize;
 
-use crate::api::audit::{Body, Report, remediation::Trace, trace};
+use crate::api::audit::{Report, remediation::Trace, trace};
 
 mod current;
 pub(crate) use current::{RecordedRequest, recorded_requests};
@@ -58,9 +58,7 @@ pub(crate) struct Edge<'a> {
 }
 
 pub(crate) fn select<'a>(report: &'a Report, package: &str) -> Option<Explanation<'a>> {
-    let Body::V2(body) = &report.body else {
-        return None;
-    };
+    let body = &report.data;
     let indices: BTreeSet<_> = body
         .findings
         .vulnerabilities

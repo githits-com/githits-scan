@@ -3,15 +3,15 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::Serialize;
 
-use crate::api::audit::v2::{ManifestLockMismatch, NativeConditions};
+use crate::api::audit::report::{ManifestLockMismatch, NativeConditions};
 use crate::api::audit::{
-    Body, Report,
-    wire::{Coordinate, MetadataCoverage, V1, VulnerabilityCoverage},
+    Report,
+    wire::{Coordinate, MetadataCoverage, VulnerabilityCoverage},
 };
 use crate::audit::Assessment;
 
 pub(super) mod remediation;
-mod v2;
+mod report;
 
 #[derive(Serialize)]
 pub(super) struct View {
@@ -19,14 +19,10 @@ pub(super) struct View {
     pub incomplete: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub analysis: Option<crate::audit::saved::Provenance>,
-    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
-    pub resolved_from_manifests: BTreeSet<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub summary: Option<Summary>,
+    pub summary: Summary,
+    pub lifecycle: crate::api::audit::lifecycle::Lifecycle,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub vulnerabilities: Vec<Finding>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub deprecated: Vec<Finding>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub outdated: Vec<Finding>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -48,7 +44,8 @@ pub(super) struct Summary {
     pub vulnerabilities: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ignored_vulnerabilities: Option<u64>,
-    pub deprecated: u64,
+    pub lifecycle: u64,
+    pub retained_lifecycle_warnings: u64,
     pub outdated: u64,
     pub duplicates: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -82,8 +79,6 @@ pub(super) struct Finding {
     pub latest: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub change: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub reason: Option<String>,
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub malicious: bool,
 }
@@ -164,7 +159,7 @@ pub(super) fn coordinate(c: &Coordinate) -> String {
 }
 
 fn severity(score: f64, kind: Option<&str>) -> String {
-    // Schema 1's legacy JSON string keeps its spelling independently of human labels.
+    // Preserve source spelling in JSON independently of human severity labels.
     format!("{} {score}", kind.unwrap_or("score"))
 }
 
@@ -183,56 +178,9 @@ impl Finding {
     }
 }
 
-type Locations = BTreeMap<String, (String, BTreeSet<String>)>;
 type IssueKey = (String, String, String, BTreeSet<String>, BTreeSet<String>);
 type Issues = BTreeMap<IssueKey, Issue>;
 
-fn locations(r: &V1) -> Locations {
-    let mut locations = Locations::new();
-    for o in &r.occurrences {
-        let name = o.coordinate.as_ref().map_or_else(
-            || {
-                o.version
-                    .as_ref()
-                    .map_or_else(|| o.name.clone(), |v| format!("{}@{v}", o.name))
-            },
-            coordinate,
-        );
-        let files = o
-            .lockfile_path
-            .iter()
-            .chain(&o.resolution_manifest_paths)
-            .cloned()
-            .collect();
-        locations.insert(o.id.clone(), (name, files));
-    }
-    for m in &r.inputs.manifests {
-        locations.insert(
-            m.id.clone(),
-            (m.name.clone(), BTreeSet::from([m.path.clone()])),
-        );
-    }
-    for s in &r.inputs.subjects {
-        locations.insert(
-            s.id.clone(),
-            (s.name.clone(), BTreeSet::from([s.lockfile_path.clone()])),
-        );
-    }
-    locations
-}
-fn files(ids: &[String], locations: &Locations) -> BTreeSet<String> {
-    ids.iter()
-        .filter_map(|id| locations.get(id))
-        .flat_map(|(_, files)| files.iter().cloned())
-        .collect()
-}
-fn finding(c: &Coordinate, ids: &[String], locations: &Locations) -> Finding {
-    Finding {
-        package: coordinate(c),
-        files: files(ids, locations),
-        ..Finding::default()
-    }
-}
 fn add_issue(groups: &mut Issues, mut issue: Issue) {
     let key = (
         issue.check.clone(),
@@ -252,79 +200,39 @@ fn add_issue(groups: &mut Issues, mut issue: Issue) {
     group.required_files.append(&mut issue.required_files);
     group.missing_requests.append(&mut issue.missing_requests);
 }
-fn owner_issue(
-    check: &str,
-    status: &str,
-    reason: String,
-    id: &str,
-    locations: &Locations,
-) -> Issue {
-    let mut issue = Issue {
-        check: check.into(),
-        status: status.into(),
-        reason,
-        ..Issue::default()
-    };
-    if let Some((name, paths)) = locations.get(id) {
-        issue.packages.insert(name.clone());
-        issue.files.clone_from(paths);
-    }
-    issue
-}
-
 impl View {
     pub(super) fn new(
         report: &Report,
-        assessment: Option<&Assessment>,
+        a: &Assessment,
         manifests: Vec<String>,
         policy: &crate::config::Audit,
     ) -> Self {
+        let s = &a.summary;
         let mut view = Self {
-            schema_version: 1,
-            incomplete: false,
+            schema_version: 2,
+            incomplete: a.incomplete,
             analysis: None,
-            resolved_from_manifests: BTreeSet::new(),
-            summary: None,
+            summary: Summary {
+                dependencies: s.dependencies,
+                vulnerabilities: s.vulnerabilities,
+                ignored_vulnerabilities: None,
+                lifecycle: s.lifecycle,
+                retained_lifecycle_warnings: s.retained_lifecycle_warnings,
+                outdated: s.outdated,
+                duplicates: s.duplicates,
+                manifest_lock_mismatches: None,
+            },
+            lifecycle: report.data.lifecycle.clone(),
             vulnerabilities: Vec::new(),
-            deprecated: Vec::new(),
             outdated: Vec::new(),
             duplicates: Vec::new(),
             manifest_lock_mismatches: Vec::new(),
             issues: Vec::new(),
-            manifests: BTreeSet::new(),
+            manifests: manifests.into_iter().collect(),
             limitations: coverage_notices(report),
             remediation: remediation::State::Unavailable,
         };
-        let Some(a) = assessment else {
-            view.incomplete = true;
-            view.issues.push(Issue {
-                check: "report".into(),
-                status: "unsupported".into(),
-                reason: format!(
-                    "Audit API schema version {} is not supported",
-                    report.version()
-                ),
-                ..Issue::default()
-            });
-            return view;
-        };
-        view.manifests = manifests.into_iter().collect();
-        view.incomplete = a.incomplete;
-        let s = &a.summary;
-        view.summary = Some(Summary {
-            dependencies: s.dependencies,
-            vulnerabilities: s.vulnerabilities,
-            ignored_vulnerabilities: None,
-            deprecated: s.deprecated,
-            outdated: s.outdated,
-            duplicates: s.duplicates,
-            manifest_lock_mismatches: None,
-        });
-        match &report.body {
-            Body::V1(r) => view.populate_v1(r, a),
-            Body::V2(r) => v2::populate(&mut view, r, a),
-            Body::Future(_) => (),
-        }
+        report::populate(&mut view, &report.data, a);
         for finding in &mut view.vulnerabilities {
             finding.ignore = finding
                 .advisory
@@ -333,77 +241,10 @@ impl View {
                 .cloned();
             finding.ignored = finding.ignore.is_some();
         }
-        let ignored = view
-            .vulnerabilities
-            .iter()
-            .filter(|finding| finding.ignored)
-            .count();
-        if let Some(summary) = &mut view.summary {
-            summary.ignored_vulnerabilities = (ignored != 0).then_some(ignored as u64);
-        }
+        let ignored = view.vulnerabilities.iter().filter(|f| f.ignored).count();
+        view.summary.ignored_vulnerabilities = (ignored != 0).then_some(ignored as u64);
         view.remediation = remediation::State::new(report, a);
         view
-    }
-
-    fn populate_v1(&mut self, r: &V1, a: &Assessment) {
-        let view = self;
-        view.resolved_from_manifests = r
-            .occurrences
-            .iter()
-            .flat_map(|o| o.resolution_manifest_paths.iter().cloned())
-            .collect();
-        let locations = locations(r);
-        for f in &r.findings.vulnerabilities {
-            let mut item = finding(&f.coordinate, &f.occurrence_ids, &locations);
-            item.advisory = Some(f.advisory_id.clone());
-            item.title = f.summary.clone().filter(|s| !s.is_empty());
-            item.severity = f
-                .severity_score
-                .map(|score| severity(score, f.severity_type.as_deref()));
-            item.severity_score = f.severity_score;
-            item.severity_type.clone_from(&f.severity_type);
-            item.aliases.clone_from(&f.aliases);
-            item.proposed_fixes.clone_from(&f.fixed_in_versions);
-            item.verified_advisory_fixes
-                .clone_from(&f.verified_remedies);
-            item.malicious = f.malicious;
-            view.vulnerabilities.push(item);
-        }
-        for f in &r.findings.deprecated {
-            let mut item = finding(&f.coordinate, &f.occurrence_ids, &locations);
-            item.reason = Some(f.reason.clone());
-            view.deprecated.push(item);
-        }
-        for f in &r.findings.outdated {
-            let mut item = finding(&f.coordinate, &f.occurrence_ids, &locations);
-            item.latest = Some(f.latest_version.clone());
-            item.change = Some(f.change_type.clone());
-            view.outdated.push(item);
-        }
-        for f in &r.findings.duplicates {
-            view.duplicates.push(Duplicate {
-                package: format!("{}:{}", f.registry, f.name),
-                versions: f
-                    .versions
-                    .iter()
-                    .map(|v| DuplicateVersion {
-                        version: v.version.clone(),
-                        files: files(&v.occurrence_ids, &locations),
-                        origins: BTreeSet::new(),
-                    })
-                    .collect(),
-                unattributed_requirements: BTreeSet::new(),
-            });
-        }
-        view.issues = issues(r, a, &locations)
-            .into_values()
-            .map(compact_issue)
-            .collect();
-        if !view.duplicates.is_empty() {
-            view.limitations.push(
-                "Required ranges and requesting dependencies are not provided by this API.".into(),
-            );
-        }
     }
 }
 
@@ -417,80 +258,6 @@ fn compact_issue(mut issue: Issue) -> Issue {
     issue
 }
 
-fn issues(r: &V1, a: &Assessment, locations: &Locations) -> Issues {
-    let mut groups = Issues::new();
-    report_issues(a, &mut groups);
-    for f in &r.unknowns.vulnerabilities {
-        add_issue(
-            &mut groups,
-            Issue {
-                check: f.check.clone(),
-                status: f.status.clone(),
-                reason: reasons(&f.reasons),
-                packages: BTreeSet::from([coordinate(&f.coordinate)]),
-                registries: BTreeSet::from([f.coordinate.registry.clone()]),
-                files: files(&f.occurrence_ids, locations),
-                advisories: f.advisory_ids.iter().cloned().collect(),
-                ..Issue::default()
-            },
-        );
-    }
-    for f in &r.unknowns.metadata {
-        add_issue(
-            &mut groups,
-            Issue {
-                check: f.check.clone(),
-                status: f.status.clone(),
-                reason: f
-                    .reason
-                    .as_deref()
-                    .map_or_else(String::new, |r| reason(r).into()),
-                packages: BTreeSet::from([coordinate(&f.coordinate)]),
-                registries: BTreeSet::from([f.coordinate.registry.clone()]),
-                files: files(&f.occurrence_ids, locations),
-                ..Issue::default()
-            },
-        );
-    }
-    for s in r
-        .coverage
-        .sources
-        .iter()
-        .chain(&r.unknowns.sources)
-        .filter(|s| s.state != "complete")
-    {
-        add_issue(
-            &mut groups,
-            owner_issue(
-                "dependency information",
-                &s.state,
-                reasons(&s.reasons),
-                &s.owner_id,
-                locations,
-            ),
-        );
-    }
-    for f in &r.unknowns.excluded_occurrences {
-        add_issue(
-            &mut groups,
-            owner_issue(
-                "package checks",
-                "excluded",
-                reason(&f.reason).into(),
-                &f.occurrence_id,
-                locations,
-            ),
-        );
-    }
-    resolution_issues(r, &mut groups);
-    coverage_issues(
-        &r.coverage.vulnerabilities,
-        &r.coverage.deprecation,
-        &r.coverage.outdated,
-        &mut groups,
-    );
-    groups
-}
 fn report_issues(a: &Assessment, groups: &mut Issues) {
     for reason in &a.unverified {
         add_issue(
@@ -505,81 +272,28 @@ fn report_issues(a: &Assessment, groups: &mut Issues) {
     }
 }
 
-fn resolution_issues(r: &V1, groups: &mut Issues) {
-    for resolution in r
-        .inputs
-        .resolutions
-        .iter()
-        .filter(|s| s.status != "complete" || !s.diagnostics.is_empty())
-    {
-        if resolution.diagnostics.is_empty() {
-            add_issue(
-                groups,
-                Issue {
-                    check: "resolution".into(),
-                    status: resolution.status.clone(),
-                    files: BTreeSet::from([resolution.path.clone()]),
-                    ..Issue::default()
-                },
-            );
-        }
-        for d in &resolution.diagnostics {
-            add_issue(
-                groups,
-                Issue {
-                    check: "resolution".into(),
-                    status: resolution.status.clone(),
-                    reason: reason(&d.reason).into(),
-                    packages: BTreeSet::from([d.name.clone()]),
-                    files: BTreeSet::from([resolution.path.clone()]),
-                    ..Issue::default()
-                },
-            );
-        }
-    }
-}
-
-fn coverage_issues(
-    v: &VulnerabilityCoverage,
-    deprecation: &MetadataCoverage,
-    outdated: &MetadataCoverage,
-    groups: &mut Issues,
-) {
+fn coverage_issues(v: &VulnerabilityCoverage, outdated: &MetadataCoverage, groups: &mut Issues) {
     coverage_issue(
         "vulnerabilities",
         v.checked_count,
         v.candidates_count,
-        0,
         v.checked_count != v.candidates_count,
         groups,
     );
-    for (check, coverage) in [("deprecation", deprecation), ("outdated", outdated)] {
-        coverage_issue(
-            check,
-            coverage.checked_count,
-            coverage.candidates_count,
-            coverage.not_applicable_count.unwrap_or(0),
-            crate::audit::metadata_gap(coverage),
-            groups,
-        );
-    }
+    coverage_issue(
+        "outdated",
+        outdated.checked_count,
+        outdated.candidates_count,
+        crate::audit::metadata_gap(outdated),
+        groups,
+    );
 }
 
-fn coverage_issue(
-    check: &str,
-    checked: u64,
-    total: u64,
-    not_applicable: u64,
-    incomplete: bool,
-    groups: &mut Issues,
-) {
+fn coverage_issue(check: &str, checked: u64, total: u64, incomplete: bool, groups: &mut Issues) {
     if !incomplete {
         return;
     }
-    let mut reason = format!("{checked} of {total} packages checked");
-    if not_applicable != 0 {
-        reason = format!("{reason}; {not_applicable} not applicable");
-    }
+    let reason = format!("{checked} of {total} packages checked");
     add_issue(
         groups,
         Issue {
@@ -592,32 +306,56 @@ fn coverage_issue(
 }
 
 fn coverage_notices(report: &Report) -> Vec<String> {
-    let (deprecation, outdated) = match &report.body {
-        Body::V1(r) => (&r.coverage.deprecation, &r.coverage.outdated),
-        Body::V2(r) => (&r.coverage.deprecation, &r.coverage.outdated),
-        Body::Future(_) => return Vec::new(),
-    };
-    [("deprecation", deprecation), ("outdated", outdated)]
-        .into_iter()
-        .filter_map(|(check, c)| {
-            let count = c.not_applicable_count.unwrap_or(0);
-            if count == 0 {
-                return None;
-            }
-            let mut notice = format!(
-                "{check} coverage: {} of {} packages checked; {count} not applicable",
-                c.checked_count, c.candidates_count
-            );
-            if let Some(registries) = c
-                .not_applicable_registries
-                .as_ref()
-                .filter(|r| !r.is_empty())
-            {
-                notice = format!("{notice} ({})", registries.join(", "));
-            }
-            Some(notice)
-        })
-        .collect()
+    let mut notices = Vec::new();
+    for (check, facet) in report.data.lifecycle.coverage.facets() {
+        let check = lifecycle_check(check);
+        let uncollected_noun = if facet.not_collected_count == 1 {
+            "dependency"
+        } else {
+            "dependencies"
+        };
+        let inapplicable_noun = if facet.not_applicable_count == 1 {
+            "dependency"
+        } else {
+            "dependencies"
+        };
+        if facet.not_collected_count != 0 {
+            notices.push(format!(
+                "{check} was not collected for {} {uncollected_noun} ({}).",
+                facet.not_collected_count,
+                facet.not_collected_registries.join(", ")
+            ));
+        }
+        if facet.not_applicable_count != 0 {
+            notices.push(format!(
+                "{check} does not apply to {} {inapplicable_noun} ({}); this is not a checked negative.",
+                facet.not_applicable_count,
+                facet.not_applicable_registries.join(", ")
+            ));
+        }
+    }
+    notices
+}
+
+pub(super) fn lifecycle_check(value: &str) -> &'static str {
+    match value {
+        "deprecation" => "deprecation",
+        "withdrawal" => "withdrawal",
+        "registry_archival" => "registry archival",
+        "repository_archival" => "repository archival",
+        _ => "an unfamiliar lifecycle check",
+    }
+}
+
+fn lifecycle_reason(value: &str) -> &'static str {
+    match value {
+        "lookup_failed" => "the service could not obtain the package metadata",
+        "metadata_unavailable" => "the package metadata was unavailable",
+        "native_evidence_unavailable" => {
+            "the stored metadata does not include the native observation needed for this check"
+        }
+        _ => "the service supplied no recognized explanation for this outcome",
+    }
 }
 
 fn reason(value: &str) -> &str {

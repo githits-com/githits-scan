@@ -1,6 +1,6 @@
 //! All upload commands share native Cargo member evidence selection.
 use super::*;
-use crate::support::audit::v2_clean;
+use crate::support::audit::clean;
 
 const MANIFEST: &str = "[workspace]\nmembers = [\"crates/*\"]\n";
 const CONFIG: &str = "version = 1\n\n[lockfiles]\ninclude = [\"Cargo.lock\"]\nmanifests = []\n\n[licenses]\nallow = [\"MIT\"]\n";
@@ -31,7 +31,7 @@ fn native_member_evidence_is_shared_by_upload_commands_under_configuration() {
             "[package]\nname = \"unrelated\"\nversion = \"1.0.0\"\n",
         ),
     ]);
-    let report = serde_json::to_vec(&v2_clean()).expect("clean audit report");
+    let report = serde_json::to_vec(&clean()).expect("clean audit report");
 
     let audit_server = server(&report);
     let output = run(
@@ -158,7 +158,7 @@ fn automatic_cargo_member_limit_names_counts_and_explicit_partial_scan() {
     );
     assert!(!diagnostic.contains("scan a smaller tree"), "{diagnostic}");
 
-    let mut partial = v2_clean();
+    let mut partial = clean();
     partial["unknowns"]["sources"] = serde_json::json!([
         {"path":"Cargo.lock","reasons":["required_input_not_supplied"]}
     ]);

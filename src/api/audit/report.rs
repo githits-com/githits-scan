@@ -1,15 +1,15 @@
-//! Compact version-two fields used by interpretation and presentation.
+//! The sole consumed native audit report and its compact common evidence.
 use serde::{Deserialize, Serialize};
 
 use super::wire::{Additional, Coordinate, MetadataCoverage, VulnerabilityCoverage, nullable};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub(crate) struct V2 {
+pub(crate) struct Data {
     #[serde(flatten, skip_serializing)]
     pub _additional: Additional,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub generated_at: Option<String>,
+    pub generated_at: String,
     pub summary: Summary,
+    pub lifecycle: super::lifecycle::Lifecycle,
     pub findings: Findings,
     pub coverage: Coverage,
     pub unknowns: Unknowns,
@@ -27,7 +27,8 @@ pub(crate) struct Summary {
     pub _additional: Additional,
     pub dependencies: u64,
     pub vulnerabilities: u64,
-    pub deprecated: u64,
+    pub lifecycle: u64,
+    pub retained_lifecycle_warnings: u64,
     pub outdated: u64,
     pub duplicates: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -42,7 +43,6 @@ pub(crate) struct Coverage {
     #[serde(flatten, skip_serializing)]
     pub _additional: Additional,
     pub vulnerabilities: VulnerabilityCoverage,
-    pub deprecation: MetadataCoverage,
     pub outdated: MetadataCoverage,
 }
 
@@ -51,7 +51,6 @@ pub(crate) struct Findings {
     #[serde(flatten, skip_serializing)]
     pub _additional: Additional,
     pub vulnerabilities: Vec<Vulnerability>,
-    pub deprecated: Vec<Deprecated>,
     pub outdated: Vec<Outdated>,
     pub duplicates: Vec<Duplicate>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -75,15 +74,6 @@ pub(crate) struct Vulnerability {
     pub malicious: bool,
     pub fixed_in_versions: Vec<String>,
     pub verified_remedies: Vec<String>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub(crate) struct Deprecated {
-    #[serde(flatten, skip_serializing)]
-    pub _additional: Additional,
-    pub coordinate: Coordinate,
-    pub paths: Vec<String>,
-    pub reason: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

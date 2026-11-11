@@ -71,8 +71,15 @@ pub(super) fn replay(
             })?;
         select_recommendations(&mut result, &mut selected);
         super::super::write_report(&request.output, out, palette, |out, _| {
-            super::explain::write(&result, &analysis.provenance, &selected, request.json, out)
-                .map_err(Error::Output)
+            super::explain::write(
+                &result,
+                &analysis.provenance,
+                &selected,
+                request.json,
+                request.details,
+                out,
+            )
+            .map_err(Error::Output)
         })?;
     } else {
         result.analysis = Some(analysis.provenance);

@@ -102,16 +102,11 @@ fn recorded_request(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::api::audit::Body;
     use crate::audit::test_support::{report, value};
     use serde_json::{Value, json};
 
     fn selected(input: &Value) -> Vec<RecordedRequest> {
-        let body = match report(input).body {
-            Body::V2(body) => Some(body),
-            _ => None,
-        }
-        .expect("v2 fixture");
+        let body = report(input).data;
         let remediation = body.remediation.expect("remediation");
         recorded_requests(&remediation.trace, &remediation.recommendations[0])
     }

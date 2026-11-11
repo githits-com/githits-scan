@@ -2,7 +2,7 @@
 use std::collections::BTreeSet;
 use std::io::{self, Write};
 
-use super::{file_list, heading, list, requirement_status, safe};
+use super::{file_list, list, requirement_status, safe};
 use crate::api::audit::remediation::{Blocker, Change, Checks};
 use crate::commands::audit::view::{
     View,
@@ -18,7 +18,7 @@ pub(in crate::commands::audit) use reasons::ReasonDetail;
 pub(super) fn write(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
     let data = match &view.remediation {
         State::Unavailable if !view.vulnerabilities.is_empty() => {
-            return writeln!(out, "\nMitigation planning unavailable in this report.");
+            return writeln!(out, "\nFix guidance is unavailable in this report.");
         }
         State::Present(data) => data,
         State::Unavailable | State::Unverified => return Ok(()),
@@ -29,18 +29,16 @@ pub(super) fn write(view: &View, out: &mut dyn Write, palette: Palette) -> io::R
     {
         return Ok(());
     }
-    heading(
-        "Mitigation recommendations",
-        data.recommendations.len(),
-        out,
-        palette,
-    )?;
+    writeln!(out, "\n{}", palette.bold("Fix guidance"))?;
     if data.status != "completed" {
-        writeln!(
-            out,
-            "  planning: {}",
-            status(&data.status, &["limited", "not_assessed"])
-        )?;
+        let message = match data.status.as_str() {
+            "limited" => "Fix guidance is incomplete.",
+            "not_assessed" => "Fix guidance was not assessed.",
+            _ => {
+                "The service returned an unfamiliar fix-planning status; see JSON for the supplied value."
+            }
+        };
+        writeln!(out, "  {message}")?;
     }
     if data.recommendations.is_empty() {
         writeln!(
@@ -147,17 +145,20 @@ fn impact(
     out: &mut dyn Write,
 ) -> io::Result<()> {
     let addressed: BTreeSet<_> = r.addressed_findings.iter().collect();
-    let fully_addressed = supported
-        && r.outcome == "proposed"
+    let covers_displayed_findings = r.outcome == "proposed"
         && r.remaining_findings.is_empty()
         && r.findings.iter().collect::<BTreeSet<_>>() == addressed
         && context.matches(&r.findings);
-    if !fully_addressed && !r.addressed_findings.is_empty() {
-        writeln!(
-            out,
-            "    would address: {}",
-            finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
-        )?;
+    if !(r.addressed_findings.is_empty() || supported && covers_displayed_findings) {
+        let benefit = match (covers_displayed_findings, r.addressed_findings.len()) {
+            (true, 1) => "would address the listed advisory".into(),
+            (true, _) => "would address all listed advisories".into(),
+            (false, _) => format!(
+                "would address: {}",
+                finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
+            ),
+        };
+        writeln!(out, "    {benefit}")?;
     }
     if r.outcome == "partial" && r.addressed_findings.is_empty() {
         writeln!(out, "    would address: none reported")?;
@@ -206,7 +207,7 @@ fn outcome(r: &Record, planning_known: bool) -> String {
                     && d.release_scope == "observed_catalog_upgrades"
             }) =>
         {
-            "No upgrade path found within observed releases and represented requests.".into()
+            "No upgrade path found among releases known to the service, under the dependency requirements considered.".into()
         }
         "no_upgrade_path" => "unrecognized search scope; no conclusion".into(),
         _ => format!("unrecognized outcome: {}", safe(&r.outcome)),
@@ -370,11 +371,6 @@ fn checks(r: &Record, out: &mut dyn Write) -> io::Result<()> {
             &["not_withdrawn", "unknown"][..],
         ),
         (
-            "parent search",
-            c.parent_search.as_str(),
-            &["completed", "not_assessed"][..],
-        ),
-        (
             "native resolution",
             c.native_resolution.as_str(),
             &["not_checked"][..],
@@ -389,6 +385,7 @@ fn checks(r: &Record, out: &mut dyn Write) -> io::Result<()> {
             writeln!(out, "    {label}: {}", check_text(value))?;
         }
     }
+    parent_search(&c.parent_search, out)?;
     if !matches!(
         c.availability_source.as_str(),
         "catalog" | "exact_metadata" | "mixed" | "not_assessed"
@@ -477,12 +474,15 @@ pub(in crate::commands::audit) fn shared_limits(
     Ok(())
 }
 
-fn status(value: &str, known: &[&str]) -> String {
-    if known.contains(&value) {
-        check_text(value)
-    } else {
-        format!("unrecognized ({})", safe(value))
-    }
+fn parent_search(value: &str, out: &mut dyn Write) -> io::Result<()> {
+    let message = match value {
+        "completed" | "not_assessed" => return Ok(()),
+        "limited" => "Upgrades to packages using this dependency were not fully checked.",
+        _ => {
+            "The service returned an unfamiliar result for upgrades to packages using this dependency; see JSON for the supplied value."
+        }
+    };
+    writeln!(out, "    {message}")
 }
 
 fn check_text(value: &str) -> String {
@@ -519,17 +519,23 @@ fn explanation(value: &str) -> String {
         "project_request_change" => "project requirement must change".into(),
         "third_party_request_excludes_target" => "parent dependency excludes the target".into(),
         "required_request_excludes_target" => "dependency requirement excludes the target".into(),
-        "parent_candidate_limit" => "parent upgrade search reached its candidate limit".into(),
-        "assignment_limit" => "parent upgrade search reached its combination limit".into(),
-        "parent_evidence_incomplete" => "parent dependency evidence is incomplete".into(),
-        "parent_exact_lookup_limit" => "parent release metadata lookup limit reached".into(),
+        "parent_candidate_limit" => "upgrade checks for packages requiring vulnerable dependencies reached the service limit".into(),
+        "assignment_limit" => "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked".into(),
+        "parent_evidence_incomplete" => {
+            "some information about packages requiring vulnerable dependencies was unavailable".into()
+        }
+        "parent_exact_lookup_limit" => {
+            "metadata checks for packages requiring vulnerable dependencies reached the service limit".into()
+        }
         "introduction_not_recorded" => "how the dependency was introduced is not recorded".into(),
         "unsupported_selector" => "dependency requirement could not be evaluated".into(),
         "release_existence_unverified" => "target release availability not verified".into(),
         "new_dependency_not_checked" => "a new dependency was not checked".into(),
         "represented_routes_cut" => "proposal removes represented dependency paths".into(),
-        "no_checked_parent_upgrade" => "no checked parent upgrade was found".into(),
-        "no_checked_leaf" => "no checked upgrade for the vulnerable dependency was found".into(),
+        "no_checked_parent_upgrade" => {
+            "no upgrade of a package requiring this dependency was verified".into()
+        }
+        "no_checked_leaf" => "no upgrade of this vulnerable dependency was verified".into(),
         "project_preference_change" => "project preference must change".into(),
         "unresolved_manifest_activation" => "manifest applicability is unresolved".into(),
         _ => safe(value),

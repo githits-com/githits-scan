@@ -1,15 +1,16 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "generated_at": "2026-10-15T00:00:00Z",
   "summary": {
     "dependencies": 2,
     "vulnerabilities": 1,
-    "deprecated": 1,
     "outdated": 1,
     "duplicates": 1,
     "excluded_dependencies": 1,
     "incomplete_sources": 1,
-    "incomplete_checks": 2
+    "incomplete_checks": 2,
+    "lifecycle": 1,
+    "retained_lifecycle_warnings": 0
   },
   "coverage": {
     "vulnerabilities": {
@@ -18,13 +19,6 @@
       "unknown_count": 1,
       "unsupported_count": 0,
       "unsupported_registries": []
-    },
-    "deprecation": {
-      "candidates_count": 2,
-      "checked_count": 1,
-      "unknown_count": 1,
-      "not_collected_count": 0,
-      "not_collected_registries": []
     },
     "outdated": {
       "candidates_count": 2,
@@ -63,19 +57,6 @@
         "verified_remedies": [
           "1.1.1"
         ]
-      }
-    ],
-    "deprecated": [
-      {
-        "coordinate": {
-          "registry": "npm",
-          "name": "demo",
-          "version": "1.0.0"
-        },
-        "paths": [
-          "package-lock.json"
-        ],
-        "reason": "use the maintained package"
       }
     ],
     "outdated": [
@@ -168,21 +149,7 @@
         ]
       }
     ],
-    "metadata": [
-      {
-        "coordinate": {
-          "registry": "npm",
-          "name": "demo",
-          "version": "2.0.0"
-        },
-        "paths": [
-          "web/package-lock.json"
-        ],
-        "check": "deprecation",
-        "status": "unknown",
-        "reason": "metadata_unavailable"
-      }
-    ],
+    "metadata": [],
     "sources": [
       {
         "path": "package-lock.json",
@@ -211,5 +178,102 @@
   },
   "notices": [
     "Producer prose is not a user-facing evidence inventory."
-  ]
+  ],
+  "lifecycle": {
+    "findings": [
+      {
+        "registry": "npm",
+        "name": "demo",
+        "version": "1.0.0",
+        "category": "deprecation",
+        "kind": "deprecated",
+        "scope": "release",
+        "source": "fixture.deprecation",
+        "observations": [
+          {
+            "source_version": "1.0.0",
+            "observed_at": null,
+            "reason": "use the maintained package",
+            "reason_codes": [],
+            "replacement": null,
+            "affected": [
+              {
+                "coordinate": {
+                  "registry": "npm",
+                  "name": "demo",
+                  "version": "1.0.0"
+                },
+                "paths": [
+                  "package-lock.json"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "retained_warnings": [],
+    "coverage": {
+      "deprecation": {
+        "candidates_count": 2,
+        "checked_count": 1,
+        "unknown_count": 1,
+        "not_collected_count": 0,
+        "not_collected_registries": [],
+        "not_applicable_count": 0,
+        "not_applicable_registries": []
+      },
+      "withdrawal": {
+        "candidates_count": 2,
+        "checked_count": 0,
+        "unknown_count": 0,
+        "not_collected_count": 2,
+        "not_collected_registries": [
+          "npm"
+        ],
+        "not_applicable_count": 0,
+        "not_applicable_registries": []
+      },
+      "registry_archival": {
+        "candidates_count": 2,
+        "checked_count": 0,
+        "unknown_count": 0,
+        "not_collected_count": 2,
+        "not_collected_registries": [
+          "npm"
+        ],
+        "not_applicable_count": 0,
+        "not_applicable_registries": []
+      },
+      "repository_archival": {
+        "candidates_count": 2,
+        "checked_count": 0,
+        "unknown_count": 0,
+        "not_collected_count": 2,
+        "not_collected_registries": [
+          "npm"
+        ],
+        "not_applicable_count": 0,
+        "not_applicable_registries": []
+      }
+    },
+    "unknowns": [
+      {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "2.0.0"
+        },
+        "paths": [
+          "web/package-lock.json"
+        ],
+        "check": "deprecation",
+        "status": "unknown",
+        "reason": "metadata_unavailable"
+      }
+    ],
+    "content_safety": {
+      "filtered": false
+    }
+  }
 }

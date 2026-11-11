@@ -1,13 +1,13 @@
 //! Detail visibility changes presentation, never saved or structured facts.
 use super::*;
-use crate::support::audit::{v2_clean, v2_findings};
+use crate::support::audit::{clean, findings};
 use serde_json::Value;
 
 #[test]
 fn audit_details_replay_and_json_preserve_all_maintenance_facts() {
     let root = repo();
     let archive = root.path().join("analysis.json");
-    let mock = server(&serde_json::to_vec(&v2_findings()).expect("report"));
+    let mock = server(&serde_json::to_vec(&findings()).expect("report"));
     let saved = run(
         root.path(),
         Some(&mock.origin()),
@@ -28,7 +28,14 @@ fn audit_details_replay_and_json_preserve_all_maintenance_facts() {
         let mut replay: Value = serde_json::from_slice(&output.stdout).expect("JSON");
         replay.as_object_mut().expect("document").remove("analysis");
         assert_eq!(replay, live);
-        for key in ["deprecated", "outdated", "duplicates"] {
+        assert_eq!(
+            replay["lifecycle"]["findings"]
+                .as_array()
+                .expect("native findings")
+                .len(),
+            1
+        );
+        for key in ["outdated", "duplicates"] {
             assert_eq!(replay[key].as_array().expect("findings").len(), 1, "{key}");
         }
     }
@@ -40,11 +47,7 @@ fn audit_details_replay_and_json_preserve_all_maintenance_facts() {
         assert!(stdout(output).contains("GHSA-demo"));
         assert!(stdout(output).contains("Incomplete checks"));
     }
-    for heading in [
-        "Deprecated releases",
-        "Outdated versions",
-        "Duplicate versions",
-    ] {
+    for heading in ["Outdated versions", "Duplicate versions"] {
         assert!(!stdout(&compact).contains(heading));
         assert!(stdout(&full).contains(heading));
     }
@@ -52,8 +55,8 @@ fn audit_details_replay_and_json_preserve_all_maintenance_facts() {
 
 #[test]
 fn audit_compact_maintenance_only_is_still_a_finding() {
-    let mut report = v2_clean();
-    report["findings"]["outdated"] = v2_findings()["findings"]["outdated"].clone();
+    let mut report = clean();
+    report["findings"]["outdated"] = findings()["findings"]["outdated"].clone();
     report["summary"]["outdated"] = 1.into();
     let root = repo();
     for args in [
@@ -85,7 +88,7 @@ fn audit_details_selects_human_file_output_and_keeps_explanation_scope() {
     let root = repo();
     let destination = root.path().join("audit.txt");
     for details in [false, true] {
-        let mock = server(&serde_json::to_vec(&v2_findings()).expect("report"));
+        let mock = server(&serde_json::to_vec(&findings()).expect("report"));
         let mut args = vec!["--quiet", "--output", destination.to_str().expect("path")];
         if details {
             args.push("--details");
@@ -99,11 +102,7 @@ fn audit_details_selects_human_file_output_and_keeps_explanation_scope() {
         assert_eq!(text.contains("Outdated versions"), details);
     }
     let archive = root.path().join("analysis.json");
-    fs::write(
-        &archive,
-        include_bytes!("../fixtures/audit/analysis-v1.json"),
-    )
-    .expect("archive");
+    fs::write(&archive, include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let normal = offline(&archive, &["--explain", "npm:demo@1.0.0"]);
     let detailed = offline(&archive, &["--explain", "npm:demo@1.0.0", "--details"]);
     assert_eq!(normal.status.code(), Some(1), "{}", stderr(&normal));

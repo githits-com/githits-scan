@@ -277,6 +277,14 @@ pub enum ApiError {
         /// Response request ID when available.
         request_id: Option<String>,
     },
+    /// The completed audit used a producer format this Scan cannot interpret.
+    #[error("completed audit returned report schema version {version}; this Scan requires version 3{}. {}", request_suffix(request_id.as_deref()), audit_version_action(*version))]
+    UnsupportedAuditVersion {
+        /// The producer's returned version, independent of the requested version.
+        version: u64,
+        /// Result request ID when the response supplied one.
+        request_id: Option<String>,
+    },
     /// A terminal failed snapshot; only the authored allowlisted code is shown.
     #[error("analysis failed: {}{}\n  action: {}", code.as_str(), request_suffix(request_id.as_deref()), failure_action(*code))]
     JobFailed {
@@ -340,10 +348,20 @@ impl ApiError {
     }
 
     pub(super) fn with_request_id(mut self, id: Option<String>) -> Self {
-        if let Self::Protocol { request_id, .. } = &mut self {
+        if let Self::Protocol { request_id, .. }
+        | Self::UnsupportedAuditVersion { request_id, .. } = &mut self
+        {
             *request_id = id;
         }
         self
+    }
+}
+
+const fn audit_version_action(version: u64) -> &'static str {
+    if version < audit::SCHEMA_VERSION {
+        "The service returned an older format; contact support with the request ID when available. The completed job will not be resubmitted."
+    } else {
+        "A newer Scan release may be needed for future audits; contact support with the request ID when available. This completed result was not saved."
     }
 }
 

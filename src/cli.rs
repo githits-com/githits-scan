@@ -17,10 +17,10 @@ use crate::commands::{self, ErrorKind, Outcome, audit, detect, license, sbom};
 use crate::env;
 use crate::style::Palette;
 
-/// Exit code for a successful run; checks have no unignored findings or blocking gaps.
+/// Exit code for a successful run; checks have no unignored findings or blocking gaps in available evidence.
 pub const EXIT_SUCCESS: u8 = 0;
 /// Exit code for findings: empty/drift, policy violations, unignored audit findings
-/// or unassessed evidence.
+/// or incomplete/unverified evidence.
 ///
 /// A pipeline blocks on this code; it means the repository, not the tool, needs
 /// attention.
@@ -30,7 +30,7 @@ pub const EXIT_FINDINGS: u8 = 1;
 pub const EXIT_USAGE: u8 = 2;
 /// Exit code for an execution error: I/O, network, service or protocol failure.
 ///
-/// A pipeline may retry on this code.
+/// Inspect the diagnostic before retrying; completed analyses are never resubmitted automatically.
 pub const EXIT_EXECUTION: u8 = 3;
 
 /// Shared `--exclude` help; the glob language is the configuration's.
@@ -54,9 +54,9 @@ pub struct Cli {
 enum Command {
     /// Preview package uploads and excluded candidates locally (no network, no token)
     Detect(DetectArgs),
-    /// Audit dependency vulnerabilities, maintenance findings and native input disagreements
+    /// Audit dependency vulnerabilities, native lifecycle warnings and input disagreements
     #[command(
-        long_about = "Audit selected repository evidence through one asynchronous job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement or incomplete/unsupported/excluded evidence. Advisories ignored by [[audit.ignore]] stay visible with reasons. Exit 0 only for fully checked selected evidence without unignored findings. Versions are source evidence, not constraint-compatible upgrade guarantees."
+        long_about = "Audit selected repository evidence through one asynchronous audit job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, native lifecycle or retained registry warning, outdated version, duplicate group, manifest/lock disagreement or genuine unknown/incomplete evidence. Lifecycle checks not collected or not applicable do not fail alone; use --details or JSON for collection limits, including uncollected archival checks. Exit 0 means no findings or genuine gaps in available evidence, not proof that every check was collected. Unsupported returned report formats are execution error 3; completed jobs are never resubmitted automatically. Advisories ignored by [[audit.ignore]] stay visible with reasons. Publisher replacement advice is not a verified upgrade. Versions are source evidence, not constraint-compatible upgrade guarantees."
     )]
     Audit(AuditArgs),
     /// Compare repository dependencies (experimental, informational)
@@ -131,7 +131,7 @@ struct AuditArgs {
     /// Write compact findings and incomplete checks as JSON
     #[arg(long, display_order = 60)]
     json: bool,
-    /// Include deprecated, outdated and duplicate lists in human audit output
+    /// Include lifecycle source observations, affected files, collection limits and outdated/duplicate lists
     #[arg(long, display_order = 65)]
     details: bool,
     /// Write the selected report representation to FILE ('-' means stdout)

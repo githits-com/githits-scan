@@ -12,11 +12,11 @@ mod audit_remediation_grouping;
 mod audit_change_reasons;
 
 use super::*;
-use crate::support::audit::v2_findings;
+use crate::support::audit::findings;
 use serde_json::{Value, json};
 
 fn remediation_report() -> Value {
-    let mut value = v2_findings();
+    let mut value = findings();
     value["remediation"] =
         serde_json::from_slice(include_bytes!("../fixtures/audit/remediation.json"))
             .expect("remediation fixture");
@@ -51,17 +51,16 @@ fn audit_remediation_normal_output_establishes_problem_before_guidance() {
     input["remediation"]["recommendations"][0]["limitations"] = json!(["withdrawal_not_observed"]);
     let text = human_report(&input);
     let section = text
-        .split_once("Mitigation recommendations")
+        .split_once("Fix guidance")
         .expect("mitigation section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Package warnings")
         .expect("next section")
         .0;
     assert_eq!(
         section.trim(),
         concat!(
-            "(1)\n",
-            "  npm:demo@1.0.0 — vulnerable\n",
+            "npm:demo@1.0.0 — vulnerable\n",
             "    GHSA-demo / CVE-demo (CVSS 7.5): Authored example advisory\n",
             "      advisory-reported fix versions: 1.1.0\n",
             "      verified advisory fixes: 1.1.1\n",
@@ -93,10 +92,7 @@ fn audit_remediation_problem_context_handles_missing_and_untrusted_metadata() {
     input["remediation"]["recommendations"][0]["changes"][0]["paths"] =
         json!(["web/package-lock.json"]);
     let text = human_report(&input);
-    let section = text
-        .split_once("Mitigation recommendations")
-        .expect("section")
-        .1;
+    let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("    GHSA-demo / CVE-demo\n"));
     assert!(!section.contains("(CVSS") && !section.contains("Authored example"));
     assert!(section.contains("Found in: package-lock.json"));
@@ -104,10 +100,7 @@ fn audit_remediation_problem_context_handles_missing_and_untrusted_metadata() {
     input["findings"]["vulnerabilities"][0]["summary"] = "unsafe\n\u{1b}[2J".into();
     input["findings"]["vulnerabilities"][0]["malicious"] = true.into();
     let text = human_report(&input);
-    let section = text
-        .split_once("Mitigation recommendations")
-        .expect("section")
-        .1;
+    let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("GHSA-demo / CVE-demo MALICIOUS: unsafe\\n\\u{1b}[2J"));
     assert!(!section.contains('\u{1b}'));
     for field in [
@@ -118,10 +111,7 @@ fn audit_remediation_problem_context_handles_missing_and_untrusted_metadata() {
         input["remediation"]["recommendations"][0][field] = json!([]);
     }
     let text = human_report(&input);
-    let section = text
-        .split_once("Mitigation recommendations")
-        .expect("section")
-        .1;
+    let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("  npm:demo@1.0.0\n"));
     assert!(!section.contains("— vulnerable"));
     assert!(section.contains("Candidate changes:"));
@@ -129,10 +119,7 @@ fn audit_remediation_problem_context_handles_missing_and_untrusted_metadata() {
     input["remediation"]["recommendations"][0]["finding_refs"] = json!([0]);
     input["remediation"]["recommendations"][0]["remaining_finding_refs"] = json!([0]);
     let text = human_report(&input);
-    let section = text
-        .split_once("Mitigation recommendations")
-        .expect("section")
-        .1;
+    let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("— vulnerable") && section.contains("still unresolved: GHSA-demo"));
     assert!(section.contains("Candidate changes:"));
     assert!(!section.contains("Suggested fix") && !section.contains("      Upgrade npm:"));
@@ -187,14 +174,11 @@ fn audit_remediation_full_report_keeps_each_covered_problem_once() {
 fn audit_remediation_summary_uses_singular_nouns() {
     let input = remediation_report();
     assert!(human_report(&input).contains(
-        "2 dependencies; 1 vulnerability, 1 deprecated, 1 outdated, 1 duplicate package"
+        "2 dependencies; 1 vulnerability, 1 package warning, 1 outdated version, 1 duplicate package"
     ));
-    let output = execute_report(
-        &crate::support::audit::v2_clean(),
-        &["--quiet", "--no-color"],
-    );
+    let output = execute_report(&crate::support::audit::clean(), &["--quiet", "--no-color"]);
     assert_eq!(output.status.code(), Some(0));
-    assert!(stdout(&output).contains("2 dependencies; 0 vulnerabilities"));
+    assert_eq!(stdout(&output).lines().nth(1), Some("2 dependencies"));
 }
 
 fn shape_case(name: &str) -> Value {
@@ -232,10 +216,10 @@ fn audit_remediation_output_shape_keeps_actions_without_trace_dump() {
         let projected = serde_json::to_string_pretty(&result["remediation"]).expect("projected");
         let text = human_report(&input);
         let human = text
-            .split_once("Mitigation recommendations")
+            .split_once("Fix guidance")
             .expect("section")
             .1
-            .split_once("Deprecated releases")
+            .split_once("Package warnings")
             .expect("next section")
             .0;
         assert_shape_records(&input, &result);
@@ -353,17 +337,18 @@ fn audit_remediation_material_warnings_remain_visible() {
             "blocked",
             "blocked by dependency requirements",
         ),
-        ("parent_search", "limited", "parent search: limited"),
+        (
+            "parent_search",
+            "limited",
+            "Upgrades to packages using this dependency were not fully checked.",
+        ),
     ] {
         let mut input = remediation_report();
         input["remediation"]["recommendations"][0]["checks"][check] = value.into();
         let text = human_report(&input);
         assert!(text.contains(warning), "{check}: {value}");
         if check != "parent_search" {
-            let section = text
-                .split_once("Mitigation recommendations")
-                .expect("section")
-                .1;
+            let section = text.split_once("Fix guidance").expect("section").1;
             assert!(section.contains("Candidate changes:"));
             assert!(!section.contains("Suggested fix"));
             assert!(!section.contains("      Upgrade npm:"));
@@ -380,10 +365,7 @@ fn audit_remediation_partial_candidates_keep_qualifiers_with_weak_evidence() {
         r["remaining_finding_refs"] = json!([0]);
         r["checks"]["requirements"] = evidence.into();
         let text = human_report(&input);
-        let section = text
-            .split_once("Mitigation recommendations")
-            .expect("section")
-            .1;
+        let section = text.split_once("Fix guidance").expect("section").1;
         assert!(section.contains("Candidate changes (partial):"));
         assert!(section.contains("still unresolved: GHSA-demo"));
         assert!(!section.contains("Suggested fix"));
@@ -408,7 +390,7 @@ fn audit_remediation_file_output_is_plain_quiet_and_complete() {
     assert_eq!(output.status.code(), Some(1));
     assert!(output.stdout.is_empty() && output.stderr.is_empty());
     let text = fs::read_to_string(path).expect("file");
-    assert!(text.contains("Mitigation recommendations"));
+    assert!(text.contains("Fix guidance"));
     assert!(text.contains("Upgrade npm:demo 1.0.0 -> 1.1.1"));
     assert!(!text.contains('\u{1b}'));
 }
@@ -511,10 +493,10 @@ fn audit_remediation_advisory_lists_avoid_repeating_covered_findings() {
         r["checks"]["advisories"] = "unknown".into();
         let text = human_report(&input);
         let section = text
-            .split_once("Mitigation recommendations")
+            .split_once("Fix guidance")
             .expect("section")
             .1
-            .split_once("Deprecated releases")
+            .split_once("Package warnings")
             .expect("next section")
             .0;
         assert!(!section.contains("    advisories: "));
@@ -531,6 +513,7 @@ fn audit_remediation_future_vocabulary_never_looks_like_known_action() {
         "/recommendations/0/changes/0/strategy",
         "/recommendations/0/checks/advisories",
         "/recommendations/0/checks/native_resolution",
+        "/recommendations/0/checks/parent_search",
         "/recommendations/0/checks/catalog_freshness",
         "/recommendations/0/checks/withdrawal",
         "/recommendations/0/checks/parent_search",
@@ -544,17 +527,24 @@ fn audit_remediation_future_vocabulary_never_looks_like_known_action() {
                 .contains("future_value")
         );
         let text = human_report(&input);
-        assert!(text.contains("future_value"), "{path}");
+        let warning = if path == "/status" {
+            "unfamiliar fix-planning status"
+        } else if path == "/recommendations/0/checks/parent_search" {
+            "unfamiliar result for upgrades"
+        } else {
+            "future_value"
+        };
+        assert!(text.contains(warning), "{path}: {text}");
         assert!(!text.contains("      Upgrade "), "{path}");
         assert!(!text.contains("Suggested fix"), "{path}");
-        assert!(!text.contains("No upgrade path found within"), "{path}");
+        assert!(!text.contains("No upgrade path found"), "{path}");
     }
 }
 
 #[test]
 fn audit_remediation_unavailable_planning_does_not_change_clean_base() {
     for planning in ["completed", "not_assessed", "limited"] {
-        let mut input = crate::support::audit::v2_clean();
+        let mut input = crate::support::audit::clean();
         input["remediation"] = remediation_report()["remediation"].clone();
         input["remediation"]["status"] = planning.into();
         input["remediation"]["recommendations"] = json!([]);
@@ -565,11 +555,11 @@ fn audit_remediation_unavailable_planning_does_not_change_clean_base() {
         assert_eq!(result["incomplete"], false);
         assert_eq!(result["remediation"]["status"], planning);
     }
-    let old = v2_findings();
-    assert!(json_report(&old).get("remediation").is_none());
+    let without_guidance = findings();
+    assert!(json_report(&without_guidance).get("remediation").is_none());
     assert_eq!(
-        human_report(&old)
-            .matches("Mitigation planning unavailable")
+        human_report(&without_guidance)
+            .matches("Fix guidance is unavailable")
             .count(),
         1
     );
@@ -590,8 +580,8 @@ fn assert_unverified(input: &Value) {
     );
     let text = human_report(input);
     assert!(text.contains("mitigation recommendation references or search domain are unverified"));
-    assert!(!text.contains("Mitigation planning unavailable"));
-    assert!(!text.contains("Mitigation recommendations"));
+    assert!(!text.contains("Fix guidance is unavailable"));
+    assert!(!text.contains("Fix guidance"));
 }
 
 #[test]
@@ -605,7 +595,7 @@ fn audit_remediation_invalid_references_suppress_only_action_section() {
         input["remediation"]["recommendations"][0][field] = json!([999]);
         assert_unverified(&input);
     }
-    let mut clean = crate::support::audit::v2_clean();
+    let mut clean = crate::support::audit::clean();
     clean["remediation"] = remediation_report()["remediation"].clone();
     assert_unverified(&clean);
 }
@@ -622,14 +612,12 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
     assert_unverified(&input);
     input["remediation"]["recommendations"][0]["search_domain"] = json!({"constraint_scope":"represented_requests","release_scope":"observed_catalog_upgrades","packages":[{"coordinate":{"registry":"npm","name":"demo","version":"1.0.0"},"versions":["1.0.0"]}]});
     assert!(
-        human_report(&input)
-            .contains("No upgrade path found within observed releases and represented requests")
+        human_report(&input).contains(
+            "No upgrade path found among releases known to the service, under the dependency requirements considered"
+        )
     );
     let text = human_report(&input);
-    let section = text
-        .split_once("Mitigation recommendations")
-        .expect("section")
-        .1;
+    let section = text.split_once("Fix guidance").expect("section").1;
     for absent in [
         "release availability:",
         "target advisories:",
@@ -642,7 +630,7 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
         "future_scope".into();
     let text = human_report(&input);
     assert!(text.contains("unrecognized search scope; no conclusion"));
-    assert!(!text.contains("No upgrade path found within"));
+    assert!(!text.contains("No upgrade path found"));
 }
 
 #[test]
@@ -660,7 +648,7 @@ fn audit_remediation_future_checks_cannot_produce_negative() {
         let mut input = base.clone();
         *input.pointer_mut(path).expect("field") = "future_value".into();
         let text = human_report(&input);
-        assert!(!text.contains("No upgrade path found within"), "{path}");
+        assert!(!text.contains("No upgrade path found"), "{path}");
         assert!(text.contains("unrecognized planning/check evidence; no conclusion"));
         let result = json_report(&input);
         assert!(
@@ -734,17 +722,16 @@ fn audit_remediation_parent_upgrade_names_the_vulnerable_dependency() {
     change["target_version"] = "2.1.0".into();
     let text = human_report(&input);
     let section = text
-        .split_once("Mitigation recommendations")
+        .split_once("Fix guidance")
         .expect("section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Package warnings")
         .expect("next section")
         .0;
     assert_eq!(
         section.trim(),
         concat!(
-            "(1)\n",
-            "  npm:demo@1.0.0 — vulnerable\n",
+            "npm:demo@1.0.0 — vulnerable\n",
             "    GHSA-demo / CVE-demo (CVSS 7.5): Authored example advisory\n",
             "      advisory-reported fix versions: 1.1.0\n",
             "      verified advisory fixes: 1.1.1\n",
@@ -756,7 +743,7 @@ fn audit_remediation_parent_upgrade_names_the_vulnerable_dependency() {
 }
 
 fn joint_action_report() -> Vec<u8> {
-    let mut report = v2_findings();
+    let mut report = findings();
     let mut remediation: Value =
         serde_json::from_slice(include_bytes!("../fixtures/audit/remediation.json"))
             .expect("remediation fixture");
@@ -826,12 +813,12 @@ fn assert_human_joint_action_set(bytes: &[u8]) {
     );
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let human = stdout(&output);
-    assert_eq!(human.matches("Mitigation recommendations").count(), 1);
+    assert_eq!(human.matches("Fix guidance").count(), 1);
     let mitigation = human
-        .split_once("Mitigation recommendations")
+        .split_once("Fix guidance")
         .expect("mitigation section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Package warnings")
         .expect("deprecated section")
         .0;
     assert!(mitigation.contains("change together:"));

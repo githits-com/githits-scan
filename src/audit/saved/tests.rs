@@ -44,12 +44,8 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
         input["generated_at"].as_str().expect("time")
     );
     assert_eq!(
-        crate::audit::assess(&original, &crate::config::Audit::default())
-            .expect("known")
-            .attention,
-        crate::audit::assess(&decoded.report, &crate::config::Audit::default())
-            .expect("known")
-            .attention
+        crate::audit::assess(&original, &crate::config::Audit::default()).attention,
+        crate::audit::assess(&decoded.report, &crate::config::Audit::default()).attention
     );
     assert_eq!(
         encode(
@@ -63,13 +59,13 @@ fn audit_saved_round_trip_preserves_facts_and_filters_new_private_properties() {
 }
 
 #[test]
-fn audit_saved_schema_one_compatibility_and_optional_absence() {
+fn audit_saved_current_format_and_optional_remediation_absence() {
     let analysis = decode(include_bytes!(
-        "../../../tests/fixtures/audit/analysis-v1.json"
+        "../../../tests/fixtures/audit/analysis.json"
     ))
-    .expect("archive v1");
-    assert_eq!(analysis.provenance.writer_version, "0.2.0");
-    assert_eq!(analysis.provenance.producer_schema_version, 2);
+    .expect("native archive");
+    assert_eq!(analysis.provenance.writer_version, "0.5.0");
+    assert_eq!(analysis.provenance.producer_schema_version, 3);
     let mut input = value();
     input.as_object_mut().expect("report").remove("remediation");
     let bytes = encode(
@@ -78,8 +74,8 @@ fn audit_saved_schema_one_compatibility_and_optional_absence() {
         &crate::config::Audit::default(),
     )
     .expect("without remediation");
-    let restored = decode(&bytes).expect("older optional absence");
-    assert!(matches!(restored.report.body, Body::V2(body) if body.remediation.is_none()));
+    let restored = decode(&bytes).expect("optional evidence absence");
+    assert!(restored.report.data.remediation.is_none());
     assert!(!String::from_utf8_lossy(&bytes).contains("\"remediation\":null"));
 }
 
@@ -93,9 +89,9 @@ fn audit_saved_archive_errors_are_safe_and_do_not_guess_versions() {
         assert!(matches!(decode(bytes), Err(Error::Invalid)));
     }
     let mut input: serde_json::Value = serde_json::from_slice(include_bytes!(
-        "../../../tests/fixtures/audit/analysis-v1.json"
+        "../../../tests/fixtures/audit/analysis.json"
     ))
-    .expect("v1");
+    .expect("archive");
     input["schema_version"] = 9.into();
     input["writer_version"] = "unknown\n\u{1b}".into();
     let error = decode(&serde_json::to_vec(&input).expect("JSON"))
@@ -103,17 +99,17 @@ fn audit_saved_archive_errors_are_safe_and_do_not_guess_versions() {
         .expect("version error");
     assert!(matches!(error, Error::Version { version: 9, .. }));
     assert!(!error.to_string().contains('\n') && !error.to_string().contains('\u{1b}'));
-    input["schema_version"] = 1.into();
+    input["schema_version"] = 2.into();
     input["producer_report"] = serde_json::json!({"schema_version":2});
     assert!(matches!(
         decode(&serde_json::to_vec(&input).expect("bad inner")),
-        Err(Error::Invalid)
+        Err(Error::ProducerVersion { version: 2 })
     ));
 }
 
 #[test]
 fn audit_saved_exact_byte_cap_and_oversize_are_distinct() {
-    let mut bytes = include_bytes!("../../../tests/fixtures/audit/analysis-v1.json").to_vec();
+    let mut bytes = include_bytes!("../../../tests/fixtures/audit/analysis.json").to_vec();
     bytes.resize(MAX_RESPONSE_BYTES, b' ');
     assert!(decode(&bytes).is_ok());
     bytes.push(b' ');
@@ -133,10 +129,12 @@ fn audit_saved_exact_byte_cap_and_oversize_are_distinct() {
 }
 
 #[test]
-fn audit_saved_unsupported_producer_cannot_be_saved() {
-    let future = Report::from_bytes(br#"{"schema_version":99}"#).expect("future");
-    assert!(matches!(
-        encode(&future, &BTreeSet::new(), &crate::config::Audit::default()),
-        Err(Error::UnsupportedProducer)
-    ));
+fn audit_saved_old_format_is_rejected_without_conversion() {
+    let error = decode(
+        br#"{"format":"githits-scan-analysis","schema_version":1,"writer_version":"0.4.0"}"#,
+    )
+    .err()
+    .expect("old format");
+    assert!(matches!(error, Error::Version { version: 1, .. }));
+    assert!(error.to_string().contains("recorded writer"));
 }

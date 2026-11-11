@@ -3,7 +3,7 @@ use super::*;
 
 fn grouping_report() -> Value {
     let base = remediation_report();
-    let mut value = crate::support::audit::v2_clean();
+    let mut value = crate::support::audit::clean();
     let first = base["findings"]["vulnerabilities"][0].clone();
     let mut second = first.clone();
     second["advisory_id"] = "GHSA-second".into();

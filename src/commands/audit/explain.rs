@@ -25,6 +25,7 @@ struct Document<'a, 'b> {
     issues: &'a std::collections::BTreeSet<&'static str>,
     audit_incomplete: bool,
     audit_issues: &'a [view::Issue],
+    audit_lifecycle: &'a crate::api::audit::lifecycle::Lifecycle,
 }
 
 pub(super) fn write(
@@ -32,6 +33,7 @@ pub(super) fn write(
     provenance: &Provenance,
     selected: &Explanation<'_>,
     json: bool,
+    details: bool,
     out: &mut dyn Write,
 ) -> io::Result<()> {
     let problems: Vec<_> = selected
@@ -43,7 +45,7 @@ pub(super) fn write(
         serde_json::to_writer_pretty(
             &mut *out,
             &Document {
-                schema_version: 1,
+                schema_version: 2,
                 kind: "audit_explanation",
                 analysis: provenance,
                 problems,
@@ -52,6 +54,7 @@ pub(super) fn write(
                 issues: &selected.issues,
                 audit_incomplete: view.incomplete,
                 audit_issues: &view.issues,
+                audit_lifecycle: &view.lifecycle,
             },
         )
         .map_err(io::Error::other)?;
@@ -78,6 +81,7 @@ pub(super) fn write(
     }
     write_issues(&selected.issues, "\n", out)?;
     guidance(view, &problems, selected, out)?;
+    render::lifecycle::write(&view.lifecycle, details, out, crate::style::Palette::PLAIN)?;
     for source in &sources {
         source.further(out)?;
     }
@@ -340,7 +344,7 @@ mod tests {
 
     fn result(packages: &[&str], query: &str) -> String {
         let report = crate::api::audit::Report::from_bytes(include_bytes!(
-            "../../../tests/fixtures/audit/v2-findings.json"
+            "../../../tests/fixtures/audit/native-findings.json"
         ))
         .expect("report");
         let (mut view, _) =

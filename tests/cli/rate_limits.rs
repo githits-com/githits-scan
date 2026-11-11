@@ -54,7 +54,7 @@ fn rate_limit_audit_and_license_json_keep_warnings_and_valid_json() {
             "version=1\n[lockfiles]\ninclude=[\"Cargo.lock\"]\n[licenses]\nallow=[]\n",
         ),
     ]);
-    let audit = serde_json::to_vec(&crate::support::audit::v2_clean()).expect("audit JSON");
+    let audit = serde_json::to_vec(&crate::support::audit::clean()).expect("audit JSON");
     let licenses = include_bytes!("../fixtures/licenses/report-v2.json");
     for (command, bytes, is_audit) in [
         (&["audit"][..], audit.as_slice(), true),

@@ -18,7 +18,7 @@ impl AuditApi for Fake {
             ["package-lock.json", "package.json"]
         );
         Report::from_bytes(include_bytes!(
-            "../../../tests/fixtures/audit/findings.json"
+            "../../../tests/fixtures/audit/native-findings.json"
         ))
     }
 }

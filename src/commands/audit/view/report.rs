@@ -1,15 +1,15 @@
-//! Compact report projection; only actionable values enter the shared output.
+//! Native compact report projection; only useful evidence enters the shared output.
 use std::collections::BTreeSet;
 
 use super::{
     Duplicate, DuplicateVersion, Finding, Issue, Issues, MissingRequest, Origin, Unattributed,
     View, add_issue, compact_issue, coordinate, coverage_issues, reason, reasons, report_issues,
 };
-use crate::api::audit::v2::{Requester, ResolutionGap, V2};
+use crate::api::audit::report::{Data, Requester, ResolutionGap};
 use crate::api::audit::wire::Coordinate;
 use crate::audit::Assessment;
 
-pub(super) fn populate(view: &mut View, r: &V2, a: &Assessment) {
+pub(super) fn populate(view: &mut View, r: &Data, a: &Assessment) {
     for f in &r.findings.vulnerabilities {
         let mut item = finding(&f.coordinate, &f.paths);
         item.advisory = Some(f.advisory_id.clone());
@@ -25,11 +25,6 @@ pub(super) fn populate(view: &mut View, r: &V2, a: &Assessment) {
             .clone_from(&f.verified_remedies);
         item.malicious = f.malicious;
         view.vulnerabilities.push(item);
-    }
-    for f in &r.findings.deprecated {
-        let mut item = finding(&f.coordinate, &f.paths);
-        item.reason = Some(f.reason.clone());
-        view.deprecated.push(item);
     }
     for f in &r.findings.outdated {
         let mut item = finding(&f.coordinate, &f.paths);
@@ -74,10 +69,8 @@ pub(super) fn populate(view: &mut View, r: &V2, a: &Assessment) {
     }
     view.manifest_lock_mismatches
         .clone_from(&r.findings.manifest_lock_mismatches);
-    if let Some(summary) = &mut view.summary {
-        summary.manifest_lock_mismatches = (!view.manifest_lock_mismatches.is_empty())
-            .then_some(view.manifest_lock_mismatches.len());
-    }
+    view.summary.manifest_lock_mismatches =
+        (!view.manifest_lock_mismatches.is_empty()).then_some(view.manifest_lock_mismatches.len());
     view.issues = issues(r, a).into_values().map(compact_issue).collect();
 }
 
@@ -95,7 +88,7 @@ fn finding(c: &Coordinate, paths: &[String]) -> Finding {
     }
 }
 
-fn issues(r: &V2, a: &Assessment) -> Issues {
+fn issues(r: &Data, a: &Assessment) -> Issues {
     let mut groups = Issues::new();
     report_issues(a, &mut groups);
     for g in &r.unknowns.vulnerabilities {
@@ -188,13 +181,30 @@ fn issues(r: &V2, a: &Assessment) -> Issues {
             },
         );
     }
+    lifecycle_issues(&r.lifecycle, &mut groups);
     coverage_issues(
         &r.coverage.vulnerabilities,
-        &r.coverage.deprecation,
         &r.coverage.outdated,
         &mut groups,
     );
     groups
+}
+
+fn lifecycle_issues(data: &crate::api::audit::lifecycle::Lifecycle, groups: &mut Issues) {
+    for g in &data.unknowns {
+        add_issue(
+            groups,
+            Issue {
+                check: super::lifecycle_check(&g.check).into(),
+                status: "unknown".into(),
+                reason: super::lifecycle_reason(&g.reason).into(),
+                packages: BTreeSet::from([coordinate(&g.coordinate)]),
+                registries: BTreeSet::from([g.coordinate.registry.clone()]),
+                files: g.paths.iter().cloned().collect(),
+                ..Issue::default()
+            },
+        );
+    }
 }
 
 fn missing_request(g: &ResolutionGap) -> Option<MissingRequest> {

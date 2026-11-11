@@ -1,6 +1,6 @@
 //! Shared upload selection for bounded npm and Bun workspace declarations.
 use super::*;
-use crate::support::audit::v2_clean;
+use crate::support::audit::clean;
 
 const ROOT: &str = r#"{"name":"workspace","private":true,"workspaces":["packages/*"]}"#;
 const MEMBER: &str = r#"{"name":"member","version":"1.0.0"}"#;
@@ -40,7 +40,7 @@ fn assert_paths(requests: &[Vec<u8>], expected: &[&str]) {
 }
 
 fn assert_commands(root: &Path, extra: &[&str], expected: &[&str]) {
-    let report = serde_json::to_vec(&v2_clean()).expect("report");
+    let report = serde_json::to_vec(&clean()).expect("report");
     let api = server(&report);
     let output = run(root, Some(&api.origin()), extra);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
@@ -146,7 +146,7 @@ fn automatic_npm_exclusions_keep_existing_explicit_manifest_precedence() {
         if include_b {
             expected.push("packages/b/package.json");
         }
-        let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+        let api = server(&serde_json::to_vec(&clean()).expect("report"));
         let output = run(root.path(), Some(&api.origin()), extra);
         assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
         assert_paths(&api.requests(), &expected);
@@ -158,7 +158,7 @@ fn automatic_npm_coexisting_locks_use_owner_directory_and_deduplicate() {
     let root = workspace();
     fs::write(root.path().join("npm-shrinkwrap.json"), [0xff]).expect("excluded non-UTF8 lock");
     fs::write(root.path().join("yarn.lock"), [0xff]).expect("excluded other lock");
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(
         root.path(),
         Some(&api.origin()),
@@ -175,7 +175,7 @@ fn automatic_npm_coexisting_locks_use_owner_directory_and_deduplicate() {
         ],
     );
     fs::write(root.path().join("npm-shrinkwrap.json"), "{}").expect("selected shrinkwrap");
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(
         root.path(),
         Some(&api.origin()),
@@ -236,7 +236,7 @@ fn automatic_npm_never_crosses_child_lock_or_discovery_boundaries() {
             ],
         ),
     ] {
-        let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+        let api = server(&serde_json::to_vec(&clean()).expect("report"));
         let extra = if exclude_child {
             &["--exclude", "packages/child/package-lock.json"][..]
         } else {
@@ -257,7 +257,7 @@ fn automatic_npm_unsupported_declarations_keep_explicit_selection_available() {
     )
     .expect("unsupported declaration");
     fs::write(root.path().join("githits-scan.toml"), "version=1\n[lockfiles]\ninclude=['package-lock.json']\nmanifests=['packages/a/package.json']\n").expect("explicit config");
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(root.path(), Some(&api.origin()), &[]);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     assert_paths(
@@ -285,7 +285,7 @@ fn javascript_workspace_members_follow_supported_lock_families() {
             ("package.json", ROOT),
             ("packages/a/package.json", MEMBER),
         ]);
-        let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+        let api = server(&serde_json::to_vec(&clean()).expect("report"));
         let output = run(root.path(), Some(&api.origin()), &[]);
         assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
         assert_paths(&api.requests(), expected);
@@ -323,7 +323,7 @@ fn large_workspace(count: usize, cargo: bool) -> tempfile::TempDir {
 #[test]
 fn automatic_npm_file_count_boundary_and_mixed_family_hints() {
     let root = large_workspace(254, false);
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(root.path(), Some(&api.origin()), &[]);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     assert_eq!(
@@ -365,7 +365,7 @@ fn automatic_npm_saved_analysis_keeps_selected_members_and_replay_facts() {
     let root = workspace();
     let path = root.path().join("analysis.json");
     let archive: serde_json::Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json"))
             .expect("archive fixture");
     let api = server(&serde_json::to_vec(&archive["producer_report"]).expect("report"));
     let output = run(
@@ -443,7 +443,7 @@ fn automatic_npm_help_names_member_exclusions() {
 #[test]
 fn automatic_npm_limit_remedy_keeps_explicit_partial_scope() {
     let root = large_workspace(255, false);
-    let mut partial = v2_clean();
+    let mut partial = clean();
     partial["unknowns"]["sources"] = serde_json::json!([
         {"path":"package-lock.json","reasons":["required_input_not_supplied"]}
     ]);
@@ -516,7 +516,7 @@ fn automatic_npm_honors_default_fixture_exclusions_and_explicit_override() {
         [0xff],
     )
     .expect("excluded unreadable fixture");
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(root.path(), Some(&api.origin()), &[]);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     assert_paths(
@@ -534,7 +534,7 @@ fn automatic_npm_honors_default_fixture_exclusions_and_explicit_override() {
     )
     .expect("explicit fixture");
     fs::write(root.path().join("githits-scan.toml"), "version=1\n[lockfiles]\ninclude=['package-lock.json']\nmanifests=['packages/fixtures/member/package.json']\n").expect("explicit configuration");
-    let api = server(&serde_json::to_vec(&v2_clean()).expect("report"));
+    let api = server(&serde_json::to_vec(&clean()).expect("report"));
     let output = run(root.path(), Some(&api.origin()), &[]);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     assert_paths(

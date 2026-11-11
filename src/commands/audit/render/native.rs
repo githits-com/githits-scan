@@ -2,7 +2,7 @@
 use std::io::{self, Write};
 
 use super::{heading, list, request, safe};
-use crate::api::audit::v2::{ManifestLockMismatch, NativeConditions};
+use crate::api::audit::report::{ManifestLockMismatch, NativeConditions};
 use crate::commands::audit::view::{MissingRequest, View};
 use crate::style::Palette;
 

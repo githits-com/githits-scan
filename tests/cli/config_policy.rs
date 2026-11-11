@@ -4,18 +4,9 @@ use serde_json::{Value, json};
 
 const POLICY: &str = "version=1\n[lockfiles]\ninclude=['package-lock.json']\n[[audit.ignore]]\nid='RUSTSEC-2024-0436'\nreason='Reviewed for this deployment'\n";
 
-fn vulnerability_report(v2: bool) -> Value {
-    let mut report = if v2 {
-        crate::support::audit::v2_clean()
-    } else {
-        clean()
-    };
-    let mut finding = if v2 {
-        crate::support::audit::v2_findings()
-    } else {
-        fixture()
-    }["findings"]["vulnerabilities"][0]
-        .clone();
+fn vulnerability_report() -> Value {
+    let mut report = clean();
+    let mut finding = fixture()["findings"]["vulnerabilities"][0].clone();
     finding["advisory_id"] = "RUSTSEC-2024-0436".into();
     finding["aliases"] = json!(["GHSA-example"]);
     report["findings"]["vulnerabilities"] = json!([finding]);
@@ -23,10 +14,10 @@ fn vulnerability_report(v2: bool) -> Value {
     report
 }
 
-fn assert_audit_case(v2: bool, case: &str) {
+fn assert_audit_case(case: &str) {
     let repo = repo();
     fs::write(repo.path().join("githits-scan.toml"), POLICY).expect("policy");
-    let mut value = vulnerability_report(v2);
+    let mut value = vulnerability_report();
     match case {
         "unmatched" => {
             value["findings"]["vulnerabilities"][0]["advisory_id"] = "OTHER-ID".into();
@@ -45,11 +36,7 @@ fn assert_audit_case(v2: bool, case: &str) {
             value["findings"]["vulnerabilities"][0]["aliases"] = json!(["RUSTSEC-2024-0436"]);
         }
         "outdated" => {
-            let original = if v2 {
-                crate::support::audit::v2_findings()
-            } else {
-                fixture()
-            };
+            let original = fixture();
             value["findings"]["outdated"] = original["findings"]["outdated"].clone();
             value["summary"]["outdated"] = value["findings"]["outdated"]
                 .as_array()
@@ -66,7 +53,7 @@ fn assert_audit_case(v2: bool, case: &str) {
     assert_eq!(
         output.status.code(),
         Some(i32::from(case != "ignored")),
-        "v2={v2} {case}: {}",
+        "{case}: {}",
         stderr(&output)
     );
     let report: Value = serde_json::from_slice(&output.stdout).expect("JSON");
@@ -110,17 +97,15 @@ fn assert_audit_case(v2: bool, case: &str) {
 
 #[test]
 fn config_policy_audit_ignores_preserve_findings_and_other_failure_causes() {
-    for v2 in [false, true] {
-        for case in [
-            "ignored",
-            "unmatched",
-            "mixed",
-            "alias_only",
-            "outdated",
-            "incomplete",
-        ] {
-            assert_audit_case(v2, case);
-        }
+    for case in [
+        "ignored",
+        "unmatched",
+        "mixed",
+        "alias_only",
+        "outdated",
+        "incomplete",
+    ] {
+        assert_audit_case(case);
     }
 }
 
@@ -128,7 +113,7 @@ fn config_policy_audit_ignores_preserve_findings_and_other_failure_causes() {
 fn config_policy_audit_ignored_text_and_saved_replay_keep_reason() {
     let repo = repo();
     fs::write(repo.path().join("githits-scan.toml"), POLICY).expect("policy");
-    let mut value = vulnerability_report(true);
+    let mut value = vulnerability_report();
     value["generated_at"] = "2026-11-06T00:00:00Z".into();
     let service = server(&serde_json::to_vec(&value).expect("report"));
     let archive = repo.path().join("analysis.json");
@@ -140,7 +125,7 @@ fn config_policy_audit_ignored_text_and_saved_replay_keep_reason() {
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     let text = String::from_utf8_lossy(&output.stdout);
     assert!(
-        text.starts_with("No unignored audit findings in checked dependencies\n"),
+        text.starts_with("No unignored audit findings in available evidence\n"),
         "{text}"
     );
     assert!(
@@ -166,8 +151,7 @@ fn config_policy_saved_explanation_labels_ignored_advisories() {
     let repo = repo();
     let archive = repo.path().join("analysis.json");
     let mut input: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let id = input["producer_report"]["findings"]["vulnerabilities"][0]["advisory_id"].clone();
     input["producer_report"]["findings"]["vulnerabilities"][0]["aliases"] = json!(["CVE-example"]);
     input["audit_policy"] = json!({"ignore":[{"id":id,"reason":"Reviewed advisory"}]});
@@ -202,8 +186,7 @@ fn config_policy_saved_analysis_rejects_invalid_ignores() {
     let repo = repo();
     let archive = repo.path().join("analysis.json");
     let mut input: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     for ignore in [
         json!({"id":"X","reason":" "}),
         json!({"id":"X"}),

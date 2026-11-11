@@ -247,7 +247,8 @@ was retained. Binary compatibility is pinned by exact output/exit tests.
 ## Shared audit transport
 
 Audit uses the same upload/job limits, security, progress framing and result path
-with `kind=audit&format=json` and `application/json` result media. It adds the
+with `kind=audit&format=json&report_version=3` and `application/json` result media.
+The report-version parameter applies to audit only. It adds the
 `assessing` phase and optional assessment counters. Phases/failure codes are open:
 unfamiliar phases get generic progress and unfamiliar failures get a static safe
 code/action. Unknown job states stop rather than infer terminal semantics.

@@ -33,7 +33,7 @@ impl AuditApi for FixtureApi {
         _: UploadSet,
         _: &mut dyn FnMut(&ProgressEvent) -> io::Result<()>,
     ) -> Result<api::audit::Report, ApiError> {
-        api::audit::Report::from_bytes(include_bytes!("fixtures/audit/findings.json"))
+        api::audit::Report::from_bytes(include_bytes!("fixtures/audit/native-findings.json"))
     }
 }
 
