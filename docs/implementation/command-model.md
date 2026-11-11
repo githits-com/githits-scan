@@ -42,7 +42,7 @@ previously completed output intact. See [dependency diff](dependency-diff.md#out
 | `--config <FILE>` | Configuration file; defaults to `<PATH>/githits-scan.toml`. An explicitly selected file must exist unless `detect --save` creates it; implicit default discovery is optional except for `license check`, which requires a policy. Paths inside the file are relative to `PATH` regardless of where the file lives |
 | `--no-check` | Report inventory drift without failing on drift itself. Empty selection still exits 1. Never the default |
 | `--json` | JSON on stdout or `--output` instead of the human report (`detect`, `license report`, `license check`, `audit`); audit emits focused findings and incomplete checks |
-| `-q`, `--quiet` | Suppress routine progress and success messages (all commands); reports/documents, errors, actionable warnings and blocked-scan diagnostics are preserved |
+| `-q`, `--quiet` | Suppress routine progress and success messages (all commands); reports/documents (including expected Git coverage notes), errors, actionable warnings and blocked-scan diagnostics are preserved |
 | `--no-color` | Disable color; `NO_COLOR` is honored too. Color never carries meaning |
 | `--lockfiles-only` | Leave manifest-only projects out of the inventory (`detect`) and the upload (`sbom generate`, `license report`, `license check`, `audit`, `diff`); by default they are part of both and resolved from their declared constraints |
 | `--exclude <GLOB>` | Omit matching package files, including owning/workspace manifests; patterns ending in `/**` prune subtrees (repeatable; same glob rules as `lockfiles.exclude`). `detect --save` merges the patterns into the configuration. Conflicts with `license check --sbom` |
@@ -122,3 +122,12 @@ See [JSON output contracts](json-output.md) for command-specific fields.
   Git-source exceptions can pin an exact recorded revision.
 - A cache of the generated SBOM for `license check`: `--sbom FILE` covers reuse.
 - Splitting an oversized repository into several uploads: `PATH` scopes a scan.
+
+## Coverage and attention
+
+Audit factual `incomplete` is independent of `actionable_incomplete`. Only explicit
+expected Git registry, graph and captured-binding reasons produce informational
+coverage notes without causing exit 1 on their own. Findings and other gaps retain
+attention; unknown reasons and inconsistent reports remain actionable. JSON adds
+`issues[].actionable`; saved explanations add `audit_actionable_incomplete`. There
+is no flag or saved-archive change. See [audit](audit.md).

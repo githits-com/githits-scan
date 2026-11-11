@@ -63,6 +63,8 @@ pub(crate) struct Occurrence {
 #[derive(Deserialize)]
 pub(crate) struct RootProof {
     pub id: Option<String>,
+    pub manifest_path: Option<String>,
+    pub source_key: Option<String>,
     #[serde(default)]
     pub reasons: Vec<Cause>,
 }
@@ -204,10 +206,9 @@ pub(crate) struct Exposure {
 pub(crate) struct ScopeCoverage {
     pub inventory: String,
     pub assessment: String,
-    #[serde(rename = "coordinates")]
-    pub _coordinates: u64,
-    #[serde(rename = "checked")]
-    pub _checked: u64,
+    pub coordinates: u64,
+    pub checked: u64,
+    pub reasons: Option<Vec<String>>,
     pub unqualified_occurrences: Option<u64>,
 }
 
@@ -373,25 +374,18 @@ pub(crate) struct Gap {
 
 #[derive(Deserialize)]
 pub(crate) struct ReviewCoverage {
-    #[serde(rename = "eligible")]
-    pub _eligible: u64,
-    #[serde(rename = "completed")]
-    pub _completed: u64,
-    #[serde(rename = "returned")]
-    pub _returned: u64,
-    #[serde(rename = "not_assessed")]
-    pub _not_assessed: u64,
-    #[serde(rename = "unavailable")]
-    pub _unavailable: u64,
-    #[serde(rename = "omitted")]
-    pub _omitted: u64,
+    pub eligible: u64,
+    pub completed: u64,
+    pub returned: u64,
+    pub not_assessed: u64,
+    pub unavailable: u64,
+    pub omitted: u64,
 }
 #[derive(Deserialize)]
 pub(crate) struct AdvisoryCoverage {
-    #[serde(rename = "checked")]
-    pub _checked: Option<u64>,
-    #[serde(rename = "coordinates")]
-    pub _coordinates: Option<u64>,
+    pub checked: Option<u64>,
+    pub coordinates: Option<u64>,
+    pub reasons: Option<Vec<String>>,
     pub unknown: Option<u64>,
     pub unsupported: Option<u64>,
 }

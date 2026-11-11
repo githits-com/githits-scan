@@ -66,7 +66,7 @@ work without a token or network access.
    ```bash
    githits-scan detect                         # local inventory, no token needed
    githits-scan sbom generate -o bom.cdx.json  # upload selected package files
-   githits-scan audit                          # findings or incomplete checks exit 1
+   githits-scan audit                          # findings or actionable gaps exit 1
    githits-scan license report                 # informational, no policy needed
    ```
 
@@ -197,10 +197,13 @@ githits-scan audit --from-analysis analysis.json     # offline replay
 ```
 
 Audit requests native lifecycle report v3 automatically. Findings, retained lifecycle
-warnings and genuine incomplete checks exit 1. Lifecycle collection limits and checks
+warnings and actionable incomplete checks exit 1. Expected Git coverage limits appear
+as informational notes and do not fail alone. Lifecycle collection limits and checks
 that do not apply alone exit 0; `--details` explains them. Results cover only the
 selected evidence, not proof of an installed build's safety. JSON and saved
-analyses retain findings independently of human presentation. Scan proposes
+analyses retain findings independently of human presentation. Audit JSON keeps factual
+`incomplete` separately from `actionable_incomplete`; each issue has an explicit
+`actionable` boolean. Expected Git limits remain visible even when no action is needed. Scan proposes
 changes when the service supplies them; it does not edit dependencies.
 This breaking minor update emits audit/explanation JSON schema 2 and saved analysis
 format 2 with producer report 3. Older saved analyses are no longer read; use their
@@ -352,7 +355,7 @@ inclusion overrides remain unless the CLI excludes them. See
 | Exit | Meaning | Action |
 | --- | --- | --- |
 | 0 | Success; checks have no unignored findings or blocking gaps; license reports are informational | Continue |
-| 1 | Findings, incomplete audit, inventory drift, violations, unresolved license projects, or nothing selected | Review the repository or selection |
+| 1 | Findings, actionable audit gaps, inventory drift, violations, unresolved license projects, or nothing selected | Review the repository or selection |
 | 2 | Invalid invocation/configuration/input, upload limits, missing/rejected token, or account access | Correct the diagnostic's cause |
 | 3 | Network, I/O, rate limit, service, or protocol failure | Investigate after bounded rate-limit recovery; respect `Retry-After` before a deliberate retry |
 

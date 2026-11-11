@@ -30,15 +30,17 @@ pub(super) fn write(
         return display.line("Scan cannot explain this report because its format is newer than this version supports. Update Scan to read it; the original report is available as JSON.");
     };
     display.line("This compares the supplied dependency files, not an observed installation.")?;
+    let informational = super::coverage::informational_only(view)?;
     match view.outcome.as_str() {
         "complete" => {},
+        "partial" if informational => {},
         "partial" => display.line("Some checks could not be completed. Review the limitations below before accepting these changes.")?,
         _ => display.line("The service did not confirm a complete comparison. Scan cannot explain its completion result; review the original JSON before relying on it.")?,
     }
     let explanations = explanations::new(view);
     changes(view, &explanations, &mut display)?;
     declarations(view, &explanations, &mut display)?;
-    evidence::write(view, &mut display)?;
+    evidence::write(view, informational, &mut display)?;
     reviews::write(view, &explanations, &mut display)?;
     for (side, snapshot) in view.snapshots.iter() {
         if side != snapshot.side {
@@ -46,6 +48,13 @@ pub(super) fn write(
         }
     }
     evidence::file_problems(view, &explanations, &mut display)?;
+    let notes = super::coverage::notes(view)?;
+    if !notes.is_empty() {
+        display.heading("Coverage notes")?;
+        for note in notes {
+            display.item(note)?;
+        }
+    }
     let mut notices = std::collections::BTreeSet::new();
     for notice in &view.notices {
         if notice != "Recorded input comparison, not an observed installation or solver ancestry."

@@ -1,4 +1,5 @@
 //! Producer-owned causes joined through exact same-snapshot references.
+use super::super::coverage;
 use super::{Display, view};
 use std::collections::{BTreeMap, BTreeSet};
 use std::io;
@@ -173,7 +174,11 @@ pub(super) fn binding(
         for row in rows.into_iter().flatten() {
             collect(&mut causes, &row.reasons);
         }
+        let expected = status == "source_unavailable"
+            && !causes.is_empty()
+            && causes.iter().all(|c| coverage::cause_is_git(c));
         if !absent
+            && !expected
             && !matches!(status, "matched" | "absent")
             && !causes.iter().any(|cause| cause.code == status)
         {
@@ -329,6 +334,9 @@ fn cause_text(c: &view::Cause) -> String {
         .unwrap_or("the supplied dependency declarations");
     let name = c.dependency_name.as_deref().unwrap_or("this dependency");
     let source = &c.source_key;
+    if let Some(note) = crate::coverage::note(&c.code) {
+        return format!("{note}: {name} in {source}.");
+    }
     match c.code.as_str() {
         "root_dependency_coverage_incomplete" => incomplete_dependencies(c, declarations),
         "authored_request_not_linked" => format!(
@@ -369,6 +377,18 @@ fn cause_text(c: &view::Cause) -> String {
 }
 
 fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
+    if coverage::cause_is_git(c) {
+        let notes: BTreeSet<_> = c
+            .coverage_reasons
+            .iter()
+            .filter_map(|r| crate::coverage::note(r))
+            .collect();
+        return format!(
+            "{} ({manifest}; {}).",
+            notes.into_iter().collect::<Vec<_>>().join("; "),
+            c.source_key
+        );
+    }
     let has_unmatched = c
         .coverage_reasons
         .iter()
@@ -414,6 +434,9 @@ fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
 }
 
 fn native_reason(reason: &str) -> Option<&'static str> {
+    if let Some(note) = crate::coverage::note(reason) {
+        return Some(note);
+    }
     match reason {
         "dependency_list_unavailable" | "replacement_dependency_list_unknown" => {
             Some("a package's dependency list was unavailable")

@@ -33,6 +33,7 @@ pub(crate) struct Assessment {
     pub unverified: BTreeSet<&'static str>,
     pub attention: bool,
     pub incomplete: bool,
+    pub actionable_incomplete: bool,
 }
 
 /// Whether outdated metadata remains unchecked.

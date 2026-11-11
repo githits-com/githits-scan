@@ -22,7 +22,8 @@ pub(crate) fn assess(
     if !super::remediation::verified(r) {
         unverified.insert(super::remediation::UNVERIFIED);
     }
-    let incomplete = !unverified.is_empty() || has_gaps(r);
+    let incomplete = !unverified.is_empty() || has_gaps(r, true);
+    let actionable_incomplete = !unverified.is_empty() || has_gaps(r, false);
     let summary = Summary {
         dependencies: r.summary.dependencies,
         vulnerabilities: r.findings.vulnerabilities.len() as u64,
@@ -31,7 +32,7 @@ pub(crate) fn assess(
         outdated: r.findings.outdated.len() as u64,
         duplicates: r.findings.duplicates.len() as u64,
     };
-    let attention = incomplete
+    let attention = actionable_incomplete
         || r.findings
             .vulnerabilities
             .iter()
@@ -46,16 +47,23 @@ pub(crate) fn assess(
         unverified,
         attention,
         incomplete,
+        actionable_incomplete,
     }
 }
 
-const fn has_gaps(r: &Data) -> bool {
+fn has_gaps(r: &Data, include_expected_git: bool) -> bool {
     let u = &r.unknowns;
     !u.vulnerabilities.is_empty()
         || !u.metadata.is_empty()
-        || !u.sources.is_empty()
-        || !u.resolution.is_empty()
-        || !u.excluded_dependencies.is_empty()
+        || u.sources
+            .iter()
+            .any(|g| include_expected_git || !crate::coverage::git_only(&g.reasons))
+        || u.resolution
+            .iter()
+            .any(|g| include_expected_git || !crate::coverage::expected_git(&g.reason))
+        || u.excluded_dependencies
+            .iter()
+            .any(|g| include_expected_git || !crate::coverage::expected_git(&g.reason))
         || r.coverage.vulnerabilities.checked_count != r.coverage.vulnerabilities.candidates_count
         || !r.coverage.vulnerabilities.unsupported_registries.is_empty()
         || !r.lifecycle.unknowns.is_empty()

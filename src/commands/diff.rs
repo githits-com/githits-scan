@@ -7,6 +7,7 @@ use clap::ValueEnum;
 use std::io::Write;
 use std::path::Path;
 
+mod coverage;
 mod output;
 mod render;
 

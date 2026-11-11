@@ -46,6 +46,11 @@ pub mod catalog;
 pub mod cli;
 pub mod commands;
 pub mod config;
+#[expect(
+    clippy::redundant_pub_crate,
+    reason = "shared coverage interpretation stays crate-private, like the audit interpreter"
+)]
+mod coverage;
 pub mod discover;
 pub mod env;
 pub mod license;

@@ -44,6 +44,10 @@ fn mismatch(item: &ManifestLockMismatch, out: &mut dyn Write) -> io::Result<()> 
             out,
             "    locked version does not satisfy the declaration; refresh the lockfile if this declaration is intended"
         ),
+        "recorded_git_source_differs" => writeln!(
+            out,
+            "    the Git source recorded in the lockfile differs from the declaration; reconcile the dependency source and lockfile"
+        ),
         "recorded_requirement_differs" => writeln!(
             out,
             "    lock records {}; reconcile the declaration and lockfile",
