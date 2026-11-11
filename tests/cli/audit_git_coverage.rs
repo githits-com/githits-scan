@@ -4,9 +4,10 @@ use serde_json::{Value, json};
 
 fn git_limits() -> Value {
     let mut v = clean();
-    v["unknowns"]["sources"] =
-        json!([{"path":"mix.lock", "reasons":["git_dependency_graph_unavailable"]}]);
+    v["unknowns"]["sources"] = json!([{"path":"mix.lock", "reasons":["git_dependency_graph_unavailable", "git_registry_checks_not_supported"]}]);
     v["unknowns"]["excluded_dependencies"] = json!([{"name":"git-demo","version":null,"paths":["mix.lock"],"reason":"git_registry_checks_not_supported"}]);
+    v["unknowns"]["resolution"] =
+        json!([{ "path":"mix.lock", "name":null, "reason":"git_dependency_graph_unavailable" }]);
     v["summary"]["incomplete_sources"] = 1.into();
     v["summary"]["excluded_dependencies"] = 1.into();
     v
@@ -42,7 +43,20 @@ fn audit_git_coverage_notes_keep_facts_without_failing_and_replay_offline() {
     let human = offline(&saved, &["--no-color", "--quiet"]);
     assert_eq!(human.status.code(), Some(0));
     let human = stdout(&human);
+    assert!(
+        human.contains("No audit findings in available evidence"),
+        "{human}"
+    );
     assert!(human.contains("Coverage notes"), "{human}");
+    let notes: Vec<_> = human
+        .lines()
+        .filter(|line| line.contains(" [mix.lock]"))
+        .collect();
+    assert_eq!(notes.len(), 2, "{human}");
+    assert!(
+        notes.iter().all(|line| !line.contains("dependencies, Git")),
+        "{human}"
+    );
     assert!(
         human.contains("Registry checks do not cover Git-based dependencies"),
         "{human}"
@@ -180,5 +194,31 @@ fn audit_git_coverage_source_mismatch_is_explained_and_still_actionable() {
     );
     assert!(!text.contains("recorded_git_source_differs"), "{text}");
     assert!(text.contains("Coverage notes"), "{text}");
+    assert_eq!(s.requests().len(), 3);
+}
+
+#[test]
+fn audit_git_coverage_ignored_findings_keep_a_qualified_success_headline() {
+    let mut v = git_limits();
+    let mut finding = crate::support::audit::findings()["findings"]["vulnerabilities"][0].clone();
+    finding["advisory_id"] = "TEST-IGNORED".into();
+    v["findings"]["vulnerabilities"] = json!([finding]);
+    v["summary"]["vulnerabilities"] = 1.into();
+    let r = repo();
+    fs::write(
+        r.path().join("githits-scan.toml"),
+        "version=1\n[lockfiles]\ninclude=['package-lock.json']\n[[audit.ignore]]\nid='TEST-IGNORED'\nreason='Reviewed test advisory'\n",
+    )
+    .expect("policy");
+    let s = server(&serde_json::to_vec(&v).expect("JSON"));
+    let output = run(r.path(), Some(&s.origin()), &["--no-color"]);
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    let text = stdout(&output);
+    assert!(
+        text.starts_with("No unignored audit findings in available evidence\n"),
+        "{text}"
+    );
+    assert!(text.contains("Coverage notes"), "{text}");
+    assert!(text.contains("Reviewed test advisory"), "{text}");
     assert_eq!(s.requests().len(), 3);
 }

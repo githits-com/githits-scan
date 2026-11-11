@@ -390,8 +390,10 @@ pub(super) fn file_problems(
     let report: view::Coverage =
         serde_json::from_str(v.coverage.get()).map_err(io::Error::other)?;
     let all = [&base, &head, &report];
-    let unexplained =
-        all.iter().any(|c| c.partial == Some(true)) && !all.iter().any(|c| has_details(c));
+    let unexplained = [&base, &head]
+        .iter()
+        .any(|c| c.partial == Some(true) && !coverage::has_details(c))
+        || (report.partial == Some(true) && !all.iter().any(|c| coverage::has_details(c)));
     if !unexplained && !all.iter().any(|c| has_actionable_details(c, v)) {
         return Ok(());
     }
@@ -418,10 +420,6 @@ fn families(c: &view::Coverage) -> [&[view::Gap]; 4] {
         &c.excluded_dependencies,
         &c.mismatches,
     ]
-}
-
-fn has_details(c: &view::Coverage) -> bool {
-    families(c).iter().any(|r| !r.is_empty()) || c.reachability.iter().any(|r| !r.complete)
 }
 
 fn has_actionable_details(c: &view::Coverage, v: &View) -> bool {
@@ -451,15 +449,17 @@ fn partial_without_details(
     report: &view::Coverage,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    let before = base.partial == Some(true) && !has_details(base);
-    let after = head.partial == Some(true) && !has_details(head);
+    let before = base.partial == Some(true) && !coverage::has_details(base);
+    let after = head.partial == Some(true) && !coverage::has_details(head);
     let phase = match (before, after) {
         (true, true) => Some("both"),
         (true, false) => Some("base"),
         (false, true) => Some("head"),
         (false, false)
             if report.partial == Some(true)
-                && ![base, head, report].iter().any(|c| has_details(c)) =>
+                && ![base, head, report]
+                    .iter()
+                    .any(|c| coverage::has_details(c)) =>
         {
             Some("Report")
         }

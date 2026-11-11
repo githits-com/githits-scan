@@ -274,9 +274,10 @@ Human and Markdown output separate exact expected Git source limitations into
 Coverage notes, preserving partial/unknown producer facts. JSON remains the
 original bytes. A neutral partial headline requires exhaustive expected-only
 causes on each affected source and exposure, fully checked eligible registry
-coordinates, complete or unrequested upgrade reviews, and consistent revision
+coordinates, complete upgrade reviews, and consistent revision
 labels. Aggregate causes never explain a different owner's deficit. Missing or
 empty cause lists, unknown status/reasons, provider failures, incomplete review
 counts and independent file/assessment failures retain caution. A derived
 `source_scope_incomplete` explanation is informational only with its own scoped
-Git-only proof. Known affected advisories and changes remain visible.
+Git-only proof. Coverage notes group each cause with its affected files; aggregate-only
+causes without file attribution remain explicit. Known affected advisories and changes remain visible.

@@ -132,6 +132,7 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
             (g.name.is_none() || (g.reason == "unmet_dependency" && g.requester.is_some()))
                 && s.path == g.path
                 && s.reasons.contains(&g.reason)
+                && (!coverage::expected_git(&g.reason) || s.reasons.len() == 1)
                 && s.reasons
                     .iter()
                     .all(|r| coverage::attention(r) == coverage::attention(&g.reason))
@@ -188,23 +189,26 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
 }
 
 fn source_gap(g: &SourceGap, groups: &mut Issues) {
-    for attention in [Attention::Informational, Attention::Actionable] {
-        let selected: Vec<_> = g
-            .reasons
-            .iter()
-            .filter(|r| coverage::attention(r) == attention)
-            .cloned()
-            .collect();
-        if selected.is_empty() && (!g.reasons.is_empty() || attention == Attention::Informational) {
-            continue;
-        }
+    let (informational, actionable): (Vec<_>, Vec<_>) = g
+        .reasons
+        .iter()
+        .cloned()
+        .partition(|r| coverage::expected_git(r));
+    let mut rows: Vec<_> = informational
+        .iter()
+        .map(|r| (Attention::Informational, reason(r).to_owned()))
+        .collect();
+    if !actionable.is_empty() || g.reasons.is_empty() {
+        rows.push((Attention::Actionable, reasons(&actionable)));
+    }
+    for (attention, reason) in rows {
         add_issue(
             groups,
             Issue {
                 attention,
                 check: "dependency information".into(),
                 status: "incomplete".into(),
-                reason: reasons(&selected),
+                reason,
                 files: BTreeSet::from([g.path.clone()]),
                 ..Issue::default()
             },

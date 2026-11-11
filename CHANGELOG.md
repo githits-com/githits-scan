@@ -17,8 +17,8 @@ that section describe 0.2.0 only; use the README for current commands and the
 
 ### Changed
 
-- **Breaking: native lifecycle audits** - Audit requests report v3 automatically
-  and preserves native deprecation, withdrawal, retained warnings, source
+- **Breaking: native lifecycle audits** - Audits request report v3 automatically
+  and preserve native deprecation, withdrawal, retained warnings, source
   observations and affected paths. Native findings and genuine unknown checks
   require attention; lifecycle collection limits and not-applicable checks do not
   fail alone. Unsupported returned versions fail without output or resubmission.
@@ -33,7 +33,9 @@ that section describe 0.2.0 only; use the README for current commands and the
   remains, but these limits do not independently cause audit exit 1. Audit JSON
   adds `actionable_incomplete` and `issues[].actionable`; saved explanations add
   `audit_actionable_incomplete`. Mixed, unfamiliar and inconsistent evidence still
-  requires attention. Raw dependency-diff JSON remains unchanged.
+  requires attention. Dependency-comparison human and Markdown reports show
+  these limits as coverage notes instead of generic partial cautions. Raw
+  dependency-diff JSON remains unchanged.
 - **Clearer audit output** - Human reports omit empty totals, group package
   warnings plainly, explain missing transitive dependencies and simplify fix
   guidance. Complete displayed advisory sets are summarized without repeating

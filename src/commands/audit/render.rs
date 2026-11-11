@@ -141,7 +141,7 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
         || !view.manifest_lock_mismatches.is_empty()
     {
         "Audit findings"
-    } else if view.incomplete {
+    } else if view.actionable_incomplete {
         "Audit results"
     } else if view.vulnerabilities.iter().any(|finding| finding.ignored) {
         "No unignored audit findings in available evidence"

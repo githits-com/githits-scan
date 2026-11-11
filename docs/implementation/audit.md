@@ -92,7 +92,7 @@ include ignored advisories; it is not a local enforcement verdict. Saved human
 explanations also mark ignored problems with the reason.
 
 When all vulnerabilities are ignored, all other finding categories are empty,
-and evidence is complete, exit is 0 and the headline is
+and no actionable evidence gaps remain, exit is 0 and the headline is
 `No unignored audit findings in available evidence`. The human summary retains
 the total and ignored count. Ignored advisories with actionable incomplete evidence still
 produce `Audit results` and exit 1; other findings produce `Audit findings` and
@@ -525,7 +525,7 @@ cannot establish a clean scan. Parser completeness is open source applicability,
 a universal `complete` token: package inventory and relationship detail are
 different facts. Scan consumes backend source coverage instead of duplicating
 parser-family rules. Human headlines lead with findings or neutral `Audit results`
-for gap-only reports. Excluded packages appear once under **Packages not checked**,
+for actionable-gap-only reports. Excluded packages appear once under **Packages not checked**,
 with their reason and files, separately from **Incomplete checks**. A non-registry
 source is ineligible for registry matching, not a failed package lookup. The wire
 reason does not distinguish local workspace packages from every other non-registry

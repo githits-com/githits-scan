@@ -1,5 +1,5 @@
 //! Owner-local interpretation of exhaustive Git coverage causes, without changing facts.
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::io;
 
 use crate::api::diff::view::{self, View};
@@ -59,12 +59,9 @@ pub(super) fn informational_only(v: &View) -> io::Result<bool> {
     for (_, snapshot) in v.snapshots.iter() {
         let c: view::Coverage =
             serde_json::from_str(snapshot.coverage.get()).map_err(io::Error::other)?;
-        if !coverage_is_git(&c, v) {
+        if (c.partial == Some(true) && !has_details(&c)) || !coverage_is_git(&c, v) {
             return Ok(false);
         }
-    }
-    if v.advisories.status == "unrequested" {
-        return Ok(!notes(v)?.is_empty());
     }
     if !matches!(v.advisories.status.as_str(), "complete" | "partial")
         || v.advisories.reason.is_some()
@@ -143,9 +140,6 @@ fn exposure_is_git(e: &view::Exposure) -> bool {
 }
 
 fn reviews_complete(v: &View) -> io::Result<bool> {
-    if v.direct_reviews.status == "unrequested" {
-        return Ok(true);
-    }
     if v.direct_reviews.status != "complete" || v.direct_reviews.reason.is_some() {
         return Ok(false);
     }
@@ -167,19 +161,33 @@ fn reviews_complete(v: &View) -> io::Result<bool> {
         }))
 }
 
-pub(super) fn notes(v: &View) -> io::Result<BTreeSet<&'static str>> {
-    let mut result = BTreeSet::new();
+pub(super) fn has_details(c: &view::Coverage) -> bool {
+    [
+        &c.sources,
+        &c.resolution,
+        &c.excluded_dependencies,
+        &c.mismatches,
+    ]
+    .iter()
+    .any(|rows| !rows.is_empty())
+        || c.reachability.iter().any(|r| !r.complete)
+}
+
+pub(super) fn notes(v: &View) -> io::Result<BTreeMap<&'static str, BTreeSet<String>>> {
+    let mut result = BTreeMap::<_, BTreeSet<String>>::new();
     if matches!(v.advisories.status.as_str(), "complete" | "partial")
         && let Some(raw) = &v.advisories.coverage
     {
         let c: view::AdvisoryCoverage =
             serde_json::from_str(raw.get()).map_err(io::Error::other)?;
-        result.extend(
-            c.reasons
-                .iter()
-                .flatten()
-                .filter_map(|r| crate::coverage::note(r)),
-        );
+        for note in c
+            .reasons
+            .iter()
+            .flatten()
+            .filter_map(|r| crate::coverage::note(r))
+        {
+            result.entry(note).or_default();
+        }
     }
     for raw in std::iter::once(&v.coverage).chain(v.snapshots.iter().map(|(_, s)| &s.coverage)) {
         let c: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
@@ -189,15 +197,24 @@ pub(super) fn notes(v: &View) -> io::Result<BTreeSet<&'static str>> {
             .chain(&c.resolution)
             .chain(&c.excluded_dependencies)
         {
-            result.extend(
-                row.reason
-                    .iter()
-                    .chain(&row.reasons)
-                    .filter_map(|r| crate::coverage::note(r)),
-            );
+            add_gap_notes(row, &mut result);
         }
     }
     Ok(result)
+}
+
+fn add_gap_notes(row: &view::Gap, notes: &mut BTreeMap<&'static str, BTreeSet<String>>) {
+    for note in row
+        .reason
+        .iter()
+        .chain(&row.reasons)
+        .filter_map(|r| crate::coverage::note(r))
+    {
+        notes
+            .entry(note)
+            .or_default()
+            .extend(row.path.iter().chain(&row.paths).cloned());
+    }
 }
 
 pub(super) fn actionable_reason(reason: &str) -> bool {

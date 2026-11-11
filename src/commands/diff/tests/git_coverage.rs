@@ -32,7 +32,9 @@ fn git_report() -> serde_json::Value {
 fn diff_git_coverage_is_a_note_in_human_and_markdown_without_losing_advisories() {
     let v = git_report();
     for format in [Format::Human, Format::Markdown] {
-        let text = rendered(&v, format).replace("&#45;", "-");
+        let text = rendered(&v, format)
+            .replace("&#45;", "-")
+            .replace("&#46;", ".");
         assert!(text.contains("Coverage notes"), "{text}");
         assert!(
             text.contains("Registry checks do not cover Git-based dependencies"),
@@ -42,6 +44,13 @@ fn diff_git_coverage_is_a_note_in_human_and_markdown_without_losing_advisories()
             text.contains("Git dependency relationships are not recorded"),
             "{text}"
         );
+        let notes = text.split("Coverage notes").nth(1).expect("notes");
+        for line in notes
+            .lines()
+            .filter(|line| line.contains("Git") || line.contains("Registry checks"))
+        {
+            assert!(line.contains("package-lock.json"), "{line}");
+        }
         assert!(text.contains("still affected"), "{text}");
         for warning in [
             "Files that need attention",
@@ -82,6 +91,8 @@ fn diff_git_coverage_does_not_hide_unexplained_or_mixed_deficits() {
     }
     for (pointer, value) in [
         ("/direct_reviews/status", json!("partial")),
+        ("/direct_reviews/status", json!("not_requested")),
+        ("/advisories/status", json!("not_requested")),
         ("/advisories/coverage/unknown", json!(1)),
         ("/snapshots/base/side", json!("future")),
     ] {
@@ -91,6 +102,22 @@ fn diff_git_coverage_does_not_hide_unexplained_or_mixed_deficits() {
             rendered(&v, Format::Human).contains("Some checks could not be completed"),
             "{pointer}"
         );
+    }
+    for (side, revision) in [("base", "earlier"), ("head", "later")] {
+        let mut v = git_report();
+        v["snapshots"][side]["coverage"] = json!({"partial":true});
+        for format in [Format::Human, Format::Markdown] {
+            let text = rendered(&v, format);
+            assert!(
+                text.contains("Some checks could not be completed"),
+                "{text}"
+            );
+            assert!(text.contains("Files that need attention"), "{text}");
+            assert!(
+                text.contains(&format!("unavailable in the {revision} revision")),
+                "{text}"
+            );
+        }
     }
     let mut v = git_report();
     v["snapshots"]["head"]["coverage"]["sources"][0]["reasons"] = json!([

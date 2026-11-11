@@ -48,13 +48,7 @@ pub(super) fn write(
         }
     }
     evidence::file_problems(view, &explanations, &mut display)?;
-    let notes = super::coverage::notes(view)?;
-    if !notes.is_empty() {
-        display.heading("Coverage notes")?;
-        for note in notes {
-            display.item(note)?;
-        }
-    }
+    coverage_notes(view, &mut display)?;
     let mut notices = std::collections::BTreeSet::new();
     for notice in &view.notices {
         if notice != "Recorded input comparison, not an observed installation or solver ancestry."
@@ -384,4 +378,21 @@ fn safe_url(value: &str) -> Option<String> {
         && url.username().is_empty()
         && url.password().is_none())
     .then(|| url.to_string())
+}
+
+fn coverage_notes(view: &View, display: &mut Display<'_>) -> io::Result<()> {
+    let notes = super::coverage::notes(view)?;
+    if notes.is_empty() {
+        return Ok(());
+    }
+    display.heading("Coverage notes")?;
+    for (note, files) in notes {
+        let attribution = if files.is_empty() {
+            String::new()
+        } else {
+            format!(" [{}]", files.into_iter().collect::<Vec<_>>().join(", "))
+        };
+        display.item(&format!("{note}{attribution}"))?;
+    }
+    Ok(())
 }
