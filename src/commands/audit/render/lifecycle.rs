@@ -15,7 +15,7 @@ pub(in crate::commands::audit) fn write(
 ) -> io::Result<()> {
     let count = data.findings.len() + data.retained_warnings.len();
     if count != 0 {
-        heading("Lifecycle warnings", count, out, palette)?;
+        heading("Package warnings", count, out, palette)?;
     }
     for event in &data.findings {
         event_line(event, details, out)?;

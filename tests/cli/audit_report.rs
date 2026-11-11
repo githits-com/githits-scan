@@ -74,7 +74,7 @@ fn audit_report_binary_human_origins_distinguish_unattributed_and_missing_inform
         "Declarations without a recorded dependency link",
         "app requests ^1.0.0 [package.json]",
         "Vulnerabilities (1)",
-        "Lifecycle warnings (1)",
+        "Package warnings (1)",
         "Outdated versions (1)",
         "Duplicate versions (1)",
         "Incomplete checks",
@@ -456,7 +456,7 @@ fn audit_report_required_files_coalesce_repeated_source_diagnostics() {
         1
     );
     for expected in [
-        "dependencies not expanded",
+        "transitive dependencies were not included",
         "dependency declarations are incomplete",
         "required project files were not uploaded",
         "required files: packages/a/package.json, packages/b/package.json",

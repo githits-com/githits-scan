@@ -14,7 +14,8 @@ unique manifest paths selected for upload in `manifests` (`Manifests:` in human
 output). Deliberately omitted files are not listed: results describe the selected
 scope, not every file discovered in the repository.
 
-Default human output shows vulnerability problems, qualified fix alternatives,
+Human output omits empty finding totals and uses plain package-warning and fix-guidance
+headings. Default human output shows vulnerability problems, qualified fix alternatives,
 manifest/lock disagreements, native lifecycle warnings and genuine evidence gaps.
 Each lifecycle event has a compact package/native-kind/scope line and its distinct
 publisher reasons. `--details` expands every source observation, source version,
@@ -22,8 +23,11 @@ metadata observation time, replacement advice and affected coordinate/file list;
 it also expands outdated/duplicate lists and collection limits. JSON always keeps
 those facts. `--quiet` changes progress/messages, not result visibility.
 
-Human and JSON output use one command-owned view. Its summary separates native
-events and retained registry warnings from advisory counts. The `lifecycle` subtree
+Human and JSON output use one command-owned view. JSON separates native
+events and retained registry warnings from advisory counts. The human overview
+shows nonempty finding categories and combines native events and retained registry
+warnings as package warnings; the detailed rows preserve their distinct meaning.
+The `lifecycle` subtree
 retains findings, distinct attributed observations, retained warnings, four
 coverage facets, unknown outcomes and content-safety disclosure. It has no coarse
 `deprecated` list or occurrence/manifest-resolution inventory. The upload plan
@@ -242,7 +246,7 @@ not expanded or inferred as activation, and original parent requests do not
 constrain a proposed replacement parent. Existing findings, checks and omission
 limits remain authoritative; the client does not perform new upgrade reasoning.
 
-## Mitigation recommendations
+## Fix guidance
 
 Optional native `remediation` is consumed as proposals about the existing findings,
 not a change to installed dependencies. The service owns release/advisory/request
@@ -326,7 +330,7 @@ the target or requirements. Target-check warnings require an actual proposed
 change; a scoped no-upgrade result does not print checks for an absent target.
 It adds no generic follow-up instructions.
 A scoped negative is separated from source metadata by a blank line and reads
-`No upgrade path found within observed releases and represented requests.` The
+`No upgrade path found among the recorded releases and dependency requirements.` The
 search scope stays explicit; it does not establish that no fix exists.
 
 Joint actions can show `recorded request for TARGET: REQUIREMENT; owner OWNER

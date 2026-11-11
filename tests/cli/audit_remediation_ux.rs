@@ -106,7 +106,7 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         .expect("changes")
         .push(second);
     let text = human_report(&value);
-    assert!(text.contains("would address: GHSA-demo"), "{text}");
+    assert!(text.contains("would address the listed advisory"), "{text}");
     assert_eq!(text.matches("override not verified:").count(), 1, "{text}");
     assert!(
         text.contains("package-manager support and build not checked"),
@@ -164,7 +164,7 @@ fn audit_ux_negative_conclusion_is_separated_and_keeps_its_scope() {
     let text = human_report(&value);
     assert!(
         text.contains(
-            "\n\n    No upgrade path found within observed releases and represented requests.\n"
+            "\n\n    No upgrade path found among the recorded releases and dependency requirements.\n"
         ),
         "{text}"
     );
@@ -342,4 +342,51 @@ fn audit_ux_mixed_impact_marks_only_the_overlapping_advisory() {
         "{text}"
     );
     assert!(!text.contains("GHSA-second (partly)"), "{text}");
+}
+
+#[test]
+fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
+    let mut value = remediation_report();
+    let mut second = value["findings"]["vulnerabilities"][0].clone();
+    second["advisory_id"] = "GHSA-second".into();
+    value["findings"]["vulnerabilities"]
+        .as_array_mut()
+        .expect("findings")
+        .push(second);
+    value["summary"]["vulnerabilities"] = 2.into();
+    let record = &mut value["remediation"]["recommendations"][0];
+    record["finding_refs"] = json!([0, 1]);
+    record["addressed_finding_refs"] = json!([0, 1]);
+    record["checks"]["requirements"] = "blocked".into();
+    record["blockers"] = json!([named_constraint()]);
+    let text = human_report(&value);
+    assert!(
+        text.contains("would address all listed advisories"),
+        "{text}"
+    );
+    assert!(
+        text.contains("GHSA-demo") && text.contains("GHSA-second"),
+        "{text}"
+    );
+    assert!(
+        text.contains("requirement conflict:") && text.contains("Candidate changes"),
+        "{text}"
+    );
+    assert!(
+        !text.contains("Suggested fix") && !text.contains("would address: GHSA"),
+        "{text}"
+    );
+    value["remediation"]["recommendations"][0]["addressed_finding_refs"] = json!([0]);
+    value["remediation"]["recommendations"][0]["remaining_finding_refs"] = json!([1]);
+    value["remediation"]["recommendations"][0]["outcome"] = "partial".into();
+    let partial = human_report(&value);
+    assert!(
+        partial.contains("would address: GHSA-demo")
+            && partial.contains("still unresolved: GHSA-second"),
+        "{partial}"
+    );
+    assert!(
+        !partial.contains("would address all listed advisories"),
+        "{partial}"
+    );
 }

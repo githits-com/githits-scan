@@ -53,7 +53,7 @@ fn license_report_v2_replays_compact_details_and_exact_json() {
         "library classification assumed from inventory",
         "recorded lockfiles and manifest resolution",
         "dependency coverage: catalog-dependency 1.0.0 (inputs: native/vcpkg.json): unknown",
-        "reason: dependencies not expanded",
+        "reason: transitive dependencies were not included",
         "notice: Recorded inventory, not an exact installed build; artifacts were not inspected.",
         "manifest: app/package.json",
         "notice: Target conditions were retained, not evaluated.",

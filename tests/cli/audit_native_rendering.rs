@@ -113,7 +113,7 @@ fn audit_native_missing_reason_and_filtered_publisher_text_are_explicit() {
     );
     assert_eq!(text.matches("yanked (release)").count(), 1, "{text}");
     assert!(
-        text.contains("Use --details for lifecycle source observations, affected files"),
+        text.contains("Use --details for sources, affected files"),
         "{text}"
     );
     assert_eq!(mock.requests().len(), 3);

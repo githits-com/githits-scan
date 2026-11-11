@@ -132,30 +132,40 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
     writeln!(out, "{}", palette.bold(headline))?;
     {
         let s = &view.summary;
-        writeln!(
+        let mut findings: Vec<_> = [
+            (s.vulnerabilities, "vulnerability", "vulnerabilities"),
+            (
+                s.lifecycle + s.retained_lifecycle_warnings,
+                "package warning",
+                "package warnings",
+            ),
+            (s.outdated, "outdated version", "outdated versions"),
+            (s.duplicates, "duplicate package", "duplicate packages"),
+        ]
+        .into_iter()
+        .filter(|(count, _, _)| *count != 0)
+        .map(|(count, one, many)| format!("{count} {}", noun(count, one, many)))
+        .collect();
+        if let Some(count) = s.manifest_lock_mismatches.filter(|count| *count != 0) {
+            findings.push(format!(
+                "{count} manifest/lock {}",
+                if count == 1 {
+                    "disagreement"
+                } else {
+                    "disagreements"
+                }
+            ));
+        }
+        write!(
             out,
-            "{} {}; {} {}, {} lifecycle {}, {} retained {}, {} outdated, {} duplicate {}{}",
+            "{} {}",
             s.dependencies,
-            noun(s.dependencies, "dependency", "dependencies"),
-            s.vulnerabilities,
-            noun(s.vulnerabilities, "vulnerability", "vulnerabilities"),
-            s.lifecycle,
-            noun(s.lifecycle, "finding", "findings"),
-            s.retained_lifecycle_warnings,
-            noun(s.retained_lifecycle_warnings, "warning", "warnings"),
-            s.outdated,
-            s.duplicates,
-            noun(s.duplicates, "package", "packages"),
-            s.manifest_lock_mismatches
-                .map_or_else(String::new, |count| format!(
-                    "; {count} manifest/lock {}",
-                    if count == 1 {
-                        "disagreement"
-                    } else {
-                        "disagreements"
-                    }
-                ))
+            noun(s.dependencies, "dependency", "dependencies")
         )?;
+        if !findings.is_empty() {
+            write!(out, "; {}", findings.join(", "))?;
+        }
+        writeln!(out)?;
         if let Some(ignored) = s.ignored_vulnerabilities {
             writeln!(
                 out,
@@ -181,7 +191,7 @@ fn maintenance(
         {
             writeln!(
                 out,
-                "\nUse --details for lifecycle source observations, affected files, coverage limits and outdated/duplicate lists."
+                "\nUse --details for sources, affected files and version details."
             )?;
         }
         return Ok(());

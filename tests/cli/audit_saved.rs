@@ -91,9 +91,9 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
         "{text}"
     );
     for expected in [
-        "parent upgrade search reached its combination limit",
-        "parent dependency evidence is incomplete",
-        "parent release metadata lookup limit reached",
+        "not all combinations of dependency changes could be checked",
+        "some dependency information needed to check related upgrades was unavailable",
+        "metadata checks for related upgrades reached the service limit",
         "how the dependency was introduced is not recorded",
         "dependency requirement could not be evaluated",
         "target release availability not verified",

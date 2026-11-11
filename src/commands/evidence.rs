@@ -9,7 +9,7 @@ pub(super) fn reason(value: &str) -> Option<&'static str> {
         "metadata_unavailable" => "package metadata missing",
         "comparison_unknown" => "version comparison could not be determined",
         "skipped_requirement" => "dependency requirement skipped",
-        "not_expanded" => "dependencies not expanded",
+        "not_expanded" => "transitive dependencies were not included",
         "untargeted_requirement" => "dependency requirement without a recorded link",
         "inventory_only" => "dependency relationships not recorded",
         "unknown_relationship" => "dependency relationships could not be determined",

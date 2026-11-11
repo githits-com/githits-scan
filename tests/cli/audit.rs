@@ -173,7 +173,7 @@ fn audit_binary_human_report_preserves_all_categories_attribution_and_progress()
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     for text in [
         "Vulnerabilities (1)",
-        "Lifecycle warnings (1)",
+        "Package warnings (1)",
         "Outdated versions (1)",
         "Duplicate versions (1)",
         "GHSA-demo",

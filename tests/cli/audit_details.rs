@@ -21,7 +21,7 @@ fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
         "GHSA-demo",
         "Incomplete checks",
         "Packages not checked",
-        "1 lifecycle finding, 0 retained warnings, 1 outdated, 1 duplicate package",
+        "1 package warning, 1 outdated version, 1 duplicate package",
         "--details",
     ] {
         assert!(compact_text.contains(text), "{text}: {compact_text}");
@@ -42,7 +42,7 @@ fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
     assert_eq!(detailed_server.requests().len(), 3);
     let detailed_text = stdout(&detailed);
     for text in [
-        "Lifecycle warnings",
+        "Package warnings",
         "Outdated versions",
         "Duplicate versions",
         "use the maintained package",

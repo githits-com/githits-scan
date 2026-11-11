@@ -81,7 +81,7 @@ fn assert_ordinary_limits_hidden(text: &str) {
         "does not apply",
         "not collected",
         "not a checked negative",
-        "Lifecycle warnings",
+        "Package warnings",
         "Incomplete checks",
     ] {
         assert!(!text.contains(omitted), "{omitted}: {text}");

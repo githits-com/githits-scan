@@ -213,3 +213,54 @@ fn audit_presentation_new_dependency_limit_keeps_raw_codes_and_coverage() {
         assert_eq!(view.get(field), original.get(field), "{field}");
     }
 }
+
+#[test]
+fn audit_presentation_summary_is_compact_and_keeps_scope() {
+    for (value, expected) in [
+        (clean(), "2 dependencies"),
+        (
+            fixture(),
+            "2 dependencies; 1 vulnerability, 1 package warning, 1 outdated version, 1 duplicate package",
+        ),
+    ] {
+        let root = repo();
+        let mock = server(&serde_json::to_vec(&value).expect("report"));
+        let output = run(
+            root.path(),
+            Some(&mock.origin()),
+            &["--quiet", "--no-color"],
+        );
+        let text = stdout(&output);
+        assert_eq!(text.lines().nth(1), Some(expected), "{text}");
+        assert!(
+            !text.contains("0 vulnerabilities") && !text.contains("0 retained warnings"),
+            "{text}"
+        );
+        assert_eq!(mock.requests().len(), 3);
+    }
+}
+
+#[test]
+fn audit_presentation_explains_unexpanded_dependency_lists_without_inventing_a_remedy() {
+    let mut value = clean();
+    value["unknowns"]["sources"] = json!([{"path":"go.mod","reasons":["not_expanded"]}]);
+    value["summary"]["incomplete_sources"] = 1.into();
+    let root = repo();
+    let mock = server(&serde_json::to_vec(&value).expect("report"));
+    let output = run(
+        root.path(),
+        Some(&mock.origin()),
+        &["--quiet", "--no-color"],
+    );
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let text = stdout(&output);
+    assert!(
+        text.contains("transitive dependencies were not included [go.mod]"),
+        "{text}"
+    );
+    assert!(
+        !text.contains("not_expanded") && !text.contains("action:") && !text.contains("retry"),
+        "{text}"
+    );
+    assert_eq!(mock.requests().len(), 3);
+}
