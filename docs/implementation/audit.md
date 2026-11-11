@@ -444,7 +444,7 @@ inspection described above; replay and inspection make no API call.
 
 `api::AuditApi` is injectable independently of `SbomApi`. `HttpSbomApi` implements
 both using one internal operation selector and one submit/events/result path.
-Audit requests `kind=audit&format=json` in the query, leaving multipart files and
+Audit requests `kind=audit&format=json&report_version=3` in the query, leaving multipart files and
 canonical upload-size estimation unchanged. Result media is `application/json`.
 One accepted job is never resubmitted for an events/result failure. Current full
 snapshots replace progress even when revisions are equal; reconnect starts with
@@ -585,7 +585,7 @@ compatibility with caller constraints. Latest versions are metadata evidence.
 ## Validation and limits
 
 Deterministic trait, pure, loopback and real-binary tests use authored synthetic
-fixtures plus the public OpenAPI example. They verify each finding category, clean
+fixtures, including `tests/fixtures/audit/native-findings.json`. They verify each finding category, clean
 and gap-only outcomes, semantic discrepancies, native and unsupported versions, compact JSON
 allow-listing, duplicate origins and unattributed requirements, streams/files,
 progress/reconnect/terminal behavior, failures and result limits. Existing
