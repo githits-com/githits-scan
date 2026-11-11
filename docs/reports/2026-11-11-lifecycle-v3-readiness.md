@@ -3,7 +3,7 @@
 The native lifecycle producer and public gateway contracts are qualified. The
 gateway admission blocker is removed, with delivery and free inspection smoke
 verified in development and production. Scan adoption remains unshipped. The
-[backlog](../../BACKLOG.md#adopt-qualified-native-lifecycle-audit-v3)
+[implementation plan](../plans/native-lifecycle-audit.md)
 owns the remaining consumer work, receiving paths and acceptance cases.
 The [earlier receipt](2026-11-10-lifecycle-report-readiness.md) records the prior
 inspection-only contract.
@@ -57,11 +57,12 @@ other worktree change was needed.
 Scan currently submits kind/format only. Its decoder treats version 3 as a future
 report, renders an incomplete unsupported-version result with exit 1, and does
 not forward opaque fields. Saved format 1 currently accepts only producer v2.
-The backlog names transport, decoder, assessment, shared view, rendering and
+The implementation plan names transport, decoder, assessment, shared view, rendering and
 save/replay changes still needed in Scan. It records the version-2 response case
 for a v3 request without resubmitting an accepted job. Explicit consumer version
-selection, positive-warning exit policy and archive compatibility remain design
-work; this readiness update does not select a new default, gate or schema.
+selection, positive-warning exit policy and archive compatibility are now settled
+by Juha's breaking-change direction in that plan; this receipt remains evidence
+of the pre-implementation state, not a separate source of product decisions.
 
 Before this gateway evidence update, the following debug-build command ran 3
 existing tests: 3 passed, 771 skipped. Runtime code is unchanged, so the tests

@@ -7,7 +7,7 @@ qualified producer and public request-admission contracts.
 At that snapshot, the readiness investigation was complete, consumer adoption
 had not shipped and the producer prerequisite was absent. Current follow-up
 requirements, receiving paths and acceptance cases are recorded in the
-[repository backlog](../../BACKLOG.md#adopt-qualified-native-lifecycle-audit-v3).
+[implementation plan](../plans/native-lifecycle-audit.md).
 
 ## Qualified boundary
 
