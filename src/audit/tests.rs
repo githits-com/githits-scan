@@ -280,3 +280,20 @@ fn audit_native_retained_warning_counts_once_without_inventing_a_native_event() 
     assert_eq!(assessment.summary.lifecycle, 0);
     assert_eq!(assessment.summary.retained_lifecycle_warnings, 1);
 }
+
+#[test]
+fn audit_report_outdated_coverage_requires_actual_checked_evidence() {
+    let mut value = clean();
+    value["coverage"]["outdated"]["checked_count"] = 0.into();
+    // Only native lifecycle facets define applicability; extra metadata fields
+    // cannot replace missing checked outdated evidence.
+    value["coverage"]["outdated"]["not_applicable_count"] = 2.into();
+    value["coverage"]["outdated"]["not_applicable_registries"] = json!(["pypi"]);
+    let assessment = interpreted(&value);
+    assert!(assessment.attention && assessment.incomplete);
+    assert!(
+        assessment
+            .unverified
+            .contains("metadata coverage does not account for eligible packages")
+    );
+}

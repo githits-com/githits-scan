@@ -35,11 +35,9 @@ pub(crate) struct Assessment {
     pub incomplete: bool,
 }
 
-/// Whether applicable metadata remains unchecked; not-applicable outcomes are coverage.
-pub(crate) fn metadata_gap(c: &MetadataCoverage) -> bool {
-    c.checked_count
-        .checked_add(c.not_applicable_count.unwrap_or(0))
-        != Some(c.candidates_count)
+/// Whether outdated metadata remains unchecked.
+pub(crate) const fn metadata_gap(c: &MetadataCoverage) -> bool {
+    c.checked_count != c.candidates_count
         || c.unknown_count != 0
         || c.not_collected_count != 0
         || !c.not_collected_registries.is_empty()
@@ -49,7 +47,6 @@ fn metadata_total(c: &MetadataCoverage) -> Option<u64> {
     c.checked_count
         .checked_add(c.unknown_count)
         .and_then(|n| n.checked_add(c.not_collected_count))
-        .and_then(|n| n.checked_add(c.not_applicable_count.unwrap_or(0)))
 }
 
 #[cfg(test)]

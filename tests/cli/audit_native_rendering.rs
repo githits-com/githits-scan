@@ -112,6 +112,10 @@ fn audit_native_missing_reason_and_filtered_publisher_text_are_explicit() {
         "{text}"
     );
     assert_eq!(text.matches("yanked (release)").count(), 1, "{text}");
+    assert!(
+        text.contains("Use --details for lifecycle source observations, affected files"),
+        "{text}"
+    );
     assert_eq!(mock.requests().len(), 3);
 }
 
@@ -133,6 +137,7 @@ fn audit_native_retained_warning_is_not_reclassified_or_duplicated() {
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let text = stdout(&output);
     assert_eq!(text.matches("Retained publisher warning").count(), 1);
+    assert!(text.contains("Use --details"), "{text}");
     assert!(
         text.contains("native classification was not retained")
             && text.contains("stored metadata does not include the native observation")

@@ -174,7 +174,11 @@ fn maintenance(
     palette: Palette,
 ) -> io::Result<()> {
     if !details {
-        if !view.outdated.is_empty() || !view.duplicates.is_empty() {
+        if !view.outdated.is_empty()
+            || !view.duplicates.is_empty()
+            || !view.lifecycle.findings.is_empty()
+            || !view.lifecycle.retained_warnings.is_empty()
+        {
             writeln!(
                 out,
                 "\nUse --details for lifecycle source observations, affected files, coverage limits and outdated/duplicate lists."

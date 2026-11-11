@@ -41,7 +41,9 @@ vocabulary are open. Both archive facets remain not-collected.
 Lifecycle coverage partitions candidates into checked/unknown/not-collected/NA;
 only unknown rows contribute lifecycle incomplete checks. Summary incomplete
 checks also include advisory unknown/unsupported counts and outdated gaps.
-Native and retained warning counts are independent of advisory counts.
+Native and retained warning counts are independent of advisory counts. Outdated
+metadata coverage has checked, unknown and not-collected outcomes only;
+applicability belongs to native lifecycle facets.
 
 The consistency checks are limited to the qualified public fields and verified
 producer grouping; they do not independently classify a registry:

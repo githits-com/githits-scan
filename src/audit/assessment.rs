@@ -49,7 +49,7 @@ pub(crate) fn assess(
     }
 }
 
-fn has_gaps(r: &Data) -> bool {
+const fn has_gaps(r: &Data) -> bool {
     let u = &r.unknowns;
     !u.vulnerabilities.is_empty()
         || !u.metadata.is_empty()

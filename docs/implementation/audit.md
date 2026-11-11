@@ -89,7 +89,7 @@ explanations also mark ignored problems with the reason.
 
 When all vulnerabilities are ignored, all other finding categories are empty,
 and evidence is complete, exit is 0 and the headline is
-`No unignored audit findings in checked dependencies`. The human summary retains
+`No unignored audit findings in available evidence`. The human summary retains
 the total and ignored count. Ignored advisories with incomplete evidence still
 produce `Audit results` and exit 1; other findings produce `Audit findings` and
 exit 1. Ignores never suppress coverage or accounting errors.
@@ -505,7 +505,9 @@ repeating archival/NA notices on every ordinary audit. Both archival facets are
 currently not collected; Scan acquires no registry/repository status. PyPI
 native deprecation NA does not assert a negative withdrawal check. Genuine unknown
 and failed observations stay visible and incomplete. Outdated not-collected and
-advisory unsupported outcomes retain their separate gap behavior.
+advisory unsupported outcomes retain their separate gap behavior. Only native
+lifecycle facets define not-applicable coverage; outdated metadata has checked,
+unknown and not-collected outcomes.
 
 Empty findings and zero candidates
 never establish health. Headlines describe available evidence, not universally
@@ -642,7 +644,7 @@ member selection follows the shared upload boundary described below.
 If a producer omits the optional required path, Scan keeps the generic incomplete
 reason and never fabricates a filename.
 
-Human manifest, manifest-resolution and required-file lists stay inline when the
+Human manifest and required-file lists stay inline when the
 whole escaped line, including label and indentation, has at most 100 characters.
 Longer lists show a count and each full path on its own line. JSON retains all
 paths. `UNUSABLE_MANIFEST` advises `--exclude <glob>` for unrelated projects or

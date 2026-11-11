@@ -46,20 +46,6 @@ pub(crate) struct MetadataCoverage {
     pub _additional: Additional,
     pub candidates_count: u64,
     pub checked_count: u64,
-    /// Candidates outside this check; optional in public outdated coverage.
-    #[serde(
-        default,
-        deserialize_with = "optional",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub not_applicable_count: Option<u64>,
-    /// Registries with not-applicable candidates when supplied by the public contract.
-    #[serde(
-        default,
-        deserialize_with = "optional",
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub not_applicable_registries: Option<Vec<String>>,
     pub not_collected_count: u64,
     pub not_collected_registries: Vec<String>,
     pub unknown_count: u64,

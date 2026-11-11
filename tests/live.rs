@@ -259,7 +259,13 @@ fn live_minimist_fixture() -> tempfile::TempDir {
 #[cfg(test)]
 fn assert_live_minimist_recommendation(result: &serde_json::Value) {
     // Native evidence can legitimately remain unavailable independently of remediation.
-    assert!(result["incomplete"].is_boolean());
+    let native_unknowns = result["lifecycle"]["unknowns"]
+        .as_array()
+        .expect("native unknowns");
+    assert_eq!(
+        result["incomplete"].as_bool(),
+        Some(!native_unknowns.is_empty())
+    );
     assert_eq!(result["remediation"]["status"], "completed");
     let records = result["remediation"]["recommendations"]
         .as_array()

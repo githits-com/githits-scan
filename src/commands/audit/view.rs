@@ -277,7 +277,6 @@ fn coverage_issues(v: &VulnerabilityCoverage, outdated: &MetadataCoverage, group
         "vulnerabilities",
         v.checked_count,
         v.candidates_count,
-        0,
         v.checked_count != v.candidates_count,
         groups,
     );
@@ -285,27 +284,16 @@ fn coverage_issues(v: &VulnerabilityCoverage, outdated: &MetadataCoverage, group
         "outdated",
         outdated.checked_count,
         outdated.candidates_count,
-        outdated.not_applicable_count.unwrap_or(0),
         crate::audit::metadata_gap(outdated),
         groups,
     );
 }
 
-fn coverage_issue(
-    check: &str,
-    checked: u64,
-    total: u64,
-    not_applicable: u64,
-    incomplete: bool,
-    groups: &mut Issues,
-) {
+fn coverage_issue(check: &str, checked: u64, total: u64, incomplete: bool, groups: &mut Issues) {
     if !incomplete {
         return;
     }
-    let mut reason = format!("{checked} of {total} packages checked");
-    if not_applicable != 0 {
-        reason = format!("{reason}; {not_applicable} not applicable");
-    }
+    let reason = format!("{checked} of {total} packages checked");
     add_issue(
         groups,
         Issue {
