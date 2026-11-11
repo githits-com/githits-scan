@@ -6,20 +6,29 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::api::MAX_RESPONSE_BYTES;
-use crate::api::audit::{Body, Report, v2::V2, wire::Additional};
+use crate::api::audit::{
+    Report, SCHEMA_VERSION as PRODUCER_SCHEMA_VERSION, report::Data, wire::Additional,
+};
 
 const FORMAT: &str = "githits-scan-analysis";
+const SCHEMA_VERSION: u8 = 2;
 
 #[derive(Debug, Error)]
 pub(crate) enum Error {
     #[error("analysis exceeds the {MAX_RESPONSE_BYTES}-byte limit")]
     TooLarge,
-    #[error("not a valid saved audit analysis")]
+    #[error(
+        "not a valid saved audit analysis; this Scan requires analysis format 2 with audit report version 3"
+    )]
     Invalid,
-    #[error("unsupported saved analysis version {version} (written by Scan {writer})")]
+    #[error(
+        "unsupported saved analysis version {version} (written by Scan {writer}); this Scan requires analysis format 2. Use the recorded writer for compatible offline replay"
+    )]
     Version { version: u64, writer: String },
-    #[error("saving requires a version-two audit report with its generation timestamp")]
-    UnsupportedProducer,
+    #[error(
+        "saved analysis contains audit report version {version}; this Scan requires version 3. Use its recorded writer for compatible offline replay"
+    )]
+    ProducerVersion { version: u64 },
     #[error("cannot encode saved audit analysis")]
     Encoding,
 }
@@ -52,9 +61,9 @@ struct Envelope<'a> {
 
 #[derive(Serialize)]
 struct Producer<'a> {
-    schema_version: u8,
+    schema_version: u64,
     #[serde(flatten)]
-    report: &'a V2,
+    report: &'a Data,
 }
 
 #[derive(Deserialize)]
@@ -83,18 +92,13 @@ pub(crate) fn encode(
     manifests: &BTreeSet<String>,
     policy: &crate::config::Audit,
 ) -> Result<Vec<u8>, Error> {
-    let Body::V2(body) = &report.body else {
-        return Err(Error::UnsupportedProducer);
-    };
-    if body.generated_at.is_none() {
-        return Err(Error::UnsupportedProducer);
-    }
+    let body = &report.data;
     let envelope = Envelope {
         format: FORMAT,
-        schema_version: 1,
+        schema_version: SCHEMA_VERSION,
         writer_version: env!("CARGO_PKG_VERSION"),
         producer_report: Producer {
-            schema_version: 2,
+            schema_version: PRODUCER_SCHEMA_VERSION,
             report: body,
         },
         selected_manifests: manifests,
@@ -122,12 +126,12 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Analysis, Error> {
     if header.format != FORMAT {
         return Err(Error::Invalid);
     }
-    if header.schema_version != 1 {
+    if header.schema_version != u64::from(SCHEMA_VERSION) {
         let writer = header
             .writer_version
             .as_ref()
             .and_then(serde_json::Value::as_str)
-            .unwrap_or("unknown");
+            .unwrap_or("writer not recorded");
         return Err(Error::Version {
             version: header.schema_version,
             writer: writer.escape_default().to_string(),
@@ -137,16 +141,18 @@ pub(crate) fn decode(bytes: &[u8]) -> Result<Analysis, Error> {
     input.audit_policy.validate().map_err(|_| Error::Invalid)?;
     let producer = serde_json::to_vec(&input.producer_report).map_err(|_| Error::Invalid)?;
     drop(input.producer_report);
-    let report = Report::from_bytes(&producer).map_err(|_| Error::Invalid)?;
-    let Body::V2(body) = &report.body else {
-        return Err(Error::Invalid);
-    };
-    let generated_at = body.generated_at.clone().ok_or(Error::Invalid)?;
+    let report = Report::from_bytes(&producer).map_err(|error| match error {
+        crate::api::ApiError::UnsupportedAuditVersion { version, .. } => {
+            Error::ProducerVersion { version }
+        }
+        _ => Error::Invalid,
+    })?;
+    let generated_at = report.data.generated_at.clone();
     Ok(Analysis {
         provenance: Provenance {
-            archive_schema_version: 1,
+            archive_schema_version: SCHEMA_VERSION,
             writer_version: input.writer_version,
-            producer_schema_version: 2,
+            producer_schema_version: PRODUCER_SCHEMA_VERSION,
             generated_at,
         },
         report,

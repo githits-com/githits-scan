@@ -1,6 +1,6 @@
 //! Exact native input facts survive normal output and saved replay.
 use super::*;
-use crate::support::audit::v2_clean;
+use crate::support::audit::clean;
 use serde_json::{Value, json};
 
 fn mismatch(reason: &str) -> Value {
@@ -10,7 +10,7 @@ fn mismatch(reason: &str) -> Value {
 }
 
 #[test]
-fn native_diagnostics_mismatch_only_is_attention_with_precise_reason_and_old_count_compatibility() {
+fn native_diagnostics_mismatch_only_is_attention_with_precise_reason_and_optional_count() {
     for (reason, detail) in [
         (
             "locked_version_does_not_satisfy_request",
@@ -23,7 +23,7 @@ fn native_diagnostics_mismatch_only_is_attention_with_precise_reason_and_old_cou
         ),
         ("future_disagreement", "future_disagreement"),
     ] {
-        let mut value = v2_clean();
+        let mut value = clean();
         value["findings"]["manifest_lock_mismatches"] = json!([mismatch(reason)]);
         let bytes = serde_json::to_vec(&value).expect("report");
         let s = server(&bytes);
@@ -53,7 +53,7 @@ fn unmet(name: &str, requester: &str, requirement: Option<&str>, status: &str) -
 
 #[test]
 fn native_diagnostics_missing_peer_is_compact_and_saved_without_opaque_context() {
-    let mut value = v2_clean();
+    let mut value = clean();
     value["unknowns"]["sources"] =
         json!([{"path":"package-lock.json","reasons":["unmet_dependency"]}]);
     value["summary"]["incomplete_sources"] = 1.into();
@@ -135,7 +135,7 @@ fn native_diagnostics_missing_peer_is_compact_and_saved_without_opaque_context()
 
 #[test]
 fn native_diagnostics_mismatch_archive_replay_preserves_findings_and_counts() {
-    let mut value = v2_clean();
+    let mut value = clean();
     value["findings"]["manifest_lock_mismatches"] =
         json!([mismatch("recorded_requirement_differs")]);
     value["summary"]["manifest_lock_mismatches"] = 1.into();

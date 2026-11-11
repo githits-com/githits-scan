@@ -293,7 +293,7 @@ fn polish_excluded_companions_are_not_read_or_uploaded() {
 fn polish_unmatched_audit_selector_suggests_saved_coordinates() {
     let repo = repository(&[(
         "analysis.json",
-        include_str!("../fixtures/audit/analysis-v1.json"),
+        include_str!("../fixtures/audit/analysis.json"),
     )]);
     for selector in ["demo", "npm:demo@9", "dmeo", "unrelated"] {
         let output = githits_scan()

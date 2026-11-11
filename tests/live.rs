@@ -258,7 +258,8 @@ fn live_minimist_fixture() -> tempfile::TempDir {
 
 #[cfg(test)]
 fn assert_live_minimist_recommendation(result: &serde_json::Value) {
-    assert_eq!(result["incomplete"], false);
+    // Native evidence can legitimately remain unavailable independently of remediation.
+    assert!(result["incomplete"].is_boolean());
     assert_eq!(result["remediation"]["status"], "completed");
     let records = result["remediation"]["recommendations"]
         .as_array()
@@ -659,15 +660,25 @@ fn property<'a>(component: &'a serde_json::Value, name: &str) -> Option<&'a str>
 
 #[cfg(test)]
 fn assert_compact_audit_report(report: &serde_json::Value) {
-    assert_eq!(report["schema_version"], 1);
+    assert_eq!(report["schema_version"], 2);
     assert!(
         report["summary"]["dependencies"]
             .as_u64()
             .expect("dependency count")
             > 0
     );
+    assert!(
+        report
+            .get("issues")
+            .and_then(serde_json::Value::as_array)
+            .is_none_or(|rows| rows.iter().all(|row| row["check"] != "report")),
+        "service accounting must remain verified"
+    );
+    assert!(report["lifecycle"]["findings"].is_array());
+    assert!(report["lifecycle"]["coverage"].is_object());
+    assert!(report.get("deprecated").is_none());
     assert!(report.get("occurrences").is_none() && report.get("inputs").is_none());
-    for category in ["vulnerabilities", "deprecated", "outdated", "duplicates"] {
+    for category in ["vulnerabilities", "outdated", "duplicates"] {
         assert!(
             report.get(category).is_none_or(serde_json::Value::is_array),
             "{category}"

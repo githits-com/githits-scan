@@ -1,10 +1,10 @@
 //! Only consumed reference bounds and scoped-negative prerequisites are checked here.
-use crate::api::audit::{remediation::Reason, v2::V2};
+use crate::api::audit::{remediation::Reason, report::Data};
 
 pub(crate) const UNVERIFIED: &str =
     "mitigation recommendation references or search domain are unverified";
 
-pub(super) fn verified(report: &V2) -> bool {
+pub(super) fn verified(report: &Data) -> bool {
     let Some(remediation) = &report.remediation else {
         return true;
     };

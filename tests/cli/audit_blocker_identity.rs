@@ -1,4 +1,4 @@
-//! Binary coverage for supplied blocker dependency identities and old reports.
+//! Binary coverage for supplied blocker dependency identities and optional evidence.
 use super::*;
 
 fn named_blocker() -> Value {
@@ -132,7 +132,7 @@ fn audit_blocker_dependency_name_saved_explanation_preserves_distinct_names() {
     let root = repo();
     let path = root.path().join("analysis.json");
     let mut archive: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json"))
             .expect("compatibility archive");
     let named = named_blocker();
     let mut different = named.clone();

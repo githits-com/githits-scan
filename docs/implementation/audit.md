@@ -1,7 +1,8 @@
 # Audit consumer
 
 `githits-scan audit [PATH]` submits the selected files as one combined asynchronous
-analysis. The backend owns parsing, advisory applicability and metadata assessment;
+analysis, explicitly requesting native report version 3. There is no report-version
+flag. The backend owns parsing, advisory applicability and metadata assessment;
 Scan owns evidence interpretation, output and exit policy. It does not infer
 reachability from manifest associations or execute one job per file pair.
 
@@ -14,41 +15,34 @@ output). Deliberately omitted files are not listed: results describe the selecte
 scope, not every file discovered in the repository.
 
 Default human output shows vulnerability problems, qualified fix alternatives,
-manifest/lock disagreements and all evidence gaps. Deprecated, outdated and
-duplicate findings contribute their totals; `--details` expands their complete
-human lists with recorded origins and paths. A hint appears only when such
-maintenance findings exist. The audit-only switch applies to live and saved
-ordinary reports and to human output files. JSON is always complete and accepts
-the switch without changing facts; focused explanation remains scoped to its
-selected component. Library callers supply `details` on `Request` and
-`ReplayRequest` (`false` for compact output). `--quiet` does not change result visibility.
+manifest/lock disagreements, native lifecycle warnings and genuine evidence gaps.
+Each lifecycle event has a compact package/native-kind/scope line and its distinct
+publisher reasons. `--details` expands every source observation, source version,
+metadata observation time, replacement advice and affected coordinate/file list;
+it also expands outdated/duplicate lists and collection limits. JSON always keeps
+those facts. `--quiet` changes progress/messages, not result visibility.
 
-Both human and JSON output use one command-owned result view. It contains summary
-counts, security/maintenance findings, native declaration/lock disagreements,
-deduplicated input-file paths and grouped issues
-for unresolved dependencies, excluded package checks and incomplete assessments.
-There is no full occurrence, native-ID, declaration, subject or parser-statistics
-inventory dump. Missing optional severity or source metadata is omitted; a missing
-lockfile path on a manifest-resolved package does not mean the package is missing.
-For v1 reports, returned manifest-resolution evidence is still named once
-(`resolved_from_manifests` in JSON). V2 omits that producer metadata, so the optional
-field is absent rather than inferred from directory layout or missing lockfiles.
-The upload plan is the canonical manifest-name source for both versions.
+Human and JSON output use one command-owned view. Its summary separates native
+events and retained registry warnings from advisory counts. The `lifecycle` subtree
+retains findings, distinct attributed observations, retained warnings, four
+coverage facets, unknown outcomes and content-safety disclosure. It has no coarse
+`deprecated` list or occurrence/manifest-resolution inventory. The upload plan
+remains the canonical manifest-name source. Paths locate selected evidence and
+never establish package reachability.
 
-JSON is a Scan-owned `schema_version: 1` contract. Empty finding categories and
-optional fields are omitted. `incomplete` describes coverage gaps or inconsistent
-consumed evidence, independently of whether findings exist. Future API versions produce a
-compact incomplete issue without interpreting known-version counts or forwarding
-opaque fields. Producer report IDs, timestamps, unknown additional fields and raw
-evidence are not emitted.
+Audit and saved-explanation JSON use Scan schema 2. Empty optional common groups
+are omitted; `summary` and native lifecycle evidence are present. `incomplete`
+means genuine coverage gaps or inconsistent consumed evidence, independently of
+positive findings. Only producer schema 3 is supported. Returned older/newer
+versions fail with exit 3, request ID and an explanation before writing output;
+Scan never converts them or resubmits the completed job. Unknown additive fields
+are ignored; native vocabulary remains open and retains unfamiliar values in JSON.
 
-Vulnerability JSON retains the legacy `severity` string and adds independently
-optional `severity_score` (number) and `severity_type` (the supplied source string).
-The legacy string keeps its original spelling and is absent without a score.
-Source-only evidence remains available in `severity_type`; missing values are
-omitted rather than inferred. These additive fields use the existing schema 1,
-including explanation `problems`; nested remediation finding identities stay
-unchanged. Saved analyses already retain the producer facts and need no migration.
+Vulnerability JSON has the `severity` display string and independently optional
+numeric `severity_score` and source `severity_type`. Missing values are omitted
+rather than inferred. Advisory/remediation identities and exact-ID ignores keep
+their meaning; lifecycle events never become vulnerability counts or verified
+upgrade advice.
 
 Human reports use one severity formatter across vulnerability lists, mitigation
 cards and explanations: known CVSS sources show `CVSS 7.4`, label-origin or
@@ -68,10 +62,10 @@ terminal output; color never carries meaning.
 
 | Exit | Audit meaning |
 | --- | --- |
-| 0 | No unignored finding in any category, and the selected evidence is fully checked |
-| 1 | Any unignored vulnerability, deprecated release, outdated version, duplicate group, manifest/lock disagreement, evidence gap, unverified accounting or future unassessed report version; also preflight drift/empty selection |
+| 0 | No unignored finding or genuine gap in available evidence; lifecycle collection limits can remain |
+| 1 | Any unignored vulnerability, native lifecycle event, retained registry warning, outdated version, duplicate group, manifest/lock disagreement, genuine evidence gap or unverified accounting; also preflight drift/empty selection |
 | 2 | Usage/configuration/credentials/access/upload-limit or caller-action API error; missing/invalid saved input or explanation selector |
-| 3 | Transport, rate limit, service/problem execution, structural report decoding or output error |
+| 3 | Transport, rate limit, service/problem execution, malformed/unsupported returned report or output error |
 
 Outdated, duplicate or manifest/lock disagreement findings alone cause exit 1.
 This is an attention gate across unignored findings and evidence gaps.
@@ -126,8 +120,8 @@ compact JSON adds `analysis` provenance. Replay uses the current Scan assessment
 of stored facts, not a stored verdict or a fresh check. The archive also stores
 its explicit local `audit_policy` when nonempty, separate from unchanged producer
 facts. Replay validates and reapplies that policy without reading configuration.
-Older archives default to no ignores. This is additive archive schema 1; older
-Scan readers may omit the policy and return the stricter exit 1.
+When the current archive omits policy, no advisory ignores apply. Old archive
+formats are rejected rather than migrated or reinterpreted.
 
 `--explain REGISTRY:NAME@VERSION` requires offline mode and exactly matches a
 vulnerability coordinate. Human output shows the problem, its immediate recorded
@@ -136,8 +130,10 @@ the compact report. Further recorded requests follow the fixes. Joint changes ar
 not split and alternatives are not combined. An
 unmatched selector is usage exit 2. Inspection preserves the entire saved audit's
 0/1 outcome, including unrelated findings/gaps. Explanation JSON has its own
-`schema_version: 1`, `kind: audit_explanation`, provenance, selected problems,
-source-grouped nodes/relations, remediation and explicit detail/audit issues.
+`schema_version: 2`, `kind: audit_explanation`, provenance, selected problems,
+source-grouped nodes/relations, remediation, explicit detail/audit issues and
+`audit_lifecycle` for the whole saved audit. Native warnings remain visible in
+human explanations without changing advisory reference or requester algorithms.
 
 Detailed recommendations also expose `occurrence_scope`: subject references,
 per-change references in the same order as the complete change list, and
@@ -200,22 +196,21 @@ search limits explicitly apply to the whole audit. These layout rules do not
 change ordinary reports, archive/JSON schemas, flags or exit status.
 
 The archive is a JSON object with `format: githits-scan-analysis`, archive
-`schema_version: 1`, `writer_version`, `producer_report` and `selected_manifests`.
-The producer report is the consumed typed v2 projection with its generation
-timestamp, finding/coverage facts and retained mitigation/trace detail. It is a
-subset, not the original service JSON. Producer schema, archive schema and writing
-Scan versions are distinct. Optional keys preserve absence; required nullable
-facts remain null. V2 without remediation is saveable; v1/future producer schemas
-are not saveable in this format. Ordinary live interpretation is unchanged.
+`schema_version: 2`, `writer_version`, `producer_report` and `selected_manifests`.
+Its producer report is the consumed typed native schema-3 data, including native
+observations/coverage, generation timestamp and optional mitigation/trace detail.
+It is not the original service JSON. Producer, archive and writing Scan versions
+are independent. Required nullable facts stay null; optional fields stay absent.
+Native reports without remediation remain saveable.
 
-Loading and encoding are capped at 16,777,216 bytes; reads stop at cap+1. Archive
-overhead can make a near-cap service result unsaveable, which returns an error
-rather than truncating. Malformed/oversized archives, including malformed inner
-producer reports and missing selected files return usage exit 2; other open/read I/O errors return 3. Unknown
-archive versions return 2 without a rescan. Archive schema 1 freezes its required
-projection; later additions must be optional/unavailable when absent. An authored
-schema-1 fixture protects compatibility. Across Scan releases, presentation and
-interpretation can evolve; the source evidence is not refreshed.
+Reads and bounded encoding are capped at 16,777,216 bytes. Archive overhead can
+make a near-cap service result unsaveable; the encoder errors rather than
+truncating. Malformed/oversized archives or unsupported archive/producer versions
+return usage exit 2, with no network request or conversion. Other open/read I/O
+errors return 3. Use the recorded older writer to inspect an old analysis offline;
+a new audit is a separate intentional paid operation, never an automatic fallback.
+Across supported Scan releases, interpretation may evolve but stored evidence is
+not refreshed.
 
 Only consumed fields are saved, except opaque evidence for unknown change-reason
 codes retained for forward replay (see checked reasons below). Other unknown
@@ -249,7 +244,7 @@ limits remain authoritative; the client does not perform new upgrade reasoning.
 
 ## Mitigation recommendations
 
-Optional v2 `remediation` is consumed as proposals about the existing findings,
+Optional native `remediation` is consumed as proposals about the existing findings,
 not a change to installed dependencies. The service owns release/advisory/request
 checks and joint action reasoning; Scan never matches ranges or solves a graph.
 One record's changes stay together. JSON and archives preserve producer order.
@@ -266,7 +261,7 @@ The subject appears before related components within its problem block.
 Joint findings refer to other components explicitly; a component without its
 own subject group is described before the first alternative involving it. Advisory context comes directly from the exact referenced
 finding during view projection, with render-only fields skipped by JSON; there is
-no second package-name join. One view helper formats human severity for v1, v2 and
+no second package-name join. One view helper formats human severity for ordinary reports and
 recommendation context. Covered vulnerabilities appear in these cards rather than also in the earlier
 inventory. Membership uses validated original finding
 indices, not coordinate matching; uncovered findings and reports without usable
@@ -308,8 +303,8 @@ Blockers may supply an optional `dependency_name`, the dependency identity reque
 by the owner. Human output renders `express@5.1.0 requires cookie ^0.7.1` when
 that name and range are supplied. With a name but no range, it keeps the name and
 explicit requirement status, such as `express@5.1.0 requires cookie (requirement
-not recorded)`. The name is escaped like other untrusted text. Older reports
-without the field keep their existing human blocker structure. Scan never infers this
+not recorded)`. The name is escaped like other untrusted text. When the optional field is absent,
+human blockers show the owner and supplied requirement without an inferred dependency name. Scan never infers this
 identity from the owner, recommendation target or opaque context. Compact JSON,
 explanation JSON and saved analyses retain `dependency_name` when supplied and
 omit it when absent. A supplied value must be a string; null and other types are
@@ -395,8 +390,7 @@ Saved analyses retain the consumed known subset. Unknown reason codes are the
 explicit open-evidence exception: their opaque evidence is retained in the saved
 wire projection so a future reader can recognize it. That evidence is neither
 interpreted nor emitted in compact/explanation JSON or human output. Unknown
-fields on known reasons remain ignored. Saved and audit schema versions do not
-change; old reports without reasons remain usable.
+fields on known reasons remain ignored. The optional reasons field may be absent.
 
 The service's `change_reason_deadline` and `change_reason_membership_limit` limits
 read as time or requirement-check limits reached while checking change reasons.
@@ -408,7 +402,7 @@ recommendation or a new exit condition.
 withdrawal. The service excludes withdrawn advisories and known withdrawn release
 targets before mitigation planning; Scan does not reclassify advisory eligibility.
 
-Scan JSON schema 1 adds optional `remediation`: status, recommendations,
+Scan JSON schema 2 includes optional `remediation`: status, recommendations,
 trace_status and the useful omission limits/reasons. Records retain subject,
 outcome, changes, blockers, every independent check, resolved findings,
 addressed_findings, remaining_findings, limitations, detail_status and an optional
@@ -434,7 +428,7 @@ incomplete true and exit 1 while preserving original findings. JSON remediation
 is omitted and the issue alone explains why; no unavailable-planning note prints.
 
 Producer absence means planning was not assessed/retained; JSON omits remediation
-and vulnerable human reports say so once. Finding-free old reports gain no banner.
+and vulnerable human reports say so once. Finding-free reports gain no banner.
 Optional planning failure/limits alone do not change base completeness or exits.
 Proposed actions never clear original findings. A no-upgrade-path conclusion is
 restricted to its supplied represented-request and observed-release domain;
@@ -463,65 +457,61 @@ terminal semantics are unknown. Each read has the established timeout; there is 
 global reconnect count or new polling fallback. Explicit HTTP 429 refusals at any
 request share the [bounded rate-limit policy](sbom-api-contract.md#rate-limit-recovery).
 
-`api::audit::Report` decodes disjoint v1/v2 payloads using a crate-private body
-enum. Required consumed fields and nullable slots are checked; objects cannot be
-positional arrays. Additional fields and response strings remain open. Versions 3+
-are identified without retaining their payload and produce unsupported/incomplete
-exit 1. Invalid/zero versions and malformed known reports are execution errors. V1
-remains supported for existing API origins and production rollout compatibility;
-retiring it requires a separate explicit compatibility decision.
+`api::audit::Report` decodes only native producer schema 3. Required consumed
+fields and required-nullable slots are checked; objects cannot be positional
+arrays. Unsupported versions are typed execution failures carrying the result
+request ID. Older service results can occur during rollback; share the request ID
+with support rather than submitting another analysis. A newer returned format may
+need a newer Scan release for future audits. No opaque document is emitted as a
+clean or partly understood audit.
 
-For v1, pure interpretation checks occurrence/reference attribution and coverage
-accounting and recomputes summary counts and duplicate-version groups from eligible
-occurrences. The candidate/outcome partitions must account for eligible coordinates;
-exclusions, sources and resolutions must reconcile. Manifest/structural owners are
-valid but manifest source rows are not mandatory. Unknown resolutions remain gaps.
+Pure interpretation checks common advisory/outdated coverage, summary/group/gap
+counts, duplicate origins and native lifecycle evidence. The compact report has
+no full input/occurrence inventory to reconstruct: reported exact coordinates
+provide only a lower bound on `summary.dependencies`. Unattributed requirements
+select no target and can name a separate manifest path. Qualified advisory rows
+can remain meaningful gaps even when they are not counted as unknown advisories.
 
-V2 has no input or occurrence inventory. Scan checks vulnerability and metadata
-coverage partitions against `summary.dependencies`, recomputes finding/group/gap
-counts from available rows, and verifies distinct duplicate versions/groups and
-origin path coherence.
-Each version path must have a recorded parent or explicit absence; unattributed
-requirements intentionally select no target and may name a separate manifest path.
-Input path order is normalized; repeated/empty path evidence is unverified.
-Qualified advisory rows (`affected` or `non_affecting`) do not have to equal
-`unknown_count`; all qualified rows remain visible gaps. Unsupported and
-not-collected partitions are legitimate incomplete outcomes, not accounting errors.
+Native event identity is registry/name/category/kind/scope/source/affected-version.
+Each event retains all distinct source-version/time/reason/reason-code/replacement
+observations and their exact affected coordinates with nonempty unique selected
+paths. Known package scope has a null affected version; release/file scope has a
+version. Source authority and accepted selected-version spellings can differ, so
+Scan does not equate them or canonicalize package identities locally. A source
+observation time is acquisition evidence, not a status-change time or freshness
+promise. Replacement advice is labelled as the publisher's, never a verified fix.
 
-Metadata coverage for both versions partitions candidates into `checked_count`,
-`unknown_count`, `not_collected_count`, and `not_applicable_count`. The sum must
-exactly equal candidates without overflow. The optional
-`not_applicable_registries` names the registries represented by the last partition.
-Current reports supply both new fields; retained immutable reports may omit them.
-Scan preserves their presence or absence in saved v2 analyses and interprets an
-omitted count as zero. Legacy `not_collected` data stays incomplete, including
-PyPI; Scan never reclassifies it based on registry capability.
+Each of deprecation, withdrawal, registry archival and repository archival
+partitions eligible candidates into checked, unknown, not-collected and NA.
+Candidate totals, overflow-safe partitions, per-facet unknown rows, event and
+retained-warning totals, reference coherence and the combined incomplete-check
+count are reconciled. Incomplete checks sum advisory unknown/unsupported counts,
+outdated metadata-gap rows and native unknown rows. No local registry capability
+rules override those outcomes. A positive may coexist with an unknown, notably
+partial PyPI file withdrawal; findings are not required to be checked negatives.
 
-Applicability belongs to the service. An acquired PyPI release without retained
-positive deprecation evidence is not applicable to that check. Missing metadata
-and failed lookups remain unknown; retained positives remain findings. An empty
-finding list or compatibility `deprecated=false` does not establish checked
-coverage. Not-applicable candidates produce no metadata unknown rows and do not
-contribute to `summary.incomplete_checks`. Fully accounted checked plus
-not-applicable coverage creates no incomplete issue. Unknown, not-collected,
-source and policy gaps keep their existing behavior.
+An ambiguous retained NuGet warning appears once with its supplied reason and
+native uncertainty. Hex retirement, yanking, retraction, unlisting, package
+abandonment/discontinuation and Go module deprecation keep their native meaning.
+A package-wide finding is not relabelled a deprecated selected release. Native
+counts do not alter advisory counts or the service's upgrade-selection authority.
+Remediation's current `deprecated_target` flag remains producer-supplied evidence,
+independent of the removed coarse audit list.
 
-The existing public `limitations` array and human notices show the check name,
-checked/candidate counts, not-applicable count and supplied nonempty registry list.
-These are factual coverage notices, not findings or a new issue category. Real-gap
-aggregate issues also name the not-applicable count. Older Scan binaries ignore
-the new fields and can report unverified/incomplete coverage with exit 1 when
-not-applicable counts are positive. Upgrading Scan corrects interpretation of
-current reports; old retained reports cannot recover applicability facts that
-were never recorded. Project archival, quarantine and release/file yanking are
-separate from deprecation; Scan does not collect or reinterpret lifecycle status.
+Lifecycle not-collected and NA outcomes are collection limits, not findings or
+incomplete checks. JSON carries all four facets; `--details` shows supplied
+counts/registries. Help/docs describe routine capability limits instead of
+repeating archival/NA notices on every ordinary audit. Both archival facets are
+currently not collected; Scan acquires no registry/repository status. PyPI
+native deprecation NA does not assert a negative withdrawal check. Genuine unknown
+and failed observations stay visible and incomplete. Outdated not-collected and
+advisory unsupported outcomes retain their separate gap behavior.
 
-V2 cannot independently prove that an unreported coordinate or duplicate group is
-absent: it deliberately contains no inventory to reconstruct. Reported coordinates
-provide only a lower bound. Coverage and findings reflect producer-owned assessment,
-not globally fresh advisory truth or observed installations. Scan never fabricates
-v1 entries to recover stronger-looking checks, assesses advisories or solves constraints.
-Findings and gaps may coexist for one coordinate.
+Empty findings and zero candidates
+never establish health. Headlines describe available evidence, not universally
+checked safety. Coverage reflects the service's accepted observations, not global
+freshness or an observed installation. Scan neither assesses advisories nor
+solves dependency constraints.
 
 Semantic discrepancies are rendered as a **report unverified** issue, return 1 and
 retain the findings with a focused consistency issue. Structural decoding alone
@@ -545,7 +535,7 @@ help/documentation, not a repetitive footer. Producer notice inventories are not
 forwarded; actionable gaps come from the structured assessment and resolution
 fields.
 
-Duplicate version rows name their files and, for v2, requesting origins with
+Duplicate version rows name their files and requesting origins with
 literal recorded version/tag requirements. JSON adds compact `origins` rows under
 each version (`file`, optional requester/requirement/attribution basis, open
 status). Requesters are names with a version suffix only when recorded. Missing parent, not-recorded,
@@ -568,7 +558,7 @@ Known values are `lockfile_recorded` (native target), `manifest_lock_agreement`
 (a static published-version possibility). These values may appear on observed as
 well as possible origins; they do not promise historical solver choices. Missing
 or null basis is omitted, and unfamiliar basis text is retained. This useful field
-is additive in Scan schema 1; declaration-context inventories remain excluded.
+is included in Scan schema 2; declaration-context inventories remain excluded.
 
 A file shared by every version, origin and unattributed requirement is named once
 on the group; mixed and inconsistent paths retain precise per-version/request
@@ -580,10 +570,7 @@ by name. Human output labels these 'Declarations without a recorded dependency
 link'; it does not repeat an untargeted status on every row. Explicit absence and
 unfamiliar target states remain separately labelled. The coverage reason for an
 untargeted request uses 'dependency requirement without a recorded link' in both
-representations. No candidate is filtered or assigned locally. New producer
-reports omit release-only unlinked declarations; retained older reports may still
-include them. Uploaded/native gaps remain visible in either case. V1 still emits its no-origin limitation
-once; v2 drops that obsolete line.
+representations. No candidate is filtered or assigned locally. The producer omits release-only unlinked declarations. Uploaded/native gaps remain visible. No requesting origin or requirement is inferred when the service did not record it.
 Multiple versions and overlapping ranges do not establish conflicts, satisfaction
 or reachability. Native missing-input diagnostics and automatic Cargo/npm/Bun member
 evidence follow the [workspace evidence boundary](#workspace-evidence-boundary).
@@ -597,7 +584,7 @@ compatibility with caller constraints. Latest versions are metadata evidence.
 
 Deterministic trait, pure, loopback and real-binary tests use authored synthetic
 fixtures plus the public OpenAPI example. They verify each finding category, clean
-and gap-only outcomes, semantic discrepancies, v1/v2/future versions, compact JSON
+and gap-only outcomes, semantic discrepancies, native and unsupported versions, compact JSON
 allow-listing, duplicate origins and unattributed requirements, streams/files,
 progress/reconnect/terminal behavior, failures and result limits. Existing
 SBOM/license regression cases protect shared preparation and transport.
@@ -623,7 +610,7 @@ no cache, queue, lock, execution mode or dependency is added.
 
 ## Actionable input gaps and file lists
 
-V2 resolution diagnostics may supply `required_path`, a safe request-relative
+Native resolution diagnostics may supply `required_path`, a safe request-relative
 required manifest path. The API decoder accepts an optional string and rejects
 wrong types. Compact issues retain sorted unique `required_files` only when
 present. Neither interpretation nor rendering opens those paths or resubmits a
@@ -718,8 +705,8 @@ These findings alone produce attention exit 1, consistent with other findings.
 The optional `summary.manifest_lock_mismatches` count is checked against the list;
 a disagreement marks the report unverified/incomplete, not a decoding failure.
 Empty attribution paths or a recorded null/empty requirement also mark consumed
-new rows unverified. Older reports/archives omitting all additions remain valid.
-JSON additions preserve the command and archive schema versions. Replay retains
+new rows unverified. These optional evidence fields may be absent in native v3 reports.
+Audit/explanation JSON use schema 2; saved analysis uses format 2 with producer report 3. Replay retains
 the findings; vulnerability explanation still selects a component from the full
 analysis without hiding its overall outcome.
 
@@ -747,12 +734,12 @@ established by the presence of license checks, offline replay or remediation.
 
 ## Public schema publication
 
-Publishing optional remediation and related response types is a service-owned
-follow-up, deferred until the schema stabilizes. Scan consumes the
-qualified additive projection; this does not establish that generated clients can
-discover it. Before a contract-dependent increment, verify public admission and
-response schemas against the behavior it needs. User-facing schema publication
-is not replaced by speculative client defaults.
+Native audit v3 and lifecycle response schemas are published in the public
+OpenAPI. Remediation recommendation/blocker definitions remain partial stubs,
+and some qualified mismatch/remediation extensions are not fully described there.
+Do not infer generated-client discovery from an outer type's presence. Before a
+contract-dependent change, verify the actual emitted fields and public schema at
+their owning boundaries; keep this qualification distinct from runtime support.
 
 An unmatched saved-analysis `--explain` selector reports up to five unique
 vulnerable coordinates from that report, ranking exact names and substrings

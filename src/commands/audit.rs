@@ -130,9 +130,9 @@ fn project(
     policy: &crate::config::Audit,
 ) -> (view::View, Outcome) {
     let assessment = crate::audit::assess(report, policy);
-    let attention = assessment.as_ref().is_none_or(|a| a.attention);
+    let attention = assessment.attention;
     (
-        view::View::new(report, assessment.as_ref(), manifests, policy),
+        view::View::new(report, &assessment, manifests, policy),
         if attention {
             Outcome::Findings
         } else {

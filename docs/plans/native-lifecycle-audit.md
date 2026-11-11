@@ -2,7 +2,7 @@
 
 ## Outcome and scope
 
-Status: ready for implementation. One implementation PR will make ordinary Scan
+Status: implementation in progress. One implementation PR makes ordinary Scan
 audits request the qualified public native lifecycle report, interpret its native
 findings and coverage, and preserve those facts in human/JSON output and offline
 analysis. The next release has minor impact with an explicit breaking-change note.
@@ -105,7 +105,8 @@ needed now that legacy support is out of scope.
 command Request and CLI need no selector/signature widening. Existing upload,
 progress, result retrieval and bounded 429 recovery stay canonical.
 
-`src/audit.rs` becomes the single compact-report assessment, reusing the current
+`src/audit.rs` exposes the single compact-report assessment in its private
+`assessment` module, reusing the current
 compact algorithms for attribution, common counts, advisory policy and
 remediation consistency. A cohesive lifecycle helper owns event identity,
 observation/affected-reference consistency and facet accounting. Combine native
@@ -145,7 +146,7 @@ unnecessary after Juha removed retention and would obscure the breaking contract
 
 ## Implementation increment
 
-Status: ready. Dependencies: qualified public v3 contract
+Status: implementation in progress; verification and review remain. Dependencies: qualified public v3 contract
 and Juha's explicit breaking-change direction, both satisfied. Unknowns: none.
 
 1. Replace legacy report/assessment/view paths with the sole native model; update

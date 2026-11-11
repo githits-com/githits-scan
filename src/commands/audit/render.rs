@@ -5,6 +5,7 @@ use std::io::{self, Write};
 use super::view::{Duplicate, DuplicateVersion, Finding, Issue, Origin, View};
 use crate::style::Palette;
 
+pub(super) mod lifecycle;
 mod native;
 pub(super) mod remediation;
 
@@ -62,12 +63,6 @@ pub(super) fn write(
 ) -> io::Result<()> {
     header(view, out, palette)?;
     file_list("Manifests", &view.manifests, "", out)?;
-    file_list(
-        "Resolved from manifest constraints",
-        &view.resolved_from_manifests,
-        "",
-        out,
-    )?;
     vulnerability_section(view, out, palette)?;
     let ignored: Vec<_> = view
         .vulnerabilities
@@ -86,6 +81,7 @@ pub(super) fn write(
     }
     remediation::write(view, out, palette)?;
     native::mismatches(view, out, palette)?;
+    lifecycle::write(&view.lifecycle, details, out, palette)?;
     maintenance(view, details, out, palette)?;
     for (excluded, title) in [(false, "Incomplete checks"), (true, "Packages not checked")] {
         let issues: Vec<_> = view
@@ -107,8 +103,10 @@ pub(super) fn write(
             )?;
         }
     }
-    for note in &view.limitations {
-        writeln!(out, "\n{}", safe(note))?;
+    if details {
+        for note in &view.limitations {
+            writeln!(out, "\n{}", safe(note))?;
+        }
     }
     Ok(())
 }
@@ -117,7 +115,8 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
         writeln!(out, "Saved analysis from {}", safe(&analysis.generated_at))?;
     }
     let headline = if view.vulnerabilities.iter().any(|finding| !finding.ignored)
-        || !view.deprecated.is_empty()
+        || !view.lifecycle.findings.is_empty()
+        || !view.lifecycle.retained_warnings.is_empty()
         || !view.outdated.is_empty()
         || !view.duplicates.is_empty()
         || !view.manifest_lock_mismatches.is_empty()
@@ -126,20 +125,24 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
     } else if view.incomplete {
         "Audit results"
     } else if view.vulnerabilities.iter().any(|finding| finding.ignored) {
-        "No unignored audit findings in checked dependencies"
+        "No unignored audit findings in available evidence"
     } else {
-        "No audit findings in checked dependencies"
+        "No audit findings in available evidence"
     };
     writeln!(out, "{}", palette.bold(headline))?;
-    if let Some(s) = &view.summary {
+    {
+        let s = &view.summary;
         writeln!(
             out,
-            "{} {}; {} {}, {} deprecated, {} outdated, {} duplicate {}{}",
+            "{} {}; {} {}, {} lifecycle {}, {} retained {}, {} outdated, {} duplicate {}{}",
             s.dependencies,
             noun(s.dependencies, "dependency", "dependencies"),
             s.vulnerabilities,
             noun(s.vulnerabilities, "vulnerability", "vulnerabilities"),
-            s.deprecated,
+            s.lifecycle,
+            noun(s.lifecycle, "finding", "findings"),
+            s.retained_lifecycle_warnings,
+            noun(s.retained_lifecycle_warnings, "warning", "warnings"),
             s.outdated,
             s.duplicates,
             noun(s.duplicates, "package", "packages"),
@@ -171,20 +174,15 @@ fn maintenance(
     palette: Palette,
 ) -> io::Result<()> {
     if !details {
-        if !view.deprecated.is_empty() || !view.outdated.is_empty() || !view.duplicates.is_empty() {
+        if !view.outdated.is_empty() || !view.duplicates.is_empty() {
             writeln!(
                 out,
-                "\nUse --details to list deprecated, outdated and duplicate packages."
+                "\nUse --details for lifecycle source observations, affected files, coverage limits and outdated/duplicate lists."
             )?;
         }
         return Ok(());
     }
-    for (name, findings) in [
-        ("Deprecated releases", &view.deprecated),
-        ("Outdated versions", &view.outdated),
-    ] {
-        finding_section(name, findings, out, palette)?;
-    }
+    finding_section("Outdated versions", &view.outdated, out, palette)?;
     if !view.duplicates.is_empty() {
         heading("Duplicate versions", view.duplicates.len(), out, palette)?;
         for d in &view.duplicates {
@@ -250,9 +248,6 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     }
     if f.malicious {
         write!(out, " MALICIOUS")?;
-    }
-    if let Some(reason) = &f.reason {
-        write!(out, " — {}", safe(reason))?;
     }
     writeln!(out, "{}", paths(&f.files))?;
     if let Some(title) = f.title.as_ref().filter(|s| !s.is_empty()) {

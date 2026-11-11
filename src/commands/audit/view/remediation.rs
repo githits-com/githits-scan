@@ -7,7 +7,7 @@ pub(in crate::commands::audit) mod reasons;
 use reasons::Reason;
 
 use super::coordinate;
-use crate::api::audit::{Body, Report, remediation as wire, v2::Vulnerability};
+use crate::api::audit::{Report, remediation as wire, report::Vulnerability};
 use crate::audit::{Assessment, remediation::UNVERIFIED};
 
 #[derive(Serialize)]
@@ -31,9 +31,7 @@ impl State {
         if assessment.unverified.contains(UNVERIFIED) {
             return Self::Unverified;
         }
-        let Body::V2(r) = &report.body else {
-            return Self::Unavailable;
-        };
+        let r = &report.data;
         let Some(data) = &r.remediation else {
             return Self::Unavailable;
         };
@@ -63,7 +61,7 @@ impl State {
 
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Remediation {
-    // Positions address the unchanged v2 inventory order; never export them.
+    // Positions address the unchanged advisory finding order; never export them.
     #[serde(skip)]
     problem_indices: BTreeSet<usize>,
     pub status: String,
@@ -117,7 +115,7 @@ pub(in crate::commands::audit) struct Finding {
 pub(in crate::commands::audit) struct Change {
     /// Original consumed change, including archive-only data.
     pub data: wire::Change,
-    /// Compact checked effects; None preserves an old report's absence.
+    /// Compact checked effects; None preserves optional evidence absence.
     pub reasons: Option<Vec<Reason>>,
 }
 

@@ -2,7 +2,7 @@
 use super::{Finding, resolve};
 use crate::api::audit::{
     remediation::{Reason as WireReason, reasons::Request},
-    v2::Vulnerability,
+    report::Vulnerability,
     wire::Coordinate,
 };
 use serde::{Serialize, Serializer, ser::SerializeMap as _};

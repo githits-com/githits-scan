@@ -11,8 +11,7 @@ fn audit_explain_binary_polishes_recorded_request_context() {
     let root = repo();
     let path = root.path().join("analysis.json");
     let mut input: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let request =
         &mut input["producer_report"]["remediation"]["trace"]["relations"][1]["requests"][0];
     request["requirement_status"] = "not_recorded".into();
@@ -38,8 +37,7 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
     let root = repo();
     let path = root.path().join("analysis.json");
     let mut input: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let record = &mut input["producer_report"]["remediation"]["recommendations"][0];
     let blocker = json!({
         "owner":{"name":"parent","version":"2.0.0"},"owner_role":"third_party",
@@ -115,8 +113,7 @@ fn audit_explain_binary_deduplicates_reference_warnings_without_losing_json_issu
     let root = repo();
     let path = root.path().join("analysis.json");
     let mut input: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     input["producer_report"]["remediation"]["trace"]["relations"][0]["from_ref"] = json!(999_999);
     input["producer_report"]["remediation"]["trace"]["relations"][1]["path"] =
         "other/package-lock.json".into();
@@ -259,8 +256,7 @@ fn audit_saved_binary_bad_archives_and_selection_use_usage_exit() {
     let root = repo();
     let path = root.path().join("saved.json");
     let mut archive: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-            .expect("archive");
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let mut corrupt = archive.clone();
     corrupt["producer_report"] = json!({"schema_version":2});
     let mut future = archive.clone();
@@ -288,7 +284,7 @@ fn audit_saved_binary_bad_archives_and_selection_use_usage_exit() {
             .code(),
         Some(2)
     );
-    archive["producer_report"]["schema_version"] = 3.into();
+    archive["producer_report"]["schema_version"] = 4.into();
     fs::write(&path, serde_json::to_vec(&archive).expect("future inner")).expect("write");
     assert_eq!(offline(&path, &[]).status.code(), Some(2));
 }
@@ -567,7 +563,7 @@ fn audit_saved_binary_unwritable_parent_fails_preflight_without_upload() {
 fn audit_saved_output_routes_reports_and_explanations_offline() {
     let root = repo();
     let path = root.path().join("analysis.json");
-    fs::write(&path, include_bytes!("../fixtures/audit/analysis-v1.json")).expect("archive");
+    fs::write(&path, include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
     let target = root.path().join("report.json");
     for explain in [false, true] {
         let mut args = vec!["--json"];

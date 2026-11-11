@@ -135,6 +135,10 @@ impl HttpSbomApi {
             operation.kind(),
             operation.format()
         )));
+        if matches!(operation, Operation::Audit) {
+            url.query_pairs_mut()
+                .append_pair("report_version", &audit::SCHEMA_VERSION.to_string());
+        }
         let response = send(self, retries, RequestStage::Submission, progress, || {
             let form = multipart(
                 Form::new().percent_encode_noop(),

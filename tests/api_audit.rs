@@ -12,7 +12,7 @@ use std::ffi::OsString;
 use support::jobs::{ScriptedServer, accept_response, events_response, snapshot};
 use support::{head, response};
 
-const REPORT: &[u8] = include_bytes!("fixtures/audit/findings.json");
+const REPORT: &[u8] = include_bytes!("fixtures/audit/native-findings.json");
 fn audit_snapshot(state: &str, phase: &str, revision: u64) -> serde_json::Value {
     let mut s = snapshot(state, phase, revision);
     s["kind"] = "audit".into();
@@ -72,13 +72,12 @@ fn audit_reconnect_replaces_equal_revision_assessments_and_never_resubmits() {
         result(REPORT),
     ]);
     let mut progress = Vec::new();
-    let r = client(&s)
+    let _report = client(&s)
         .audit(upload(), &mut |e| {
             progress.push(e.clone());
             Ok(())
         })
         .expect("audit");
-    assert_eq!(r.version(), 1);
     assert_eq!(progress.len(), 5);
     assert_eq!(progress[1], ProgressEvent::Reconnecting);
     let first = match &progress[0] {
@@ -165,7 +164,7 @@ fn audit_result_media_structure_and_size_fail_closed() {
     for r in [
         response("200 OK", &[("Content-Type", "text/plain")], REPORT),
         result(b"{}"),
-        result(br#"{"schema_version":1}"#),
+        result(br#"{"schema_version":3}"#),
     ] {
         let s = success(r);
         let error = audit(&s).expect_err("invalid result");
@@ -178,4 +177,46 @@ fn audit_result_media_structure_and_size_fail_closed() {
     let s = success(result(&vec![b' '; MAX_RESPONSE_BYTES + 1]));
     assert!(matches!(audit(&s), Err(ApiError::ResponseTooLarge)));
     assert_eq!(s.requests().len(), 3);
+}
+
+#[test]
+fn audit_native_requires_version_three_without_resubmitting() {
+    let s = success(result(br#"{"schema_version":2}"#));
+    let error = audit(&s).expect_err("older completed audit result");
+    assert!(matches!(
+        &error,
+        ApiError::UnsupportedAuditVersion {
+            version: 2,
+            request_id: Some(request_id),
+        } if request_id == "req-audit-result"
+    ));
+    let message = error.to_string().to_ascii_lowercase();
+    assert!(message.contains("schema version 2"));
+    assert!(message.contains("requires version 3"));
+    assert!(message.contains("older format"));
+    assert!(message.contains("contact support"));
+    assert!(message.contains("request id req-audit-result"));
+    assert!(!message.contains("retry"));
+    assert!(!message.contains("replay"));
+
+    let requests = s.requests();
+    assert_eq!(requests.len(), 3);
+    assert_eq!(
+        requests
+            .iter()
+            .filter(|request| head(request).starts_with("post "))
+            .count(),
+        1
+    );
+    assert!(head(&requests[0]).starts_with(
+        "post /v1/experimental/lockfile-jobs?kind=audit&format=json&report_version=3 http/1.1"
+    ));
+    assert!(
+        head(&requests[1]).starts_with("get /v1/experimental/lockfile-jobs/")
+            && head(&requests[1]).contains("/events http/1.1")
+    );
+    assert!(
+        head(&requests[2]).starts_with("get /v1/experimental/lockfile-jobs/")
+            && head(&requests[2]).contains("/result http/1.1")
+    );
 }

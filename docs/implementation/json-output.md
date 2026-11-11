@@ -51,31 +51,40 @@ come from the catalog. Arrays retain discovery's deterministic path order.
 These are policy results, not a replay input or a license inventory. See
 [license check](license-check.md) for evaluator semantics.
 
-## Audit and saved explanations (schema 1)
+## Audit and saved explanations (schema 2)
 
-Audit has `schema_version`, `incomplete`, optional `analysis` provenance,
-optional `summary`, and nonempty finding/evidence groups: `vulnerabilities`,
-`deprecated`, `outdated`, `duplicates`, `manifest_lock_mismatches`, `issues`,
-`manifests`, `resolved_from_manifests`, `limitations`, plus `remediation` when
-available. Empty optional groups are omitted. Source paths and manifests are
-unique and sorted. Summary is absent for unknown producer versions. Vulnerability findings may carry
-`ignored: true` and `ignore: {id, reason}`; unmatched findings omit both fields.
-`summary.vulnerabilities` remains the raw total; optional
-`summary.ignored_vulnerabilities` counts ignored rows when nonzero. The same
-annotations appear on saved explanation `problems`. Archive schema 1 may contain
-optional `audit_policy: {ignore: [{id, reason}]}`; replay validates and reapplies
-it, while archives without it have no ignores.
+Native audit JSON has `schema_version: 2`, `incomplete`, optional saved `analysis`
+provenance, required `summary` and `lifecycle`, and useful common groups:
+`vulnerabilities`, `outdated`, `duplicates`, `manifest_lock_mismatches`, `issues`,
+`manifests`, `limitations` and optional `remediation`. Empty optional groups are
+omitted. There is no coarse `deprecated` or manifest-resolution inventory field.
+Summary separates `lifecycle` events and `retained_lifecycle_warnings` from
+vulnerabilities. Source manifests and common issue paths are sorted and unique.
 
-`audit --from-analysis --explain ... --json` has `kind: audit_explanation`,
+The canonical `lifecycle` subtree contains native events, distinct source
+observations with exact affected coordinates/paths, retained registry warnings,
+all four coverage facets, unknown rows and content-safety disclosure. Required
+nullable source/affected facts stay null; native strings stay open. Empty findings
+or collection limits do not establish a checked-safe result. Unknown/unverified
+outcomes set `incomplete`; ordinary collection limits alone do not. See
+[audit interpretation](audit.md#wire-and-interpretation-boundaries).
+
+Advisory ignores remain exact-ID. Findings retain `ignored: true` and their reason;
+summary vulnerability totals stay raw, with optional ignored counts. The archive
+stores an explicit nonempty policy when supplied and replay applies it without
+reading repository configuration.
+
+Saved explanation JSON has `schema_version: 2`, `kind: audit_explanation`,
 `analysis`, selected `problems`, `sources`, `issues`, `audit_incomplete`,
-`audit_issues`, and optional `remediation`. Its issues concern the selected
-explanation; audit issues retain whole-report gaps. Detailed nested evidence
-contracts live in [audit](audit.md). A saved analysis archive is a separate
-format (`format: githits-scan-analysis`), not compact audit JSON.
+`audit_issues`, `audit_lifecycle` and optional `remediation`. Focused advisory
+algorithms remain source-local; native audit evidence and the whole-audit outcome
+are preserved. A saved analysis is a separate format with
+`format: githits-scan-analysis`, archive schema 2 and producer report 3. Old
+archive/report versions are rejected; no migration or rescan is automatic.
 
 ### Reasons for remediation changes
 
-Both audit and `audit_explanation` schema 1 use the same optional
+Both audit and `audit_explanation` schema 2 use the same optional
 `remediation.recommendations[].changes[].reasons` array. Absence stays omitted;
 order and multiple effects are preserved. Known entries are:
 

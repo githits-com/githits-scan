@@ -12,11 +12,11 @@ mod audit_remediation_grouping;
 mod audit_change_reasons;
 
 use super::*;
-use crate::support::audit::v2_findings;
+use crate::support::audit::findings;
 use serde_json::{Value, json};
 
 fn remediation_report() -> Value {
-    let mut value = v2_findings();
+    let mut value = findings();
     value["remediation"] =
         serde_json::from_slice(include_bytes!("../fixtures/audit/remediation.json"))
             .expect("remediation fixture");
@@ -54,7 +54,7 @@ fn audit_remediation_normal_output_establishes_problem_before_guidance() {
         .split_once("Mitigation recommendations")
         .expect("mitigation section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Lifecycle warnings")
         .expect("next section")
         .0;
     assert_eq!(
@@ -187,12 +187,9 @@ fn audit_remediation_full_report_keeps_each_covered_problem_once() {
 fn audit_remediation_summary_uses_singular_nouns() {
     let input = remediation_report();
     assert!(human_report(&input).contains(
-        "2 dependencies; 1 vulnerability, 1 deprecated, 1 outdated, 1 duplicate package"
+        "2 dependencies; 1 vulnerability, 1 lifecycle finding, 0 retained warnings, 1 outdated, 1 duplicate package"
     ));
-    let output = execute_report(
-        &crate::support::audit::v2_clean(),
-        &["--quiet", "--no-color"],
-    );
+    let output = execute_report(&crate::support::audit::clean(), &["--quiet", "--no-color"]);
     assert_eq!(output.status.code(), Some(0));
     assert!(stdout(&output).contains("2 dependencies; 0 vulnerabilities"));
 }
@@ -235,7 +232,7 @@ fn audit_remediation_output_shape_keeps_actions_without_trace_dump() {
             .split_once("Mitigation recommendations")
             .expect("section")
             .1
-            .split_once("Deprecated releases")
+            .split_once("Lifecycle warnings")
             .expect("next section")
             .0;
         assert_shape_records(&input, &result);
@@ -514,7 +511,7 @@ fn audit_remediation_advisory_lists_avoid_repeating_covered_findings() {
             .split_once("Mitigation recommendations")
             .expect("section")
             .1
-            .split_once("Deprecated releases")
+            .split_once("Lifecycle warnings")
             .expect("next section")
             .0;
         assert!(!section.contains("    advisories: "));
@@ -554,7 +551,7 @@ fn audit_remediation_future_vocabulary_never_looks_like_known_action() {
 #[test]
 fn audit_remediation_unavailable_planning_does_not_change_clean_base() {
     for planning in ["completed", "not_assessed", "limited"] {
-        let mut input = crate::support::audit::v2_clean();
+        let mut input = crate::support::audit::clean();
         input["remediation"] = remediation_report()["remediation"].clone();
         input["remediation"]["status"] = planning.into();
         input["remediation"]["recommendations"] = json!([]);
@@ -565,7 +562,7 @@ fn audit_remediation_unavailable_planning_does_not_change_clean_base() {
         assert_eq!(result["incomplete"], false);
         assert_eq!(result["remediation"]["status"], planning);
     }
-    let old = v2_findings();
+    let old = findings();
     assert!(json_report(&old).get("remediation").is_none());
     assert_eq!(
         human_report(&old)
@@ -605,7 +602,7 @@ fn audit_remediation_invalid_references_suppress_only_action_section() {
         input["remediation"]["recommendations"][0][field] = json!([999]);
         assert_unverified(&input);
     }
-    let mut clean = crate::support::audit::v2_clean();
+    let mut clean = crate::support::audit::clean();
     clean["remediation"] = remediation_report()["remediation"].clone();
     assert_unverified(&clean);
 }
@@ -737,7 +734,7 @@ fn audit_remediation_parent_upgrade_names_the_vulnerable_dependency() {
         .split_once("Mitigation recommendations")
         .expect("section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Lifecycle warnings")
         .expect("next section")
         .0;
     assert_eq!(
@@ -756,7 +753,7 @@ fn audit_remediation_parent_upgrade_names_the_vulnerable_dependency() {
 }
 
 fn joint_action_report() -> Vec<u8> {
-    let mut report = v2_findings();
+    let mut report = findings();
     let mut remediation: Value =
         serde_json::from_slice(include_bytes!("../fixtures/audit/remediation.json"))
             .expect("remediation fixture");
@@ -831,7 +828,7 @@ fn assert_human_joint_action_set(bytes: &[u8]) {
         .split_once("Mitigation recommendations")
         .expect("mitigation section")
         .1
-        .split_once("Deprecated releases")
+        .split_once("Lifecycle warnings")
         .expect("deprecated section")
         .0;
     assert!(mitigation.contains("change together:"));

@@ -21,7 +21,7 @@
 [GitHits public API](https://docs.githits.com/api/overview) to:
 
 - generate a CycloneDX 1.7, SPDX 2.3 tag-value, or text SBOM;
-- audit vulnerabilities, deprecated releases, outdated and duplicate versions,
+- audit vulnerabilities, native package lifecycle warnings, outdated and duplicate versions,
   and manifest/lockfile disagreements;
 - report license evidence or check it against an explicit license policy.
 
@@ -196,10 +196,17 @@ githits-scan audit --save-analysis analysis.json
 githits-scan audit --from-analysis analysis.json     # offline replay
 ```
 
-Any unignored audit finding or incomplete check exits 1. A clean audit covers only the
+Audit requests native lifecycle report v3 automatically. Findings, retained lifecycle
+warnings and genuine incomplete checks exit 1. Lifecycle collection limits and checks
+that do not apply alone exit 0; `--details` explains them. Results cover only the
 selected evidence, not proof of an installed build's safety. JSON and saved
 analyses retain findings independently of human presentation. Scan proposes
 changes when the service supplies them; it does not edit dependencies.
+This breaking minor update emits audit/explanation JSON schema 2 and saved analysis
+format 2 with producer report 3. Older saved analyses are no longer read; use their
+recorded Scan writer version for offline replay. Unsupported service report versions
+fail with exit 3 without saving output or resubmitting the job.
+
 See [audit design](docs/implementation/audit.md) for evidence and replay semantics.
 
 To record a reviewed advisory decision in `githits-scan.toml`:

@@ -54,8 +54,8 @@ const CASES: &[Case] = &[
 ];
 
 fn archive() -> Value {
-    serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json"))
-        .expect("authored old archive")
+    serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json"))
+        .expect("authored archive")
 }
 
 fn assert_facts(finding: &Value, case: &Case) {
@@ -117,7 +117,7 @@ fn assert_saved_case(path: &Path, case: &Case, covered: bool) {
         assert!(output.stderr.is_empty(), "{}", stderr(&output));
         let view: Value = serde_json::from_slice(&output.stdout).expect("view JSON");
         assert_facts(&view[field][0], case);
-        assert_eq!(view["schema_version"], 1, "{view}");
+        assert_eq!(view["schema_version"], 2, "{view}");
     }
     assert_eq!(fs::read(path).expect("unchanged archive"), bytes);
 }
@@ -134,14 +134,14 @@ fn audit_presentation_saved_severity_preserves_facts_and_readable_labels() {
 }
 
 #[test]
-fn audit_presentation_v1_keeps_typed_severity_and_legacy_string() {
+fn audit_presentation_keeps_typed_and_display_severity() {
     let root = repo();
     let case = &CASES[1];
     let mut input = fixture();
     input["findings"]["vulnerabilities"][0]["severity_score"] = json!(case.0);
     input["findings"]["vulnerabilities"][0]["severity_type"] = json!(case.1);
     input["findings"]["vulnerabilities"][0]["summary"] = "Authored example vulnerability".into();
-    let bytes = serde_json::to_vec(&input).expect("v1 JSON");
+    let bytes = serde_json::to_vec(&input).expect("native JSON");
     let s = server(&bytes);
     let output = run(root.path(), Some(&s.origin()), &["--json"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
@@ -154,11 +154,11 @@ fn audit_presentation_v1_keeps_typed_severity_and_legacy_string() {
 }
 
 #[test]
-fn audit_presentation_old_archive_replay_matches_recorded_analysis() {
+fn audit_presentation_archive_replay_matches_recorded_analysis() {
     let root = repo();
-    let path = root.path().join("old-analysis.json");
-    let bytes = include_bytes!("../fixtures/audit/analysis-v1.json");
-    fs::write(&path, bytes).expect("old archive");
+    let path = root.path().join("analysis.json");
+    let bytes = include_bytes!("../fixtures/audit/analysis.json");
+    fs::write(&path, bytes).expect("archive");
     let input = archive();
     let s = server(&serde_json::to_vec(&input["producer_report"]).expect("producer JSON"));
     let online = run(root.path(), Some(&s.origin()), &["--json", "--quiet"]);

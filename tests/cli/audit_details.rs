@@ -1,10 +1,10 @@
 //! Compact maintenance visibility in the real audit binary.
 use super::*;
-use crate::support::audit::v2_findings;
+use crate::support::audit::findings;
 
 #[test]
 fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
-    let report = v2_findings();
+    let report = findings();
 
     let compact_root = repo();
     let compact_server = server(&serde_json::to_vec(&report).expect("report"));
@@ -21,16 +21,12 @@ fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
         "GHSA-demo",
         "Incomplete checks",
         "Packages not checked",
-        "1 deprecated, 1 outdated, 1 duplicate package",
+        "1 lifecycle finding, 0 retained warnings, 1 outdated, 1 duplicate package",
         "--details",
     ] {
         assert!(compact_text.contains(text), "{text}: {compact_text}");
     }
-    for heading in [
-        "Deprecated releases",
-        "Outdated versions",
-        "Duplicate versions",
-    ] {
+    for heading in ["Outdated versions", "Duplicate versions"] {
         assert!(!compact_text.contains(heading), "{heading}: {compact_text}");
     }
 
@@ -46,7 +42,7 @@ fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
     assert_eq!(detailed_server.requests().len(), 3);
     let detailed_text = stdout(&detailed);
     for text in [
-        "Deprecated releases",
+        "Lifecycle warnings",
         "Outdated versions",
         "Duplicate versions",
         "use the maintained package",

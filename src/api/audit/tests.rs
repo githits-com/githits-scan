@@ -1,7 +1,6 @@
 use super::*;
 
-const FINDINGS: &[u8] = include_bytes!("../../../tests/fixtures/audit/findings.json");
-const V2: &[u8] = include_bytes!("../../../tests/fixtures/audit/v2-findings.json");
+const NATIVE: &[u8] = include_bytes!("../../../tests/fixtures/audit/native-findings.json");
 
 fn remove_projection_key(value: &mut serde_json::Value, path: &str, key: &str) {
     value
@@ -12,7 +11,7 @@ fn remove_projection_key(value: &mut serde_json::Value, path: &str, key: &str) {
         .remove(key);
 }
 
-fn expected_v2_projection(mut value: serde_json::Value) -> serde_json::Value {
+fn expected_projection(mut value: serde_json::Value) -> serde_json::Value {
     for key in ["schema_version", "notices", "future_marker"] {
         value.as_object_mut().expect("root object").remove(key);
     }
@@ -37,12 +36,9 @@ fn expected_v2_projection(mut value: serde_json::Value) -> serde_json::Value {
     value
 }
 
-fn serialize_v2_projection(bytes: &[u8]) -> Option<serde_json::Value> {
-    let report = Report::from_bytes(bytes).expect("v2 report");
-    let Body::V2(body) = &report.body else {
-        return None;
-    };
-    Some(serde_json::to_value(body).expect("serialized v2 projection"))
+fn serialize_projection(bytes: &[u8]) -> serde_json::Value {
+    let report = Report::from_bytes(bytes).expect("native report");
+    serde_json::to_value(&report.data).expect("serialized projection")
 }
 
 #[test]
@@ -51,7 +47,7 @@ fn audit_saved_wire_projection_round_trips() {
         "../../../tests/fixtures/audit/remediation.json"
     ))
     .expect("remediation fixture");
-    let mut original: serde_json::Value = serde_json::from_slice(V2).expect("v2 fixture");
+    let mut original: serde_json::Value = serde_json::from_slice(NATIVE).expect("native fixture");
     original["remediation"] = remediation;
     original["future_marker"] = serde_json::json!({"ignored": true});
     original["summary"]["future_marker"] = serde_json::json!("ignored");
@@ -59,11 +55,10 @@ fn audit_saved_wire_projection_round_trips() {
         serde_json::json!("ignored");
     original["remediation"]["trace"]["future_marker"] = serde_json::json!("ignored");
 
-    let expected = expected_v2_projection(original.clone());
-    let serialized = serialize_v2_projection(
-        &serde_json::to_vec(&original).expect("encoded v2 report with remediation"),
-    )
-    .expect("v2 projection with remediation");
+    let expected = expected_projection(original.clone());
+    let serialized = serialize_projection(
+        &serde_json::to_vec(&original).expect("encoded native report with remediation"),
+    );
     assert_eq!(serialized, expected);
     for path in [
         "/findings/duplicates/0/versions/1/origins/0/requested_requirement",
@@ -86,33 +81,31 @@ fn audit_saved_wire_projection_round_trips() {
     }
 
     let mut envelope = serialized.clone();
-    envelope["schema_version"] = serde_json::json!(2);
-    let second_projection = serialize_v2_projection(
+    envelope["schema_version"] = serde_json::json!(3);
+    let second_projection = serialize_projection(
         &serde_json::to_vec(&envelope).expect("encoded serialized projection"),
-    )
-    .expect("second v2 projection with remediation");
+    );
     assert_eq!(second_projection, serialized);
 
     let mut without_remediation: serde_json::Value =
-        serde_json::from_slice(V2).expect("v2 fixture without remediation");
+        serde_json::from_slice(NATIVE).expect("native fixture without remediation");
     without_remediation["future_marker"] = serde_json::json!("ignored");
     without_remediation["summary"]["future_marker"] = serde_json::json!("ignored");
     without_remediation["findings"]["vulnerabilities"][0]["coordinate"]["future_marker"] =
         serde_json::json!("ignored");
-    let expected_without_remediation = expected_v2_projection(without_remediation.clone());
-    let serialized_without_remediation = serialize_v2_projection(
-        &serde_json::to_vec(&without_remediation).expect("encoded v2 report without remediation"),
-    )
-    .expect("v2 projection without remediation");
+    let expected_without_remediation = expected_projection(without_remediation.clone());
+    let serialized_without_remediation = serialize_projection(
+        &serde_json::to_vec(&without_remediation)
+            .expect("encoded native report without remediation"),
+    );
     assert_eq!(serialized_without_remediation, expected_without_remediation);
     assert!(serialized_without_remediation.get("remediation").is_none());
     let mut without_remediation_envelope = serialized_without_remediation.clone();
-    without_remediation_envelope["schema_version"] = serde_json::json!(2);
-    let second_without_remediation_projection = serialize_v2_projection(
+    without_remediation_envelope["schema_version"] = serde_json::json!(3);
+    let second_without_remediation_projection = serialize_projection(
         &serde_json::to_vec(&without_remediation_envelope)
             .expect("encoded projection without remediation"),
-    )
-    .expect("second v2 projection without remediation");
+    );
     assert_eq!(
         second_without_remediation_projection,
         serialized_without_remediation
@@ -131,7 +124,7 @@ fn audit_remediation_rejects_malformed_consumed_fields() {
         ("/recommendations/0/finding_refs", serde_json::json!(["0"])),
         ("/trace/status", serde_json::json!(7)),
     ] {
-        let mut v: serde_json::Value = serde_json::from_slice(V2).expect("base");
+        let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("base");
         v["remediation"] = remediation.clone();
         *v["remediation"].pointer_mut(path).expect("path") = invalid;
         assert!(
@@ -163,7 +156,7 @@ fn audit_remediation_required_fields_and_optional_nulls_fail_closed() {
         ("/trace", "status"),
         ("/limits", "omitted_occurrences"),
     ] {
-        let mut v: serde_json::Value = serde_json::from_slice(V2).expect("base");
+        let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("base");
         v["remediation"] = data.clone();
         v["remediation"]
             .pointer_mut(path)
@@ -181,7 +174,7 @@ fn audit_remediation_required_fields_and_optional_nulls_fail_closed() {
         "/recommendations/0/changes/0/availability_source",
         "/recommendations/0/changes/0/prerelease_target",
     ] {
-        let mut v: serde_json::Value = serde_json::from_slice(V2).expect("base");
+        let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("base");
         v["remediation"] = data.clone();
         let (parent, field) = path.rsplit_once('/').expect("path");
         v["remediation"].pointer_mut(parent).expect("parent")[field] = serde_json::Value::Null;
@@ -193,70 +186,82 @@ fn audit_remediation_required_fields_and_optional_nulls_fail_closed() {
 }
 
 #[test]
-fn audit_v1_decodes_required_nullable_fields() {
-    let report = Report::from_bytes(FINDINGS).expect("v1");
-    assert_eq!(report.version(), 1);
-    assert!(matches!(&report.body, Body::V1(r) if r.findings.vulnerabilities.len() == 1));
-    let mut value: serde_json::Value = serde_json::from_slice(FINDINGS).expect("fixture");
-    value["occurrences"][0]
-        .as_object_mut()
-        .expect("object")
-        .remove("coordinate");
-    assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("json")).is_err());
+fn audit_native_fixture_decodes_current_contract() {
+    let report = Report::from_bytes(NATIVE).expect("native fixture");
+    assert_eq!(report.data.summary.lifecycle, 1);
+    assert_eq!(report.data.lifecycle.findings[0].kind, "deprecated");
+    assert_eq!(
+        report.data.lifecycle.findings[0].observations[0].affected[0]
+            .coordinate
+            .name,
+        "demo"
+    );
+    assert!(
+        crate::audit::assess(&report, &crate::config::Audit::default())
+            .unverified
+            .is_empty()
+    );
 }
 
 #[test]
-fn audit_future_is_identified_and_bad_versions_fail_closed() {
-    let report = Report::from_bytes(br#"{"schema_version":3,"future":{"summary":"opaque"}}"#)
-        .expect("future");
-    assert_eq!(report.version(), 3);
-    assert!(matches!(report.body, Body::Future(3)));
+fn audit_native_unsupported_and_malformed_versions_fail_closed() {
+    for version in [0, 1, 2, 4, u64::MAX] {
+        let bytes = serde_json::to_vec(
+            &serde_json::json!({"schema_version":version,"opaque":"must not escape"}),
+        )
+        .expect("JSON");
+        let error = Report::from_bytes(&bytes).expect_err("unsupported");
+        assert!(
+            matches!(error, ApiError::UnsupportedAuditVersion { version: actual, .. } if actual == version)
+        );
+        assert!(error.to_string().contains("requires version 3"));
+        assert!(!error.to_string().contains("must not escape"));
+    }
     for bytes in [
         b"{}".as_slice(),
-        br#"{"schema_version":0}"#,
         br#"{"schema_version":-1}"#,
-        br#"{"schema_version":"1"}"#,
-        br#"{"schema_version":1}"#,
-        br#"{"schema_version":2}"#,
+        br#"{"schema_version":"3"}"#,
+        br#"{"schema_version":3}"#,
         b"[1]",
     ] {
-        assert!(Report::from_bytes(bytes).is_err(), "{bytes:?}");
+        assert!(Report::from_bytes(bytes).is_err());
     }
 }
 
 #[test]
 fn audit_objects_reject_positional_arrays_and_accept_additional_fields() {
-    let mut value: serde_json::Value = serde_json::from_slice(FINDINGS).expect("fixture");
-    value["occurrences"][0]["coordinate"] = serde_json::json!(["demo", "npm", "1.0.0"]);
-    assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("json")).is_err());
-    let mut value: serde_json::Value = serde_json::from_slice(FINDINGS).expect("fixture");
-    value["summary"]["future_counter"] = 44.into();
-    value["occurrences"][0]["coordinate"]["future_field"] = "ignored additional value".into();
+    let mut value: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
+    value["lifecycle"]["findings"][0]["observations"][0]["affected"][0]["coordinate"] =
+        serde_json::json!(["demo", "npm", "1.0.0"]);
+    assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).is_err());
+    let mut value: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
+    value["lifecycle"]["findings"][0]["new_metadata"] = serde_json::json!({"do_not_forward":true});
+    value["lifecycle"]["findings"][0]["kind"] = "future_kind".into();
     let report =
-        Report::from_bytes(&serde_json::to_vec(&value).expect("json")).expect("additional fields");
+        Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).expect("open vocabulary");
     assert!(
         crate::audit::assess(&report, &crate::config::Audit::default())
-            .expect("known")
             .unverified
-            .is_empty(),
-        "{:?}",
-        crate::audit::assess(&report, &crate::config::Audit::default())
-            .expect("known")
-            .unverified
+            .is_empty()
+    );
+    let projected = serde_json::to_value(&report.data).expect("projection");
+    assert_eq!(projected["lifecycle"]["findings"][0]["kind"], "future_kind");
+    assert!(
+        projected["lifecycle"]["findings"][0]
+            .get("new_metadata")
+            .is_none()
     );
 }
 
 #[test]
-fn audit_v2_consumes_compact_fields_and_requires_nullable_slots() {
-    let report = Report::from_bytes(V2).expect("v2");
-    assert_eq!(report.version(), 2);
-    let requirement = match &report.body {
-        Body::V2(r) => r.findings.duplicates[0].versions[0].origins[0]
+fn audit_report_consumes_compact_fields_and_requires_nullable_slots() {
+    let report = Report::from_bytes(NATIVE).expect("native");
+    assert_eq!(
+        report.data.findings.duplicates[0].versions[0].origins[0]
             .requested_requirement
             .as_deref(),
-        _ => None,
-    };
-    assert_eq!(requirement, Some("^1.0.0"));
+        Some("^1.0.0")
+    );
     for (path, field) in [
         ("/findings/vulnerabilities/0", "summary"),
         ("/findings/vulnerabilities/0", "severity_score"),
@@ -269,11 +274,15 @@ fn audit_v2_consumes_compact_fields_and_requires_nullable_slots() {
             "/findings/duplicates/0/versions/0/origins/0/requester",
             "version",
         ),
-        ("/unknowns/metadata/0", "reason"),
+        ("/lifecycle/findings/0", "version"),
+        ("/lifecycle/findings/0/observations/0", "reason"),
+        ("/lifecycle/findings/0/observations/0", "replacement"),
+        ("/lifecycle/findings/0/observations/0", "source_version"),
+        ("/lifecycle/findings/0/observations/0", "observed_at"),
         ("/unknowns/resolution/0", "name"),
         ("/unknowns/excluded_dependencies/0", "version"),
     ] {
-        let mut v: serde_json::Value = serde_json::from_slice(V2).expect("fixture");
+        let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
         v.pointer_mut(path)
             .expect("path")
             .as_object_mut()
@@ -287,47 +296,48 @@ fn audit_v2_consumes_compact_fields_and_requires_nullable_slots() {
 }
 
 #[test]
-fn audit_v2_rejects_wrong_containers_without_closing_additive_vocabulary() {
+fn audit_report_rejects_wrong_containers_without_closing_additive_vocabulary() {
     for path in [
         "/summary",
         "/findings",
         "/coverage",
         "/unknowns",
+        "/lifecycle",
+        "/lifecycle/findings/0",
+        "/lifecycle/findings/0/observations/0",
+        "/lifecycle/coverage/deprecation",
         "/findings/duplicates/0/versions/0/origins/0/requester",
     ] {
-        let mut v: serde_json::Value = serde_json::from_slice(V2).expect("fixture");
+        let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
         *v.pointer_mut(path).expect("path") = serde_json::json!([]);
         assert!(
             Report::from_bytes(&serde_json::to_vec(&v).expect("json")).is_err(),
             "{path}"
         );
     }
-    let mut v: serde_json::Value = serde_json::from_slice(V2).expect("fixture");
+    let mut v: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
     v["findings"]["duplicates"][0]["versions"][0]["origins"][0]["status"] = "future_origin".into();
     v["findings"]["outdated"][0]["change_type"] = "future_delta".into();
     v["future_inventory"] = serde_json::json!({"native_id":"must not escape"});
     let report = Report::from_bytes(&serde_json::to_vec(&v).expect("json")).expect("open fields");
     assert!(
         crate::audit::assess(&report, &crate::config::Audit::default())
-            .expect("known")
             .unverified
             .is_empty(),
         "{:?}",
-        crate::audit::assess(&report, &crate::config::Audit::default())
-            .expect("known")
-            .unverified
+        crate::audit::assess(&report, &crate::config::Audit::default()).unverified
     );
 }
 
 #[test]
-fn audit_v2_optional_attribution_basis_rejects_wrong_types() {
+fn audit_report_optional_attribution_basis_rejects_wrong_types() {
     for basis in [
         serde_json::json!(7),
         serde_json::json!(true),
         serde_json::json!([]),
         serde_json::json!({}),
     ] {
-        let mut value: serde_json::Value = serde_json::from_slice(V2).expect("fixture");
+        let mut value: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
         value["findings"]["duplicates"][0]["versions"][0]["origins"][0]["attribution_basis"] =
             basis;
         assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("json")).is_err());
@@ -335,36 +345,43 @@ fn audit_v2_optional_attribution_basis_rejects_wrong_types() {
 }
 
 #[test]
-fn audit_v2_required_path_rejects_wrong_types() {
+fn audit_report_required_path_rejects_wrong_types() {
     for invalid in [
         serde_json::json!(7),
         serde_json::json!(true),
         serde_json::json!([]),
         serde_json::json!({}),
     ] {
-        let mut value: serde_json::Value = serde_json::from_slice(V2).expect("fixture");
+        let mut value: serde_json::Value = serde_json::from_slice(NATIVE).expect("fixture");
         value["unknowns"]["resolution"] = serde_json::json!([{"path":"Cargo.toml","name":null,"reason":"required_input_not_supplied","required_path":invalid}]);
         assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("json")).is_err());
     }
 }
 
 #[test]
-fn audit_not_applicable_fields_reject_malformed_present_values() {
-    for version in [1, 2] {
-        for (field, invalid) in [
-            ("not_applicable_count", serde_json::Value::Null),
-            ("not_applicable_count", serde_json::json!(-1)),
-            ("not_applicable_count", serde_json::json!("2")),
-            ("not_applicable_registries", serde_json::Value::Null),
-            ("not_applicable_registries", serde_json::json!({})),
-            ("not_applicable_registries", serde_json::json!([1])),
-        ] {
-            let mut value = crate::test_support::audit::pypi_not_applicable(version);
-            value["coverage"]["deprecation"][field] = invalid;
-            assert!(
-                Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).is_err(),
-                "v{version} {field}"
-            );
-        }
+fn audit_native_facet_fields_are_required_and_correctly_typed() {
+    for (field, invalid) in [
+        ("not_applicable_count", serde_json::Value::Null),
+        ("not_applicable_count", serde_json::json!(-1)),
+        ("not_applicable_count", serde_json::json!("2")),
+        ("not_applicable_registries", serde_json::Value::Null),
+        ("not_applicable_registries", serde_json::json!({})),
+        ("not_applicable_registries", serde_json::json!([1])),
+    ] {
+        let mut value = crate::test_support::audit::pypi_not_applicable();
+        value["lifecycle"]["coverage"]["deprecation"][field] = invalid;
+        assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).is_err());
+    }
+    for field in [
+        "not_applicable_count",
+        "not_applicable_registries",
+        "unknown_count",
+    ] {
+        let mut value = crate::test_support::audit::pypi_not_applicable();
+        value["lifecycle"]["coverage"]["deprecation"]
+            .as_object_mut()
+            .expect("facet")
+            .remove(field);
+        assert!(Report::from_bytes(&serde_json::to_vec(&value).expect("JSON")).is_err());
     }
 }

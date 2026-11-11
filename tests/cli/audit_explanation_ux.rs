@@ -4,7 +4,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeSet;
 
 fn fixture() -> Value {
-    serde_json::from_slice(include_bytes!("../fixtures/audit/analysis-v1.json")).expect("archive")
+    serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive")
 }
 fn trace(input: &mut Value) -> &mut Value {
     &mut input["producer_report"]["remediation"]["trace"]

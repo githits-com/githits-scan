@@ -2,16 +2,23 @@
 use std::collections::BTreeSet;
 
 use super::{Assessment, Summary, metadata_gap};
-use crate::api::audit::v2::{Duplicate, V2};
+use crate::api::audit::report::{Data, Duplicate};
 use crate::api::audit::wire::Coordinate;
 
 type Warnings = BTreeSet<&'static str>;
 
-pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
+pub(crate) fn assess(
+    report: &crate::api::audit::Report,
+    policy: &crate::config::Audit,
+) -> Assessment {
+    let r = &report.data;
     let mut unverified = Warnings::new();
     coverage(r, &mut unverified);
     counts(r, &mut unverified);
     attribution(r, &mut unverified);
+    if !super::lifecycle::verified(&r.lifecycle, r.summary.dependencies) {
+        unverified.insert("native lifecycle coverage or attribution is inconsistent");
+    }
     if !super::remediation::verified(r) {
         unverified.insert(super::remediation::UNVERIFIED);
     }
@@ -19,7 +26,8 @@ pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
     let summary = Summary {
         dependencies: r.summary.dependencies,
         vulnerabilities: r.findings.vulnerabilities.len() as u64,
-        deprecated: r.findings.deprecated.len() as u64,
+        lifecycle: r.lifecycle.findings.len() as u64,
+        retained_lifecycle_warnings: r.lifecycle.retained_warnings.len() as u64,
         outdated: r.findings.outdated.len() as u64,
         duplicates: r.findings.duplicates.len() as u64,
     };
@@ -28,7 +36,8 @@ pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
             .vulnerabilities
             .iter()
             .any(|finding| super::ignored(policy, &finding.advisory_id).is_none())
-        || summary.deprecated != 0
+        || summary.lifecycle != 0
+        || summary.retained_lifecycle_warnings != 0
         || summary.outdated != 0
         || summary.duplicates != 0
         || !r.findings.manifest_lock_mismatches.is_empty();
@@ -40,7 +49,7 @@ pub(super) fn assess(r: &V2, policy: &crate::config::Audit) -> Assessment {
     }
 }
 
-fn has_gaps(r: &V2) -> bool {
+fn has_gaps(r: &Data) -> bool {
     let u = &r.unknowns;
     !u.vulnerabilities.is_empty()
         || !u.metadata.is_empty()
@@ -49,11 +58,11 @@ fn has_gaps(r: &V2) -> bool {
         || !u.excluded_dependencies.is_empty()
         || r.coverage.vulnerabilities.checked_count != r.coverage.vulnerabilities.candidates_count
         || !r.coverage.vulnerabilities.unsupported_registries.is_empty()
-        || metadata_gap(&r.coverage.deprecation)
+        || !r.lifecycle.unknowns.is_empty()
         || metadata_gap(&r.coverage.outdated)
 }
 
-fn coverage(r: &V2, warnings: &mut Warnings) {
+fn coverage(r: &Data, warnings: &mut Warnings) {
     let v = &r.coverage.vulnerabilities;
     let total = v
         .checked_count
@@ -62,15 +71,14 @@ fn coverage(r: &V2, warnings: &mut Warnings) {
     if v.candidates_count != r.summary.dependencies || total != Some(v.candidates_count) {
         warnings.insert("vulnerability coverage does not account for eligible packages");
     }
-    for c in [&r.coverage.deprecation, &r.coverage.outdated] {
-        let total = super::metadata_total(c);
-        if c.candidates_count != r.summary.dependencies || total != Some(c.candidates_count) {
-            warnings.insert("metadata coverage does not account for eligible packages");
-        }
+    let c = &r.coverage.outdated;
+    let total = super::metadata_total(c);
+    if c.candidates_count != r.summary.dependencies || total != Some(c.candidates_count) {
+        warnings.insert("metadata coverage does not account for eligible packages");
     }
 }
 
-fn counts(r: &V2, warnings: &mut Warnings) {
+fn counts(r: &Data, warnings: &mut Warnings) {
     let s = &r.summary;
     let f = &r.findings;
     let sources: BTreeSet<_> = r.unknowns.sources.iter().map(|g| &g.path).collect();
@@ -84,9 +92,11 @@ fn counts(r: &V2, warnings: &mut Warnings) {
     let checks = v
         .unknown_count
         .checked_add(v.unsupported_count)
-        .and_then(|n| n.checked_add(r.unknowns.metadata.len() as u64));
+        .and_then(|n| n.checked_add(r.unknowns.metadata.len() as u64))
+        .and_then(|n| n.checked_add(r.lifecycle.unknowns.len() as u64));
     if s.vulnerabilities != f.vulnerabilities.len() as u64
-        || s.deprecated != f.deprecated.len() as u64
+        || s.lifecycle != r.lifecycle.findings.len() as u64
+        || s.retained_lifecycle_warnings != r.lifecycle.retained_warnings.len() as u64
         || s.outdated != f.outdated.len() as u64
         || s.duplicates != f.duplicates.len() as u64
         || s.manifest_lock_mismatches
@@ -101,20 +111,19 @@ fn counts(r: &V2, warnings: &mut Warnings) {
     }
 }
 
-fn paths_valid(paths: &[String]) -> bool {
+pub(super) fn paths_valid(paths: &[String]) -> bool {
     !paths.is_empty()
         && paths.iter().all(|p| !p.is_empty())
         && paths.iter().collect::<BTreeSet<_>>().len() == paths.len()
 }
 
-fn attribution(r: &V2, warnings: &mut Warnings) {
+fn attribution(r: &Data, warnings: &mut Warnings) {
     let f = &r.findings;
     let u = &r.unknowns;
     let paths = f
         .vulnerabilities
         .iter()
         .map(|x| &x.paths)
-        .chain(f.deprecated.iter().map(|x| &x.paths))
         .chain(f.outdated.iter().map(|x| &x.paths))
         .chain(u.vulnerabilities.iter().map(|x| &x.paths))
         .chain(u.metadata.iter().map(|x| &x.paths))
@@ -149,17 +158,17 @@ fn attribution(r: &V2, warnings: &mut Warnings) {
     if groups.len() != f.duplicates.len() || f.duplicates.iter().any(|d| !duplicate_valid(d)) {
         warnings.insert("duplicate versions or requesting origins have inconsistent attribution");
     }
-    // Only a lower bound is possible: v2 deliberately omits the full inventory.
+    // The native compact report deliberately omits the full inventory.
     let mut coordinates: BTreeSet<_> = f
         .vulnerabilities
         .iter()
         .map(|x| &x.coordinate)
-        .chain(f.deprecated.iter().map(|x| &x.coordinate))
         .chain(f.outdated.iter().map(|x| &x.coordinate))
         .chain(u.vulnerabilities.iter().map(|x| &x.coordinate))
         .chain(u.metadata.iter().map(|x| &x.coordinate))
         .map(key)
         .collect();
+    coordinates.extend(super::lifecycle::coordinates(&r.lifecycle).map(key));
     for d in &f.duplicates {
         coordinates.extend(
             d.versions
@@ -205,6 +214,3 @@ fn duplicate_valid(d: &Duplicate) -> bool {
                     .is_some_and(|s| !s.is_empty()))
     })
 }
-
-#[cfg(test)]
-mod tests;
