@@ -53,15 +53,15 @@ pub(super) fn informational_only(v: &View) -> io::Result<bool> {
         return Ok(false);
     }
     let top: view::Coverage = serde_json::from_str(v.coverage.get()).map_err(io::Error::other)?;
-    if !coverage_is_git(&top, v) || !reviews_complete(v)? {
+    let base: view::Coverage =
+        serde_json::from_str(v.snapshots.base.coverage.get()).map_err(io::Error::other)?;
+    let head: view::Coverage =
+        serde_json::from_str(v.snapshots.head.coverage.get()).map_err(io::Error::other)?;
+    if unexplained_partial(&base, &head, &top).is_some()
+        || ![&base, &head, &top].iter().all(|c| coverage_is_git(c, v))
+        || !reviews_complete(v)?
+    {
         return Ok(false);
-    }
-    for (_, snapshot) in v.snapshots.iter() {
-        let c: view::Coverage =
-            serde_json::from_str(snapshot.coverage.get()).map_err(io::Error::other)?;
-        if (c.partial == Some(true) && !has_details(&c)) || !coverage_is_git(&c, v) {
-            return Ok(false);
-        }
     }
     if !matches!(v.advisories.status.as_str(), "complete" | "partial")
         || v.advisories.reason.is_some()
@@ -161,7 +161,29 @@ fn reviews_complete(v: &View) -> io::Result<bool> {
         }))
 }
 
-pub(super) fn has_details(c: &view::Coverage) -> bool {
+// This phase is shared by headline qualification and the missing-details explanation.
+pub(super) fn unexplained_partial(
+    base: &view::Coverage,
+    head: &view::Coverage,
+    report: &view::Coverage,
+) -> Option<&'static str> {
+    let before = base.partial == Some(true) && !has_details(base);
+    let after = head.partial == Some(true) && !has_details(head);
+    match (before, after) {
+        (true, true) => Some("both"),
+        (true, false) => Some("base"),
+        (false, true) => Some("head"),
+        (false, false)
+            if report.partial == Some(true)
+                && ![base, head, report].iter().any(|c| has_details(c)) =>
+        {
+            Some("Report")
+        }
+        _ => None,
+    }
+}
+
+fn has_details(c: &view::Coverage) -> bool {
     [
         &c.sources,
         &c.resolution,

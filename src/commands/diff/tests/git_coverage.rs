@@ -120,6 +120,21 @@ fn diff_git_coverage_does_not_hide_unexplained_or_mixed_deficits() {
         }
     }
     let mut v = git_report();
+    for side in ["base", "head"] {
+        v["snapshots"][side]["coverage"] = json!({"partial":false});
+    }
+    for format in [Format::Human, Format::Markdown] {
+        let text = rendered(&v, format);
+        assert!(
+            text.contains("Some checks could not be completed"),
+            "{text}"
+        );
+        assert!(
+            text.contains("Some dependency information was unavailable in this comparison"),
+            "{text}"
+        );
+    }
+    let mut v = git_report();
     v["snapshots"]["head"]["coverage"]["sources"][0]["reasons"] = json!([
         "git_dependency_graph_unavailable",
         "required_input_not_supplied"
