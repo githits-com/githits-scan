@@ -5,6 +5,8 @@ use std::io;
 use crate::api::diff::view::{self, View};
 use crate::coverage::{exclusions_only, expected_git, git_only};
 
+type Exclusions = BTreeMap<BTreeSet<String>, BTreeSet<String>>;
+
 pub(super) fn gap_is_git(row: &view::Gap) -> bool {
     let reasons: Vec<_> = row.reason.iter().chain(&row.reasons).cloned().collect();
     git_only(&reasons)
@@ -221,6 +223,7 @@ fn has_details(c: &view::Coverage) -> bool {
 
 pub(super) fn notes(v: &View) -> io::Result<BTreeMap<String, BTreeSet<String>>> {
     let mut result = BTreeMap::<_, BTreeSet<String>>::new();
+    let mut exclusions = Exclusions::new();
     if matches!(v.advisories.status.as_str(), "complete" | "partial")
         && let Some(raw) = &v.advisories.coverage
     {
@@ -241,13 +244,27 @@ pub(super) fn notes(v: &View) -> io::Result<BTreeMap<String, BTreeSet<String>>> 
             add_gap_notes(row, &mut result);
         }
         for row in &c.excluded_dependencies {
-            add_exclusion_notes(row, &mut result);
+            add_exclusion_notes(row, &mut result, &mut exclusions);
         }
+    }
+    for (files, packages) in exclusions {
+        result
+            .entry(format!(
+                "{} — {}",
+                packages.into_iter().collect::<Vec<_>>().join(", "),
+                crate::coverage::NON_REGISTRY_NOTE
+            ))
+            .or_default()
+            .extend(files);
     }
     Ok(result)
 }
 
-fn add_exclusion_notes(row: &view::Gap, notes: &mut BTreeMap<String, BTreeSet<String>>) {
+fn add_exclusion_notes(
+    row: &view::Gap,
+    notes: &mut BTreeMap<String, BTreeSet<String>>,
+    exclusions: &mut Exclusions,
+) {
     add_gap_notes(row, notes);
     if !row
         .reason
@@ -266,8 +283,10 @@ fn add_exclusion_notes(row: &view::Gap, notes: &mut BTreeMap<String, BTreeSet<St
         .version
         .as_ref()
         .map_or(String::new(), |v| format!(" {v}"));
-    notes.entry(format!("{name}{version} comes from outside a public package registry and is excluded from registry vulnerability and update checks."))
-        .or_default().extend(row.path.iter().chain(&row.paths).cloned());
+    exclusions
+        .entry(row.path.iter().chain(&row.paths).cloned().collect())
+        .or_default()
+        .insert(format!("{name}{version}"));
 }
 
 fn add_gap_notes(row: &view::Gap, notes: &mut BTreeMap<String, BTreeSet<String>>) {

@@ -251,3 +251,58 @@ fn diff_non_registry_aggregate_only_note_remains_visible() {
         "{text}"
     );
 }
+
+#[test]
+fn diff_non_registry_packages_share_one_note_per_file_set() {
+    let mut v = excluded();
+    v["snapshots"]["head"]["coverage"]["excluded_dependencies"] = json!([
+        {"name":"other-helper","version":"0.2.0","paths":["tools/Cargo.lock","Cargo.lock"],"reason":"non_registry_source"},
+        {"name":"another-helper","version":"0.3.0","paths":["web/package-lock.json"],"reason":"non_registry_source"}
+    ]);
+    for format in [Format::Human, Format::Markdown] {
+        let text = rendered(&v, format)
+            .replace("&#45;", "-")
+            .replace("&#46;", ".");
+        assert_eq!(
+            text.matches(crate::coverage::NON_REGISTRY_NOTE).count(),
+            2,
+            "{text}"
+        );
+        let shared = text
+            .lines()
+            .find(|line| line.contains("workspace-helper 0.1.0"))
+            .expect("shared note");
+        for expected in ["other-helper 0.2.0", "Cargo.lock, tools/Cargo.lock"] {
+            assert!(shared.contains(expected), "{text}");
+        }
+        let separate = text
+            .lines()
+            .find(|line| line.contains("another-helper 0.3.0"))
+            .expect("separate note");
+        assert!(separate.contains("web/package-lock.json"), "{text}");
+        assert!(!text.contains("Files that need attention"), "{text}");
+    }
+}
+
+#[test]
+fn diff_non_registry_grouping_keeps_paths_when_packages_move() {
+    let mut v = excluded();
+    v["snapshots"]["head"]["coverage"]["excluded_dependencies"] = json!([
+        {"name":"workspace-helper","version":"0.1.0","paths":["moved/Cargo.lock"],"reason":"non_registry_source"}
+    ]);
+    for format in [Format::Human, Format::Markdown] {
+        let text = rendered(&v, format)
+            .replace("&#45;", "-")
+            .replace("&#46;", ".");
+        assert_eq!(
+            text.matches(crate::coverage::NON_REGISTRY_NOTE).count(),
+            1,
+            "{text}"
+        );
+        assert!(
+            text.contains("Cargo.lock, moved/Cargo.lock, tools/Cargo.lock"),
+            "{text}"
+        );
+        assert!(text.contains("workspace-helper 0.1.0"), "{text}");
+    }
+}

@@ -291,6 +291,8 @@ changes remain visible.
 identifies a package excluded from public registry checks, not a failed lookup.
 Human and Markdown output keep its name, recorded version and all file paths
 under **Coverage notes**, without requiring manual review on that basis alone.
+Packages with the same file set share one explanation, retaining every name and
+recorded version.
 This reason does not establish that a package is local, safe, or licensed.
 The same string in source gaps, resolution gaps, mismatches, arbitrary assessment
 reasons or reachability causes does not qualify those failures as expected.
