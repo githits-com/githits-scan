@@ -545,7 +545,7 @@ fn gap_message(row: &view::Gap, side: &str, reason: Option<&str>) -> String {
         Some("required_input_not_supplied") => row.required_path.as_ref().map_or_else(
             || format!("Could not fully compare {context} because a required dependency file was not read. The service did not identify the missing file. Review the dependency files and Scan's exclusions."),
             |path|format!("Could not fully compare {context} because {path} was not among the files read {read_context}. Check the file, workspace declarations and --exclude settings.")),
-
+        Some("non_registry_source") => format!("The service reported a non-registry source for {name}{version} in {context}. This does not explain the incomplete comparison. Review these files manually."),
         Some("locked_version_does_not_satisfy_request") => format!("The dependency {name} requires {} in {}, but {files} lists {} {}. Review the dependency requirement and lockfile entries.",row.requested_requirement.as_deref().unwrap_or("a requirement not supplied in this report"),row.declaration_path.as_deref().unwrap_or("a dependency file not identified by the service"),if row.locked_versions.is_empty() {"no matching versions".into()} else {row.locked_versions.join(", ")},super::revision_context(side)),
         Some("recorded_dependency_scope_differs") => format!("For {name} in {context}, the dependency declaration and lockfile disagree about how the dependency is used. Review the corresponding entries."),
         Some("recorded_requirement_differs" | "recorded_provider_requirement_mismatch") => format!("For {name} in {context}, the dependency requirement differs between the declaration and lockfile. Review the corresponding entries."),

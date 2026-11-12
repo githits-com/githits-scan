@@ -257,6 +257,7 @@ fn add_exclusion_notes(row: &view::Gap, notes: &mut BTreeMap<String, BTreeSet<St
     {
         return;
     }
+    notes.remove(crate::coverage::NON_REGISTRY_NOTE);
     let name = row
         .name
         .as_deref()

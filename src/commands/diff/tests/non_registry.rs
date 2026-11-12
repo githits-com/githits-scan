@@ -40,6 +40,12 @@ fn diff_non_registry_exclusions_are_notes_and_keep_advisories_and_exact_json() {
         ] {
             assert!(text.contains(expected), "{expected}: {text}");
         }
+        assert_eq!(
+            text.matches("excluded from registry vulnerability and update checks")
+                .count(),
+            1,
+            "{text}"
+        );
         for warning in [
             "Files that need attention",
             "manually",
@@ -76,7 +82,7 @@ fn diff_non_registry_reason_does_not_excuse_other_gap_contexts() {
         v["snapshots"]["head"]["coverage"][family] =
             json!([{"path":"Cargo.lock","name":"helper","reason":reason}]);
         for format in [Format::Human, Format::Markdown] {
-            let text = rendered(&v, format);
+            let text = rendered(&v, format).replace("&#45;", "-");
             assert!(
                 text.contains("Files that need attention"),
                 "{family}: {text}"
@@ -87,6 +93,15 @@ fn diff_non_registry_reason_does_not_excuse_other_gap_contexts() {
             );
             assert!(
                 text.contains("Review these files manually"),
+                "{family}: {text}"
+            );
+            assert!(
+                family == "excluded_dependencies"
+                    || text.contains("The service reported a non-registry source"),
+                "{family}: {text}"
+            );
+            assert!(
+                family == "excluded_dependencies" || !text.contains("did not supply a reason"),
                 "{family}: {text}"
             );
         }
@@ -217,4 +232,22 @@ fn diff_non_registry_exclusion_with_expected_git_graph_loss_stays_neutral() {
             "{causes}: {text}"
         );
     }
+}
+
+#[test]
+fn diff_non_registry_aggregate_only_note_remains_visible() {
+    let mut v = excluded();
+    for side in ["base", "head"] {
+        v["snapshots"][side]["coverage"]["excluded_dependencies"] = json!([]);
+    }
+    let text = rendered(&v, Format::Human);
+    assert_eq!(
+        text.matches(crate::coverage::NON_REGISTRY_NOTE).count(),
+        1,
+        "{text}"
+    );
+    assert!(
+        text.contains("Some checks could not be completed"),
+        "{text}"
+    );
 }

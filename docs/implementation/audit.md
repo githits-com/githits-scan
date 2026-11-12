@@ -548,8 +548,11 @@ unsupported generic sources, missing files and lookup failures remain actionable
 All rows still participate in count and attribution validation; an inconsistent
 report is actionable even when its named causes are expected limits.
 Non-registry exclusions appear in **Coverage notes** with package/version and
-files, without a manual-review instruction. They mean registry checks do not
-apply, not that the package is local, safe, or fully assessed. The producer
+files, without a manual-review instruction. Their compact JSON `issues[].reason`
+now contains that explanatory sentence rather than the earlier short label
+`non-registry dependency`; consumers classify attention using `actionable`, not
+this display text. These exclusions mean registry checks do not apply, not that
+the package is local, safe, or fully assessed. The producer
 reason does not establish license eligibility or license policy compliance.
 
 `incomplete: true, actionable_incomplete: false` does not imply exit 0: independent

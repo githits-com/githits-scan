@@ -280,9 +280,10 @@ empty cause lists, unknown status/reasons, provider failures, incomplete review
 counts and independent file/assessment failures retain caution. A derived
 `source_scope_incomplete` explanation is informational only with its own scoped
 expected-only proof. Non-registry exclusions require complete inventory unless an
-explicit expected Git graph limitation also explains inventory loss. Coverage notes group each cause with its affected files; aggregate-only
-causes without file attribution remain explicit. Known affected advisories and changes remain visible.
-
+explicit expected Git graph limitation also explains inventory loss. Coverage
+notes group each cause with its affected files; aggregate-only
+causes without file attribution remain explicit. Known affected advisories and
+changes remain visible.
 
 ## Non-registry exclusions and downstream consumers
 

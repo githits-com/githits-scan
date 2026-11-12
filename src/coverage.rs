@@ -18,6 +18,9 @@ pub(crate) fn git_only(reasons: &[String]) -> bool {
     !reasons.is_empty() && reasons.iter().all(|r| expected_git(r))
 }
 
+/// Shared wording for explicitly excluded non-registry package checks.
+pub(crate) const NON_REGISTRY_NOTE: &str = "Dependencies from outside public package registries are excluded from registry vulnerability and update checks.";
+
 /// Registry ineligibility is neutral only for explicitly excluded packages.
 pub(crate) fn expected_exclusion(reason: &str) -> bool {
     reason == "non_registry_source" || expected_git(reason)
@@ -40,9 +43,7 @@ pub(crate) fn exclusion_attention(reason: &str) -> Attention {
 /// Human wording for an expected public-registry exclusion.
 pub(crate) fn exclusion_note(reason: &str) -> Option<&'static str> {
     if reason == "non_registry_source" {
-        Some(
-            "Dependencies from outside public package registries are excluded from registry vulnerability and update checks.",
-        )
+        Some(NON_REGISTRY_NOTE)
     } else {
         note(reason)
     }
