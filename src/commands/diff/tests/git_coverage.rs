@@ -37,18 +37,17 @@ fn diff_git_coverage_is_a_note_in_human_and_markdown_without_losing_advisories()
             .replace("&#46;", ".");
         assert!(text.contains("Coverage notes"), "{text}");
         assert!(
-            text.contains("Registry checks do not cover Git-based dependencies"),
+            text.contains(
+                "Git-sourced dependencies are not checked for vulnerabilities or available updates."
+            ),
             "{text}"
         );
         assert!(
-            text.contains("Git dependency relationships are not recorded"),
+            text.contains("Dependencies used by Git-sourced packages cannot be fully traced; change-impact results may be incomplete."),
             "{text}"
         );
         let notes = text.split("Coverage notes").nth(1).expect("notes");
-        for line in notes
-            .lines()
-            .filter(|line| line.contains("Git") || line.contains("Registry checks"))
-        {
+        for line in notes.lines().filter(|line| line.contains("Git")) {
             assert!(line.contains("package-lock.json"), "{line}");
         }
         assert!(text.contains("still affected"), "{text}");
@@ -182,9 +181,12 @@ fn diff_git_coverage_binding_limit_joins_only_its_own_root_proof() {
         "{text}"
     );
     assert!(
-        text.contains("Some Git source bindings cannot be established"),
+        text.contains("Some Git dependencies could not be matched between manifest and lockfile; source and revision agreement remains unverified."),
         "{text}"
     );
+    for broken in [".:", ".;", ".."] {
+        assert!(!text.contains(broken), "{text}");
+    }
     v["snapshots"]["head"]["reachability"][0]["manifest_path"] = "other/package.json".into();
     let text = rendered(&v, Format::Human);
     assert!(text.contains("Files that need attention"), "{text}");
@@ -217,11 +219,11 @@ fn diff_git_coverage_changed_binding_and_occurrence_keep_neutral_causes() {
     v["snapshots"]["base"]["occurrences"] = json!([{"id":"base:git","directness":"unknown","directness_reasons":[{"code":"git_dependency_graph_unavailable","message":"EXPECTED GRAPH LIMIT","source_key":"package-lock.json"}],"directness_proof_ids":[]}]);
     let text = rendered(&v, Format::Human);
     assert!(
-        text.contains("Some Git source bindings cannot be established"),
+        text.contains("Some Git dependencies could not be matched between manifest and lockfile; source and revision agreement remains unverified."),
         "{text}"
     );
     assert!(
-        text.contains("Git dependency relationships are not recorded"),
+        text.contains("Dependencies used by Git-sourced packages cannot be fully traced; change-impact results may be incomplete."),
         "{text}"
     );
     assert!(
@@ -229,6 +231,9 @@ fn diff_git_coverage_changed_binding_and_occurrence_keep_neutral_causes() {
         "{text}"
     );
     assert!(!text.contains("EXPECTED GRAPH LIMIT"), "{text}");
+    for broken in [".:", ".;", ".."] {
+        assert!(!text.contains(broken), "{text}");
+    }
     v["snapshots"]["base"]["bindings"][0]["reasons"] = json!([]);
     assert!(rendered(&v, Format::Human).contains("Review the declaration and package-lock.json"));
 }

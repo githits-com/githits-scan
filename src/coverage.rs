@@ -28,15 +28,15 @@ pub(crate) fn attention(reason: &str) -> Attention {
 
 pub(crate) fn note(reason: &str) -> Option<&'static str> {
     match reason {
-        "git_registry_checks_not_supported" => {
-            Some("Registry checks do not cover Git-based dependencies")
-        }
-        "git_dependency_graph_unavailable" => {
-            Some("Git dependency relationships are not recorded in this lockfile")
-        }
-        "git_source_binding_unavailable" => {
-            Some("Some Git source bindings cannot be established from the supplied evidence")
-        }
+        "git_registry_checks_not_supported" => Some(
+            "Git-sourced dependencies are not checked for vulnerabilities or available updates.",
+        ),
+        "git_dependency_graph_unavailable" => Some(
+            "Dependencies used by Git-sourced packages cannot be fully traced; change-impact results may be incomplete.",
+        ),
+        "git_source_binding_unavailable" => Some(
+            "Some Git dependencies could not be matched between manifest and lockfile; source and revision agreement remains unverified.",
+        ),
         _ => None,
     }
 }

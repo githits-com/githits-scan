@@ -335,7 +335,7 @@ fn cause_text(c: &view::Cause) -> String {
     let name = c.dependency_name.as_deref().unwrap_or("this dependency");
     let source = &c.source_key;
     if let Some(note) = crate::coverage::note(&c.code) {
-        return format!("{note}: {name} in {source}.");
+        return format!("{note} This concerns {name} in {source}.");
     }
     match c.code.as_str() {
         "root_dependency_coverage_incomplete" => incomplete_dependencies(c, declarations),
@@ -384,8 +384,8 @@ fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
             .filter_map(|r| crate::coverage::note(r))
             .collect();
         return format!(
-            "{} ({manifest}; {}).",
-            notes.into_iter().collect::<Vec<_>>().join("; "),
+            "{} ({manifest}; {})",
+            notes.into_iter().collect::<Vec<_>>().join(" "),
             c.source_key
         );
     }
@@ -435,7 +435,7 @@ fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
 
 fn native_reason(reason: &str) -> Option<&'static str> {
     if let Some(note) = crate::coverage::note(reason) {
-        return Some(note);
+        return Some(note.trim_end_matches('.'));
     }
     match reason {
         "dependency_list_unavailable" | "replacement_dependency_list_unknown" => {

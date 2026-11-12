@@ -58,11 +58,13 @@ fn audit_git_coverage_notes_keep_facts_without_failing_and_replay_offline() {
         "{human}"
     );
     assert!(
-        human.contains("Registry checks do not cover Git-based dependencies"),
+        human.contains(
+            "Git-sourced dependencies are not checked for vulnerabilities or available updates."
+        ),
         "{human}"
     );
     assert!(
-        human.contains("Git dependency relationships are not recorded"),
+        human.contains("Dependencies used by Git-sourced packages cannot be fully traced; change-impact results may be incomplete."),
         "{human}"
     );
     for misleading in [
