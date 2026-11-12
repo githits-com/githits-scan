@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 use std::io::{self, Write};
 
 use super::view::{Duplicate, DuplicateVersion, Finding, Issue, Origin, View};
+use crate::coverage::Attention;
 use crate::style::Palette;
 
 pub(super) mod lifecycle;
@@ -87,7 +88,7 @@ pub(super) fn write(
         let issues: Vec<_> = view
             .issues
             .iter()
-            .filter(|i| package_exclusion(i) == excluded)
+            .filter(|i| i.attention == Attention::Actionable && package_exclusion(i) == excluded)
             .collect();
         if issues.is_empty() {
             continue;
@@ -103,6 +104,7 @@ pub(super) fn write(
             )?;
         }
     }
+    coverage_notes(view, out)?;
     if details {
         for note in &view.limitations {
             writeln!(out, "\n{}", safe(note))?;
@@ -110,6 +112,23 @@ pub(super) fn write(
     }
     Ok(())
 }
+pub(super) fn coverage_notes(view: &View, out: &mut dyn Write) -> io::Result<()> {
+    let notes: BTreeSet<_> = view
+        .issues
+        .iter()
+        .filter(|i| i.attention == Attention::Informational)
+        .map(|i| (&i.reason, &i.files))
+        .collect();
+    if notes.is_empty() {
+        return Ok(());
+    }
+    writeln!(out, "\nCoverage notes")?;
+    for (note, files) in notes {
+        writeln!(out, "  {}{}", safe(note), paths(files))?;
+    }
+    Ok(())
+}
+
 fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
     if let Some(analysis) = &view.analysis {
         writeln!(out, "Saved analysis from {}", safe(&analysis.generated_at))?;
@@ -122,7 +141,7 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
         || !view.manifest_lock_mismatches.is_empty()
     {
         "Audit findings"
-    } else if view.incomplete {
+    } else if view.actionable_incomplete {
         "Audit results"
     } else if view.vulnerabilities.iter().any(|finding| finding.ignored) {
         "No unignored audit findings in available evidence"

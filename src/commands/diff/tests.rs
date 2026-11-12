@@ -337,3 +337,6 @@ mod explanations;
 mod friendly;
 
 mod realistic;
+
+#[path = "tests/git_coverage.rs"]
+mod git_coverage;

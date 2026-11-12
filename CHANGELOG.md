@@ -13,6 +13,55 @@ pre-public baseline, not a supported installation target. Historical flags in
 that section describe 0.2.0 only; use the README for current commands and the
 0.3.0 migration notes when updating pre-public automation.
 
+## [0.5.0] - 2026-11-11
+
+### Changed
+
+- **Breaking: native lifecycle audits** - Audits request report v3 automatically
+  and preserve native deprecation, withdrawal, retained warnings, source
+  observations and affected paths. Native findings and genuine unknown checks
+  require attention; lifecycle collection limits and not-applicable checks do not
+  fail alone. Unsupported returned versions fail without output or resubmission.
+- **Audit format migration** - Audit/explanation JSON and saved analyses advance
+  to format 2. JSON consumers must adopt native `lifecycle` evidence in place of
+  the removed coarse `deprecated` list. Older reports and saved archives are no
+  longer read. Keep the recorded writer's reader for old saved analyses: 0.4.0
+  reads archive format 1, while 0.5.0 reads format 2; neither automatically migrates
+  the other's archive. Rollback to 0.4.0 restores the prior Git warnings and exits.
+- **Informational Git coverage** - Expected Git registry, graph and source-binding
+  limits are coverage notes instead of actionable warnings. Factual incompleteness
+  remains, but these limits do not independently cause audit exit 1. Audit JSON
+  adds `actionable_incomplete` and `issues[].actionable`; saved explanations add
+  `audit_actionable_incomplete`. Mixed, unfamiliar and inconsistent evidence still
+  requires attention. Dependency-comparison human and Markdown reports show
+  these limits as coverage notes instead of generic partial cautions. Raw
+  dependency-diff JSON remains unchanged.
+- **Clearer audit output** - Human reports omit empty totals, group package
+  warnings plainly, explain missing transitive dependencies and simplify fix
+  guidance. Complete displayed advisory sets are summarized without repeating
+  identifiers; partial fixes and requirement conflicts remain explicit.
+- **Recover from short rate limits** - Retry HTTP 429 up to five times across each
+  scan, honoring Retry-After within five minutes of total waiting. Every retry is
+  reported on stderr, including quiet/JSON mode. Missing, invalid or over-budget
+  delays still fail promptly; accepted analyses are never resubmitted.
+
+### Fixed
+
+- **Include Bun workspace evidence** - Declared workspace member manifests now
+  accompany `bun.lock` across upload commands and detect previews, including
+  lockfiles-only scans. This expands default upload selection; existing exclusions
+  and upload limits still apply.
+- **Complete comparison Markdown** - Include every returned release note and
+  retain entries missing a summary. Terminal output keeps its compact selection;
+  service omissions remain explicit.
+- **Explain dependency comparisons clearly** - Human and Markdown reports explain
+  incomplete dependency information, file problems and upgrade-review failures in
+  plain language, with useful context and supported next steps. Repeated
+  limitations are grouped without hiding known risks; ordinary accents and emoji
+  remain readable. Internal codes and diagnostic counters stay in unchanged JSON.
+- **Missing diff inputs** - Human and Markdown reports name the required file when
+  the service explains that an input was not supplied.
+
 ## [0.4.0] - 2026-11-09
 
 ### Added

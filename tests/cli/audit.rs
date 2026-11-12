@@ -5,6 +5,8 @@ mod audit_applicability;
 mod audit_compact_replay;
 #[path = "audit_details.rs"]
 mod audit_details;
+#[path = "audit_git_coverage.rs"]
+mod audit_git_coverage;
 #[path = "audit_native_diagnostics.rs"]
 mod audit_native_diagnostics;
 #[path = "audit_native_inputs.rs"]

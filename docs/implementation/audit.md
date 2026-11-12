@@ -36,7 +36,7 @@ never establish package reachability.
 
 Audit and saved-explanation JSON use Scan schema 2. Empty optional common groups
 are omitted; `summary` and native lifecycle evidence are present. `incomplete`
-means genuine coverage gaps or inconsistent consumed evidence, independently of
+means factual coverage gaps or inconsistent consumed evidence, independently of
 positive findings. Only producer schema 3 is supported. Returned older/newer
 versions fail with exit 3, request ID and an explanation before writing output;
 Scan never converts them or resubmits the completed job. Unknown additive fields
@@ -66,8 +66,8 @@ terminal output; color never carries meaning.
 
 | Exit | Audit meaning |
 | --- | --- |
-| 0 | No unignored finding or genuine gap in available evidence; lifecycle collection limits can remain |
-| 1 | Any unignored vulnerability, native lifecycle event, retained registry warning, outdated version, duplicate group, manifest/lock disagreement, genuine evidence gap or unverified accounting; also preflight drift/empty selection |
+| 0 | No unignored finding or actionable gap; expected Git limits and lifecycle collection limits can remain |
+| 1 | Any unignored vulnerability, native lifecycle event, retained registry warning, outdated version, duplicate group, manifest/lock disagreement, actionable evidence gap or unverified accounting; also preflight drift/empty selection |
 | 2 | Usage/configuration/credentials/access/upload-limit or caller-action API error; missing/invalid saved input or explanation selector |
 | 3 | Transport, rate limit, service/problem execution, malformed/unsupported returned report or output error |
 
@@ -92,16 +92,16 @@ include ignored advisories; it is not a local enforcement verdict. Saved human
 explanations also mark ignored problems with the reason.
 
 When all vulnerabilities are ignored, all other finding categories are empty,
-and evidence is complete, exit is 0 and the headline is
+and no actionable evidence gaps remain, exit is 0 and the headline is
 `No unignored audit findings in available evidence`. The human summary retains
-the total and ignored count. Ignored advisories with incomplete evidence still
+the total and ignored count. Ignored advisories with actionable incomplete evidence still
 produce `Audit results` and exit 1; other findings produce `Audit findings` and
 exit 1. Ignores never suppress coverage or accounting errors.
 
 There is no category-specific `--fail-on` or configuration equivalent. Audit is
 an attention gate across vulnerabilities, maintenance, input disagreements and
 evidence gaps. Consumers requiring a different gate can compute it from full
-JSON, including `incomplete`, `issues` and ignored annotations; handle exits 2/3
+JSON, including `actionable_incomplete`, `issues[].actionable` and ignored annotations; handle exits 2/3
 as errors rather than policy findings. No additional flag is needed for that
 workflow.
 
@@ -525,21 +525,35 @@ cannot establish a clean scan. Parser completeness is open source applicability,
 a universal `complete` token: package inventory and relationship detail are
 different facts. Scan consumes backend source coverage instead of duplicating
 parser-family rules. Human headlines lead with findings or neutral `Audit results`
-for gap-only reports. Excluded packages appear once under **Packages not checked**,
+for actionable-gap-only reports. Excluded packages appear once under **Packages not checked**,
 with their reason and files, separately from **Incomplete checks**. A non-registry
 source is ineligible for registry matching, not a failed package lookup. The wire
 reason does not distinguish local workspace packages from every other non-registry
-source, so Scan does not label them all local. Exclusions still set JSON
-`incomplete` and exit 1; this display change does not silently weaken the
-coverage/exit policy.
+source, so Scan does not label them all local. Exclusions retain JSON `incomplete` as a factual qualification. Pure
+assessment owns `actionable_incomplete` separately from findings, and the shared
+view retains both decisions in human output, JSON and saved explanations.
 
-Pure assessment owns incomplete coverage separately from findings; the presentation
-view consumes that decision for both formats. Proven first-party projects are
-backend-owned project evidence; Scan adds no generic LOCAL/path/Git exemption and
-still treats actual excluded groups as gaps. Standard producer caveats live in
-help/documentation, not a repetitive footer. Producer notice inventories are not
-forwarded; actionable gaps come from the structured assessment and resolution
-fields.
+Only the exact producer reasons `git_registry_checks_not_supported`,
+`git_dependency_graph_unavailable` and `git_source_binding_unavailable` identify
+expected Git limits. These appear as concise **Coverage notes**, including in
+quiet reports, and do not independently cause attention or exit 1. Each compact
+issue has `actionable: false` for these reasons and `true` otherwise. Mixed source
+reason lists split into informational and actionable subsets before grouping;
+resolution diagnostics cannot borrow the other class's message. Missing/empty or
+unfamiliar causes, actual source contradictions (`recorded_git_source_differs`),
+unsupported generic sources, missing files and lookup failures remain actionable.
+All rows still participate in count and attribution validation; an inconsistent
+report is actionable even when its named causes are expected Git limits.
+
+`incomplete: true, actionable_incomplete: false` does not imply exit 0: independent
+advisory, native lifecycle, maintenance or disagreement findings still cause exit
+1. Git-only limits with no independent findings exit 0 while retaining their
+factual incomplete status. Unavailable Git bindings remain unknown; no Git source
+is treated as a checked registry release or an empty dependency graph. Standard
+producer caveats stay in help/docs; these result-specific coverage notes are always
+visible. Producer notice inventories are not forwarded. Saved archive schema 2
+retains the producer report unchanged and replay applies the same interpretation.
+
 
 Duplicate version rows name their files and requesting origins with
 literal recorded version/tag requirements. JSON adds compact `origins` rows under

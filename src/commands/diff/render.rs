@@ -30,15 +30,17 @@ pub(super) fn write(
         return display.line("Scan cannot explain this report because its format is newer than this version supports. Update Scan to read it; the original report is available as JSON.");
     };
     display.line("This compares the supplied dependency files, not an observed installation.")?;
+    let informational = super::coverage::informational_only(view)?;
     match view.outcome.as_str() {
         "complete" => {},
+        "partial" if informational => {},
         "partial" => display.line("Some checks could not be completed. Review the limitations below before accepting these changes.")?,
         _ => display.line("The service did not confirm a complete comparison. Scan cannot explain its completion result; review the original JSON before relying on it.")?,
     }
     let explanations = explanations::new(view);
     changes(view, &explanations, &mut display)?;
     declarations(view, &explanations, &mut display)?;
-    evidence::write(view, &mut display)?;
+    evidence::write(view, informational, &mut display)?;
     reviews::write(view, &explanations, &mut display)?;
     for (side, snapshot) in view.snapshots.iter() {
         if side != snapshot.side {
@@ -46,6 +48,7 @@ pub(super) fn write(
         }
     }
     evidence::file_problems(view, &explanations, &mut display)?;
+    coverage_notes(view, &mut display)?;
     let mut notices = std::collections::BTreeSet::new();
     for notice in &view.notices {
         if notice != "Recorded input comparison, not an observed installation or solver ancestry."
@@ -375,4 +378,21 @@ fn safe_url(value: &str) -> Option<String> {
         && url.username().is_empty()
         && url.password().is_none())
     .then(|| url.to_string())
+}
+
+fn coverage_notes(view: &View, display: &mut Display<'_>) -> io::Result<()> {
+    let notes = super::coverage::notes(view)?;
+    if notes.is_empty() {
+        return Ok(());
+    }
+    display.heading("Coverage notes")?;
+    for (note, files) in notes {
+        let attribution = if files.is_empty() {
+            String::new()
+        } else {
+            format!(" [{}]", files.into_iter().collect::<Vec<_>>().join(", "))
+        };
+        display.item(&format!("{note}{attribution}"))?;
+    }
+    Ok(())
 }

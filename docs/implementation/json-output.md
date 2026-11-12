@@ -53,7 +53,7 @@ These are policy results, not a replay input or a license inventory. See
 
 ## Audit and saved explanations (schema 2)
 
-Native audit JSON has `schema_version: 2`, `incomplete`, optional saved `analysis`
+Native audit JSON has `schema_version: 2`, `incomplete`, `actionable_incomplete`, optional saved `analysis`
 provenance, required `summary` and `lifecycle`, and useful common groups:
 `vulnerabilities`, `outdated`, `duplicates`, `manifest_lock_mismatches`, `issues`,
 `manifests`, `limitations` and optional `remediation`. Empty optional groups are
@@ -66,7 +66,13 @@ observations with exact affected coordinates/paths, retained registry warnings,
 all four coverage facets, unknown rows and content-safety disclosure. Required
 nullable source/affected facts stay null; native strings stay open. Empty findings
 or collection limits do not establish a checked-safe result. Unknown/unverified
-outcomes set `incomplete`; ordinary collection limits alone do not. See
+outcomes set `incomplete`; ordinary collection limits alone do not. Expected Git
+source limits retain `incomplete: true` but do not set `actionable_incomplete`.
+Each issue has an `actionable` boolean; original status, explanation and
+attribution remain present. Mixed causes produce separate attention classes.
+Independent findings can still require exit 1 with `actionable_incomplete: false`.
+Older schema-2 readers can ignore these additive fields; consumers lacking them
+must not guess that a partial report is informational. See
 [audit interpretation](audit.md#wire-and-interpretation-boundaries).
 
 Advisory ignores remain exact-ID. Findings retain `ignored: true` and their reason;
@@ -76,7 +82,7 @@ reading repository configuration.
 
 Saved explanation JSON has `schema_version: 2`, `kind: audit_explanation`,
 `analysis`, selected `problems`, `sources`, `issues`, `audit_incomplete`,
-`audit_issues`, `audit_lifecycle` and optional `remediation`. Focused advisory
+`audit_actionable_incomplete`, `audit_issues`, `audit_lifecycle` and optional `remediation`. Focused advisory
 algorithms remain source-local; native audit evidence and the whole-audit outcome
 are preserved. A saved analysis is a separate format with
 `format: githits-scan-analysis`, archive schema 2 and producer report 3. Old

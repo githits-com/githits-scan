@@ -3,7 +3,13 @@
 /// Known evidence reasons shared by audit and license presentation. Unknown
 /// values remain a caller decision: audit retains them, license points to JSON.
 pub(super) fn reason(value: &str) -> Option<&'static str> {
+    if let Some(note) = crate::coverage::note(value) {
+        return Some(note);
+    }
     Some(match value {
+        "recorded_git_source_differs" => {
+            "the Git source recorded in the lockfile differs from the declaration"
+        }
         "invalid_version" => "package version could not be evaluated",
         "invalid_range" => "advisory range could not be evaluated",
         "metadata_unavailable" => "package metadata missing",

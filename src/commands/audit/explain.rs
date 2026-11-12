@@ -24,6 +24,7 @@ struct Document<'a, 'b> {
     remediation: &'a State,
     issues: &'a std::collections::BTreeSet<&'static str>,
     audit_incomplete: bool,
+    audit_actionable_incomplete: bool,
     audit_issues: &'a [view::Issue],
     audit_lifecycle: &'a crate::api::audit::lifecycle::Lifecycle,
 }
@@ -53,6 +54,7 @@ pub(super) fn write(
                 remediation: &view.remediation,
                 issues: &selected.issues,
                 audit_incomplete: view.incomplete,
+                audit_actionable_incomplete: view.actionable_incomplete,
                 audit_issues: &view.issues,
                 audit_lifecycle: &view.lifecycle,
             },
@@ -85,13 +87,19 @@ pub(super) fn write(
     for source in &sources {
         source.further(out)?;
     }
-    if !view.issues.is_empty() {
+    let actionable = view
+        .issues
+        .iter()
+        .filter(|i| i.attention == crate::coverage::Attention::Actionable)
+        .count();
+    if actionable != 0 {
         writeln!(
             out,
             "\nAudit evidence gaps: {} reported. Replay without --explain for details.",
-            crate::commands::plural(view.issues.len(), "issue")
+            crate::commands::plural(actionable, "issue")
         )?;
     }
+    render::coverage_notes(view, out)?;
     out.flush()
 }
 

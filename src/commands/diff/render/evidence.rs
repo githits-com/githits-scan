@@ -1,11 +1,12 @@
 //! Security changes and file problems in reader-facing language.
+use super::super::coverage;
 use super::{Display, View, package, view};
 use std::collections::{BTreeMap, BTreeSet};
 use std::io;
 
 type Qualifications = BTreeMap<(String, String), BTreeSet<&'static str>>;
 
-pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
+pub(super) fn write(v: &View, informational: bool, d: &mut Display<'_>) -> io::Result<()> {
     let Some(data) = v
         .advisories
         .decode::<view::Advisories>()
@@ -18,8 +19,13 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
         ));
     };
     let qualifications = qualifications(&data);
-    let limitation = limitation(&v.advisories, !qualifications.is_empty())?;
-    let manual_check = limitation.is_none()
+    let limitation = if informational {
+        None
+    } else {
+        limitation(&v.advisories, !qualifications.is_empty())?
+    };
+    let manual_check = !informational
+        && limitation.is_none()
         && (!qualifications.is_empty()
             || data
                 .coordinate_transitions
@@ -61,7 +67,14 @@ pub(super) fn write(v: &View, d: &mut Display<'_>) -> io::Result<()> {
                 || "A changed package whose name and file were not supplied".into(),
                 |c| format!("{} in {}", package(&c.package), c.source_key),
             );
-        coordinate_deltas(&context, &transition.deltas, &data.findings, &project, d)?;
+        coordinate_deltas(
+            &context,
+            &transition.deltas,
+            &data.findings,
+            &project,
+            coverage::transition_is_git(v, &data, transition),
+            d,
+        )?;
     }
     for exposure in project {
         project_deltas(exposure, &changed, &data, &mut *d)?;
@@ -85,11 +98,14 @@ fn coordinate_deltas(
     rows: &[view::Delta],
     findings: &[view::Finding],
     project: &[&view::Exposure],
+    expected_limits: bool,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
     for delta in rows.iter().filter(|r| r.kind != "non_affecting") {
         delta_fact(context, delta, findings, d)?;
-        assessment_qualifications(delta, d)?;
+        if !expected_limits {
+            assessment_qualifications(delta, d)?;
+        }
         project_for_change(delta, project, d)?;
     }
     Ok(())
@@ -183,9 +199,13 @@ fn exposure_qualifications(e: &view::Exposure, result: &mut Qualifications) {
         coverage_qualifications(c, &context, side, result);
     }
     for row in &e.deltas {
-        delta_qualifications(row, &context, result);
+        if !coverage::delta_is_git(e, row) {
+            delta_qualifications(row, &context, result);
+        }
     }
-    if e.deltas.iter().any(|r| r.kind == "indeterminate")
+    if e.deltas
+        .iter()
+        .any(|r| r.kind == "indeterminate" && !coverage::delta_is_git(e, r))
         && !result.keys().any(|(c, _)| c == &context)
     {
         qualify(
@@ -265,6 +285,9 @@ fn coverage_qualifications(
     side: &'static str,
     result: &mut Qualifications,
 ) {
+    if coverage::scope_is_git(c) {
+        return;
+    }
     for (present, message) in [
         (
             c.inventory != "complete",
@@ -367,10 +390,8 @@ pub(super) fn file_problems(
     let report: view::Coverage =
         serde_json::from_str(v.coverage.get()).map_err(io::Error::other)?;
     let all = [&base, &head, &report];
-    if !all
-        .iter()
-        .any(|c| c.partial == Some(true) || has_details(c))
-    {
+    let unexplained = coverage::unexplained_partial(&base, &head, &report).is_some();
+    if !unexplained && !all.iter().any(|c| has_actionable_details(c, v)) {
         return Ok(());
     }
     d.heading("Files that need attention")?;
@@ -384,7 +405,7 @@ pub(super) fn file_problems(
     }
     partial_without_details(&base, &head, &report, d)?;
     for (side, coverage) in [("base", &base), ("head", &head), ("Report", &report)] {
-        reachability_problems(coverage, side, explanations, d)?;
+        reachability_problems(coverage, side, explanations, v, d)?;
     }
     Ok(())
 }
@@ -398,8 +419,13 @@ fn families(c: &view::Coverage) -> [&[view::Gap]; 4] {
     ]
 }
 
-fn has_details(c: &view::Coverage) -> bool {
-    families(c).iter().any(|r| !r.is_empty()) || c.reachability.iter().any(|r| !r.complete)
+fn has_actionable_details(c: &view::Coverage, v: &View) -> bool {
+    families(c)
+        .iter()
+        .any(|rows| rows.iter().any(|r| !coverage::gap_is_git(r)))
+        || c.reachability
+            .iter()
+            .any(|r| !r.complete && !coverage::root_is_git(r, v))
 }
 
 fn paired_gaps(left: &[view::Gap], right: &[view::Gap], d: &mut Display<'_>) -> io::Result<()> {
@@ -420,21 +446,7 @@ fn partial_without_details(
     report: &view::Coverage,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    let before = base.partial == Some(true) && !has_details(base);
-    let after = head.partial == Some(true) && !has_details(head);
-    let phase = match (before, after) {
-        (true, true) => Some("both"),
-        (true, false) => Some("base"),
-        (false, true) => Some("head"),
-        (false, false)
-            if report.partial == Some(true)
-                && ![base, head, report].iter().any(|c| has_details(c)) =>
-        {
-            Some("Report")
-        }
-        _ => None,
-    };
-    if let Some(phase) = phase {
+    if let Some(phase) = coverage::unexplained_partial(base, head, report) {
         d.line(&format!("Some dependency information was unavailable {}; the service did not supply specific file details.",super::revision_context(phase)))?;
     }
     Ok(())
@@ -444,9 +456,14 @@ fn reachability_problems(
     c: &view::Coverage,
     side: &str,
     explanations: &super::explanations::Evidence<'_>,
+    v: &View,
     d: &mut Display<'_>,
 ) -> io::Result<()> {
-    for row in c.reachability.iter().filter(|r| !r.complete) {
+    for row in c
+        .reachability
+        .iter()
+        .filter(|r| !r.complete && !coverage::root_is_git(r, v))
+    {
         d.item(&format!(
             "Scan could not establish how the dependencies in {} connect to the packages in {} {}.",
             row.manifest_path,
@@ -471,7 +488,10 @@ fn write_gap(row: &view::Gap, side: &str, d: &mut Display<'_>) -> io::Result<()>
     if reasons.is_empty() {
         return d.item(&gap_message(row, side, None));
     }
-    for reason in reasons {
+    for reason in reasons
+        .into_iter()
+        .filter(|r| coverage::actionable_reason(r))
+    {
         d.item(&gap_message(row, side, Some(reason)))?;
     }
     Ok(())

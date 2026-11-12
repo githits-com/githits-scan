@@ -5,9 +5,10 @@ use super::{
     Duplicate, DuplicateVersion, Finding, Issue, Issues, MissingRequest, Origin, Unattributed,
     View, add_issue, compact_issue, coordinate, coverage_issues, reason, reasons, report_issues,
 };
-use crate::api::audit::report::{Data, Requester, ResolutionGap};
+use crate::api::audit::report::{Data, Requester, ResolutionGap, SourceGap};
 use crate::api::audit::wire::Coordinate;
 use crate::audit::Assessment;
+use crate::coverage::{self, Attention};
 
 pub(super) fn populate(view: &mut View, r: &Data, a: &Assessment) {
     for f in &r.findings.vulnerabilities {
@@ -124,22 +125,17 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
         );
     }
     for g in &r.unknowns.sources {
-        add_issue(
-            &mut groups,
-            Issue {
-                check: "dependency information".into(),
-                status: "incomplete".into(),
-                reason: reasons(&g.reasons),
-                files: BTreeSet::from([g.path.clone()]),
-                ..Issue::default()
-            },
-        );
+        source_gap(g, &mut groups);
     }
     for g in &r.unknowns.resolution {
         let source = r.unknowns.sources.iter().find(|s| {
             (g.name.is_none() || (g.reason == "unmet_dependency" && g.requester.is_some()))
                 && s.path == g.path
                 && s.reasons.contains(&g.reason)
+                && (!coverage::expected_git(&g.reason) || s.reasons.len() == 1)
+                && s.reasons
+                    .iter()
+                    .all(|r| coverage::attention(r) == coverage::attention(&g.reason))
         });
         let (check, diagnostic) = source.map_or_else(
             || ("resolution", reason(&g.reason).into()),
@@ -149,6 +145,7 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
         add_issue(
             &mut groups,
             Issue {
+                attention: coverage::attention(&g.reason),
                 check: check.into(),
                 status: "incomplete".into(),
                 reason: diagnostic,
@@ -172,6 +169,7 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
         add_issue(
             &mut groups,
             Issue {
+                attention: coverage::attention(&g.reason),
                 check: "package checks".into(),
                 status: "excluded".into(),
                 reason: reason(&g.reason).into(),
@@ -188,6 +186,34 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
         &mut groups,
     );
     groups
+}
+
+fn source_gap(g: &SourceGap, groups: &mut Issues) {
+    let (informational, actionable): (Vec<_>, Vec<_>) = g
+        .reasons
+        .iter()
+        .cloned()
+        .partition(|r| coverage::expected_git(r));
+    let mut rows: Vec<_> = informational
+        .iter()
+        .map(|r| (Attention::Informational, reason(r).to_owned()))
+        .collect();
+    if !actionable.is_empty() || g.reasons.is_empty() {
+        rows.push((Attention::Actionable, reasons(&actionable)));
+    }
+    for (attention, reason) in rows {
+        add_issue(
+            groups,
+            Issue {
+                attention,
+                check: "dependency information".into(),
+                status: "incomplete".into(),
+                reason,
+                files: BTreeSet::from([g.path.clone()]),
+                ..Issue::default()
+            },
+        );
+    }
 }
 
 fn lifecycle_issues(data: &crate::api::audit::lifecycle::Lifecycle, groups: &mut Issues) {

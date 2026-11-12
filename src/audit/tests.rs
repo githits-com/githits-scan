@@ -297,3 +297,14 @@ fn audit_report_outdated_coverage_requires_actual_checked_evidence() {
             .contains("metadata coverage does not account for eligible packages")
     );
 }
+
+#[test]
+fn audit_git_coverage_expected_binding_limit_retains_incompleteness() {
+    let mut v = clean();
+    v["unknowns"]["resolution"] =
+        json!([{"path":"mix.lock", "name":"git-demo", "reason":"git_source_binding_unavailable"}]);
+    let result = interpreted(&v);
+    assert!(result.incomplete);
+    assert!(!result.actionable_incomplete && !result.attention);
+    assert!(result.unverified.is_empty());
+}

@@ -9,6 +9,7 @@ use crate::api::audit::{
     wire::{Coordinate, MetadataCoverage, VulnerabilityCoverage},
 };
 use crate::audit::Assessment;
+use crate::coverage::Attention;
 
 pub(super) mod remediation;
 mod report;
@@ -17,6 +18,7 @@ mod report;
 pub(super) struct View {
     schema_version: u8,
     pub incomplete: bool,
+    pub actionable_incomplete: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub analysis: Option<crate::audit::saved::Provenance>,
     pub summary: Summary,
@@ -118,6 +120,8 @@ pub(super) struct Unattributed {
 }
 #[derive(Default, Serialize)]
 pub(super) struct Issue {
+    #[serde(rename = "actionable")]
+    pub attention: Attention,
     pub check: String,
     pub status: String,
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -178,11 +182,19 @@ impl Finding {
     }
 }
 
-type IssueKey = (String, String, String, BTreeSet<String>, BTreeSet<String>);
+type IssueKey = (
+    Attention,
+    String,
+    String,
+    String,
+    BTreeSet<String>,
+    BTreeSet<String>,
+);
 type Issues = BTreeMap<IssueKey, Issue>;
 
 fn add_issue(groups: &mut Issues, mut issue: Issue) {
     let key = (
+        issue.attention,
         issue.check.clone(),
         issue.status.clone(),
         issue.reason.clone(),
@@ -190,6 +202,7 @@ fn add_issue(groups: &mut Issues, mut issue: Issue) {
         issue.files.clone(),
     );
     let group = groups.entry(key).or_default();
+    group.attention = issue.attention;
     group.check = issue.check;
     group.status = issue.status;
     group.reason = issue.reason;
@@ -211,6 +224,7 @@ impl View {
         let mut view = Self {
             schema_version: 2,
             incomplete: a.incomplete,
+            actionable_incomplete: a.actionable_incomplete,
             analysis: None,
             summary: Summary {
                 dependencies: s.dependencies,
