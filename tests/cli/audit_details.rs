@@ -20,7 +20,8 @@ fn audit_details_expands_maintenance_without_hiding_security_or_gaps() {
     for text in [
         "GHSA-demo",
         "Incomplete checks",
-        "Packages not checked",
+        "Coverage notes",
+        "external-path",
         "1 package warning, 1 outdated version, 1 duplicate package",
         "--details",
     ] {

@@ -169,10 +169,12 @@ fn issues(r: &Data, a: &Assessment) -> Issues {
         add_issue(
             &mut groups,
             Issue {
-                attention: coverage::attention(&g.reason),
+                attention: coverage::exclusion_attention(&g.reason),
                 check: "package checks".into(),
                 status: "excluded".into(),
-                reason: reason(&g.reason).into(),
+                reason: coverage::exclusion_note(&g.reason)
+                    .unwrap_or_else(|| reason(&g.reason))
+                    .into(),
                 packages: BTreeSet::from([package]),
                 files: g.paths.iter().cloned().collect(),
                 ..Issue::default()

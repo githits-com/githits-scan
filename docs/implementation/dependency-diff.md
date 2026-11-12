@@ -279,5 +279,76 @@ labels. Aggregate causes never explain a different owner's deficit. Missing or
 empty cause lists, unknown status/reasons, provider failures, incomplete review
 counts and independent file/assessment failures retain caution. A derived
 `source_scope_incomplete` explanation is informational only with its own scoped
-Git-only proof. Coverage notes group each cause with its affected files; aggregate-only
+expected-only proof. Non-registry exclusions require complete inventory unless an
+explicit expected Git graph limitation also explains inventory loss. Coverage notes group each cause with its affected files; aggregate-only
 causes without file attribution remain explicit. Known affected advisories and changes remain visible.
+
+
+## Non-registry exclusions and downstream consumers
+
+`non_registry_source` in `coverage.excluded_dependencies` (snapshot or report)
+identifies a package excluded from public registry checks, not a failed lookup.
+Human and Markdown output keep its name, recorded version and all file paths
+under **Coverage notes**, without requiring manual review on that basis alone.
+This reason does not establish that a package is local, safe, or licensed.
+The same string in source gaps, resolution gaps, mismatches, arbitrary assessment
+reasons or reachability causes does not qualify those failures as expected.
+
+The existing producer contract supplies the required distinction: the exclusion
+family identifies ineligible packages; advisory coverage supplies exhaustive
+causes and eligible coordinate/check counts; each exposure supplies its own
+inventory and assessment status. No additional upstream field is required for
+this classification. Unknown reasons remain actionable. JSON remains the exact
+producer bytes, including partial statuses and every exclusion; Scan adds no
+attention fields to diff JSON.
+
+For `scan-action` and other JSON consumers:
+
+- **Audit:** use Scan's `actionable_incomplete` and per-issue `actionable` fields
+  for coverage attention. `incomplete` alone includes normal coverage exclusions.
+  Findings remain independent: an advisory still requires attention when
+  `actionable_incomplete` is false. Saved explanations use
+  `audit_actionable_incomplete` and `audit_issues[].actionable`.
+- **Diff exclusion rows:** only the exclusion family admits `non_registry_source`
+  alongside the three exact expected Git reasons above. Every reason in a row
+  must be recognized; empty, missing and mixed unknown causes retain caution.
+  Source and resolution rows continue to admit only the expected Git reasons;
+  any mismatch remains actionable.
+- **Diff advisory aggregate:** a neutral partial result needs a complete or partial
+  advisory section with no failure reason, present equal `checked` and
+  `coordinates`, zero `unknown` and `unsupported`, and a nonempty exhaustive list
+  of expected Git or non-registry exclusion reasons.
+- **Each exposure and revision:** non-registry reasons qualify assessment only
+  with `inventory: complete`, `assessment: complete` or `partial`, equal `checked`
+  and `coordinates`, and a nonempty expected-only reason list. A partial inventory
+  still needs Git-only proof or an explicit `git_dependency_graph_unavailable`
+  cause alongside expected-only exclusions; non-registry exclusions alone cannot
+  explain graph loss.
+  Complete exposure sides with no causes require zero unqualified occurrences.
+  Both revision sides must be present.
+- **Derived advisory limits:** only `source_scope_incomplete` can inherit an
+  expected limitation from its own qualified exposure side. Every transition
+  needs exactly one matching change; derived transition limitations additionally
+  need exactly one matching source exposure. Transitions without limitation
+  reasons do not require the source-exposure join. An unexplained unknown or
+  indeterminate result, `coordinate_assessment_incomplete`, or another reason
+  remains cautionary. Actual affected advisories remain visible.
+- **Other sections:** retain the existing checks for complete upgrade reviews and
+  matching eligible/completed/returned counts, zero omitted/unavailable/not-assessed
+  reviews, revision labels, unexplained partial snapshots, and owner-scoped
+  reachability proof. Aggregate reasons cannot explain a different source's gap.
+
+For example, an excluded `workspace-helper` at `0.1.0` in `Cargo.lock`, with
+`reason: non_registry_source`, is a coverage note. If its exposure has complete
+inventory and two eligible coordinates both checked, `assessment: partial` with
+`reasons: [non_registry_source]` is also expected. Changing inventory to `partial`,
+adding `dependency_list_unavailable`, leaving a required `member/Cargo.toml`
+uncaptured, or failing one eligible check retains caution. A separate
+`tools/Cargo.lock` dependency-information gap stays actionable even if the main
+lockfile contains an expected exclusion.
+
+Consumers need no migration of stored reports. Audit-only exclusions now return
+exit 0 when no independent findings or inconsistencies exist; `incomplete` stays
+true. Diff exit behavior is unchanged (the command reports producer facts rather
+than enforcing them). Restore an earlier binary to restore earlier presentation
+and audit attention behavior; saved producer evidence remains readable.

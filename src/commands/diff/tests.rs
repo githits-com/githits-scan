@@ -340,3 +340,6 @@ mod realistic;
 
 #[path = "tests/git_coverage.rs"]
 mod git_coverage;
+
+#[path = "tests/non_registry.rs"]
+mod non_registry;
