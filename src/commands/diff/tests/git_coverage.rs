@@ -187,6 +187,31 @@ fn diff_git_coverage_binding_limit_joins_only_its_own_root_proof() {
     for broken in [".:", ".;", ".."] {
         assert!(!text.contains(broken), "{text}");
     }
+    let mut mixed = v.clone();
+    mixed["snapshots"]["head"]["reachability"][0]["reasons"][0]["coverage_reasons"] = json!([
+        "git_dependency_graph_unavailable",
+        "dependency_list_unavailable"
+    ]);
+    for format in [Format::Human, Format::Markdown] {
+        let text = rendered(&mixed, format);
+        assert!(text.contains("Files that need attention"), "{text}");
+        assert!(
+            text.contains("change-impact results may be incomplete")
+                || text.contains("change&#45;impact results may be incomplete"),
+            "{text}"
+        );
+        assert!(text.contains("dependency list was unavailable"), "{text}");
+        for broken in [
+            "because Dependencies",
+            "because Some",
+            "further reason this version",
+            ".:",
+            ".;",
+            "..",
+        ] {
+            assert!(!text.contains(broken), "{text}");
+        }
+    }
     v["snapshots"]["head"]["reachability"][0]["manifest_path"] = "other/package.json".into();
     let text = rendered(&v, Format::Human);
     assert!(text.contains("Files that need attention"), "{text}");

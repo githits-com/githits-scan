@@ -332,7 +332,7 @@ fn cause_text(c: &view::Cause) -> String {
         .manifest_path
         .as_deref()
         .unwrap_or("the supplied dependency declarations");
-    let name = c.dependency_name.as_deref().unwrap_or("this dependency");
+    let name = c.dependency_name.as_deref().unwrap_or("a dependency");
     let source = &c.source_key;
     if let Some(note) = crate::coverage::note(&c.code) {
         return format!("{note} This concerns {name} in {source}.");
@@ -377,12 +377,12 @@ fn cause_text(c: &view::Cause) -> String {
 }
 
 fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
+    let notes: BTreeSet<_> = c
+        .coverage_reasons
+        .iter()
+        .filter_map(|r| crate::coverage::note(r))
+        .collect();
     if coverage::cause_is_git(c) {
-        let notes: BTreeSet<_> = c
-            .coverage_reasons
-            .iter()
-            .filter_map(|r| crate::coverage::note(r))
-            .collect();
         return format!(
             "{} ({manifest}; {})",
             notes.into_iter().collect::<Vec<_>>().join(" "),
@@ -416,10 +416,16 @@ fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
         text.push_str(&details.join("; "));
         text.push('.');
     }
+    for note in notes {
+        text.push(' ');
+        text.push_str(note);
+    }
     if c.coverage_reasons.is_empty()
-        || c.coverage_reasons
-            .iter()
-            .any(|r| r != "untargeted_requirement" && native_reason(r).is_none())
+        || c.coverage_reasons.iter().any(|r| {
+            r != "untargeted_requirement"
+                && !crate::coverage::expected_git(r)
+                && native_reason(r).is_none()
+        })
     {
         text.push_str(
             " The service did not supply a further reason this version of Scan can explain.",
@@ -434,9 +440,6 @@ fn incomplete_dependencies(c: &view::Cause, manifest: &str) -> String {
 }
 
 fn native_reason(reason: &str) -> Option<&'static str> {
-    if let Some(note) = crate::coverage::note(reason) {
-        return Some(note.trim_end_matches('.'));
-    }
     match reason {
         "dependency_list_unavailable" | "replacement_dependency_list_unknown" => {
             Some("a package's dependency list was unavailable")
