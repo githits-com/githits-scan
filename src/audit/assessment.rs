@@ -51,19 +51,19 @@ pub(crate) fn assess(
     }
 }
 
-fn has_gaps(r: &Data, include_expected_git: bool) -> bool {
+fn has_gaps(r: &Data, include_expected: bool) -> bool {
     let u = &r.unknowns;
     !u.vulnerabilities.is_empty()
         || !u.metadata.is_empty()
         || u.sources
             .iter()
-            .any(|g| include_expected_git || !crate::coverage::git_only(&g.reasons))
+            .any(|g| include_expected || !crate::coverage::git_only(&g.reasons))
         || u.resolution
             .iter()
-            .any(|g| include_expected_git || !crate::coverage::expected_git(&g.reason))
+            .any(|g| include_expected || !crate::coverage::expected_git(&g.reason))
         || u.excluded_dependencies
             .iter()
-            .any(|g| include_expected_git || !crate::coverage::expected_git(&g.reason))
+            .any(|g| include_expected || !crate::coverage::expected_exclusion(&g.reason))
         || r.coverage.vulnerabilities.checked_count != r.coverage.vulnerabilities.candidates_count
         || !r.coverage.vulnerabilities.unsupported_registries.is_empty()
         || !r.lifecycle.unknowns.is_empty()

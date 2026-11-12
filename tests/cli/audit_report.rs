@@ -78,7 +78,8 @@ fn audit_report_binary_human_origins_distinguish_unattributed_and_missing_inform
         "Outdated versions (1)",
         "Duplicate versions (1)",
         "Incomplete checks",
-        "Packages not checked",
+        "Coverage notes",
+        "external-path",
         "GHSA-context",
     ] {
         assert!(out.contains(text), "{text}: {out}");

@@ -1,5 +1,5 @@
 //! Compact human presentation of the same results emitted as JSON.
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Write};
 
 use super::view::{Duplicate, DuplicateVersion, Finding, Issue, Origin, View};
@@ -113,18 +113,33 @@ pub(super) fn write(
     Ok(())
 }
 pub(super) fn coverage_notes(view: &View, out: &mut dyn Write) -> io::Result<()> {
-    let notes: BTreeSet<_> = view
+    let mut notes = BTreeMap::<_, BTreeSet<_>>::new();
+    for i in view
         .issues
         .iter()
         .filter(|i| i.attention == Attention::Informational)
-        .map(|i| (&i.reason, &i.files))
-        .collect();
+    {
+        notes
+            .entry((&i.reason, &i.files))
+            .or_default()
+            .extend(&i.packages);
+    }
     if notes.is_empty() {
         return Ok(());
     }
     writeln!(out, "\nCoverage notes")?;
-    for (note, files) in notes {
-        writeln!(out, "  {}{}", safe(note), paths(files))?;
+    for ((note, files), packages) in notes {
+        let packages = packages
+            .into_iter()
+            .map(|p| safe(p))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let context = if packages.is_empty() {
+            String::new()
+        } else {
+            format!("{packages} — ")
+        };
+        writeln!(out, "  {context}{}{}", safe(note), paths(files))?;
     }
     Ok(())
 }

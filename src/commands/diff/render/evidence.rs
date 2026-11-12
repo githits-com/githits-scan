@@ -72,7 +72,7 @@ pub(super) fn write(v: &View, informational: bool, d: &mut Display<'_>) -> io::R
             &transition.deltas,
             &data.findings,
             &project,
-            coverage::transition_is_git(v, &data, transition),
+            coverage::transition_is_expected(v, &data, transition),
             d,
         )?;
     }
@@ -199,13 +199,13 @@ fn exposure_qualifications(e: &view::Exposure, result: &mut Qualifications) {
         coverage_qualifications(c, &context, side, result);
     }
     for row in &e.deltas {
-        if !coverage::delta_is_git(e, row) {
+        if !coverage::delta_is_expected(e, row) {
             delta_qualifications(row, &context, result);
         }
     }
     if e.deltas
         .iter()
-        .any(|r| r.kind == "indeterminate" && !coverage::delta_is_git(e, r))
+        .any(|r| r.kind == "indeterminate" && !coverage::delta_is_expected(e, r))
         && !result.keys().any(|(c, _)| c == &context)
     {
         qualify(
@@ -285,7 +285,7 @@ fn coverage_qualifications(
     side: &'static str,
     result: &mut Qualifications,
 ) {
-    if coverage::scope_is_git(c) {
+    if coverage::scope_is_expected(c) {
         return;
     }
     for (present, message) in [
@@ -398,9 +398,9 @@ pub(super) fn file_problems(
     for (left, right) in families(&base).into_iter().zip(families(&head)) {
         paired_gaps(left, right, d)?;
     }
-    for rows in families(&report) {
+    for (rows, exclusion) in families(&report) {
         for row in rows {
-            write_gap(row, "Report", d)?;
+            write_gap(row, "Report", exclusion, d)?;
         }
     }
     partial_without_details(&base, &head, &report, d)?;
@@ -410,32 +410,43 @@ pub(super) fn file_problems(
     Ok(())
 }
 
-fn families(c: &view::Coverage) -> [&[view::Gap]; 4] {
+fn families(c: &view::Coverage) -> [(&[view::Gap], bool); 4] {
     [
-        &c.sources,
-        &c.resolution,
-        &c.excluded_dependencies,
-        &c.mismatches,
+        (&c.sources, false),
+        (&c.resolution, false),
+        (&c.excluded_dependencies, true),
+        (&c.mismatches, false),
     ]
 }
 
 fn has_actionable_details(c: &view::Coverage, v: &View) -> bool {
-    families(c)
+    families(c).iter().any(|(rows, exclusion)| {
+        rows.iter()
+            .any(|r| !coverage::gap_is_expected(r, *exclusion))
+    }) || c
+        .reachability
         .iter()
-        .any(|rows| rows.iter().any(|r| !coverage::gap_is_git(r)))
-        || c.reachability
-            .iter()
-            .any(|r| !r.complete && !coverage::root_is_git(r, v))
+        .any(|r| !r.complete && !coverage::root_is_git(r, v))
 }
 
-fn paired_gaps(left: &[view::Gap], right: &[view::Gap], d: &mut Display<'_>) -> io::Result<()> {
-    let left: BTreeSet<_> = left.iter().collect();
-    let right: BTreeSet<_> = right.iter().collect();
+fn paired_gaps(
+    left: (&[view::Gap], bool),
+    right: (&[view::Gap], bool),
+    d: &mut Display<'_>,
+) -> io::Result<()> {
+    let exclusion = left.1;
+    let left: BTreeSet<_> = left.0.iter().collect();
+    let right: BTreeSet<_> = right.0.iter().collect();
     for row in &left {
-        write_gap(row, if right.contains(row) { "both" } else { "base" }, d)?;
+        write_gap(
+            row,
+            if right.contains(row) { "both" } else { "base" },
+            exclusion,
+            d,
+        )?;
     }
     for row in right.difference(&left) {
-        write_gap(row, "head", d)?;
+        write_gap(row, "head", exclusion, d)?;
     }
     Ok(())
 }
@@ -478,7 +489,7 @@ fn reachability_problems(
     Ok(())
 }
 
-fn write_gap(row: &view::Gap, side: &str, d: &mut Display<'_>) -> io::Result<()> {
+fn write_gap(row: &view::Gap, side: &str, exclusion: bool, d: &mut Display<'_>) -> io::Result<()> {
     let reasons: std::collections::BTreeSet<_> = row
         .reason
         .iter()
@@ -490,7 +501,7 @@ fn write_gap(row: &view::Gap, side: &str, d: &mut Display<'_>) -> io::Result<()>
     }
     for reason in reasons
         .into_iter()
-        .filter(|r| coverage::actionable_reason(r))
+        .filter(|r| coverage::actionable_reason(r, exclusion))
     {
         d.item(&gap_message(row, side, Some(reason)))?;
     }
@@ -534,7 +545,7 @@ fn gap_message(row: &view::Gap, side: &str, reason: Option<&str>) -> String {
         Some("required_input_not_supplied") => row.required_path.as_ref().map_or_else(
             || format!("Could not fully compare {context} because a required dependency file was not read. The service did not identify the missing file. Review the dependency files and Scan's exclusions."),
             |path|format!("Could not fully compare {context} because {path} was not among the files read {read_context}. Check the file, workspace declarations and --exclude settings.")),
-        Some("non_registry_source") => format!("{name}{version} in {context} comes from outside a public package registry, so it could not be checked against public security advisories. Review its source and security information manually."),
+        Some("non_registry_source") => format!("The service reported a non-registry source for {name}{version} in {context}. This does not explain the incomplete comparison. Review these files manually."),
         Some("locked_version_does_not_satisfy_request") => format!("The dependency {name} requires {} in {}, but {files} lists {} {}. Review the dependency requirement and lockfile entries.",row.requested_requirement.as_deref().unwrap_or("a requirement not supplied in this report"),row.declaration_path.as_deref().unwrap_or("a dependency file not identified by the service"),if row.locked_versions.is_empty() {"no matching versions".into()} else {row.locked_versions.join(", ")},super::revision_context(side)),
         Some("recorded_dependency_scope_differs") => format!("For {name} in {context}, the dependency declaration and lockfile disagree about how the dependency is used. Review the corresponding entries."),
         Some("recorded_requirement_differs" | "recorded_provider_requirement_mismatch") => format!("For {name} in {context}, the dependency requirement differs between the declaration and lockfile. Review the corresponding entries."),

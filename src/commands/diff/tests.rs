@@ -328,7 +328,7 @@ fn diff_excluded_dependency_keeps_its_version_and_all_source_paths() {
     let text = rendered(&value, Format::Human);
     assert!(text.contains("local-helper 0.1.0"));
     assert!(text.contains("Cargo.lock, tools/Cargo.lock"));
-    assert!(text.contains("comes from outside a public package registry"));
+    assert!(text.contains("outside public package registries"));
     assert!(!text.contains("non_registry_source"));
 }
 
@@ -340,3 +340,6 @@ mod realistic;
 
 #[path = "tests/git_coverage.rs"]
 mod git_coverage;
+
+#[path = "tests/non_registry.rs"]
+mod non_registry;

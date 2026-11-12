@@ -525,7 +525,7 @@ cannot establish a clean scan. Parser completeness is open source applicability,
 a universal `complete` token: package inventory and relationship detail are
 different facts. Scan consumes backend source coverage instead of duplicating
 parser-family rules. Human headlines lead with findings or neutral `Audit results`
-for actionable-gap-only reports. Excluded packages appear once under **Packages not checked**,
+for actionable-gap-only reports. Actionable exclusions appear once under **Packages not checked**,
 with their reason and files, separately from **Incomplete checks**. A non-registry
 source is ineligible for registry matching, not a failed package lookup. The wire
 reason does not distinguish local workspace packages from every other non-registry
@@ -537,17 +537,27 @@ Only the exact producer reasons `git_registry_checks_not_supported`,
 `git_dependency_graph_unavailable` and `git_source_binding_unavailable` identify
 expected Git limits. These appear as concise **Coverage notes**, including in
 quiet reports, and do not independently cause attention or exit 1. Each compact
-issue has `actionable: false` for these reasons and `true` otherwise. Mixed source
+issue has `actionable: false` for these reasons. Explicit `non_registry_source`
+rows in `unknowns.excluded_dependencies` are also informational; that same
+reason in source, resolution, vulnerability or metadata gaps remains actionable.
+Other causes have `actionable: true`. Mixed source
 reason lists split into informational and actionable subsets before grouping;
 resolution diagnostics cannot borrow the other class's message. Missing/empty or
 unfamiliar causes, actual source contradictions (`recorded_git_source_differs`),
 unsupported generic sources, missing files and lookup failures remain actionable.
 All rows still participate in count and attribution validation; an inconsistent
-report is actionable even when its named causes are expected Git limits.
+report is actionable even when its named causes are expected limits.
+Non-registry exclusions appear in **Coverage notes** with package/version and
+files, without a manual-review instruction. Their compact JSON `issues[].reason`
+now contains that explanatory sentence rather than the earlier short label
+`non-registry dependency`; consumers classify attention using `actionable`, not
+this display text. These exclusions mean registry checks do not apply, not that
+the package is local, safe, or fully assessed. The producer
+reason does not establish license eligibility or license policy compliance.
 
 `incomplete: true, actionable_incomplete: false` does not imply exit 0: independent
 advisory, native lifecycle, maintenance or disagreement findings still cause exit
-1. Git-only limits with no independent findings exit 0 while retaining their
+1. Expected-only limits with no independent findings exit 0 while retaining their
 factual incomplete status. Unavailable Git bindings remain unknown; no Git source
 is treated as a checked registry release or an empty dependency graph. Standard
 producer caveats stay in help/docs; these result-specific coverage notes are always

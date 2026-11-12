@@ -15,6 +15,8 @@ mod audit_native_inputs;
 mod audit_native_lifecycle;
 #[path = "audit_native_rendering.rs"]
 mod audit_native_rendering;
+#[path = "audit_non_registry.rs"]
+mod audit_non_registry;
 #[path = "audit_presentation.rs"]
 mod audit_presentation;
 #[path = "audit_remediation.rs"]

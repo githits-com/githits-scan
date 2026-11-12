@@ -1,23 +1,40 @@
-//! Owner-local interpretation of exhaustive Git coverage causes, without changing facts.
+//! Owner-local interpretation of exhaustive expected coverage causes, without changing facts.
 use std::collections::{BTreeMap, BTreeSet};
 use std::io;
 
 use crate::api::diff::view::{self, View};
-use crate::coverage::{expected_git, git_only};
+use crate::coverage::{exclusions_only, expected_git, git_only};
+
+type Exclusions = BTreeMap<BTreeSet<String>, BTreeSet<String>>;
 
 pub(super) fn gap_is_git(row: &view::Gap) -> bool {
     let reasons: Vec<_> = row.reason.iter().chain(&row.reasons).cloned().collect();
     git_only(&reasons)
 }
 
-pub(super) fn scope_is_git(c: &view::ScopeCoverage) -> bool {
-    matches!(c.inventory.as_str(), "complete" | "partial")
-        && matches!(c.assessment.as_str(), "complete" | "partial")
-        && c.checked == c.coordinates
-        && c.reasons.as_ref().is_some_and(|r| git_only(r))
+pub(super) fn gap_is_expected(row: &view::Gap, exclusion: bool) -> bool {
+    let reasons: Vec<_> = row.reason.iter().chain(&row.reasons).cloned().collect();
+    if exclusion {
+        exclusions_only(&reasons)
+    } else {
+        git_only(&reasons)
+    }
 }
 
-pub(super) fn delta_is_git(e: &view::Exposure, row: &view::Delta) -> bool {
+pub(super) fn scope_is_expected(c: &view::ScopeCoverage) -> bool {
+    (c.inventory == "complete"
+        || (c.inventory == "partial"
+            && c.reasons.as_ref().is_some_and(|r| {
+                git_only(r)
+                    || r.iter()
+                        .any(|cause| cause == "git_dependency_graph_unavailable")
+            })))
+        && matches!(c.assessment.as_str(), "complete" | "partial")
+        && c.checked == c.coordinates
+        && c.reasons.as_ref().is_some_and(|r| exclusions_only(r))
+}
+
+pub(super) fn delta_is_expected(e: &view::Exposure, row: &view::Delta) -> bool {
     if row.kind == "indeterminate" && row.base.reasons.is_empty() && row.head.reasons.is_empty() {
         return false;
     }
@@ -34,18 +51,21 @@ pub(super) fn delta_is_git(e: &view::Exposure, row: &view::Delta) -> bool {
             && assessment
                 .reasons
                 .iter()
-                .all(|r| r == "source_scope_incomplete" && coverage.is_some_and(scope_is_git))
+                .all(|r| r == "source_scope_incomplete" && coverage.is_some_and(scope_is_expected))
     })
 }
 
-fn coverage_is_git(c: &view::Coverage, v: &View) -> bool {
+fn coverage_is_expected(c: &view::Coverage, v: &View) -> bool {
     c.mismatches.is_empty()
         && c.reachability
             .iter()
             .all(|r| r.complete || root_is_git(r, v))
-        && [&c.sources, &c.resolution, &c.excluded_dependencies]
+        && [&c.sources, &c.resolution]
             .iter()
             .all(|rows| rows.iter().all(gap_is_git))
+        && c.excluded_dependencies
+            .iter()
+            .all(|r| gap_is_expected(r, true))
 }
 
 pub(super) fn informational_only(v: &View) -> io::Result<bool> {
@@ -58,7 +78,9 @@ pub(super) fn informational_only(v: &View) -> io::Result<bool> {
     let head: view::Coverage =
         serde_json::from_str(v.snapshots.head.coverage.get()).map_err(io::Error::other)?;
     if unexplained_partial(&base, &head, &top).is_some()
-        || ![&base, &head, &top].iter().all(|c| coverage_is_git(c, v))
+        || ![&base, &head, &top]
+            .iter()
+            .all(|c| coverage_is_expected(c, v))
         || !reviews_complete(v)?
     {
         return Ok(false);
@@ -76,7 +98,7 @@ pub(super) fn informational_only(v: &View) -> io::Result<bool> {
         || c.checked != c.coordinates
         || c.unknown != Some(0)
         || c.unsupported != Some(0)
-        || !c.reasons.as_ref().is_some_and(|r| git_only(r))
+        || !c.reasons.as_ref().is_some_and(|r| exclusions_only(r))
     {
         return Ok(false);
     }
@@ -90,11 +112,15 @@ pub(super) fn informational_only(v: &View) -> io::Result<bool> {
     Ok(data
         .coordinate_transitions
         .iter()
-        .all(|t| transition_is_git(v, &data, t))
-        && data.exposures.iter().all(exposure_is_git))
+        .all(|t| transition_is_expected(v, &data, t))
+        && data.exposures.iter().all(exposure_is_expected))
 }
 
-pub(super) fn transition_is_git(v: &View, data: &view::Advisories, t: &view::Transition) -> bool {
+pub(super) fn transition_is_expected(
+    v: &View,
+    data: &view::Advisories,
+    t: &view::Transition,
+) -> bool {
     let changes: Vec<_> = v.changes.iter().filter(|c| c.id == t.change_id).collect();
     let [change] = changes.as_slice() else {
         return false;
@@ -116,15 +142,15 @@ pub(super) fn transition_is_git(v: &View, data: &view::Advisories, t: &view::Tra
         let [owner] = owners.as_slice() else {
             return false;
         };
-        delta_is_git(owner, d)
+        delta_is_expected(owner, d)
     })
 }
 
-fn exposure_is_git(e: &view::Exposure) -> bool {
+fn exposure_is_expected(e: &view::Exposure) -> bool {
     e.coverage.base.is_some()
         && e.coverage.head.is_some()
         && e.coverage.iter().all(|(_, c)| {
-            scope_is_git(c)
+            scope_is_expected(c)
                 || (c.inventory == "complete"
                     && c.assessment == "complete"
                     && c.checked == c.coordinates
@@ -135,7 +161,7 @@ fn exposure_is_git(e: &view::Exposure) -> bool {
             matches!(
                 d.kind.as_str(),
                 "introduced" | "fixed" | "unchanged" | "non_affecting" | "indeterminate"
-            ) && delta_is_git(e, d)
+            ) && delta_is_expected(e, d)
         })
 }
 
@@ -195,8 +221,9 @@ fn has_details(c: &view::Coverage) -> bool {
         || c.reachability.iter().any(|r| !r.complete)
 }
 
-pub(super) fn notes(v: &View) -> io::Result<BTreeMap<&'static str, BTreeSet<String>>> {
+pub(super) fn notes(v: &View) -> io::Result<BTreeMap<String, BTreeSet<String>>> {
     let mut result = BTreeMap::<_, BTreeSet<String>>::new();
+    let mut exclusions = Exclusions::new();
     if matches!(v.advisories.status.as_str(), "complete" | "partial")
         && let Some(raw) = &v.advisories.coverage
     {
@@ -206,26 +233,63 @@ pub(super) fn notes(v: &View) -> io::Result<BTreeMap<&'static str, BTreeSet<Stri
             .reasons
             .iter()
             .flatten()
-            .filter_map(|r| crate::coverage::note(r))
+            .filter_map(|r| crate::coverage::exclusion_note(r))
         {
-            result.entry(note).or_default();
+            result.entry(note.into()).or_default();
         }
     }
     for raw in std::iter::once(&v.coverage).chain(v.snapshots.iter().map(|(_, s)| &s.coverage)) {
         let c: view::Coverage = serde_json::from_str(raw.get()).map_err(io::Error::other)?;
-        for row in c
-            .sources
-            .iter()
-            .chain(&c.resolution)
-            .chain(&c.excluded_dependencies)
-        {
+        for row in c.sources.iter().chain(&c.resolution) {
             add_gap_notes(row, &mut result);
         }
+        for row in &c.excluded_dependencies {
+            add_exclusion_notes(row, &mut result, &mut exclusions);
+        }
+    }
+    for (files, packages) in exclusions {
+        result
+            .entry(format!(
+                "{} — {}",
+                packages.into_iter().collect::<Vec<_>>().join(", "),
+                crate::coverage::NON_REGISTRY_NOTE
+            ))
+            .or_default()
+            .extend(files);
     }
     Ok(result)
 }
 
-fn add_gap_notes(row: &view::Gap, notes: &mut BTreeMap<&'static str, BTreeSet<String>>) {
+fn add_exclusion_notes(
+    row: &view::Gap,
+    notes: &mut BTreeMap<String, BTreeSet<String>>,
+    exclusions: &mut Exclusions,
+) {
+    add_gap_notes(row, notes);
+    if !row
+        .reason
+        .iter()
+        .chain(&row.reasons)
+        .any(|r| r == "non_registry_source")
+    {
+        return;
+    }
+    notes.remove(crate::coverage::NON_REGISTRY_NOTE);
+    let name = row
+        .name
+        .as_deref()
+        .unwrap_or("A dependency whose name was not supplied");
+    let version = row
+        .version
+        .as_ref()
+        .map_or(String::new(), |v| format!(" {v}"));
+    exclusions
+        .entry(row.path.iter().chain(&row.paths).cloned().collect())
+        .or_default()
+        .insert(format!("{name}{version}"));
+}
+
+fn add_gap_notes(row: &view::Gap, notes: &mut BTreeMap<String, BTreeSet<String>>) {
     for note in row
         .reason
         .iter()
@@ -233,14 +297,18 @@ fn add_gap_notes(row: &view::Gap, notes: &mut BTreeMap<&'static str, BTreeSet<St
         .filter_map(|r| crate::coverage::note(r))
     {
         notes
-            .entry(note)
+            .entry(note.into())
             .or_default()
             .extend(row.path.iter().chain(&row.paths).cloned());
     }
 }
 
-pub(super) fn actionable_reason(reason: &str) -> bool {
-    !expected_git(reason)
+pub(super) fn actionable_reason(reason: &str, exclusion: bool) -> bool {
+    !(if exclusion {
+        crate::coverage::expected_exclusion(reason)
+    } else {
+        expected_git(reason)
+    })
 }
 
 // Summary rows do not carry causes: join only their exact owner-scoped proof.
