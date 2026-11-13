@@ -79,7 +79,8 @@ impl Plan {
             .filter(|l| l.as_str() != "withdrawal_not_observed")
             .map(|l| format!("limit: {}", explanation(l)))
             .collect();
-        let has_details = !constraints.is_empty() || !limitations.is_empty();
+        let checks = checks(r);
+        let has_details = !constraints.is_empty() || !checks.is_empty() || !limitations.is_empty();
         Self {
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
@@ -105,7 +106,7 @@ impl Plan {
             context: recorded_requests(r),
             impact: impact(r, supported, context),
             constraints,
-            checks: checks(r),
+            checks,
             limitations,
         }
     }
@@ -320,9 +321,19 @@ fn checks(r: &Record) -> Vec<String> {
         }
     }
     match c.parent_search.as_str() {
-        "completed" | "not_assessed" => {},
-        "limited" => lines.push("Upgrades to packages using this dependency were not fully checked.".into()),
-        _ => lines.push("The service returned an unfamiliar result for upgrades to packages using this dependency; see JSON for the supplied value.".into()),
+        "completed" | "not_assessed" => {}
+        "limited" => {
+            lines.push("Upgrades to packages using this dependency were not fully checked.".into());
+        }
+        _ => {
+            lines.push(
+                concat!(
+                    "The service returned an unfamiliar result for upgrades to packages ",
+                    "using this dependency; see JSON for the supplied value."
+                )
+                .into(),
+            );
+        }
     }
     if !matches!(
         c.availability_source.as_str(),
@@ -400,10 +411,12 @@ fn finding_names(findings: &[Finding], other: &[Finding], subject: &str) -> Stri
 fn outcome(r: &Record, planning_known: bool, has_details: bool) -> String {
     match r.outcome.as_str() {
         "proposed" | "partial" => "The service returned a proposal without any changes.".into(),
-        "indeterminate" if !has_details => "The service could not determine a mitigation; no further reason was supplied.".into(),
+        "indeterminate" if !has_details => {
+            "The service could not determine a mitigation; no further reason was supplied.".into()
+        }
         "indeterminate" => "The service could not determine a mitigation.".into(),
         "no_upgrade_path" if !planning_known || !known_checks(&r.checks) => {
-            "unrecognized planning/check evidence; no conclusion".into()
+            "The planning or check evidence is unfamiliar, so no conclusion about an upgrade path can be drawn.".into()
         }
         "no_upgrade_path"
             if r.search_domain.as_ref().is_some_and(|d| {
@@ -413,8 +426,12 @@ fn outcome(r: &Record, planning_known: bool, has_details: bool) -> String {
         {
             "No upgrade path found among releases known to the service, under the dependency requirements considered.".into()
         }
-        "no_upgrade_path" => "unrecognized search scope; no conclusion".into(),
-        _ => format!("unrecognized outcome: {}", safe(&r.outcome)),
+        "no_upgrade_path" => {
+            "The upgrade search scope is unfamiliar, so no conclusion about an upgrade path can be drawn.".into()
+        }
+        _ => {
+            "The service returned an unfamiliar mitigation outcome; no conclusion about a fix can be drawn.".into()
+        }
     }
 }
 
@@ -499,7 +516,9 @@ fn check_text(value: &str) -> String {
         "blocked" => "blocked by dependency requirements".into(),
         "unchecked" => "not checked".into(),
         "unverified" => "not verified".into(),
-        _ => safe(value),
+        "unknown" => "not determined from the supplied evidence".into(),
+        _ => "the service returned an unfamiliar check result; see JSON for the supplied value"
+            .into(),
     }
 }
 

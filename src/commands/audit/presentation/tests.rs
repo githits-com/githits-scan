@@ -345,6 +345,35 @@ fn indeterminate_outcome_never_refers_to_suppressed_detail_blocks() {
 }
 
 #[test]
+fn indeterminate_checks_are_retained_without_claiming_no_reason_was_supplied() {
+    for (field, value) in [
+        ("parent_search", json!("limited")),
+        ("withdrawal", json!("future_value")),
+        ("native_resolution", json!("future_value")),
+        ("catalog_freshness", json!("future_value")),
+        ("availability_source", json!("future_value")),
+        ("preference_differences", json!(1)),
+        ("prerelease_target", json!(true)),
+        ("deprecated_target", json!(true)),
+    ] {
+        let mut input = input();
+        let r = &mut input["remediation"]["recommendations"][0];
+        r["outcome"] = "indeterminate".into();
+        r["changes"] = json!([]);
+        r["checks"][field] = value;
+        let plan = plan(&project(&input));
+        assert!(
+            !plan.checks.is_empty(),
+            "{field} must have a visible qualification"
+        );
+        assert_eq!(
+            plan.outcome.as_deref(),
+            Some("The service could not determine a mitigation.")
+        );
+    }
+}
+
+#[test]
 fn explanation_blocks_escape_untrusted_controls_and_omit_opaque_evidence() {
     let mut input = input();
     let mut blocker = blocker();

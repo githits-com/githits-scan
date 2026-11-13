@@ -61,7 +61,10 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         !text.contains("package-manager support and build not checked"),
         "{text}"
     );
-    assert!(text.contains("native resolution: future_check"), "{text}");
+    assert!(
+        text.contains("native resolution: the service returned an unfamiliar check result"),
+        "{text}"
+    );
 }
 
 #[test]

@@ -30,11 +30,15 @@ fn audit_presentation_json_online_and_offline_share_facts_blocks_and_exit() {
         Some(&mock.origin()),
         &[
             "--presentation-json",
-            "--quiet",
             "--save-analysis",
             archive.to_str().expect("path"),
         ],
     );
+    assert!(
+        !stderr(&online).contains("assessing"),
+        "structured output suppresses progress without --quiet"
+    );
+    assert!(!stderr(&online).contains("preparing"));
     let online = document(&online);
     assert_eq!(
         mock.requests().len(),

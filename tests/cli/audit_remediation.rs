@@ -320,7 +320,11 @@ fn audit_remediation_optional_change_flags_preserve_absence() {
 #[test]
 fn audit_remediation_material_warnings_remain_visible() {
     for (check, value, warning) in [
-        ("advisories", "unknown", "target advisories: unknown"),
+        (
+            "advisories",
+            "unknown",
+            "target advisories: not determined from the supplied evidence",
+        ),
         (
             "advisories",
             "affected",
@@ -500,7 +504,7 @@ fn audit_remediation_advisory_lists_avoid_repeating_covered_findings() {
             .expect("next section")
             .0;
         assert!(!section.contains("    advisories: "));
-        assert!(section.contains("target advisories: unknown"));
+        assert!(section.contains("target advisories: not determined from the supplied evidence"));
         assert!(section.contains("GHSA-demo") && section.contains("GHSA-other"));
     }
 }
@@ -531,8 +535,12 @@ fn audit_remediation_future_vocabulary_never_looks_like_known_action() {
             "unfamiliar fix-planning status"
         } else if path == "/recommendations/0/checks/parent_search" {
             "unfamiliar result for upgrades"
-        } else {
+        } else if path == "/recommendations/0/outcome" {
+            "unfamiliar mitigation outcome"
+        } else if path == "/recommendations/0/changes/0/strategy" {
             "future_value"
+        } else {
+            "unfamiliar check result"
         };
         assert!(text.contains(warning), "{path}: {text}");
         assert!(!text.contains("      Upgrade "), "{path}");
@@ -629,7 +637,7 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
     input["remediation"]["recommendations"][0]["search_domain"]["release_scope"] =
         "future_scope".into();
     let text = human_report(&input);
-    assert!(text.contains("unrecognized search scope; no conclusion"));
+    assert!(text.contains("The upgrade search scope is unfamiliar, so no conclusion about an upgrade path can be drawn."));
     assert!(!text.contains("No upgrade path found"));
 }
 
@@ -649,7 +657,7 @@ fn audit_remediation_future_checks_cannot_produce_negative() {
         *input.pointer_mut(path).expect("field") = "future_value".into();
         let text = human_report(&input);
         assert!(!text.contains("No upgrade path found"), "{path}");
-        assert!(text.contains("unrecognized planning/check evidence; no conclusion"));
+        assert!(text.contains("The planning or check evidence is unfamiliar, so no conclusion about an upgrade path can be drawn."));
         let result = json_report(&input);
         assert!(
             serde_json::to_string(&result["remediation"])

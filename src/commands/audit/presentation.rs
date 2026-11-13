@@ -86,8 +86,18 @@ impl<'a> Remediation<'a> {
 pub(super) fn messages(view: &View) -> Vec<String> {
     let State::Present(data) = &view.remediation else {
         return match &view.remediation {
-            State::Unavailable if !view.vulnerabilities.is_empty() => vec!["Fix guidance is unavailable in this report.".into()],
-            State::Unverified => vec!["Fix guidance could not be verified; original findings are retained in the audit report.".into()],
+            State::Unavailable if !view.vulnerabilities.is_empty() => {
+                vec!["Fix guidance is unavailable in this report.".into()]
+            }
+            State::Unverified => {
+                vec![
+                    concat!(
+                        "Fix guidance could not be verified; ",
+                        "original findings are retained in the audit report."
+                    )
+                    .into(),
+                ]
+            }
             _ => Vec::new(),
         };
     };
@@ -99,11 +109,19 @@ pub(super) fn messages(view: &View) -> Vec<String> {
     }
     let mut messages = Vec::new();
     if data.status != "completed" {
-        messages.push(match data.status.as_str() {
-            "limited" => "Fix guidance is incomplete.",
-            "not_assessed" => "Fix guidance was not assessed.",
-            _ => "The service returned an unfamiliar fix-planning status; see JSON for the supplied value.",
-        }.into());
+        messages.push(
+            match data.status.as_str() {
+                "limited" => "Fix guidance is incomplete.",
+                "not_assessed" => "Fix guidance was not assessed.",
+                _ => {
+                    concat!(
+                        "The service returned an unfamiliar fix-planning status; ",
+                        "see JSON for the supplied value."
+                    )
+                }
+            }
+            .into(),
+        );
     }
     if data.recommendations.is_empty() {
         messages.push(

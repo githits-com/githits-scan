@@ -50,7 +50,7 @@ Each recommendation has recommendation_index into audit.remediation.recommendati
 subject, findings/ addressed_findings/remaining_findings using existing identities,
 heading, optional outcome explanation (null only when the heading suffices; plain-language sentences
 replace raw indeterminate/proposed/partial labels when changes are absent;
-indeterminate with no displayed constraints/limitations explicitly says no further
+indeterminate with no displayed constraints, checks or limitations explicitly says no further
 reason was supplied),
 changes (change_index, summary, details, files, reasons with summary/evidence),
 files, context, impact, constraints with summary/details,
