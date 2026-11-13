@@ -19,6 +19,8 @@ mod audit_native_rendering;
 mod audit_non_registry;
 #[path = "audit_presentation.rs"]
 mod audit_presentation;
+#[path = "audit_presentation_json.rs"]
+mod audit_presentation_json;
 #[path = "audit_remediation.rs"]
 mod audit_remediation;
 #[path = "audit_report.rs"]
@@ -67,6 +69,11 @@ fn offline(file: &Path, extra: &[&str]) -> Output {
         .env("GITHITS_API_URL", "not-an-origin")
         .output()
         .expect("offline audit")
+}
+
+// Meaning assertions ignore native hanging wraps; dedicated renderer tests check layout.
+fn prose(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
 fn server(bytes: &[u8]) -> ScriptedServer {

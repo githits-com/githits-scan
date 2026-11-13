@@ -165,3 +165,126 @@ unrequested and unfamiliar statuses never mean pass/safe or zero findings. Addit
 fields and positive future schemas remain byte-preserved for pipelines; this binary's
 human/Markdown renderer explicitly declines unsupported structures. This replaces the
 earlier experimental Scan-owned schema; see [dependency diff](dependency-diff.md).
+
+## Audit presentation (schema 1)
+
+`audit --presentation-json` emits `kind: "audit_presentation"`,
+`schema_version: 1`, `audit` and `remediation`. It supports online audit and
+`--from-analysis` offline replay, stdout or `--output FILE`. It conflicts with
+`--json` and `--explain`; focused explanations keep their existing interface.
+`--quiet` and `--details` do not change the exported content. Progress follows
+JSON output rules. This is an additive output choice; existing audit fact JSON,
+saved analyses and byte-exact diff exports retain their contracts. Online export
+and `--save-analysis` use the same completed job; replay requires no credentials,
+repository discovery, token acquisition or network.
+
+`audit` is the complete existing schema-2 fact report, including incompleteness,
+actionability, ignores, lifecycle evidence and optional saved provenance. These
+facts and the process exit code remain authoritative for policy. Presentation
+strings must never be parsed for gating, safety or machine classification.
+
+`remediation` contains `messages`, `recommendations` and `limits` arrays. Scan's
+audit command presentation layer computes the explanations once for native text,
+focused human explanations and this export. It has the curated facts and displayed
+problem context; API types remain service evidence, and consumers own their layout.
+The first version exports **audit remediation explanations**, not prose for every
+audit section or any diff presentation. Other findings remain available in `audit`.
+
+Each recommendation is one independent alternative, in the same order as the fact
+report. It contains:
+
+| Field | Meaning |
+| --- | --- |
+| `recommendation_index` | Zero-based position in this document's `audit.remediation.recommendations` |
+| `subject` | Existing subject coordinate; never a new opaque plan ID |
+| `findings`, `addressed_findings`, `remaining_findings` | Existing `{package, advisory, files}` fact identities, unchanged |
+| `heading` | Qualified concise heading, or null when no changes were supplied |
+| `outcome` | Plain-language separate outcome, or null when the heading suffices |
+| `changes` | Ordered changes that belong together within this alternative |
+| `files` | Shared change paths that need display beyond the finding context |
+| `context` | Recorded-request explanations when checked effects do not already explain them |
+| `impact` | Addressed and unresolved impact, including explicit absence of reported benefit for partial candidates |
+| `constraints` | Objects grouped by explanation, with a `summary` and sorted unique request contexts in `details`; required project edits stay distinct from actual requirement conflicts |
+| `checks`, `limitations` | Material check qualifications and per-plan limitations |
+
+Each change has `change_index` (zero-based within the matching fact record),
+`summary`, `details`, `files` and `reasons`. Each reason has `summary` and
+`evidence` (supporting request explanations). Detailed reason evidence is always
+exported when available; native compact output can suppress redundant advisory
+reasons and request inventories. All explanation selection and wording still come
+from the same model. Missing or unfamiliar reason detail is qualified explicitly
+in the detailed export; it never becomes an invented checked benefit.
+
+Indices are document-local links, stable only within this complete report. They
+are not backend identifiers or identities across analyses. Coordinates, advisory
+IDs and full file sets retain their existing meaning; no synthetic globally
+stable plan ID is inferred. Keep the enclosing `audit` with its presentation.
+Display a recommendation's findings with its blocks: “listed advisory” refers to
+its referenced finding context. Native grouping/focused selection can display a
+different advisory context; the same builder adjusts redundant impact and file
+wording to that context. A consumer may use the fact identities to link to advisory
+metadata in `audit.vulnerabilities`.
+
+For a table, show the qualified `heading` together with every `changes[].summary`.
+Place checked reasons, `impact`, constraints and limitations in the same row or its
+associated details. A project requirement by itself is context for applying a
+change, not a substitute for the candidate's changed package/version. Keep joint
+changes together, and keep alternative records separate. A removed route does not
+prove every advisory occurrence closes. `Suggested fix` describes the supplied
+checks, not successful native installation or a verified build. Partial/unresolved
+prerelease proposals remain candidates even if some findings are addressed;
+complete supported proposals retain their explicit prerelease warning.
+
+When planning is absent with vulnerabilities, `messages` says guidance is
+unavailable; absent planning without vulnerabilities has empty arrays. Unverified
+recommendations export an explicit verification message, no recommendations or
+limits, with the authoritative reason retained among audit issues. Present but
+empty planning qualifies the absence of recommendations unless completed with no
+vulnerabilities. Shared supplied limits remain in `limits`, even when a clean
+native report omits its empty guidance section. No recommendations never means no
+fix exists. Unknown statuses do not imply completed checks. Empty explanation
+arrays mean no additional blocks to display, not an all-clear determination.
+
+### Plain text and consumer responsibilities
+
+Explanation strings contain no ANSI styling, HTML or Markdown. Scan escapes
+control characters for display (for example a newline becomes the literal `\n`)
+and preserves ordinary punctuation such as `<`, `&`, pipes and backticks. JSON
+encoding remains normal JSON escaping; decode it once. Fact values and path arrays
+retain fact identity rather than display escaping. Consumers must escape all
+values for their own output context: Markdown tables, GitHub HTML, URLs, shell
+commands or terminal output. Do not parse terminal output, split prose into
+meaning, or turn these strings into executable commands.
+
+After adoption, a consumer such as scan-action can remove its duplicate candidate
+qualification, blocker/reason phrase mapping, compact plan semantic selection,
+partial-impact wording and explanation-meaning tests. Scan owns those cases.
+Retain consumer tests for schema support, associations, missing evidence, inclusion
+of the complete qualified block, independent alternatives, GitHub layout/links,
+escaping/truncation, configured policy, authoritative facts and exit behavior.
+Release availability and downstream adoption are separate steps.
+
+The Rust command API selects `audit::Request.format: audit::Format` instead of
+`json: bool`. Offline callers select `ReplayRequest.mode` as
+`ReplayMode::Report(Format)` or `ReplayMode::Explain { package, json }`; focused
+presentation export is unrepresentable. Archives and configuration need no
+migration. Omit the new CLI flag or use the previous binary to return to previous
+output behavior without losing saved evidence.
+
+Constraint explanations appear once per plan, with the affected package owners,
+requirements and paths beneath them. Conflicts are direction-neutral: an existing
+package can exclude a proposed version, or a proposed version can require a
+different locked dependency. Unattributed `other_target_versions` stay in the fact
+report rather than becoming ambiguous version advice. A per-plan limitation is
+omitted from presentation when its exact explanation already appears in that
+plan's constraints; audit-wide planning limits retain their broader scope.
+Repeated displayed limitation sentences appear once within each scope, in first
+appearance order, while all original reason codes remain in the fact report.
+
+Advisory lists show the subject's IDs first, followed by external package groups
+(`package — IDs`) in package order. Each `(partly)` qualifier stays attached to its
+advisory, and repeated file occurrences do not repeat the same label. Every public
+advisory ID remains available. Native guidance wraps at spaces to 100 Unicode
+scalar characters including indentation, with four extra spaces on continuation
+lines; indivisible identifiers remain whole even when longer. JSON strings retain
+unwrapped plain text for the consumer's own layout.

@@ -192,6 +192,7 @@ SBOM generation submits one job and writes the complete returned document.
 ```bash
 githits-scan audit
 githits-scan audit --json -o audit.json
+githits-scan audit --presentation-json -o audit-presentation.json
 githits-scan audit --save-analysis analysis.json
 githits-scan audit --from-analysis analysis.json     # offline replay
 ```
@@ -209,6 +210,12 @@ This breaking minor update emits audit/explanation JSON schema 2 and saved analy
 format 2 with producer report 3. Older saved analyses are no longer read; use their
 recorded Scan writer version for offline replay. Unsupported service report versions
 fail with exit 3 without saving output or resubmitting the job.
+
+`--presentation-json` includes the existing facts plus Scan-owned remediation
+explanations for tables and reports; it also works with `--from-analysis`. Keep
+qualified candidate changes, checked benefits and unresolved impact together. See
+[the presentation contract](docs/implementation/json-output.md#audit-presentation-schema-1)
+for structure and escaping.
 
 See [audit design](docs/implementation/audit.md) for evidence and replay semantics.
 

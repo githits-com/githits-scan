@@ -50,11 +50,14 @@ previously completed output intact. See [dependency diff](dependency-diff.md#out
 All commands accept `-o/--output FILE` (`-` means stdout). `license check --details` adds component references, package URLs and bounded
 recorded Git-source previews; JSON retains full selector values. Detect quiet suppresses save notes, preserving the inventory.
 
-Per-command arguments: `license report --details`, `license report --from-report FILE` and `-o/--output FILE` (human or exact public JSON with `--json`); `detect --save`; `sbom generate --format <cyclonedx|spdx|text>` and `-o, --output <FILE>`; `license check --sbom <FILE>`; `audit -o/--output <FILE>` (human by default, compact result JSON with `--json`);
+Per-command arguments: `license report --details`, `license report --from-report FILE` and `-o/--output FILE` (human or exact public JSON with `--json`); `detect --save`; `sbom generate --format <cyclonedx|spdx|text>` and `-o, --output <FILE>`; `license check --sbom <FILE>`; `audit -o/--output <FILE>` (human by default, compact result JSON with `--json`, or facts plus shared remediation
+explanations with `--presentation-json`);
 `audit --details` (expand maintenance lists in ordinary human reports, including saved replay);
 `audit --save-analysis FILE`; `audit --from-analysis FILE [--explain PACKAGE]`.
 `--save-analysis` conflicts with `--output`; saved replay accepts `--output`, including explanations.
 Offline mode rejects scan-selection arguments and requires no token.
+`audit --presentation-json` also supports whole-report replay and conflicts with
+`--json` and focused `--explain`; see [presentation JSON](json-output.md#audit-presentation-schema-1).
 
 ## Configuration File
 

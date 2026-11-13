@@ -154,13 +154,13 @@ handlers own explicit file I/O and presentation. The API DTOs retain the service
 facts. The command's compact change serializer excludes archive-only occurrence
 references, so ordinary live JSON remains unchanged.
 
-Human guidance deduplicates identical rendered blocker blocks within each
-alternative; distinct target details remain separate and JSON preserves every
-original blocker, including its opaque context. Inspection omits a request path
+Human guidance groups blocker explanations within each alternative, with sorted
+unique owner/requirement/path details. Unscoped other-target versions stay in fact
+JSON, which preserves every original blocker and its opaque context. Inspection omits a request path
 only when it exactly equals the section's source path. Manifest paths that differ
 from that source remain visible. Missing requirement values remain explicit;
-unrecognized requirement-status values are escaped without interpreting them as
-planner check states.
+unrecognized requirement-status values are described as unfamiliar without
+interpreting them as planner check states; their raw values stay in fact JSON.
 
 Human inspection groups requests within one source and target occurrence by exact
 requirement/status, path/basis, owner role, request kind and relation kind/basis.
@@ -274,11 +274,21 @@ stay attached to their advisory in the card as `advisory-reported fix versions`;
 this is advisory evidence, distinct from an applicable recommendation. JSON retains the complete
 vulnerability inventory and advisory hints.
 
+Remediation wording and semantic selection live in the audit command presentation
+model; native rendering owns grouping, file wrapping and styling. The model also
+produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
+Project requirement/preference edits are described as necessary when applying the
+change, distinct from actual third-party requirement exclusions.
+
 The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
 availability, non-affecting advisory checks, matched requirements, an addressed
 vulnerability and recognized planning/check evidence. Both use one predicate that
-also requires every change to be a recognized upgrade. Weaker facts, missing
+also requires every change to be a recognized upgrade. A partial outcome or a
+nonempty remaining-finding list stays candidate-qualified when either the record
+checks or any change marks a prerelease target; an unresolved prerelease migration
+is never a confirmed fix. Complete proposed prereleases with no remaining findings
+retain supported wording and their explicit warning. Weaker facts, missing
 addressed evidence, overrides and future strategies retain neutral
 candidate wording; partial candidate groups keep their partial qualifier. Joint action sets stay together; partial results distinguish addressed
 and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
@@ -295,16 +305,34 @@ from the record itself. Common change paths are omitted only when they equal
 both file sets; otherwise change paths stay explicit. Ordinary audit and focused
 explanation use this same comparison, so grouping never broadens a fix's scope. Blockers use
 owner, supplied dependency name, requirement, path and readable reasons; role/kind/basis/recorded-status
-bookkeeping stays in JSON. Exclusion reasons use `requirement conflict` without
-a redundant exclusion suffix; other and unknown reasons use neutral `constraint`
-plus the supplied readable/escaped reason. This does not turn an unevaluated
+bookkeeping stays in JSON. Exclusion groups state that dependency requirements conflict with the candidate;
+other and unknown groups retain the supplied readable explanation. Each group
+keeps its requesting packages, requirements and files as details. This does not turn an unevaluated
 selector or a deliberate override into a blocked verdict. An override signals
 departure from a represented requirement, not proof of a valid package-manager
 override or build. Unknown
-outcomes, strategies and check values remain visible neutral candidate evidence.
+outcomes, strategies and check values keep a neutral candidate qualification and
+an explanation of what could not be determined; raw unfamiliar values stay in JSON.
+
+Constraint groups state each distinct displayed explanation once, in first
+appearance order, with sorted unique owner/requirement/path details. Required
+project edits, unchecked applicability, actual requirement conflicts and
+coordination warnings remain distinct. A conflict can be inbound (an existing
+parent excludes a proposed version) or outbound (a proposed version's requirement
+excludes a dependency retained in the lockfile). Group wording does not assume
+which package must change. Unscoped other-target versions remain in fact JSON;
+Scan does not invent their package referent. Matching per-plan limitations need
+not repeat a displayed constraint explanation; audit-wide limits remain intact.
+
+The literal change strategy `unknown` says how to apply the candidate was not
+determined, while unfamiliar future strategies retain the separate unsupported
+vocabulary qualification. `native_applicability_not_checked` explains that the
+dependency requirements' applicability to this project was not checked. Neither
+promotes a candidate or claims that the project's package manager/build was run.
+Route-removal language stays limited to dependency routes recorded in the report.
 
 Blockers may supply an optional `dependency_name`, the dependency identity requested
-by the owner. Human output renders `express@5.1.0 requires cookie ^0.7.1` when
+by the owner. Request details render `express@5.1.0 requires cookie ^0.7.1` when
 that name and range are supplied. With a name but no range, it keeps the name and
 explicit requirement status, such as `express@5.1.0 requires cookie (requirement
 not recorded)`. The name is escaped like other untrusted text. When the optional field is absent,
@@ -373,8 +401,9 @@ Empty original-request lists on route removal add no fabricated request. A
 reason's canonical dependency target never replaces an authored alias.
 
 Absent reasons retain earlier output. `unavailable` and unfamiliar codes add no
-ordinary explanation; inspection says `reason unavailable` or identifies an
-escaped unrecognized code. Trace omission does not erase the service's inline
+ordinary explanation; inspection explains that the report includes no checked
+explanation, or that Scan cannot interpret an unfamiliar reason. Raw codes stay
+in JSON. Trace omission does not erase the service's inline
 boundary evidence: it still describes a represented route at its source, never
 all matching copies. Existing record-wide request context is suppressed only
 when every change has a substantive known reason and at least one reason describes

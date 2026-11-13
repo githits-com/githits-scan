@@ -12,21 +12,8 @@ pub(super) mod remediation;
 
 pub(super) use crate::commands::safe;
 
-pub(super) fn requirement_status(value: &str) -> String {
-    match value {
-        "not_recorded" => "not recorded".into(),
-        "provider_requirement" => "bound to a provider package".into(),
-        _ => safe(value),
-    }
-}
+pub(super) use super::presentation::{list, requirement_status};
 
-fn list<'a>(values: impl IntoIterator<Item = &'a String>) -> String {
-    values
-        .into_iter()
-        .map(|s| safe(s))
-        .collect::<Vec<_>>()
-        .join(", ")
-}
 fn paths(files: &BTreeSet<String>) -> String {
     if files.is_empty() {
         return String::new();

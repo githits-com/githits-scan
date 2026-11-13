@@ -3,7 +3,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write as _;
 use std::path::Path;
 
-use super::{Error, Outcome, ReplayRequest, view};
+use super::{Error, Outcome, ReplayMode, ReplayRequest, view};
 use crate::api::audit::Report;
 use crate::audit::{explain, saved};
 use crate::style::Palette;
@@ -64,33 +64,37 @@ pub(super) fn replay(
         analysis.selected_manifests.into_iter().collect(),
         &analysis.audit_policy,
     );
-    if let Some(package) = request.explain {
-        let mut selected =
-            explain::select(&analysis.report, package).ok_or_else(|| Error::NoAuditPackage {
-                candidates: super::explain::candidates(&result, package),
+    match request.mode {
+        ReplayMode::Explain { package, json } => {
+            let mut selected = explain::select(&analysis.report, package).ok_or_else(|| {
+                Error::NoAuditPackage {
+                    candidates: super::explain::candidates(&result, package),
+                }
             })?;
-        select_recommendations(&mut result, &mut selected);
-        super::super::write_report(&request.output, out, palette, |out, _| {
-            super::explain::write(
+            select_recommendations(&mut result, &mut selected);
+            super::super::write_report(&request.output, out, palette, |out, _| {
+                super::explain::write(
+                    &result,
+                    &analysis.provenance,
+                    &selected,
+                    json,
+                    request.details,
+                    out,
+                )
+                .map_err(Error::Output)
+            })?;
+        }
+        ReplayMode::Report(format) => {
+            result.analysis = Some(analysis.provenance);
+            super::write_result(
                 &result,
-                &analysis.provenance,
-                &selected,
-                request.json,
+                format,
                 request.details,
+                &request.output,
                 out,
-            )
-            .map_err(Error::Output)
-        })?;
-    } else {
-        result.analysis = Some(analysis.provenance);
-        super::write_result(
-            &result,
-            request.json,
-            request.details,
-            &request.output,
-            out,
-            palette,
-        )?;
+                palette,
+            )?;
+        }
     }
     Ok(outcome)
 }

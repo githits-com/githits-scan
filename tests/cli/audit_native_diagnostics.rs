@@ -91,7 +91,7 @@ fn native_diagnostics_missing_peer_is_compact_and_saved_without_opaque_context()
     ] {
         assert!(text.contains(line), "{text}");
     }
-    assert!(text.contains("missing dependency: futuredep (requirement future_status) — requested by fourth@1.0.0 (kind: FUTURE_KIND)"), "{text}");
+    assert!(text.contains("missing dependency: futuredep (requirement not understood because the service returned an unfamiliar status) — requested by fourth@1.0.0 (kind: FUTURE_KIND)"), "{text}");
     assert!(!text.contains("futuredep <9"), "{text}");
     assert!(!text.contains("native_coverage_telemetry"), "{text}");
     let stored = fs::read_to_string(&archive).expect("saved archive");

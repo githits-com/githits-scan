@@ -169,7 +169,7 @@ fn guidance(
         }
         render::remediation::guidance(
             record,
-            matches!(data.status.as_str(), "completed" | "limited"),
+            &data.status,
             &context,
             render::remediation::ReasonDetail::Evidence,
             out,

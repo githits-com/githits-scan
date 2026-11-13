@@ -161,7 +161,7 @@ fn audit_remediation_grouping_keeps_joint_scope_in_focused_output() {
         "{focused}"
     );
     assert!(first.contains("would address:"), "{focused}");
-    assert!(first.contains("GHSA-other (npm:demo@2.0.0)"), "{focused}");
+    assert!(first.contains("npm:demo@2.0.0 — GHSA-other"), "{focused}");
 }
 
 #[test]
@@ -205,7 +205,7 @@ fn audit_remediation_grouping_keeps_unowned_problems_and_independent_checks() {
         .0;
     assert!(first.contains("Suggested fix (partial)"), "{text}");
     assert!(
-        first.contains("still unresolved: GHSA-other (npm:aaa@2.0.0)"),
+        first.contains("still unresolved: npm:aaa@2.0.0 — GHSA-other"),
         "{text}"
     );
     let second = text.split_once("Alternative 2").expect("second").1;

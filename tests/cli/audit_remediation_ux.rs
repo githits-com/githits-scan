@@ -33,66 +33,6 @@ fn audit_ux_advisory_hints_are_not_presented_as_recommendations() {
 }
 
 #[test]
-fn audit_ux_constraint_labels_distinguish_exclusion_from_uncertainty() {
-    for (reason, label, explanation) in [
-        (
-            "third_party_request_excludes_target",
-            "requirement conflict:",
-            None,
-        ),
-        (
-            "required_request_excludes_target",
-            "requirement conflict:",
-            None,
-        ),
-        (
-            "project_request_change",
-            "constraint:",
-            Some("project requirement must change"),
-        ),
-        (
-            "unsupported_selector",
-            "constraint:",
-            Some("dependency requirement could not be evaluated"),
-        ),
-        (
-            "future_reason\n\u{1b}[2J",
-            "constraint:",
-            Some("future_reason\\n\\u{1b}[2J"),
-        ),
-    ] {
-        let mut value = remediation_report();
-        let mut blocker = named_constraint();
-        blocker["reason"] = reason.into();
-        value["remediation"]["recommendations"][0]["blockers"] = json!([blocker]);
-        value["remediation"]["recommendations"][0]["checks"]["requirements"] = "blocked".into();
-        let text = human_report(&value);
-        assert!(
-            text.contains(&format!("{label} express@5.1.0 requires cookie ^0.7.1")),
-            "{text}"
-        );
-        assert_constraint_explanation(&text, explanation);
-        assert_eq!(
-            json_report(&value)["remediation"]["recommendations"][0]["blockers"][0],
-            blocker
-        );
-    }
-}
-
-fn assert_constraint_explanation(text: &str, explanation: Option<&str>) {
-    if let Some(expected) = explanation {
-        assert!(text.contains(expected), "{text}");
-    } else {
-        assert!(!text.contains("excludes the target"), "{text}");
-    }
-    assert!(!text.contains('\u{1b}'));
-    assert!(
-        !text.contains("blocked by dependency requirements"),
-        "{text}"
-    );
-}
-
-#[test]
 fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
     let mut value = remediation_report();
     let record = &mut value["remediation"]["recommendations"][0];
@@ -112,7 +52,10 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         text.contains("package-manager support and build not checked"),
         "{text}"
     );
-    assert!(text.contains("requirement conflict:"), "{text}");
+    assert!(
+        text.contains("Dependency requirements conflict with this candidate."),
+        "{text}"
+    );
     assert!(!text.contains("Suggested fix"), "{text}");
     value["remediation"]["recommendations"][0]["checks"]["native_resolution"] =
         "future_check".into();
@@ -121,35 +64,10 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         !text.contains("package-manager support and build not checked"),
         "{text}"
     );
-    assert!(text.contains("native resolution: future_check"), "{text}");
-}
-
-#[test]
-fn audit_ux_partial_results_preserve_overlap_and_missing_impact() {
-    for addressed in [json!([0]), json!([])] {
-        let mut value = remediation_report();
-        let record = &mut value["remediation"]["recommendations"][0];
-        record["outcome"] = "partial".into();
-        record["addressed_finding_refs"] = addressed.clone();
-        record["remaining_finding_refs"] = json!([0]);
-        let text = human_report(&value);
-        if addressed == json!([0]) {
-            assert!(text.contains("would address: GHSA-demo (partly)"), "{text}");
-            assert!(
-                text.contains("still unresolved: GHSA-demo (partly)"),
-                "{text}"
-            );
-        } else {
-            assert!(text.contains("would address: none reported"), "{text}");
-            assert!(text.contains("still unresolved: GHSA-demo"), "{text}");
-            assert!(!text.contains("(partly)"), "{text}");
-        }
-        assert!(!text.contains("some copies"), "{text}");
-        assert_eq!(
-            json_report(&value)["remediation"]["recommendations"][0]["remaining_findings"][0]["advisory"],
-            "GHSA-demo"
-        );
-    }
+    assert!(
+        text.contains("native resolution: the service returned an unfamiliar check result"),
+        "{text}"
+    );
 }
 
 #[test]
@@ -164,7 +82,7 @@ fn audit_ux_negative_conclusion_is_separated_and_keeps_its_scope() {
     let text = human_report(&value);
     assert!(
         text.contains(
-            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements considered.\n"
+            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements\n        considered.\n"
         ),
         "{text}"
     );
@@ -318,33 +236,6 @@ fn audit_ux_joint_context_deduplicates_facts_without_joining_package_names() {
 }
 
 #[test]
-fn audit_ux_mixed_impact_marks_only_the_overlapping_advisory() {
-    let mut value = remediation_report();
-    let mut second = value["findings"]["vulnerabilities"][0].clone();
-    second["advisory_id"] = "GHSA-second".into();
-    value["findings"]["vulnerabilities"]
-        .as_array_mut()
-        .expect("findings")
-        .push(second);
-    value["summary"]["vulnerabilities"] = 2.into();
-    let record = &mut value["remediation"]["recommendations"][0];
-    record["outcome"] = "partial".into();
-    record["finding_refs"] = json!([0, 1]);
-    record["addressed_finding_refs"] = json!([0, 1]);
-    record["remaining_finding_refs"] = json!([0]);
-    let text = human_report(&value);
-    assert!(
-        text.contains("would address: GHSA-demo (partly), GHSA-second"),
-        "{text}"
-    );
-    assert!(
-        text.contains("still unresolved: GHSA-demo (partly)"),
-        "{text}"
-    );
-    assert!(!text.contains("GHSA-second (partly)"), "{text}");
-}
-
-#[test]
 fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
     let mut value = remediation_report();
     let mut second = value["findings"]["vulnerabilities"][0].clone();
@@ -369,7 +260,8 @@ fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
         "{text}"
     );
     assert!(
-        text.contains("requirement conflict:") && text.contains("Candidate changes"),
+        text.contains("Dependency requirements conflict with this candidate.")
+            && text.contains("Candidate changes"),
         "{text}"
     );
     assert!(
@@ -403,7 +295,7 @@ fn audit_ux_shared_search_limits_preserve_the_requiring_package_scope() {
         value["remediation"]["status"] = "limited".into();
         value["remediation"]["limits"]["reasons"] = json!([cause]);
         let text = human_report(&value);
-        let shared = text.split_once("planning limit:").expect("shared limit").1;
+        let shared = prose(text.split_once("planning limit:").expect("shared limit").1);
         assert!(
             shared.contains("packages requiring vulnerable dependencies"),
             "{cause}: {shared}"
