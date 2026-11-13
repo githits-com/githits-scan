@@ -12,15 +12,8 @@ pub(super) mod remediation;
 
 pub(super) use crate::commands::safe;
 
-pub(super) use super::presentation::requirement_status;
+pub(super) use super::presentation::{list, requirement_status};
 
-fn list<'a>(values: impl IntoIterator<Item = &'a String>) -> String {
-    values
-        .into_iter()
-        .map(|s| safe(s))
-        .collect::<Vec<_>>()
-        .join(", ")
-}
 fn paths(files: &BTreeSet<String>) -> String {
     if files.is_empty() {
         return String::new();

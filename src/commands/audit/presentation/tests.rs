@@ -65,6 +65,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     let mut parent = r["changes"][1].clone();
     parent["reasons"] = json!([reason]);
     parent["deprecated_target"] = false.into();
+    r["checks"]["deprecated_target"] = false.into();
     r["changes"] = json!([parent]);
     let mut edit = blocker();
     edit["owner"] = json!({"name":"application","version":null});
@@ -147,6 +148,11 @@ fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
             Some("applying this change requires updating the project preference"),
         ),
         (
+            "future_reason\n\u{1b}[2J",
+            "constraint:",
+            Some("future_reason\\n\\u{1b}[2J"),
+        ),
+        (
             "unsupported_selector",
             "constraint:",
             Some("dependency requirement could not be evaluated"),
@@ -156,6 +162,7 @@ fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
         let mut blocker = blocker();
         blocker["reason"] = reason.into();
         input["remediation"]["recommendations"][0]["blockers"] = json!([blocker]);
+        input["remediation"]["recommendations"][0]["checks"]["requirements"] = "blocked".into();
         let plan = plan(&project(&input));
         let summary = &plan.constraints[0].summary;
         assert!(summary.starts_with(prefix), "{summary}");
@@ -165,7 +172,13 @@ fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
         );
         if let Some(explanation) = explanation {
             assert!(summary.contains(explanation), "{summary}");
+        } else {
+            assert!(!summary.contains("excludes the target"), "{summary}");
         }
+        assert!(
+            !plan.checks.iter().any(|s| s.starts_with("requirements:")),
+            "blocker already explains the requirement check"
+        );
     }
 }
 
@@ -307,7 +320,7 @@ fn outcomes_without_changes_explain_what_was_not_established() {
         assert_ne!(text, outcome);
         assert!(
             text.contains(if outcome == "indeterminate" {
-                "supplied no reason"
+                "no further reason was supplied"
             } else {
                 "without any changes"
             }),
@@ -327,7 +340,7 @@ fn indeterminate_outcome_never_refers_to_suppressed_detail_blocks() {
     assert!(plan.constraints.is_empty() && plan.limitations.is_empty());
     assert_eq!(
         plan.outcome.as_deref(),
-        Some("The service could not determine a mitigation.")
+        Some("The service could not determine a mitigation; no further reason was supplied.")
     );
 }
 

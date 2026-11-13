@@ -72,11 +72,19 @@ impl Plan {
             .clone()
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
+        let constraints = constraints(&r.blockers);
+        let limitations: Vec<_> = r
+            .limitations
+            .iter()
+            .filter(|l| l.as_str() != "withdrawal_not_observed")
+            .map(|l| format!("limit: {}", explanation(l)))
+            .collect();
+        let has_details = !constraints.is_empty() || !limitations.is_empty();
         Self {
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
                 || r.changes.is_empty())
-            .then(|| outcome(r, planning_known)),
+            .then(|| outcome(r, planning_known, has_details)),
             changes: r
                 .changes
                 .iter()
@@ -96,14 +104,9 @@ impl Plan {
             files,
             context: recorded_requests(r),
             impact: impact(r, supported, context),
-            constraints: constraints(&r.blockers),
+            constraints,
             checks: checks(r),
-            limitations: r
-                .limitations
-                .iter()
-                .filter(|l| l.as_str() != "withdrawal_not_observed")
-                .map(|l| format!("limit: {}", explanation(l)))
-                .collect(),
+            limitations,
         }
     }
 }
@@ -394,10 +397,10 @@ fn finding_names(findings: &[Finding], other: &[Finding], subject: &str) -> Stri
         .join(", ")
 }
 
-fn outcome(r: &Record, planning_known: bool) -> String {
+fn outcome(r: &Record, planning_known: bool, has_details: bool) -> String {
     match r.outcome.as_str() {
         "proposed" | "partial" => "The service returned a proposal without any changes.".into(),
-        "indeterminate" if r.blockers.is_empty() && r.limitations.is_empty() => "The service could not determine a mitigation and supplied no reason.".into(),
+        "indeterminate" if !has_details => "The service could not determine a mitigation; no further reason was supplied.".into(),
         "indeterminate" => "The service could not determine a mitigation.".into(),
         "no_upgrade_path" if !planning_known || !known_checks(&r.checks) => {
             "unrecognized planning/check evidence; no conclusion".into()

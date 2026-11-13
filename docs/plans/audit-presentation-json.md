@@ -49,7 +49,9 @@ schema-2 curated fact report), remediation (messages, recommendations, limits).
 Each recommendation has recommendation_index into audit.remediation.recommendations,
 subject, findings/ addressed_findings/remaining_findings using existing identities,
 heading, optional outcome explanation (null only when the heading suffices; plain-language sentences
-replace raw indeterminate/proposed/partial labels when changes are absent),
+replace raw indeterminate/proposed/partial labels when changes are absent;
+indeterminate with no displayed constraints/limitations explicitly says no further
+reason was supplied),
 changes (change_index, summary, details, files, reasons with summary/evidence),
 files, context, impact, constraints with summary/details,
 checks, limitations. Arrays of plain text are independent readable blocks in

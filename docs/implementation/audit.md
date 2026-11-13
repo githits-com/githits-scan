@@ -274,6 +274,12 @@ stay attached to their advisory in the card as `advisory-reported fix versions`;
 this is advisory evidence, distinct from an applicable recommendation. JSON retains the complete
 vulnerability inventory and advisory hints.
 
+Remediation wording and semantic selection live in the audit command presentation
+model; native rendering owns grouping, file wrapping and styling. The model also
+produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
+Project requirement/preference edits are described as necessary when applying the
+change, distinct from actual third-party requirement exclusions.
+
 The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
 availability, non-affecting advisory checks, matched requirements, an addressed
@@ -779,10 +785,3 @@ An unmatched saved-analysis `--explain` selector reports up to five unique
 vulnerable coordinates from that report, ranking exact names and substrings
 before spelling distance with deterministic coordinate ties. Suggestions never
 select a component automatically; matching still requires the exact coordinate.
-
-
-Remediation wording and semantic selection live in the audit command presentation
-model; native rendering owns grouping, file wrapping and styling. The model also
-produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
-Project requirement/preference edits are described as necessary when applying the
-change, distinct from actual third-party requirement exclusions.

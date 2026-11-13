@@ -113,7 +113,7 @@ pub(super) fn messages(view: &View) -> Vec<String> {
     messages
 }
 
-fn list<'a>(values: impl IntoIterator<Item = &'a String>) -> String {
+pub(super) fn list<'a>(values: impl IntoIterator<Item = &'a String>) -> String {
     values
         .into_iter()
         .map(|s| safe(s))
