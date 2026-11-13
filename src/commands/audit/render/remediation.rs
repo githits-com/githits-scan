@@ -88,14 +88,15 @@ fn lines(lines: &[String], indent: &str, out: &mut dyn Write) -> io::Result<()> 
 }
 
 // Match audit file-list width, preserving indivisible coordinates and identifiers.
+// Four-space continuations stay distinct from the immediate child indentation.
 fn line(text: &str, indent: &str, out: &mut dyn Write) -> io::Result<()> {
     write!(out, "{indent}")?;
     let mut width = indent.chars().count();
     for (index, word) in text.split(' ').enumerate() {
         let length = word.chars().count();
         if index > 0 && width + 1 + length > 100 {
-            write!(out, "\n{indent}  ")?;
-            width = indent.chars().count() + 2;
+            write!(out, "\n{indent}    ")?;
+            width = indent.chars().count() + 4;
         } else if index > 0 {
             write!(out, " ")?;
             width += 1;
@@ -124,7 +125,7 @@ mod tests {
         let output = String::from_utf8(output).expect("utf8");
         assert!(output.lines().count() > 1);
         assert!(output.lines().all(|l| l.chars().count() <= 100));
-        assert!(output.lines().skip(1).all(|l| l.starts_with("      ")));
+        assert!(output.lines().skip(1).all(|l| l.starts_with("        ")));
         assert_eq!(
             output.split_whitespace().collect::<Vec<_>>(),
             text.split_whitespace().collect::<Vec<_>>()
@@ -139,7 +140,7 @@ mod tests {
         line(&text, "    ", &mut output).expect("write");
         assert_eq!(
             String::from_utf8(output).expect("utf8"),
-            format!("    candidate:\n      {token}\n")
+            format!("    candidate:\n        {token}\n")
         );
     }
 }

@@ -154,13 +154,13 @@ handlers own explicit file I/O and presentation. The API DTOs retain the service
 facts. The command's compact change serializer excludes archive-only occurrence
 references, so ordinary live JSON remains unchanged.
 
-Human guidance deduplicates identical rendered blocker blocks within each
-alternative; distinct target details remain separate and JSON preserves every
-original blocker, including its opaque context. Inspection omits a request path
+Human guidance groups blocker explanations within each alternative, with sorted
+unique owner/requirement/path details. Unscoped other-target versions stay in fact
+JSON, which preserves every original blocker and its opaque context. Inspection omits a request path
 only when it exactly equals the section's source path. Manifest paths that differ
 from that source remain visible. Missing requirement values remain explicit;
-unrecognized requirement-status values are escaped without interpreting them as
-planner check states.
+unrecognized requirement-status values are described as unfamiliar without
+interpreting them as planner check states; their raw values stay in fact JSON.
 
 Human inspection groups requests within one source and target occurrence by exact
 requirement/status, path/basis, owner role, request kind and relation kind/basis.
@@ -311,7 +311,8 @@ keeps its requesting packages, requirements and files as details. This does not 
 selector or a deliberate override into a blocked verdict. An override signals
 departure from a represented requirement, not proof of a valid package-manager
 override or build. Unknown
-outcomes, strategies and check values remain visible neutral candidate evidence.
+outcomes, strategies and check values keep a neutral candidate qualification and
+an explanation of what could not be determined; raw unfamiliar values stay in JSON.
 
 Constraint groups state each distinct displayed explanation once, in first
 appearance order, with sorted unique owner/requirement/path details. Required
@@ -400,8 +401,9 @@ Empty original-request lists on route removal add no fabricated request. A
 reason's canonical dependency target never replaces an authored alias.
 
 Absent reasons retain earlier output. `unavailable` and unfamiliar codes add no
-ordinary explanation; inspection says `reason unavailable` or identifies an
-escaped unrecognized code. Trace omission does not erase the service's inline
+ordinary explanation; inspection explains that the report includes no checked
+explanation, or that Scan cannot interpret an unfamiliar reason. Raw codes stay
+in JSON. Trace omission does not erase the service's inline
 boundary evidence: it still describes a represented route at its source, never
 all matching copies. Existing record-wide request context is suppressed only
 when every change has a substantive known reason and at least one reason describes

@@ -82,7 +82,7 @@ fn audit_ux_negative_conclusion_is_separated_and_keeps_its_scope() {
     let text = human_report(&value);
     assert!(
         text.contains(
-            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements\n      considered.\n"
+            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements\n        considered.\n"
         ),
         "{text}"
     );

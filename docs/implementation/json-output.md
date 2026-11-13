@@ -283,6 +283,6 @@ Advisory lists show the subject's IDs first, followed by external package groups
 (`package — IDs`) in package order. Each `(partly)` qualifier stays attached to its
 advisory, and repeated file occurrences do not repeat the same label. Every public
 advisory ID remains available. Native guidance wraps at spaces to 100 Unicode
-scalar characters including indentation, with two extra spaces on continuation
+scalar characters including indentation, with four extra spaces on continuation
 lines; indivisible identifiers remain whole even when longer. JSON strings retain
 unwrapped plain text for the consumer's own layout.

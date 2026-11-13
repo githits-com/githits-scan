@@ -158,9 +158,13 @@ fn change(
     };
     let mut details = Vec::new();
     match data.strategy.as_str() {
-        "unknown" => details.push("How to apply this candidate has not been determined.".into()),
-        "upgrade" | "override" => {},
-        _ => details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into()),
+        "unknown" => {
+            details.push("How to apply this candidate has not been determined.".into());
+        }
+        "upgrade" | "override" => {}
+        _ => {
+            details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into());
+        }
     }
     if !data.conflicting_target_versions.is_empty() {
         details.push(format!(
