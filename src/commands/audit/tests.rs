@@ -38,7 +38,7 @@ fn audit_trait_boundary_curates_json_and_reports_selection_scope() {
         no_check: false,
         include_manifests: true,
         exclude: &["other/**".into()],
-        json: true,
+        format: Format::Json,
         details: true,
         output: sbom::Output::Stdout,
     };
@@ -77,7 +77,7 @@ fn audit_scope_keeps_nested_manifests_with_the_selected_covering_lockfile() {
         no_check: false,
         include_manifests: true,
         exclude: &[],
-        json: true,
+        format: Format::Json,
         details: true,
         output: sbom::Output::Stdout,
     };
@@ -117,7 +117,7 @@ fn audit_scope_names_only_selected_manifests_without_listing_excluded_files() {
         no_check: false,
         include_manifests: true,
         exclude: &["legacy/**".into()],
-        json: true,
+        format: Format::Json,
         details: true,
         output: sbom::Output::Stdout,
     };

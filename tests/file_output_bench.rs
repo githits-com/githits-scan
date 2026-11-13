@@ -80,7 +80,7 @@ fn audit_case(root: &Path, output: &Path, api: &FixtureApi) {
         no_check: false,
         include_manifests: true,
         exclude: &[],
-        json: false,
+        format: audit::Format::Text,
         details: true,
         quiet: true,
         output: sbom::Output::File(output.into()),

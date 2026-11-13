@@ -3,7 +3,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write as _;
 use std::path::Path;
 
-use super::{Error, Outcome, ReplayRequest, view};
+use super::{Error, Outcome, ReplayMode, ReplayRequest, view};
 use crate::api::audit::Report;
 use crate::audit::{explain, saved};
 use crate::style::Palette;
@@ -64,7 +64,7 @@ pub(super) fn replay(
         analysis.selected_manifests.into_iter().collect(),
         &analysis.audit_policy,
     );
-    if let Some(package) = request.explain {
+    if let ReplayMode::Explain { package, json } = request.mode {
         let mut selected =
             explain::select(&analysis.report, package).ok_or_else(|| Error::NoAuditPackage {
                 candidates: super::explain::candidates(&result, package),
@@ -75,17 +75,17 @@ pub(super) fn replay(
                 &result,
                 &analysis.provenance,
                 &selected,
-                request.json,
+                json,
                 request.details,
                 out,
             )
             .map_err(Error::Output)
         })?;
-    } else {
+    } else if let ReplayMode::Report(format) = request.mode {
         result.analysis = Some(analysis.provenance);
         super::write_result(
             &result,
-            request.json,
+            format,
             request.details,
             &request.output,
             out,

@@ -3,77 +3,14 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Write};
 
 use super::super::{file_list, list, safe};
-use crate::commands::audit::view::{
-    self,
-    remediation::{Finding, Record, Remediation},
-};
+use crate::commands::audit::view::remediation::{Finding, Record, Remediation};
 
-type Identity<'a> = (&'a str, Option<&'a str>, &'a BTreeSet<String>);
+use crate::commands::audit::presentation::context::{Context, facts};
+
 type Groups<'a> = BTreeMap<&'a str, Vec<&'a Record>>;
 type Problems<'a> = BTreeMap<&'a str, BTreeSet<&'a Finding>>;
 
-/// Finding identities actually displayed before guidance, not an inferred fix scope.
-pub(in crate::commands::audit) struct Context<'a> {
-    findings: BTreeSet<Identity<'a>>,
-}
-
-impl<'a> Context<'a> {
-    /// The selected explanation can be narrower than a joint recommendation.
-    pub(in crate::commands::audit) fn selected(findings: &[&'a view::Finding]) -> Self {
-        Self {
-            findings: findings
-                .iter()
-                .map(|f| (f.package.as_str(), f.advisory.as_deref(), &f.files))
-                .collect(),
-        }
-    }
-
-    /// A record's own problem context includes every explicitly referenced finding.
-    pub(super) fn record(record: &'a Record) -> Self {
-        Self::new(facts(record))
-    }
-
-    fn new(findings: impl Iterator<Item = &'a Finding>) -> Self {
-        Self {
-            findings: findings.map(identity).collect(),
-        }
-    }
-
-    /// Full source paths are compared independently of advisory identity.
-    pub(super) fn files(&self) -> BTreeSet<String> {
-        self.findings
-            .iter()
-            .flat_map(|(_, _, files)| files.iter().cloned())
-            .collect()
-    }
-
-    /// Equal packages alone never establish equal displayed advisory coverage.
-    pub(super) fn matches(&self, findings: &[Finding]) -> bool {
-        self.findings == findings.iter().map(identity).collect()
-    }
-}
-
-fn identity(finding: &Finding) -> Identity<'_> {
-    (
-        &finding.package,
-        Some(finding.advisory.as_str()),
-        &finding.files,
-    )
-}
-
-fn facts(record: &Record) -> impl Iterator<Item = &Finding> {
-    record
-        .findings
-        .iter()
-        .chain(&record.addressed_findings)
-        .chain(&record.remaining_findings)
-}
-
-pub(super) fn write(
-    data: &Remediation,
-    planning_known: bool,
-    out: &mut dyn Write,
-) -> io::Result<()> {
+pub(super) fn write(data: &Remediation, status: &str, out: &mut dyn Write) -> io::Result<()> {
     let mut groups = groups(data);
     let mut problems = problems(data);
     // Removing a group on first appearance preserves producer order within each subject.
@@ -84,7 +21,7 @@ pub(super) fn write(
         let displayed = take_context(&record.subject, &records, &groups, &mut problems);
         write_problem(&record.subject, &displayed, out)?;
         let context = Context::new(displayed.into_iter());
-        alternatives(&records, planning_known, &context, out)?;
+        alternatives(&records, status, &context, out)?;
     }
     Ok(())
 }
@@ -133,7 +70,7 @@ fn take_context<'a>(
 
 fn alternatives(
     records: &[&Record],
-    planning_known: bool,
+    status: &str,
     context: &Context<'_>,
     out: &mut dyn Write,
 ) -> io::Result<()> {
@@ -141,13 +78,7 @@ fn alternatives(
         if records.len() > 1 {
             writeln!(out, "\n    Alternative {}", index + 1)?;
         }
-        super::guidance(
-            record,
-            planning_known,
-            context,
-            super::ReasonDetail::Summary,
-            out,
-        )?;
+        super::guidance(record, status, context, super::ReasonDetail::Summary, out)?;
     }
     Ok(())
 }

@@ -8,9 +8,35 @@ use crate::api::AuditApi;
 use crate::style::Palette;
 
 mod explain;
+mod presentation;
 mod render;
 mod saved;
 mod view;
+
+/// Selected audit report representation; facts and presentation are separate contracts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Format {
+    /// Native human report.
+    Text,
+    /// Existing curated fact JSON.
+    Json,
+    /// Versioned facts and shared remediation explanations.
+    PresentationJson,
+}
+
+/// Offline selection; focused explanations keep their established text/JSON contract.
+#[derive(Debug, Clone, Copy)]
+pub enum ReplayMode<'a> {
+    /// Re-display the whole audit in the selected representation.
+    Report(Format),
+    /// Inspect one exact vulnerable coordinate.
+    Explain {
+        /// Exact registry:name@version to select.
+        package: &'a str,
+        /// Emit the existing focused fact JSON instead of human text.
+        json: bool,
+    },
+}
 
 /// Inputs for an audit of the selected repository evidence.
 #[derive(Debug)]
@@ -29,8 +55,8 @@ pub struct Request<'a> {
     pub include_manifests: bool,
     /// Invocation exclusion globs.
     pub exclude: &'a [String],
-    /// Write the compact command result as JSON instead of human text.
-    pub json: bool,
+    /// Selected report representation.
+    pub format: Format,
     /// Expand maintenance lists in human output; structured facts stay complete.
     pub details: bool,
     /// Suppress routine progress and success messages; retain actionable diagnostics.
@@ -46,12 +72,10 @@ pub struct Request<'a> {
 pub struct ReplayRequest<'a> {
     /// Saved analysis file; never interpreted as a repository path.
     pub file: &'a Path,
-    /// Emit a structured report instead of human text.
-    pub json: bool,
+    /// Whole-report representation or focused explanation selection.
+    pub mode: ReplayMode<'a>,
     /// Expand maintenance lists in human output; structured facts stay complete.
     pub details: bool,
-    /// Exact vulnerable coordinate to inspect; absent re-displays the compact report.
-    pub explain: Option<&'a str>,
     /// Destination of the replayed report or explanation.
     pub output: sbom::Output,
 }
@@ -91,13 +115,13 @@ pub fn run(
         no_check: request.no_check,
         include_manifests: request.include_manifests,
         exclude: request.exclude,
-        progress: !request.json && !request.quiet,
+        progress: request.format == Format::Text && !request.quiet,
     };
     let Some(prepared) = upload::prepare(&options, stderr, stderr_palette)? else {
         return Ok(Outcome::Findings);
     };
     let report = api.audit(prepared.upload, &mut |event| {
-        if super::progress::visible(event, !request.json && !request.quiet) {
+        if super::progress::visible(event, request.format == Format::Text && !request.quiet) {
             super::progress::write_audit(event, stderr)
         } else {
             Ok(())
@@ -109,7 +133,7 @@ pub fn run(
     let (view, outcome) = project(&report, prepared.manifests, &prepared.audit_policy);
     write_result(
         &view,
-        request.json,
+        request.format,
         request.details,
         &request.output,
         stdout,
@@ -143,18 +167,24 @@ fn project(
 
 fn write_result(
     view: &view::View,
-    json: bool,
+    format: Format,
     details: bool,
     output: &sbom::Output,
     stdout: &mut dyn Write,
     palette: Palette,
 ) -> Result<(), Error> {
     let write = |out: &mut dyn Write, palette| -> std::io::Result<()> {
-        if json {
-            serde_json::to_writer_pretty(&mut *out, view).map_err(std::io::Error::other)?;
-            writeln!(out)?;
-        } else {
-            render::write(view, details, out, palette)?;
+        match format {
+            Format::Text => render::write(view, details, out, palette)?,
+            Format::Json => {
+                serde_json::to_writer_pretty(&mut *out, view).map_err(std::io::Error::other)?;
+                writeln!(out)?;
+            }
+            Format::PresentationJson => {
+                serde_json::to_writer_pretty(&mut *out, &presentation::Document::new(view))
+                    .map_err(std::io::Error::other)?;
+                writeln!(out)?;
+            }
         }
         out.flush()
     };

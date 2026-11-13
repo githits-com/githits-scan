@@ -19,6 +19,8 @@ mod audit_native_rendering;
 mod audit_non_registry;
 #[path = "audit_presentation.rs"]
 mod audit_presentation;
+#[path = "audit_presentation_json.rs"]
+mod audit_presentation_json;
 #[path = "audit_remediation.rs"]
 mod audit_remediation;
 #[path = "audit_report.rs"]

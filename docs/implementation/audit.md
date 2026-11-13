@@ -278,7 +278,11 @@ The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
 availability, non-affecting advisory checks, matched requirements, an addressed
 vulnerability and recognized planning/check evidence. Both use one predicate that
-also requires every change to be a recognized upgrade. Weaker facts, missing
+also requires every change to be a recognized upgrade. A partial outcome or a
+nonempty remaining-finding list stays candidate-qualified when either the record
+checks or any change marks a prerelease target; an unresolved prerelease migration
+is never a confirmed fix. Complete proposed prereleases with no remaining findings
+retain supported wording and their explicit warning. Weaker facts, missing
 addressed evidence, overrides and future strategies retain neutral
 candidate wording; partial candidate groups keep their partial qualifier. Joint action sets stay together; partial results distinguish addressed
 and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
@@ -775,3 +779,10 @@ An unmatched saved-analysis `--explain` selector reports up to five unique
 vulnerable coordinates from that report, ranking exact names and substrings
 before spelling distance with deterministic coordinate ties. Suggestions never
 select a component automatically; matching still requires the exact coordinate.
+
+
+Remediation wording and semantic selection live in the audit command presentation
+model; native rendering owns grouping, file wrapping and styling. The model also
+produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
+Project requirement/preference edits are described as necessary when applying the
+change, distinct from actual third-party requirement exclusions.

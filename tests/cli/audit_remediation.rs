@@ -465,7 +465,7 @@ fn audit_remediation_blocker_context_stays_structured_in_json() {
     assert!(!text.contains('\u{1b}') && !text.contains('\u{202e}'));
     assert!(!text.contains("context:"));
     assert!(text.contains("parent\\n\\u{1b}[2J@2.0.0"));
-    assert!(text.contains("project requirement must change"));
+    assert!(text.contains("applying this change requires updating the project requirement"));
     assert!(text.contains("future_requirement_status"));
 }
 

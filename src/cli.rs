@@ -131,6 +131,9 @@ struct AuditArgs {
     /// Write compact findings and incomplete checks as JSON
     #[arg(long, display_order = 60)]
     json: bool,
+    /// Write versioned facts and shared remediation explanations as plain-text JSON blocks
+    #[arg(long, conflicts_with_all = ["json", "explain"], display_order = 61)]
+    presentation_json: bool,
     /// Include lifecycle source observations, affected files, collection limits and outdated/duplicate lists
     #[arg(long, display_order = 65)]
     details: bool,
@@ -548,9 +551,14 @@ fn run_audit(args: &AuditArgs) -> Result<Outcome, commands::Error> {
     if let Some(file) = &args.from_analysis {
         let request = audit::ReplayRequest {
             file,
-            json: args.json,
+            mode: args.explain.as_deref().map_or_else(
+                || audit::ReplayMode::Report(audit_format(args)),
+                |package| audit::ReplayMode::Explain {
+                    package,
+                    json: args.json,
+                },
+            ),
             details: args.details,
-            explain: args.explain.as_deref(),
             output: output_destination(args.output.as_deref()),
         };
         let mut out = io::BufWriter::new(stdout.lock());
@@ -567,7 +575,7 @@ fn run_audit(args: &AuditArgs) -> Result<Outcome, commands::Error> {
         no_check: args.no_check,
         include_manifests: !args.lockfiles_only,
         exclude: &args.exclude,
-        json: args.json,
+        format: audit_format(args),
         details: args.details,
         output,
         quiet: args.quiet,
@@ -584,6 +592,16 @@ fn run_audit(args: &AuditArgs) -> Result<Outcome, commands::Error> {
     )?;
     out.flush().map_err(commands::Error::Output)?;
     Ok(outcome)
+}
+
+const fn audit_format(args: &AuditArgs) -> audit::Format {
+    if args.presentation_json {
+        audit::Format::PresentationJson
+    } else if args.json {
+        audit::Format::Json
+    } else {
+        audit::Format::Text
+    }
 }
 
 fn report_path(value: &str) -> Result<PathBuf, String> {
