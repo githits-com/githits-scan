@@ -108,9 +108,9 @@ fn audit_change_reason_absence_future_and_unavailable_do_not_invent_summaries() 
         assert!(!text.contains("why:"), "{text}");
         let detail = stdout(&explain(&input, false));
         let expected = if reason["code"] == "unavailable" {
-            "reason unavailable"
+            "The report does not include a checked explanation for this change."
         } else {
-            "unrecognized reason: future\\nreason"
+            "the service supplied an unfamiliar reason; see JSON for the supplied value"
         };
         assert!(detail.contains(expected), "{detail}");
         let value = json_report(&input);

@@ -85,9 +85,11 @@ fn explanation(
                 file(path, change)
             )
         }
-        Reason::Unavailable if detail == ReasonDetail::Evidence => "reason unavailable".into(),
-        Reason::Unknown { code } if detail == ReasonDetail::Evidence => {
-            format!("unrecognized reason: {}", safe(code))
+        Reason::Unavailable if detail == ReasonDetail::Evidence => {
+            "The report does not include a checked explanation for this change.".into()
+        }
+        Reason::Unknown { .. } if detail == ReasonDetail::Evidence => {
+            super::UNFAMILIAR_REASON.into()
         }
         Reason::Unavailable | Reason::Unknown { .. } => return None,
     };

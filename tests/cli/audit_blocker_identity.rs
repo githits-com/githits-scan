@@ -78,7 +78,7 @@ fn audit_blocker_dependency_name_keeps_requirement_status() {
         (
             Value::Null,
             "future_status",
-            "requires cookie (requirement future_status)",
+            "requires cookie (requirement not understood because the service returned an unfamiliar status)",
         ),
         (
             Value::Null,

@@ -470,7 +470,8 @@ fn audit_remediation_blocker_context_stays_structured_in_json() {
     assert!(!text.contains("context:"));
     assert!(text.contains("parent\\n\\u{1b}[2J@2.0.0"));
     assert!(text.contains("applying this change requires updating the project requirement"));
-    assert!(text.contains("future_requirement_status"));
+    assert!(text.contains("the service returned an unfamiliar status"));
+    assert!(!text.contains("future_requirement_status"));
 }
 
 #[test]
@@ -538,7 +539,7 @@ fn audit_remediation_future_vocabulary_never_looks_like_known_action() {
         } else if path == "/recommendations/0/outcome" {
             "unfamiliar mitigation outcome"
         } else if path == "/recommendations/0/changes/0/strategy" {
-            "future_value"
+            "unfamiliar change strategy"
         } else {
             "unfamiliar check result"
         };

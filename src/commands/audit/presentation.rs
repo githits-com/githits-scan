@@ -143,7 +143,8 @@ pub(super) fn requirement_status(value: &str) -> String {
     match value {
         "not_recorded" => "not recorded".into(),
         "provider_requirement" => "bound to a provider package".into(),
-        _ => safe(value),
+        "recorded" | "withheld" | "unavailable" => value.into(),
+        _ => "not understood because the service returned an unfamiliar status".into(),
     }
 }
 

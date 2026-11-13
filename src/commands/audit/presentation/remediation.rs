@@ -9,6 +9,9 @@ use std::collections::BTreeSet;
 mod reasons;
 pub(in crate::commands::audit) use reasons::ReasonDetail;
 
+const UNFAMILIAR_REASON: &str =
+    "the service supplied an unfamiliar reason; see JSON for the supplied value";
+
 /// Complete qualified guidance for one independent recommendation.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Plan {
@@ -144,12 +147,15 @@ fn change(
         && matches!(r.outcome.as_str(), "proposed" | "partial")
         && known_checks(&r.checks);
     let action = match (known, data.strategy.as_str()) {
-        (true, "upgrade") if supported => "Upgrade".into(),
-        (true, "upgrade") => "Upgrade candidate:".into(),
-        (true, "override") => "Override candidate:".into(),
-        _ => format!("Candidate (strategy: {})", safe(&data.strategy)),
+        (true, "upgrade") if supported => "Upgrade",
+        (true, "upgrade") => "Upgrade candidate:",
+        (true, "override") => "Override candidate:",
+        _ => "Candidate change:",
     };
     let mut details = Vec::new();
+    if !matches!(data.strategy.as_str(), "upgrade" | "override") {
+        details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into());
+    }
     if !data.conflicting_target_versions.is_empty() {
         details.push(format!(
             "conflicting targets: {}",
@@ -562,6 +568,6 @@ fn explanation(value: &str) -> String {
         "no_checked_leaf" => "no upgrade of this vulnerable dependency was verified".into(),
         "project_preference_change" => "applying this change requires updating the project preference".into(),
         "unresolved_manifest_activation" => "manifest applicability is unresolved".into(),
-        _ => safe(value),
+        _ => UNFAMILIAR_REASON.into(),
     }
 }

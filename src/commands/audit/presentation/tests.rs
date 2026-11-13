@@ -150,7 +150,7 @@ fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
         (
             "future_reason\n\u{1b}[2J",
             "constraint:",
-            Some("future_reason\\n\\u{1b}[2J"),
+            Some("the service supplied an unfamiliar reason; see JSON for the supplied value"),
         ),
         (
             "unsupported_selector",
@@ -415,6 +415,36 @@ fn advisory_check_explanations_distinguish_unsupported_missing_and_future_result
         assert_eq!(
             facts["remediation"]["recommendations"][0]["checks"]["advisories"],
             status
+        );
+    }
+}
+
+#[test]
+fn unfamiliar_reason_and_strategy_codes_stay_in_facts_instead_of_display_blocks() {
+    for field in ["/limitations", "/blockers", "/changes/0/strategy"] {
+        let mut input = input();
+        let r = &mut input["remediation"]["recommendations"][0];
+        let value = match field {
+            "/limitations" => json!(["future_code"]),
+            "/blockers" => {
+                let mut blocker = blocker();
+                blocker["reason"] = "future_code".into();
+                blocker["requirement_status"] = "future_code".into();
+                json!([blocker])
+            }
+            _ => json!("future_code"),
+        };
+        *r.pointer_mut(field).expect("field") = value;
+        input["remediation"]["limits"]["reasons"] = json!(["future_code"]);
+        let view = project(&input);
+        let document = serde_json::to_value(Document::new(&view)).expect("presentation");
+        let text = serde_json::to_string(&document["remediation"]).expect("blocks");
+        assert!(!text.contains("future_code"), "{text}");
+        assert!(text.contains("unfamiliar"), "{text}");
+        assert!(
+            serde_json::to_string(&document["audit"])
+                .expect("facts")
+                .contains("future_code")
         );
     }
 }

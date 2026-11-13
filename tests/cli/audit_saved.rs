@@ -81,7 +81,7 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
         "{text}"
     );
     assert!(
-        text.contains("future-parent@2.0.0 requirement not_checked"),
+        text.contains("future-parent@2.0.0 requirement not understood because the service returned an unfamiliar status"),
         "{text}"
     );
     assert!(!text.contains("project resolver/build not run"), "{text}");
