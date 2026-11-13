@@ -388,3 +388,33 @@ fn explanation_blocks_escape_untrusted_controls_and_omit_opaque_evidence() {
     let json = serde_json::to_string(&plan).expect("JSON");
     assert!(!json.contains("must not appear"));
 }
+
+#[test]
+fn advisory_check_explanations_distinguish_unsupported_missing_and_future_results() {
+    for (status, explanation) in [
+        (
+            "unsupported",
+            "advisory checking is not supported for this target",
+        ),
+        ("unknown", "not determined from the supplied evidence"),
+        (
+            "future_value",
+            "the service returned an unfamiliar check result; see JSON for the supplied value",
+        ),
+    ] {
+        let mut input = input();
+        input["remediation"]["recommendations"][0]["checks"]["advisories"] = status.into();
+        let view = project(&input);
+        let plan = plan(&view);
+        assert!(
+            plan.checks
+                .contains(&format!("target advisories: {explanation}"))
+        );
+        assert_eq!(plan.heading.as_deref(), Some("Candidate changes"));
+        let facts = serde_json::to_value(&view).expect("facts");
+        assert_eq!(
+            facts["remediation"]["recommendations"][0]["checks"]["advisories"],
+            status
+        );
+    }
+}

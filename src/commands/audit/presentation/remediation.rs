@@ -517,6 +517,7 @@ fn check_text(value: &str) -> String {
         "unchecked" => "not checked".into(),
         "unverified" => "not verified".into(),
         "unknown" => "not determined from the supplied evidence".into(),
+        "unsupported" => "advisory checking is not supported for this target".into(),
         _ => "the service returned an unfamiliar check result; see JSON for the supplied value"
             .into(),
     }
