@@ -76,6 +76,7 @@ impl Plan {
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
         let constraints = constraints(&r.blockers);
+        let mut seen_limits = BTreeSet::new();
         let limitations: Vec<_> = r
             .limitations
             .iter()
@@ -85,6 +86,7 @@ impl Plan {
                 (!constraints.iter().any(|c| c.summary == message))
                     .then(|| format!("limit: {message}"))
             })
+            .filter(|message| seen_limits.insert(message.clone()))
             .collect();
         let checks = checks(r);
         let has_details = !constraints.is_empty() || !checks.is_empty() || !limitations.is_empty();
@@ -393,11 +395,13 @@ pub(in crate::commands::audit) fn limits(data: &Remediation) -> Vec<String> {
             data.limits.omitted_recommendations
         ));
     }
+    let mut seen = BTreeSet::new();
     lines.extend(
         data.limits
             .reasons
             .iter()
-            .map(|r| format!("planning limit: {}", explanation(r))),
+            .map(|r| format!("planning limit: {}", explanation(r)))
+            .filter(|message| seen.insert(message.clone())),
     );
     lines
 }

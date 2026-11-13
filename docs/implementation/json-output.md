@@ -278,6 +278,8 @@ different locked dependency. Unattributed `other_target_versions` stay in the fa
 report rather than becoming ambiguous version advice. A per-plan limitation is
 omitted from presentation when its exact explanation already appears in that
 plan's constraints; audit-wide planning limits retain their broader scope.
+Repeated displayed limitation sentences appear once within each scope, in first
+appearance order, while all original reason codes remain in the fact report.
 
 Advisory lists show the subject's IDs first, followed by external package groups
 (`package — IDs`) in package order. Each `(partly)` qualifier stays attached to its

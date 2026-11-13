@@ -624,3 +624,42 @@ fn constraint_groups_keep_inbound_and_outbound_conflicts_and_distinct_causes() {
         1
     );
 }
+
+#[test]
+fn repeated_limit_explanations_keep_first_appearance_and_all_raw_codes() {
+    let mut input = input();
+    let codes = json!([
+        "future_a",
+        "assignment_limit",
+        "future_b",
+        "assignment_limit"
+    ]);
+    input["remediation"]["recommendations"][0]["limitations"] = codes.clone();
+    input["remediation"]["limits"]["reasons"] = codes.clone();
+    let view = project(&input);
+    let document = serde_json::to_value(Document::new(&view)).expect("presentation");
+    for messages in [
+        &document["remediation"]["recommendations"][0]["limitations"],
+        &document["remediation"]["limits"],
+    ] {
+        let messages = messages.as_array().expect("limits");
+        assert_eq!(messages.len(), 2);
+        assert!(
+            messages[0]
+                .as_str()
+                .expect("text")
+                .contains("unfamiliar reason")
+        );
+        assert!(
+            messages[1]
+                .as_str()
+                .expect("text")
+                .contains("not all combinations")
+        );
+    }
+    assert_eq!(
+        document["audit"]["remediation"]["recommendations"][0]["limitations"],
+        codes
+    );
+    assert_eq!(document["audit"]["remediation"]["limits"]["reasons"], codes);
+}
