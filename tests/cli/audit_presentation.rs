@@ -183,7 +183,7 @@ fn audit_presentation_archive_replay_matches_recorded_analysis() {
 }
 
 #[test]
-fn audit_presentation_new_dependency_limit_keeps_raw_codes_and_coverage() {
+fn audit_presentation_new_dependency_limit_keeps_raw_codes_in_facts_and_coverage() {
     let root = repo();
     let path = root.path().join("analysis.json");
     let mut input = archive();
@@ -196,7 +196,11 @@ fn audit_presentation_new_dependency_limit_keeps_raw_codes_and_coverage() {
         let text = stdout(&output);
         assert!(text.contains("a new dependency was not checked"), "{text}");
         assert!(!text.contains("new_dependency_not_checked"), "{text}");
-        assert!(text.contains("future_limit"), "{text}");
+        assert!(
+            text.contains("the service supplied an unfamiliar reason"),
+            "{text}"
+        );
+        assert!(!text.contains("future_limit"), "{text}");
     }
     let output = offline(&path, &["--json"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
