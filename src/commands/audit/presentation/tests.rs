@@ -126,36 +126,30 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
 
 #[test]
 fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
-    for (reason, prefix, explanation) in [
+    for (reason, explanation) in [
         (
             "third_party_request_excludes_target",
-            "requirement conflict:",
-            None,
+            "Dependency requirements conflict with this candidate.",
         ),
         (
             "required_request_excludes_target",
-            "requirement conflict:",
-            None,
+            "Dependency requirements conflict with this candidate.",
         ),
         (
             "project_request_change",
-            "constraint:",
-            Some("applying this change requires updating the project requirement"),
+            "applying this change requires updating the project requirement",
         ),
         (
             "project_preference_change",
-            "constraint:",
-            Some("applying this change requires updating the project preference"),
+            "applying this change requires updating the project preference",
         ),
         (
             "future_reason\n\u{1b}[2J",
-            "constraint:",
-            Some("the service supplied an unfamiliar reason; see JSON for the supplied value"),
+            "the service supplied an unfamiliar reason; see JSON for the supplied value",
         ),
         (
             "unsupported_selector",
-            "constraint:",
-            Some("dependency requirement could not be evaluated"),
+            "dependency requirement could not be evaluated",
         ),
     ] {
         let mut input = input();
@@ -165,16 +159,12 @@ fn project_edits_and_preferences_are_distinct_from_requirement_exclusions() {
         input["remediation"]["recommendations"][0]["checks"]["requirements"] = "blocked".into();
         let plan = plan(&project(&input));
         let summary = &plan.constraints[0].summary;
-        assert!(summary.starts_with(prefix), "{summary}");
-        assert!(
-            summary.contains("express@5.1.0 requires cookie ^0.7.1"),
-            "{summary}"
+        assert_eq!(summary, explanation);
+        assert_eq!(
+            plan.constraints[0].details,
+            ["express@5.1.0 requires cookie ^0.7.1 [package-lock.json]"]
         );
-        if let Some(explanation) = explanation {
-            assert!(summary.contains(explanation), "{summary}");
-        } else {
-            assert!(!summary.contains("excludes the target"), "{summary}");
-        }
+        assert!(!summary.contains("excludes the target"));
         assert!(
             !plan.checks.iter().any(|s| s.starts_with("requirements:")),
             "blocker already explains the requirement check"
@@ -382,7 +372,7 @@ fn explanation_blocks_escape_untrusted_controls_and_omit_opaque_evidence() {
     blocker["context"] = json!({"private":"must not appear"});
     input["remediation"]["recommendations"][0]["blockers"] = json!([blocker]);
     let plan = plan(&project(&input));
-    let text = &plan.constraints[0].summary;
+    let text = &plan.constraints[0].details[0];
     assert!(text.contains("owner\\n\\u{1b}[2J <&|>"), "{text}");
     assert!(!text.contains(['\n', '\u{1b}']));
     let json = serde_json::to_string(&plan).expect("JSON");
@@ -447,4 +437,190 @@ fn unfamiliar_reason_and_strategy_codes_stay_in_facts_instead_of_display_blocks(
                 .contains("future_code")
         );
     }
+}
+
+#[test]
+fn undetermined_strategy_and_applicability_stay_candidates_with_specific_explanations() {
+    for strategy in ["unknown", "future_strategy"] {
+        let mut input = input();
+        let r = &mut input["remediation"]["recommendations"][0];
+        r["changes"][0]["strategy"] = strategy.into();
+        r["checks"]["requirements"] = "unchecked".into();
+        let mut blocker = blocker();
+        blocker["reason"] = "native_applicability_not_checked".into();
+        r["blockers"] = json!([blocker]);
+        r["limitations"] = json!(["native_applicability_not_checked"]);
+        let view = project(&input);
+        let plan = plan(&view);
+        assert_eq!(plan.heading.as_deref(), Some("Candidate changes"));
+        let text = serde_json::to_string(&plan).expect("blocks");
+        assert!(
+            text.contains(
+                "whether the dependency requirements apply to this project was not checked"
+            ),
+            "{text}"
+        );
+        assert_eq!(
+            text.contains("unfamiliar"),
+            strategy == "future_strategy",
+            "{text}"
+        );
+        if strategy == "unknown" {
+            assert!(
+                plan.changes[0].details[0]
+                    .contains("How to apply this candidate has not been determined")
+            );
+        }
+        assert_eq!(
+            plan.limitations.len(),
+            0,
+            "constraint already explains applicability"
+        );
+        assert_eq!(
+            serde_json::to_value(&view).expect("facts")["remediation"]["recommendations"][0]["changes"]
+                [0]["strategy"],
+            strategy
+        );
+    }
+    let mut input = input();
+    input["remediation"]["recommendations"][0]["limitations"] =
+        json!(["native_applicability_not_checked", "represented_routes_cut"]);
+    let plan = plan(&project(&input));
+    assert!(
+        plan.limitations[0]
+            .contains("whether the dependency requirements apply to this project was not checked")
+    );
+    assert!(plan.limitations[1].contains("dependency routes recorded in this report"));
+}
+
+#[test]
+fn external_advisory_groups_keep_local_first_and_item_scoped_partial_impact() {
+    let mut input = input();
+    let original = input["findings"]["vulnerabilities"][0].clone();
+    for (package, advisory, file) in [
+        ("omega", "GHSA-a", "package-lock.json"),
+        ("omega", "GHSA-z", "package-lock.json"),
+        ("omega", "GHSA-a", "other/package-lock.json"),
+        ("alpha", "GHSA-alpha", "package-lock.json"),
+    ] {
+        let mut finding = original.clone();
+        finding["coordinate"]["name"] = package.into();
+        finding["advisory_id"] = advisory.into();
+        finding["paths"] = json!([file]);
+        input["findings"]["vulnerabilities"]
+            .as_array_mut()
+            .expect("findings")
+            .push(finding);
+    }
+    input["summary"]["vulnerabilities"] = 5.into();
+    let r = &mut input["remediation"]["recommendations"][0];
+    r["outcome"] = "partial".into();
+    r["finding_refs"] = json!([0, 1, 2, 3, 4]);
+    r["addressed_finding_refs"] = json!([0, 1, 2, 3, 4]);
+    r["remaining_finding_refs"] = json!([1]);
+    let view = project(&input);
+    let plan = plan(&view);
+    assert_eq!(
+        plan.impact,
+        [
+            "would address: GHSA-demo; npm:alpha@1.0.0 — GHSA-alpha; npm:omega@1.0.0 — GHSA-a (partly), GHSA-z",
+            "still unresolved: npm:omega@1.0.0 — GHSA-a (partly)",
+        ]
+    );
+    assert_eq!(plan.impact[0].matches("npm:omega").count(), 1);
+    assert!(!plan.impact[0].contains("GHSA-z (partly)"));
+    assert!(!plan.impact.iter().any(|s| s.contains('\n')));
+    let facts = serde_json::to_value(&view).expect("facts");
+    assert_eq!(
+        facts["remediation"]["recommendations"][0]["addressed_findings"]
+            .as_array()
+            .expect("findings")
+            .len(),
+        5
+    );
+}
+
+#[test]
+fn constraint_groups_keep_inbound_and_outbound_conflicts_and_distinct_causes() {
+    let mut input = input();
+    let mut inbound = blocker();
+    inbound["owner"] = json!({"name":"current-parent", "version":"1.0.0"});
+    inbound["dependency_name"] = "example-parent".into();
+    inbound["requested_requirement"] = "^1.0".into();
+    inbound["reason"] = "required_request_excludes_target".into();
+    let mut outbound = inbound.clone();
+    outbound["owner"] = json!({"name":"example-parent", "version":"2.0.0"});
+    outbound["dependency_name"] = "example-child".into();
+    outbound["requested_requirement"] = ">=2.0".into();
+    let mut applicability = inbound.clone();
+    applicability["reason"] = "native_applicability_not_checked".into();
+    let mut coordination = inbound.clone();
+    coordination["reason"] = "checked_occurrence_changed_by_other_recommendation".into();
+    coordination["other_target_versions"] = json!(["3.0.0"]);
+    let mut other_version = coordination.clone();
+    other_version["other_target_versions"] = json!(["4.0.0"]);
+    let r = &mut input["remediation"]["recommendations"][0];
+    r["changes"][0]["name"] = "example-parent".into();
+    r["changes"][0]["target_version"] = "2.0.0".into();
+    r["checks"]["requirements"] = "blocked".into();
+    r["blockers"] = json!([
+        inbound,
+        outbound,
+        applicability,
+        coordination,
+        other_version
+    ]);
+    r["limitations"] = json!([
+        "native_applicability_not_checked",
+        "checked_occurrence_changed_by_other_recommendation",
+        "parent_candidate_limit"
+    ]);
+    input["remediation"]["limits"]["reasons"] = json!(["parent_candidate_limit"]);
+    let view = project(&input);
+    let plan = plan(&view);
+    assert_eq!(
+        plan.constraints.len(),
+        3,
+        "different causes must stay separate"
+    );
+    assert_eq!(
+        plan.constraints[0].summary,
+        "Dependency requirements conflict with this candidate."
+    );
+    assert_eq!(
+        plan.constraints[0].details,
+        [
+            "current-parent@1.0.0 requires example-parent ^1.0 [package-lock.json]",
+            "example-parent@2.0.0 requires example-child >=2.0 [package-lock.json]",
+        ]
+    );
+    assert_eq!(plan.constraints[1].details.len(), 1);
+    assert_eq!(
+        plan.constraints[2].details.len(),
+        1,
+        "unscoped versions do not duplicate the same visible request"
+    );
+    assert_eq!(
+        plan.limitations.len(),
+        1,
+        "only matching displayed explanations are suppressed"
+    );
+    assert!(plan.limitations[0].contains("service limit"));
+    let document = serde_json::to_value(Document::new(&view)).expect("presentation");
+    assert!(
+        !serde_json::to_string(&document["remediation"])
+            .expect("blocks")
+            .contains("3.0.0")
+    );
+    assert_eq!(
+        document["audit"]["remediation"]["recommendations"][0]["blockers"][3]["other_target_versions"],
+        json!(["3.0.0"])
+    );
+    assert_eq!(
+        document["remediation"]["limits"]
+            .as_array()
+            .expect("shared limits")
+            .len(),
+        1
+    );
 }

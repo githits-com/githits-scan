@@ -52,7 +52,10 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         text.contains("package-manager support and build not checked"),
         "{text}"
     );
-    assert!(text.contains("requirement conflict:"), "{text}");
+    assert!(
+        text.contains("Dependency requirements conflict with this candidate."),
+        "{text}"
+    );
     assert!(!text.contains("Suggested fix"), "{text}");
     value["remediation"]["recommendations"][0]["checks"]["native_resolution"] =
         "future_check".into();
@@ -79,7 +82,7 @@ fn audit_ux_negative_conclusion_is_separated_and_keeps_its_scope() {
     let text = human_report(&value);
     assert!(
         text.contains(
-            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements considered.\n"
+            "\n\n    No upgrade path found among releases known to the service, under the dependency requirements\n      considered.\n"
         ),
         "{text}"
     );
@@ -257,7 +260,8 @@ fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
         "{text}"
     );
     assert!(
-        text.contains("requirement conflict:") && text.contains("Candidate changes"),
+        text.contains("Dependency requirements conflict with this candidate.")
+            && text.contains("Candidate changes"),
         "{text}"
     );
     assert!(
@@ -291,7 +295,7 @@ fn audit_ux_shared_search_limits_preserve_the_requiring_package_scope() {
         value["remediation"]["status"] = "limited".into();
         value["remediation"]["limits"]["reasons"] = json!([cause]);
         let text = human_report(&value);
-        let shared = text.split_once("planning limit:").expect("shared limit").1;
+        let shared = prose(text.split_once("planning limit:").expect("shared limit").1);
         assert!(
             shared.contains("packages requiring vulnerable dependencies"),
             "{cause}: {shared}"

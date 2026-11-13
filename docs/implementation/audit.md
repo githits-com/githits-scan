@@ -305,16 +305,33 @@ from the record itself. Common change paths are omitted only when they equal
 both file sets; otherwise change paths stay explicit. Ordinary audit and focused
 explanation use this same comparison, so grouping never broadens a fix's scope. Blockers use
 owner, supplied dependency name, requirement, path and readable reasons; role/kind/basis/recorded-status
-bookkeeping stays in JSON. Exclusion reasons use `requirement conflict` without
-a redundant exclusion suffix; other and unknown reasons use neutral `constraint`
-plus the supplied readable/escaped reason. This does not turn an unevaluated
+bookkeeping stays in JSON. Exclusion groups state that dependency requirements conflict with the candidate;
+other and unknown groups retain the supplied readable explanation. Each group
+keeps its requesting packages, requirements and files as details. This does not turn an unevaluated
 selector or a deliberate override into a blocked verdict. An override signals
 departure from a represented requirement, not proof of a valid package-manager
 override or build. Unknown
 outcomes, strategies and check values remain visible neutral candidate evidence.
 
+Constraint groups state each distinct displayed explanation once, in first
+appearance order, with sorted unique owner/requirement/path details. Required
+project edits, unchecked applicability, actual requirement conflicts and
+coordination warnings remain distinct. A conflict can be inbound (an existing
+parent excludes a proposed version) or outbound (a proposed version's requirement
+excludes a dependency retained in the lockfile). Group wording does not assume
+which package must change. Unscoped other-target versions remain in fact JSON;
+Scan does not invent their package referent. Matching per-plan limitations need
+not repeat a displayed constraint explanation; audit-wide limits remain intact.
+
+The literal change strategy `unknown` says how to apply the candidate was not
+determined, while unfamiliar future strategies retain the separate unsupported
+vocabulary qualification. `native_applicability_not_checked` explains that the
+dependency requirements' applicability to this project was not checked. Neither
+promotes a candidate or claims that the project's package manager/build was run.
+Route-removal language stays limited to dependency routes recorded in the report.
+
 Blockers may supply an optional `dependency_name`, the dependency identity requested
-by the owner. Human output renders `express@5.1.0 requires cookie ^0.7.1` when
+by the owner. Request details render `express@5.1.0 requires cookie ^0.7.1` when
 that name and range are supplied. With a name but no range, it keeps the name and
 explicit requirement status, such as `express@5.1.0 requires cookie (requirement
 not recorded)`. The name is escaped like other untrusted text. When the optional field is absent,

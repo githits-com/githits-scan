@@ -68,28 +68,21 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
     fs::write(&path, serde_json::to_vec(&input).expect("JSON")).expect("archive file");
     let output = offline(&path, &["--explain", "npm:demo@1.0.0", "--no-color"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-    let text = stdout(&output);
+    let text = prose(&stdout(&output));
     assert_eq!(
-        text.matches("constraint: parent@2.0.0 requires <1.1.0")
-            .count(),
-        2,
-        "{text}"
-    );
-    assert_eq!(
-        text.matches("other recommended targets: 2.2.0").count(),
-        2,
-        "{text}"
-    );
-    assert!(
-        text.contains("future-parent@2.0.0 requirement not understood because the service returned an unfamiliar status"),
-        "{text}"
-    );
-    assert!(!text.contains("project resolver/build not run"), "{text}");
-    assert_eq!(
-        text.matches("other recommended targets: 2.3.0").count(),
+        text.matches("parent@2.0.0 requires <1.1.0").count(),
         1,
         "{text}"
     );
+    assert_eq!(
+        text.matches("another recommendation changes a checked dependency")
+            .count(),
+        1,
+        "{text}"
+    );
+    assert!(!text.contains("other recommended targets"), "{text}");
+    assert!(text.contains("future-parent@2.0.0 requirement not understood because the service returned an unfamiliar status"), "{text}");
+    assert!(!text.contains("project resolver/build not run"), "{text}");
     for expected in [
         "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked",
         "some information about packages requiring vulnerable dependencies was unavailable",

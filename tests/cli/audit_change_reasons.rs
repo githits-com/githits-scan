@@ -84,7 +84,10 @@ fn audit_change_reason_removal_and_advisory_effects_are_independent_and_scoped()
         text.contains("why: removes a route to npm:demo@1.0.0"),
         "{text}"
     );
-    assert!(text.contains("why: addresses GHSA-example"), "{text}");
+    assert!(
+        text.contains("why: addresses npm:demo@1.0.0 — GHSA-example"),
+        "{text}"
+    );
     assert!(
         !text.contains("uninstalled") && !text.contains("all copies"),
         "{text}"
@@ -143,7 +146,7 @@ fn audit_change_reason_traceless_inline_evidence_stays_useful_and_escaped() {
     reason["dependency_occurrence_refs"] = json!([]);
     reason["dependency"]["name"] = "demo\n\u{1b}[2J".into();
     reason["path"] = "lock\nfile".into();
-    let text = human_report(&input);
+    let text = prose(&human_report(&input));
     assert!(
         text.contains(
             "why: accepts npm:demo\\n\\u{1b}[2J@1.1.1, which the current requested range excludes [lock\\nfile]"
@@ -369,11 +372,12 @@ fn audit_change_reason_deduplicates_identical_effects_but_keeps_distinct_paths()
     assert_eq!(
         text.matches("which the current requested range excludes\n")
             .count(),
-        1,
+        2,
         "{text}"
     );
     assert_eq!(
-        text.matches("which the current requested range excludes [other/package-lock.json]")
+        prose(&text)
+            .matches("which the current requested range excludes [other/package-lock.json]")
             .count(),
         1,
         "{text}"

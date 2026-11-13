@@ -465,7 +465,7 @@ fn audit_remediation_blocker_context_stays_structured_in_json() {
     let result_blocker = &result["remediation"]["recommendations"][0]["blockers"][0];
     assert_eq!(result_blocker["context"], context);
     assert!(result_blocker.get("declaration_ref").is_none());
-    let text = human_report(&input);
+    let text = prose(&human_report(&input));
     assert!(!text.contains('\u{1b}') && !text.contains('\u{202e}'));
     assert!(!text.contains("context:"));
     assert!(text.contains("parent\\n\\u{1b}[2J@2.0.0"));
@@ -621,11 +621,11 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
     assert_unverified(&input);
     input["remediation"]["recommendations"][0]["search_domain"] = json!({"constraint_scope":"represented_requests","release_scope":"observed_catalog_upgrades","packages":[{"coordinate":{"registry":"npm","name":"demo","version":"1.0.0"},"versions":["1.0.0"]}]});
     assert!(
-        human_report(&input).contains(
+        prose(&human_report(&input)).contains(
             "No upgrade path found among releases known to the service, under the dependency requirements considered"
         )
     );
-    let text = human_report(&input);
+    let text = prose(&human_report(&input));
     let section = text.split_once("Fix guidance").expect("section").1;
     for absent in [
         "release availability:",
@@ -637,7 +637,7 @@ fn audit_remediation_negative_outcome_needs_domain_and_stays_scoped() {
     assert!(json_report(&input)["remediation"]["recommendations"][0]["search_domain"].is_object());
     input["remediation"]["recommendations"][0]["search_domain"]["release_scope"] =
         "future_scope".into();
-    let text = human_report(&input);
+    let text = prose(&human_report(&input));
     assert!(text.contains("The upgrade search scope is unfamiliar, so no conclusion about an upgrade path can be drawn."));
     assert!(!text.contains("No upgrade path found"));
 }
@@ -656,7 +656,7 @@ fn audit_remediation_future_checks_cannot_produce_negative() {
     ] {
         let mut input = base.clone();
         *input.pointer_mut(path).expect("field") = "future_value".into();
-        let text = human_report(&input);
+        let text = prose(&human_report(&input));
         assert!(!text.contains("No upgrade path found"), "{path}");
         assert!(text.contains("The planning or check evidence is unfamiliar, so no conclusion about an upgrade path can be drawn."));
         let result = json_report(&input);

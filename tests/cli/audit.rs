@@ -71,6 +71,11 @@ fn offline(file: &Path, extra: &[&str]) -> Output {
         .expect("offline audit")
 }
 
+// Meaning assertions ignore native hanging wraps; dedicated renderer tests check layout.
+fn prose(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
 fn server(bytes: &[u8]) -> ScriptedServer {
     let mut terminal = snapshot("succeeded", "succeeded", 1);
     terminal["kind"] = "audit".into();

@@ -5,7 +5,7 @@ use crate::commands::audit::view::remediation::{
     Change as ChangeView, Finding, Record, Remediation, reasons::Reason,
 };
 use serde::Serialize;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 mod reasons;
 pub(in crate::commands::audit) use reasons::ReasonDetail;
 
@@ -51,12 +51,12 @@ pub(in crate::commands::audit) struct Change {
     pub reasons: Vec<reasons::Explanation>,
 }
 
-/// A required edit or a genuine exclusion, kept with its supporting details.
+/// One constraint explanation with the requests it qualifies.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Constraint {
     /// Plain-text explanation; control characters are escaped.
     pub summary: String,
-    /// Additional qualifications that belong with this explanation.
+    /// Sorted unique owner, requirement and path contexts for this explanation.
     pub details: Vec<String>,
 }
 
@@ -80,7 +80,11 @@ impl Plan {
             .limitations
             .iter()
             .filter(|l| l.as_str() != "withdrawal_not_observed")
-            .map(|l| format!("limit: {}", explanation(l)))
+            .filter_map(|l| {
+                let message = explanation(l);
+                (!constraints.iter().any(|c| c.summary == message))
+                    .then(|| format!("limit: {message}"))
+            })
             .collect();
         let checks = checks(r);
         let has_details = !constraints.is_empty() || !checks.is_empty() || !limitations.is_empty();
@@ -153,8 +157,10 @@ fn change(
         _ => "Candidate change:",
     };
     let mut details = Vec::new();
-    if !matches!(data.strategy.as_str(), "upgrade" | "override") {
-        details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into());
+    match data.strategy.as_str() {
+        "unknown" => details.push("How to apply this candidate has not been determined.".into()),
+        "upgrade" | "override" => {},
+        _ => details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into()),
     }
     if !data.conflicting_target_versions.is_empty() {
         details.push(format!(
@@ -241,44 +247,43 @@ fn impact(r: &Record, supported: bool, context: &Context<'_>) -> Vec<String> {
     lines
 }
 
+// Group only visible explanations: this finite Scan-owned phrase mapping never
+// determines applicability or policy. Facts retain every original reason and request.
 fn constraints(blockers: &[Blocker]) -> Vec<Constraint> {
-    let mut seen = BTreeSet::new();
-    blockers
-        .iter()
-        .map(|b| {
-            let owner = owner(&b.owner.name, b.owner.version.as_deref());
-            let requirement = request_requirement(
+    let mut groups: Vec<Constraint> = Vec::new();
+    for b in blockers {
+        let summary = if matches!(
+            b.reason.as_str(),
+            "third_party_request_excludes_target" | "required_request_excludes_target"
+        ) {
+            "Dependency requirements conflict with this candidate.".into()
+        } else {
+            explanation(&b.reason)
+        };
+        let detail = format!(
+            "{} {} [{}]",
+            owner(&b.owner.name, b.owner.version.as_deref()),
+            request_requirement(
                 b.dependency_name.as_deref(),
                 b.requested_requirement.as_deref(),
-                &b.requirement_status,
-            );
-            let summary = if matches!(
-                b.reason.as_str(),
-                "third_party_request_excludes_target" | "required_request_excludes_target"
-            ) {
-                format!(
-                    "requirement conflict: {owner} {requirement} [{}]",
-                    safe(&b.path)
-                )
-            } else {
-                format!(
-                    "constraint: {owner} {requirement} [{}]; {}",
-                    safe(&b.path),
-                    explanation(&b.reason)
-                )
-            };
-            let details = if b.other_target_versions.is_empty() {
-                Vec::new()
-            } else {
-                vec![format!(
-                    "other recommended targets: {}",
-                    list(&b.other_target_versions)
-                )]
-            };
-            Constraint { summary, details }
-        })
-        .filter(|c| seen.insert((c.summary.clone(), c.details.clone())))
-        .collect()
+                &b.requirement_status
+            ),
+            safe(&b.path)
+        );
+        if let Some(group) = groups.iter_mut().find(|c| c.summary == summary) {
+            group.details.push(detail);
+            continue;
+        }
+        groups.push(Constraint {
+            summary,
+            details: vec![detail],
+        });
+    }
+    for group in &mut groups {
+        group.details.sort();
+        group.details.dedup();
+    }
+    groups
 }
 
 fn checks(r: &Record) -> Vec<String> {
@@ -394,24 +399,30 @@ pub(in crate::commands::audit) fn limits(data: &Remediation) -> Vec<String> {
 }
 fn finding_names(findings: &[Finding], other: &[Finding], subject: &str) -> String {
     let overlapping: BTreeSet<_> = other.iter().map(|f| (&f.package, &f.advisory)).collect();
-    findings
-        .iter()
-        .map(|f| {
-            let qualifier = if overlapping.contains(&(&f.package, &f.advisory)) {
-                " (partly)"
-            } else {
-                ""
-            };
-            if f.package == subject {
-                format!("{}{qualifier}", safe(&f.advisory))
-            } else {
-                format!("{} ({}){qualifier}", safe(&f.advisory), safe(&f.package))
-            }
-        })
-        .collect::<BTreeSet<_>>()
-        .into_iter()
-        .collect::<Vec<_>>()
-        .join(", ")
+    let mut groups: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
+    for f in findings {
+        let qualifier = if overlapping.contains(&(&f.package, &f.advisory)) {
+            " (partly)"
+        } else {
+            ""
+        };
+        groups
+            .entry(&f.package)
+            .or_default()
+            .insert(format!("{}{qualifier}", safe(&f.advisory)));
+    }
+    let mut labels = Vec::new();
+    if let Some(advisories) = groups.remove(subject) {
+        labels.push(advisories.into_iter().collect::<Vec<_>>().join(", "));
+    }
+    labels.extend(groups.into_iter().map(|(package, advisories)| {
+        format!(
+            "{} — {}",
+            safe(package),
+            advisories.into_iter().collect::<Vec<_>>().join(", ")
+        )
+    }));
+    labels.join("; ")
 }
 
 fn outcome(r: &Record, planning_known: bool, has_details: bool) -> String {
@@ -561,7 +572,8 @@ fn explanation(value: &str) -> String {
         "unsupported_selector" => "dependency requirement could not be evaluated".into(),
         "release_existence_unverified" => "target release availability not verified".into(),
         "new_dependency_not_checked" => "a new dependency was not checked".into(),
-        "represented_routes_cut" => "proposal removes represented dependency paths".into(),
+        "represented_routes_cut" => "this candidate removes dependency routes recorded in this report".into(),
+        "native_applicability_not_checked" => "whether the dependency requirements apply to this project was not checked".into(),
         "no_checked_parent_upgrade" => {
             "no upgrade of a package requiring this dependency was verified".into()
         }

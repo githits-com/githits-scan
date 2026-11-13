@@ -48,17 +48,18 @@ pub(in crate::commands::audit) fn guidance(
 ) -> io::Result<()> {
     let plan = Plan::new(r, status, context, detail);
     if let Some(outcome) = &plan.outcome {
-        writeln!(out, "\n    {outcome}")?;
+        writeln!(out)?;
+        line(outcome, "    ", out)?;
     }
     if let Some(heading) = &plan.heading {
         writeln!(out, "\n    {heading}:")?;
     }
     for change in &plan.changes {
-        writeln!(out, "      {}", change.summary)?;
+        line(&change.summary, "      ", out)?;
         file_list("files", &change.files, "        ", out)?;
         lines(&change.details, "        ", out)?;
         for reason in &change.reasons {
-            writeln!(out, "        {}", reason.summary)?;
+            line(&reason.summary, "        ", out)?;
             lines(&reason.evidence, "          ", out)?;
         }
     }
@@ -66,7 +67,7 @@ pub(in crate::commands::audit) fn guidance(
     lines(&plan.context, "    ", out)?;
     lines(&plan.impact, "    ", out)?;
     for constraint in &plan.constraints {
-        writeln!(out, "    {}", constraint.summary)?;
+        line(&constraint.summary, "    ", out)?;
         lines(&constraint.details, "      ", out)?;
     }
     lines(&plan.checks, "    ", out)?;
@@ -80,8 +81,65 @@ pub(in crate::commands::audit) fn shared_limits(
     lines(&presentation::remediation::limits(data), "  ", out)
 }
 fn lines(lines: &[String], indent: &str, out: &mut dyn Write) -> io::Result<()> {
-    for line in lines {
-        writeln!(out, "{indent}{line}")?;
+    for text in lines {
+        line(text, indent, out)?;
     }
     Ok(())
+}
+
+// Match audit file-list width, preserving indivisible coordinates and identifiers.
+fn line(text: &str, indent: &str, out: &mut dyn Write) -> io::Result<()> {
+    write!(out, "{indent}")?;
+    let mut width = indent.chars().count();
+    for (index, word) in text.split(' ').enumerate() {
+        let length = word.chars().count();
+        if index > 0 && width + 1 + length > 100 {
+            write!(out, "\n{indent}  ")?;
+            width = indent.chars().count() + 2;
+        } else if index > 0 {
+            write!(out, " ")?;
+            width += 1;
+        }
+        write!(out, "{word}")?;
+        width += length;
+    }
+    writeln!(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn guidance_wraps_with_hanging_indent_without_losing_unicode_or_ids() {
+        let text = format!(
+            "would address: café — {}",
+            (0..12)
+                .map(|i| format!("GHSA-example-{i},"))
+                .collect::<Vec<_>>()
+                .join(" ")
+        );
+        let mut output = Vec::new();
+        line(&text, "    ", &mut output).expect("write");
+        let output = String::from_utf8(output).expect("utf8");
+        assert!(output.lines().count() > 1);
+        assert!(output.lines().all(|l| l.chars().count() <= 100));
+        assert!(output.lines().skip(1).all(|l| l.starts_with("      ")));
+        assert_eq!(
+            output.split_whitespace().collect::<Vec<_>>(),
+            text.split_whitespace().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn guidance_keeps_long_indivisible_tokens_whole() {
+        let token = "é".repeat(120);
+        let text = format!("candidate: {token}");
+        let mut output = Vec::new();
+        line(&text, "    ", &mut output).expect("write");
+        assert_eq!(
+            String::from_utf8(output).expect("utf8"),
+            format!("    candidate:\n      {token}\n")
+        );
+    }
 }

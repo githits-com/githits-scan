@@ -204,7 +204,7 @@ report. It contains:
 | `files` | Shared change paths that need display beyond the finding context |
 | `context` | Recorded-request explanations when checked effects do not already explain them |
 | `impact` | Addressed and unresolved impact, including explicit absence of reported benefit for partial candidates |
-| `constraints` | Objects with `summary` and `details`; required project edits stay distinct from actual requirement exclusions |
+| `constraints` | Objects grouped by explanation, with a `summary` and sorted unique request contexts in `details`; required project edits stay distinct from actual requirement conflicts |
 | `checks`, `limitations` | Material check qualifications and per-plan limitations |
 
 Each change has `change_index` (zero-based within the matching fact record),
@@ -270,3 +270,19 @@ The Rust command API selects `audit::Request.format: audit::Format` instead of
 presentation export is unrepresentable. Archives and configuration need no
 migration. Omit the new CLI flag or use the previous binary to return to previous
 output behavior without losing saved evidence.
+
+Constraint explanations appear once per plan, with the affected package owners,
+requirements and paths beneath them. Conflicts are direction-neutral: an existing
+package can exclude a proposed version, or a proposed version can require a
+different locked dependency. Unattributed `other_target_versions` stay in the fact
+report rather than becoming ambiguous version advice. A per-plan limitation is
+omitted from presentation when its exact explanation already appears in that
+plan's constraints; audit-wide planning limits retain their broader scope.
+
+Advisory lists show the subject's IDs first, followed by external package groups
+(`package — IDs`) in package order. Each `(partly)` qualifier stays attached to its
+advisory, and repeated file occurrences do not repeat the same label. Every public
+advisory ID remains available. Native guidance wraps at spaces to 100 Unicode
+scalar characters including indentation, with two extra spaces on continuation
+lines; indivisible identifiers remain whole even when longer. JSON strings retain
+unwrapped plain text for the consumer's own layout.
