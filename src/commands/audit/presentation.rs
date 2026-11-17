@@ -8,6 +8,7 @@ use serde::Serialize;
 
 pub(super) mod context;
 pub(super) mod remediation;
+mod search;
 pub(super) use remediation::{Plan, ReasonDetail};
 
 /// Separate presentation contract; facts retain their existing schema and meaning.

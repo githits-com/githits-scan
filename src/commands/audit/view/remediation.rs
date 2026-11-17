@@ -89,6 +89,10 @@ pub(in crate::commands::audit) struct Record {
     pub detail_status: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub search_domain: Option<wire::SearchDomain>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_detail_status: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub search_details: Option<Vec<wire::search::Detail>>,
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Serialize)]
@@ -147,6 +151,8 @@ impl Record {
             limitations: r.limitations.clone(),
             detail_status: r.detail_status.clone(),
             search_domain: r.search_domain.clone(),
+            search_detail_status: r.search_detail_status.clone(),
+            search_details: r.search_details.clone(),
         }
     }
 }

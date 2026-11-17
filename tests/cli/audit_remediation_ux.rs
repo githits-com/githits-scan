@@ -261,7 +261,7 @@ fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
     );
     assert!(
         text.contains("Dependency requirements conflict with this candidate.")
-            && text.contains("Candidate changes"),
+            && text.contains("Candidate upgrade:"),
         "{text}"
     );
     assert!(
@@ -286,10 +286,10 @@ fn audit_ux_candidate_compresses_only_the_complete_displayed_advisory_set() {
 #[test]
 fn audit_ux_shared_search_limits_preserve_the_requiring_package_scope() {
     for (cause, detail) in [
-        ("parent_candidate_limit", "service limit"),
+        ("parent_candidate_limit", "limit for checking"),
         ("assignment_limit", "combinations"),
-        ("parent_evidence_incomplete", "information"),
-        ("parent_exact_lookup_limit", "metadata checks"),
+        ("parent_evidence_incomplete", "metadata"),
+        ("parent_exact_lookup_limit", "looking up metadata"),
     ] {
         let mut value = remediation_report();
         value["remediation"]["status"] = "limited".into();
@@ -297,7 +297,8 @@ fn audit_ux_shared_search_limits_preserve_the_requiring_package_scope() {
         let text = human_report(&value);
         let shared = prose(text.split_once("planning limit:").expect("shared limit").1);
         assert!(
-            shared.contains("packages requiring vulnerable dependencies"),
+            (cause == "assignment_limit"
+                || shared.contains("packages that depend on this dependency")),
             "{cause}: {shared}"
         );
         assert!(

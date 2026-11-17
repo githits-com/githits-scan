@@ -58,8 +58,17 @@ impl Report {
                 request_id: None,
             });
         }
-        let data = serde_json::from_slice(bytes)
+        let data: report::Data = serde_json::from_slice(bytes)
             .map_err(|_| ApiError::protocol("invalid native lifecycle audit report"))?;
+        if data.remediation.as_ref().is_some_and(|r| {
+            r.recommendations
+                .iter()
+                .any(|r| !r.search_collection_valid())
+        }) {
+            return Err(ApiError::protocol(
+                "invalid audit search evidence collection",
+            ));
+        }
         Ok(Self { data })
     }
 }

@@ -1,0 +1,165 @@
+{
+  "coordinate": null,
+  "current": {
+    "registry": "cargo",
+    "name": "example-leaf",
+    "version": "1.0.0"
+  },
+  "target": {
+    "registry": "cargo",
+    "name": "example-leaf",
+    "version": "1.1.0"
+  },
+  "package": {
+    "registry": "cargo",
+    "name": "example-leaf"
+  },
+  "source": {
+    "path": "Cargo.lock",
+    "coordinate": {
+      "registry": "cargo",
+      "name": "example-leaf",
+      "version": "1.0.0"
+    }
+  },
+  "boundary": {
+    "from": {
+      "path": "Cargo.lock",
+      "coordinate": {
+        "registry": "cargo",
+        "name": "example-leaf",
+        "version": "1.0.0"
+      }
+    },
+    "to": {
+      "path": "Cargo.lock",
+      "coordinate": null
+    }
+  },
+  "request": {
+    "owner": {
+      "name": "example-parent",
+      "version": "2.0.0"
+    },
+    "owner_role": "third_party",
+    "path": "Cargo.lock",
+    "kind": "normal",
+    "dependency_name": "authored-alias",
+    "requested_requirement": "^1",
+    "requirement_status": "recorded",
+    "basis": "lockfile"
+  },
+  "requests": [
+    {
+      "owner": {
+        "name": "example-parent",
+        "version": "2.0.0"
+      },
+      "owner_role": "third_party",
+      "path": "Cargo.lock",
+      "kind": "normal",
+      "dependency_name": "authored-alias",
+      "requested_requirement": "^1",
+      "requirement_status": "recorded",
+      "basis": "lockfile"
+    }
+  ],
+  "qualification": {
+    "binding": "possible",
+    "capture": "unavailable",
+    "declaration_capture": "incomplete",
+    "membership_policy": "unestablished",
+    "participation": "conditional",
+    "conditions": [
+      {
+        "kind": "feature",
+        "status": "captured",
+        "expression": "example-feature"
+      }
+    ],
+    "policy_reasons": [
+      "required_input_not_supplied"
+    ]
+  },
+  "request_checks": [
+    {
+      "owner": {
+        "name": "example-parent",
+        "version": "2.0.0"
+      },
+      "path": "Cargo.lock",
+      "dependency_name": null,
+      "target": {
+        "registry": "cargo",
+        "name": "example-leaf",
+        "version": "1.0.0"
+      },
+      "result": "unchecked",
+      "clauses": [
+        {
+          "request": {
+            "owner": {
+              "name": "example-parent",
+              "version": "2.0.0"
+            },
+            "owner_role": "third_party",
+            "path": "Cargo.lock",
+            "kind": "normal",
+            "dependency_name": "authored-alias",
+            "requested_requirement": "^1",
+            "requirement_status": "recorded",
+            "basis": "lockfile"
+          },
+          "effective_membership": {
+            "status": "unchecked",
+            "reason": "unsupported_selector"
+          },
+          "participation": {
+            "status": "unestablished"
+          }
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "status": "present",
+    "complete": false,
+    "reasons": [
+      "incomplete_dependency_list"
+    ]
+  },
+  "acquisition": "lookup_failed",
+  "status": "unavailable",
+  "budget_scope": "shared",
+  "paths": [
+    "Cargo.lock"
+  ],
+  "policy": {
+    "name": "example:capability",
+    "requested_requirement": null,
+    "requirement_status": "unavailable",
+    "effective_requirement": null,
+    "effective_requirement_status": "unavailable",
+    "diagnostics": [
+      {
+        "code": "required_input_not_supplied",
+        "field": "version"
+      }
+    ]
+  },
+  "declarations": [
+    {
+      "name": "example-child",
+      "requested_requirement": null,
+      "requirement_status": "not_recorded",
+      "scope": "optional"
+    }
+  ],
+  "observation": {
+    "name": "example-observed",
+    "path": "Cargo.lock",
+    "status": "recorded",
+    "requested_requirement": null,
+    "requirement_status": "not_recorded"
+  }
+}

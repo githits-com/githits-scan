@@ -7,6 +7,8 @@ use super::wire::{Additional, Coordinate, nullable, optional};
 
 /// Checked reason DTOs used by recommendation changes.
 pub(crate) mod reasons;
+/// Typed search evidence consumed from recommendation details.
+pub(crate) mod search;
 /// The wire reason type attached to a recommendation change.
 pub(crate) use reasons::Reason;
 
@@ -47,6 +49,20 @@ pub(crate) struct Recommendation {
         skip_serializing_if = "Option::is_none"
     )]
     pub search_domain: Option<SearchDomain>,
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    /// Whether the whole search-detail collection survived output allocation.
+    pub search_detail_status: Option<String>,
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    /// Whole-search obstacles, independent of selected-action checks.
+    pub search_details: Option<Vec<search::Detail>>,
 }
 
 // These selected facts have identical meanings in the command's compact JSON.
@@ -181,4 +197,22 @@ pub(crate) struct Limits {
     pub omitted_recommendations: u64,
     pub omitted_occurrences: u64,
     pub omitted_relations: u64,
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    /// Omitted search entries across recommendations and alternatives.
+    pub omitted_search_details: Option<u64>,
+}
+
+impl Recommendation {
+    /// Verify paired optional fields and whole-collection omission.
+    pub(super) fn search_collection_valid(&self) -> bool {
+        match (&self.search_detail_status, &self.search_details) {
+            (None, None) => true,
+            (Some(status), Some(details)) => status != "not_retained" || details.is_empty(),
+            _ => false,
+        }
+    }
 }

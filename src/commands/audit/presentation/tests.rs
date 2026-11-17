@@ -78,10 +78,10 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     r["checks"]["requirements"] = "blocked".into();
     let view = project(&input);
     let plan = plan(&view);
-    assert_eq!(plan.heading.as_deref(), Some("Candidate changes (partial)"));
+    assert!(plan.heading.is_none());
     assert_eq!(
         plan.changes[0].summary,
-        "Upgrade candidate: cargo:example-parent 2.0.0 -> 2.1.0"
+        "Candidate upgrade: cargo:example-parent 2.0.0 -> 2.1.0 (partial)"
     );
     assert_eq!(
         plan.changes[0].reasons[0].summary,
@@ -94,10 +94,9 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
             "still unresolved: GHSA-example"
         ]
     );
-    assert!(
-        plan.constraints[0]
-            .summary
-            .contains("applying this change requires updating the project requirement")
+    assert_eq!(
+        plan.constraints[0].summary,
+        "Update the example-parent requirement in Cargo.toml. Current requirement: ^2.0."
     );
     assert!(
         plan.context.is_empty(),
@@ -115,7 +114,13 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
         &plan.impact[1],
         &plan.constraints[0].summary,
     ] {
-        assert!(text.contains(value), "{text}");
+        assert!(
+            text.split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+                .contains(value),
+            "{text}"
+        );
         assert!(
             serde_json::to_string(&document["remediation"])
                 .expect("JSON")
@@ -219,15 +224,14 @@ fn prerelease_qualification_checks_both_flags_and_preserves_complete_proposals()
             *r.pointer_mut(flag).expect("flag") = true.into();
             let plan = plan(&project(&input));
             assert_eq!(
-                plan.heading
-                    .as_deref()
-                    .expect("heading")
-                    .starts_with("Suggested fix"),
+                plan.changes[0].summary.starts_with("Suggested fix:"),
                 supported,
                 "{flag}, {outcome}"
             );
             assert_eq!(
-                plan.changes[0].summary.starts_with("Upgrade npm:"),
+                plan.changes[0]
+                    .summary
+                    .starts_with("Suggested fix: Upgrade npm:"),
                 supported
             );
             assert!(
@@ -400,7 +404,8 @@ fn advisory_check_explanations_distinguish_unsupported_missing_and_future_result
             plan.checks
                 .contains(&format!("target advisories: {explanation}"))
         );
-        assert_eq!(plan.heading.as_deref(), Some("Candidate changes"));
+        assert!(plan.heading.is_none());
+        assert!(plan.changes[0].summary.starts_with("Candidate"));
         let facts = serde_json::to_value(&view).expect("facts");
         assert_eq!(
             facts["remediation"]["recommendations"][0]["checks"]["advisories"],
@@ -452,7 +457,8 @@ fn undetermined_strategy_and_applicability_stay_candidates_with_specific_explana
         r["limitations"] = json!(["native_applicability_not_checked"]);
         let view = project(&input);
         let plan = plan(&view);
-        assert_eq!(plan.heading.as_deref(), Some("Candidate changes"));
+        assert!(plan.heading.is_none());
+        assert!(plan.changes[0].summary.starts_with("Candidate"));
         let text = serde_json::to_string(&plan).expect("blocks");
         assert!(
             text.contains(
@@ -466,10 +472,7 @@ fn undetermined_strategy_and_applicability_stay_candidates_with_specific_explana
             "{text}"
         );
         if strategy == "unknown" {
-            assert!(
-                plan.changes[0].details[0]
-                    .contains("How to apply this candidate has not been determined")
-            );
+            assert!(plan.changes[0].details[0].contains("does not specify how to apply them"));
         }
         assert_eq!(
             plan.limitations.len(),
@@ -605,7 +608,7 @@ fn constraint_groups_keep_inbound_and_outbound_conflicts_and_distinct_causes() {
         1,
         "only matching displayed explanations are suppressed"
     );
-    assert!(plan.limitations[0].contains("service limit"));
+    assert!(plan.limitations[0].contains("limit for checking"));
     let document = serde_json::to_value(Document::new(&view)).expect("presentation");
     assert!(
         !serde_json::to_string(&document["remediation"])
@@ -654,7 +657,7 @@ fn repeated_limit_explanations_keep_first_appearance_and_all_raw_codes() {
             messages[1]
                 .as_str()
                 .expect("text")
-                .contains("not all combinations")
+                .contains("combinations of dependency upgrades")
         );
     }
     assert_eq!(
@@ -663,3 +666,5 @@ fn repeated_limit_explanations_keep_first_appearance_and_all_raw_codes() {
     );
     assert_eq!(document["audit"]["remediation"]["limits"]["reasons"], codes);
 }
+
+mod search;

@@ -198,14 +198,15 @@ report. It contains:
 | `recommendation_index` | Zero-based position in this document's `audit.remediation.recommendations` |
 | `subject` | Existing subject coordinate; never a new opaque plan ID |
 | `findings`, `addressed_findings`, `remaining_findings` | Existing `{package, advisory, files}` fact identities, unchanged |
-| `heading` | Qualified concise heading, or null when no changes were supplied |
+| `heading` | Shared qualified heading for joint changes; null for a single change whose summary carries its qualification, or when no changes were supplied |
 | `outcome` | Plain-language separate outcome, or null when the heading suffices |
 | `changes` | Ordered changes that belong together within this alternative |
 | `files` | Shared change paths that need display beyond the finding context |
 | `context` | Recorded-request explanations when checked effects do not already explain them |
 | `impact` | Addressed and unresolved impact, including explicit absence of reported benefit for partial candidates |
 | `constraints` | Objects grouped by explanation, with a `summary` and sorted unique request contexts in `details`; required project edits stay distinct from actual requirement conflicts |
-| `checks`, `limitations` | Material check qualifications and per-plan limitations |
+| `checks`, `limitations` | Material check qualifications, per-plan limitations and search-retention gaps |
+| `search_explanations` | Whole-search obstacle objects with `search_detail_index`, `summary`, and `details`; each index addresses the matching fact record’s `search_details` array |
 
 Each change has `change_index` (zero-based within the matching fact record),
 `summary`, `details`, `files` and `reasons`. Each reason has `summary` and
@@ -225,8 +226,10 @@ different advisory context; the same builder adjusts redundant impact and file
 wording to that context. A consumer may use the fact identities to link to advisory
 metadata in `audit.vulnerabilities`.
 
-For a table, show the qualified `heading` together with every `changes[].summary`.
-Place checked reasons, `impact`, constraints and limitations in the same row or its
+For a table, show a supplied `heading` together with every `changes[].summary`.
+For a single change, its summary carries the supported/candidate and partial
+qualification; there is no extra heading to repeat.
+Place checked reasons, `impact`, constraints, limitations and search explanations in the same row or its
 associated details. A project requirement by itself is context for applying a
 change, not a substitute for the candidate's changed package/version. Keep joint
 changes together, and keep alternative records separate. A removed route does not
@@ -288,3 +291,59 @@ advisory ID remains available. Native guidance wraps at spaces to 100 Unicode
 scalar characters including indentation, with four extra spaces on continuation
 lines; indivisible identifiers remain whole even when longer. JSON strings retain
 unwrapped plain text for the consumer's own layout.
+
+
+### Whole-search evidence
+
+The added fact fields have these JSON types. Optional means omitted for older
+reports, not explicit null.
+
+| Field | JSON type |
+| --- | --- |
+| `remediation.recommendations[].search_detail_status` | Optional non-null string |
+| `remediation.recommendations[].search_details` | Optional non-null array of detail objects, selected by string `kind` |
+| `remediation.limits.omitted_search_details` | Optional nonnegative integer (`u64`) |
+| `remediation.recommendations[].search_explanations` in presentation schema 1 | Array of objects with nonnegative integer `search_detail_index`, string `summary`, and array of strings `details` |
+
+The optional fact fields `remediation.recommendations[].search_detail_status` and
+`search_details` are preserved together. Both remain absent for older immutable
+reports. `retained` with an empty array means no recorded obstacle under the
+producer's selection policy; it certifies neither exhaustive search, applicability,
+native resolution nor safety. `not_retained` requires an empty array: the entire
+collection was omitted. An unfamiliar retention status remains explicit.
+Optional `remediation.limits.omitted_search_details` counts omitted entries across
+recommendations, including omitted recommendations and losing alternatives.
+
+Known detail kinds are `unavailable` (operation, nonempty reasons, witness) and
+`stopped` (stage, reason, witness). Stopped details require a nullable coordinate
+slot and budget scope; `used` and positive `allowed` occur together when supplied.
+Counts retain producer units in fact JSON; human explanations do not guess units
+or invent deadline counts. A known kind with malformed consumed fields is a
+protocol error. Unfamiliar operation/stage/reason vocabulary stays informational.
+An unfamiliar kind retains only its kind in curated facts and saved analyses;
+Scan does not interpret or export its arbitrary payload.
+
+Scan retains a typed witness subset needed for explanations: package and candidate
+coordinates; source paths and dependency endpoints; authored requests; request
+participation, capture and recorded conditions; effective requirement comparisons;
+coverage and acquisition causes; declaration/observation requirements; and Maven
+requirement policy diagnostics. Unused occurrence references, scope internals,
+markers, policy origins, exclusions and arbitrary additive fields are ignored.
+The schema source is the public development [gateway OpenAPI](https://api-dev.githits.dev/v1/openapi.json)
+with the [producer OpenAPI 1.33.0](https://oss-dev.githits.dev/api/openapi.json)
+as the structural reference. Dev availability does not establish production promotion.
+
+Search details can describe losing alternatives. They never alter selected-action
+checks, candidate qualification, policy, incompleteness or exit codes. Equal reason
+codes do not establish equal scope: a search detail cannot suppress a selected-plan
+limitation. Captured conditions are literal evidence, never inferred activation.
+Authored dependency names remain separate from requesting owners and canonical targets.
+Search explanations are computed by the shared presentation owner, without another
+backend job. A missing/uninterpretable reason is stated explicitly rather than
+invented. Search-retention and legacy-absence notes without a detail index live in
+`limitations`; global omission notes live in `limits`.
+
+These fields are additive within fact schema 2 and presentation schema 1; saved
+analysis format 2 and producer report version 3 stay supported. No new CLI flag or
+migration is required. Older Scan versions ignore new evidence; new Scan versions
+can replay archives without the fields, but cannot reconstruct discarded search evidence.

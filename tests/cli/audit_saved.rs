@@ -84,9 +84,9 @@ fn audit_explain_binary_deduplicates_blockers_and_translates_limits() {
     assert!(text.contains("future-parent@2.0.0 requirement not understood because the service returned an unfamiliar status"), "{text}");
     assert!(!text.contains("project resolver/build not run"), "{text}");
     for expected in [
-        "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked",
-        "some information about packages requiring vulnerable dependencies was unavailable",
-        "metadata checks for packages requiring vulnerable dependencies reached the service limit",
+        "the service reached its limit for checking combinations of dependency upgrades",
+        "metadata needed to check upgrades of packages that depend on this dependency was unavailable; this limitation does not identify the affected packages",
+        "the service reached its limit for looking up metadata for packages that depend on this dependency",
         "how the dependency was introduced is not recorded",
         "dependency requirement could not be evaluated",
         "target release availability not verified",

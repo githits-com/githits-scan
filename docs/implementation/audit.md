@@ -278,7 +278,13 @@ Remediation wording and semantic selection live in the audit command presentatio
 model; native rendering owns grouping, file wrapping and styling. The model also
 produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
 Project requirement/preference edits are described as necessary when applying the
-change, distinct from actual third-party requirement exclusions.
+change, distinct from actual third-party requirement exclusions. A supplied
+project-owned required edit with a recorded dependency name, range and file can
+be a direct instruction inside a candidate block: update that requirement, with
+its current range stated. This is the edit needed to apply the candidate, not an
+unconditional instruction to upgrade or evidence of installability. Native compact
+output omits the repeated owner context when that instruction already names the
+requirement and file; detailed presentation retains it.
 
 The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
@@ -290,11 +296,17 @@ checks or any change marks a prerelease target; an unresolved prerelease migrati
 is never a confirmed fix. Complete proposed prereleases with no remaining findings
 retain supported wording and their explicit warning. Weaker facts, missing
 addressed evidence, overrides and future strategies retain neutral
-candidate wording; partial candidate groups keep their partial qualifier. Joint action sets stay together; partial results distinguish addressed
+candidate wording; partial candidates keep their partial qualifier in the single-change
+summary or joint heading. A single change has one qualified summary, without a
+second heading. Override strategies use neutral candidate-change wording and
+retain actual requirement conflicts; Scan does not prescribe an override. Joint action sets stay together; partial results distinguish addressed
 and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
 record's own findings equal the displayed finding context (coordinate, advisory
-and full file set). Weak candidates, including overrides, retain their supplied
-`would address` findings even when those cover the full displayed set. Human
+and full file set). Weak candidates retain their supplied `would address` findings even when those
+cover the full displayed set. A fully addressed upgrade candidate whose recorded
+requirement blockers are solely project-owned required edits avoids repeating that
+impact when release/advisory/check evidence is recognized and supported. Partial
+and cross-package impact remains explicit. Human
 `still unresolved` lines keep remaining advisory/package identities visible, including scoped
 no-upgrade results with no candidate. A package/advisory present in both impact
 lists gets an item-level `(partly)` suffix in both; other advisories are unmarked.
@@ -804,3 +816,31 @@ An unmatched saved-analysis `--explain` selector reports up to five unique
 vulnerable coordinates from that report, ranking exact names and substrings
 before spelling distance with deterministic coordinate ties. Suggestions never
 select a component automatically; matching still requires the exact coordinate.
+
+
+### Explaining incomplete upgrade searches
+
+The command presentation layer also explains the optional whole-search evidence
+in recommendation `search_details`. Its [JSON contract](json-output.md#whole-search-evidence)
+defines retention, association and the consumed witness subset. These obstacles
+include losing alternatives and stay separate from selected-action checks.
+Neither a failed lookup for another candidate nor an empty retained collection
+changes the selected fix verdict or exit status.
+
+Name the affected package/version, request or source and the operation that failed
+or stopped. Translate a supplied cause; if Scan cannot interpret it, state that
+explicitly and keep the original value in JSON. Do not derive a specific failed
+lookup or request from flattened limitation strings. Legacy limitations identify
+the operation and explicitly state when no affected packages were identified by
+that limitation. A report lacking detailed search evidence says so; omitted
+collections and global omissions are separate from evidence absence in old reports.
+Do not remove selected-plan qualifications merely because another search detail
+has the same reason code.
+
+Requests retain authored names, aliases and capabilities separately from owners
+and canonical candidate targets. Conditional participation stays conditional;
+unestablished participation is described only when supplied. Recorded condition
+expressions do not establish active features, markers or platforms. Witness
+counters and occurrence references are not explanations, and package-manager or
+build success is never inferred. Online and saved replay render the same shared
+blocks without additional analysis or token use.

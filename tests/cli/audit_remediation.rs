@@ -65,8 +65,7 @@ fn audit_remediation_normal_output_establishes_problem_before_guidance() {
             "      advisory-reported fix versions: 1.1.0\n",
             "      verified advisory fixes: 1.1.1\n",
             "    Found in: package-lock.json\n\n",
-            "    Suggested fix:\n",
-            "      Upgrade npm:demo 1.0.0 -> 1.1.1"
+            "    Suggested fix: Upgrade npm:demo 1.0.0 -> 1.1.1"
         )
     );
     let result = json_report(&input);
@@ -114,14 +113,14 @@ fn audit_remediation_problem_context_handles_missing_and_untrusted_metadata() {
     let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("  npm:demo@1.0.0\n"));
     assert!(!section.contains("— vulnerable"));
-    assert!(section.contains("Candidate changes:"));
+    assert!(section.contains("Candidate upgrade:") || section.contains("Candidate change:"));
     assert!(!section.contains("Suggested fix") && !section.contains("      Upgrade npm:"));
     input["remediation"]["recommendations"][0]["finding_refs"] = json!([0]);
     input["remediation"]["recommendations"][0]["remaining_finding_refs"] = json!([0]);
     let text = human_report(&input);
     let section = text.split_once("Fix guidance").expect("section").1;
     assert!(section.contains("— vulnerable") && section.contains("still unresolved: GHSA-demo"));
-    assert!(section.contains("Candidate changes:"));
+    assert!(section.contains("Candidate upgrade:") || section.contains("Candidate change:"));
     assert!(!section.contains("Suggested fix") && !section.contains("      Upgrade npm:"));
 }
 
@@ -353,7 +352,9 @@ fn audit_remediation_material_warnings_remain_visible() {
         assert!(text.contains(warning), "{check}: {value}");
         if check != "parent_search" {
             let section = text.split_once("Fix guidance").expect("section").1;
-            assert!(section.contains("Candidate changes:"));
+            assert!(
+                section.contains("Candidate upgrade:") || section.contains("Candidate change:")
+            );
             assert!(!section.contains("Suggested fix"));
             assert!(!section.contains("      Upgrade npm:"));
         }
@@ -370,12 +371,12 @@ fn audit_remediation_partial_candidates_keep_qualifiers_with_weak_evidence() {
         r["checks"]["requirements"] = evidence.into();
         let text = human_report(&input);
         let section = text.split_once("Fix guidance").expect("section").1;
-        assert!(section.contains("Candidate changes (partial):"));
+        assert!(section.contains("Candidate") && section.contains("(partial)"));
         assert!(section.contains("still unresolved: GHSA-demo"));
         assert!(!section.contains("Suggested fix"));
         assert!(!section.contains("      Upgrade npm:"));
         if evidence == "blocked" {
-            assert!(section.contains("Upgrade candidate: npm:demo"));
+            assert!(section.contains("Candidate upgrade: npm:demo"));
         }
     }
 }
@@ -439,7 +440,7 @@ fn audit_remediation_partial_records_and_conflicts_keep_scopes() {
     for fact in [
         "partial",
         "still unresolved:",
-        "Override candidate",
+        "Candidate change:",
         "parent@2.0.0",
         "<1.1",
         "web/package-lock.json",
@@ -745,8 +746,7 @@ fn audit_remediation_parent_upgrade_names_the_vulnerable_dependency() {
             "      advisory-reported fix versions: 1.1.0\n",
             "      verified advisory fixes: 1.1.1\n",
             "    Found in: package-lock.json\n\n",
-            "    Suggested fix:\n",
-            "      Upgrade npm:parent-a 2.0.0 -> 2.1.0"
+            "    Suggested fix: Upgrade npm:parent-a 2.0.0 -> 2.1.0"
         )
     );
 }
@@ -851,7 +851,10 @@ fn audit_remediation_native_disagreement_keeps_the_candidate_qualified() {
     input["remediation"]["recommendations"][0]["limitations"] =
         json!(["manifest_lock_disagreement"]);
     let text = human_report(&input);
-    assert!(text.contains("Candidate changes:"), "{text}");
+    assert!(
+        text.contains("Candidate upgrade:") || text.contains("Candidate change:"),
+        "{text}"
+    );
     assert!(text.contains("requirements: not checked"), "{text}");
     assert!(
         text.contains("limit: manifest and lockfile disagree"),

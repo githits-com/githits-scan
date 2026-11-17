@@ -54,13 +54,21 @@ pub(in crate::commands::audit) fn guidance(
     if let Some(heading) = &plan.heading {
         writeln!(out, "\n    {heading}:")?;
     }
+    if plan.heading.is_none() && !plan.changes.is_empty() {
+        writeln!(out)?;
+    }
+    let (change_indent, detail_indent, evidence_indent) = if plan.heading.is_some() {
+        ("      ", "        ", "          ")
+    } else {
+        ("    ", "      ", "        ")
+    };
     for change in &plan.changes {
-        line(&change.summary, "      ", out)?;
-        file_list("files", &change.files, "        ", out)?;
-        lines(&change.details, "        ", out)?;
+        line(&change.summary, change_indent, out)?;
+        file_list("files", &change.files, detail_indent, out)?;
+        lines(&change.details, detail_indent, out)?;
         for reason in &change.reasons {
-            line(&reason.summary, "        ", out)?;
-            lines(&reason.evidence, "          ", out)?;
+            line(&reason.summary, detail_indent, out)?;
+            lines(&reason.evidence, evidence_indent, out)?;
         }
     }
     file_list("Change in", &plan.files, "    ", out)?;
@@ -71,7 +79,12 @@ pub(in crate::commands::audit) fn guidance(
         lines(&constraint.details, "      ", out)?;
     }
     lines(&plan.checks, "    ", out)?;
-    lines(&plan.limitations, "    ", out)
+    lines(&plan.limitations, "    ", out)?;
+    for search in &plan.search_explanations {
+        line(&search.summary, "    ", out)?;
+        lines(&search.details, "      ", out)?;
+    }
+    Ok(())
 }
 
 pub(in crate::commands::audit) fn shared_limits(

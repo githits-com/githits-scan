@@ -15,7 +15,7 @@ const UNFAMILIAR_REASON: &str =
 /// Complete qualified guidance for one independent recommendation.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Plan {
-    /// Qualified plan title; absent only when no changes were supplied.
+    /// Shared title for joint changes; a single change carries its own qualification.
     pub heading: Option<String>,
     /// Separate outcome explanation when the title cannot express it.
     pub outcome: Option<String>,
@@ -31,6 +31,8 @@ pub(in crate::commands::audit) struct Plan {
     pub constraints: Vec<Constraint>,
     /// Material qualifications of supplied checks.
     pub checks: Vec<String>,
+    /// Whole-search obstacles, associated with the fact record independently of changes.
+    pub search_explanations: Vec<super::search::Explanation>,
     /// Per-plan planning limitations.
     pub limitations: Vec<String>,
 }
@@ -75,9 +77,9 @@ impl Plan {
             .clone()
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
-        let constraints = constraints(&r.blockers);
+        let constraints = constraints(&r.blockers, detail);
         let mut seen_limits = BTreeSet::new();
-        let limitations: Vec<_> = r
+        let mut limitations: Vec<_> = r
             .limitations
             .iter()
             .filter(|l| l.as_str() != "withdrawal_not_observed")
@@ -88,8 +90,15 @@ impl Plan {
             })
             .filter(|message| seen_limits.insert(message.clone()))
             .collect();
+        if let Some(message) = super::search::retention(r) {
+            limitations.push(message);
+        }
         let checks = checks(r);
-        let has_details = !constraints.is_empty() || !checks.is_empty() || !limitations.is_empty();
+        let search_explanations = super::search::explain(r);
+        let has_details = !constraints.is_empty()
+            || !checks.is_empty()
+            || !limitations.is_empty()
+            || !search_explanations.is_empty();
         Self {
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
@@ -117,12 +126,13 @@ impl Plan {
             constraints,
             checks,
             limitations,
+            search_explanations,
         }
     }
 }
 
 fn heading(r: &Record, supported: bool) -> Option<String> {
-    if r.changes.is_empty() {
+    if r.changes.len() < 2 {
         return None;
     }
     let label = match (supported, r.outcome.as_str()) {
@@ -153,15 +163,22 @@ fn change(
         && matches!(r.outcome.as_str(), "proposed" | "partial")
         && known_checks(&r.checks);
     let action = match (known, data.strategy.as_str()) {
+        (true, "upgrade") if supported && r.changes.len() == 1 => "Suggested fix: Upgrade",
         (true, "upgrade") if supported => "Upgrade",
-        (true, "upgrade") => "Upgrade candidate:",
-        (true, "override") => "Override candidate:",
+        (true, "upgrade") => "Candidate upgrade:",
         _ => "Candidate change:",
+    };
+    let partial = if r.changes.len() == 1 && r.outcome == "partial" {
+        " (partial)"
+    } else {
+        ""
     };
     let mut details = Vec::new();
     match data.strategy.as_str() {
         "unknown" => {
-            details.push("How to apply this candidate has not been determined.".into());
+            details.push(
+                "The report lists version changes but does not specify how to apply them.".into(),
+            );
         }
         "upgrade" | "override" => {}
         _ => {
@@ -185,7 +202,7 @@ fn change(
     Change {
         index,
         summary: format!(
-            "{action} {}:{} {} -> {}",
+            "{action} {}:{} {} -> {}{partial}",
             safe(&data.registry),
             safe(&data.name),
             safe(&data.from_version),
@@ -231,7 +248,13 @@ fn impact(r: &Record, supported: bool, context: &Context<'_>) -> Vec<String> {
         && r.findings.iter().collect::<BTreeSet<_>>() == addressed
         && context.matches(&r.findings);
     let mut lines = Vec::new();
-    if !(r.addressed_findings.is_empty() || supported && covers) {
+    let required_edit = r.checks.release_availability == "observed"
+        && r.checks.advisories == "non_affecting"
+        && known_checks(&r.checks)
+        && r.changes.iter().all(|c| c.data.strategy == "upgrade")
+        && !r.blockers.is_empty()
+        && r.blockers.iter().all(project_edit);
+    if !(r.addressed_findings.is_empty() || (supported || required_edit) && covers) {
         lines.push(match (covers, r.addressed_findings.len()) {
             (true, 1) => "would address the listed advisory".into(),
             (true, _) => "would address all listed advisories".into(),
@@ -255,18 +278,25 @@ fn impact(r: &Record, supported: bool, context: &Context<'_>) -> Vec<String> {
 
 // Group only visible explanations: this finite Scan-owned phrase mapping never
 // determines applicability or policy. Facts retain every original reason and request.
-fn constraints(blockers: &[Blocker]) -> Vec<Constraint> {
+fn project_edit(b: &Blocker) -> bool {
+    b.owner_role == "project" && b.reason == "project_request_change"
+}
+fn edit_instruction(b: &Blocker) -> Option<String> {
+    if !project_edit(b) || b.requirement_status != "recorded" {
+        return None;
+    }
+    Some(format!(
+        "Update the {} requirement in {}. Current requirement: {}.",
+        safe(b.dependency_name.as_deref()?),
+        safe(&b.path),
+        safe(b.requested_requirement.as_deref()?)
+    ))
+}
+fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
     let mut groups: Vec<Constraint> = Vec::new();
     for b in blockers {
-        let summary = if matches!(
-            b.reason.as_str(),
-            "third_party_request_excludes_target" | "required_request_excludes_target"
-        ) {
-            "Dependency requirements conflict with this candidate.".into()
-        } else {
-            explanation(&b.reason)
-        };
-        let detail = format!(
+        let summary = edit_instruction(b).unwrap_or_else(|| constraint_reason(b));
+        let request = format!(
             "{} {} [{}]",
             owner(&b.owner.name, b.owner.version.as_deref()),
             request_requirement(
@@ -276,14 +306,16 @@ fn constraints(blockers: &[Blocker]) -> Vec<Constraint> {
             ),
             safe(&b.path)
         );
+        let details = if edit_instruction(b).is_some() && detail == ReasonDetail::Summary {
+            Vec::new()
+        } else {
+            vec![request]
+        };
         if let Some(group) = groups.iter_mut().find(|c| c.summary == summary) {
-            group.details.push(detail);
+            group.details.extend(details);
             continue;
         }
-        groups.push(Constraint {
-            summary,
-            details: vec![detail],
-        });
+        groups.push(Constraint { summary, details });
     }
     for group in &mut groups {
         group.details.sort();
@@ -395,6 +427,9 @@ pub(in crate::commands::audit) fn limits(data: &Remediation) -> Vec<String> {
             data.limits.omitted_recommendations
         ));
     }
+    if data.limits.omitted_search_details.is_some_and(|n| n != 0) {
+        lines.push("Search explanations were omitted from this report, including evidence from alternative upgrades.".into());
+    }
     let mut seen = BTreeSet::new();
     lines.extend(
         data.limits
@@ -469,11 +504,11 @@ fn common_paths(changes: &[ChangeView]) -> Option<BTreeSet<String>> {
     .then_some(paths)
 }
 
-fn owner(name: &str, version: Option<&str>) -> String {
+pub(super) fn owner(name: &str, version: Option<&str>) -> String {
     version.map_or_else(|| safe(name), |v| format!("{}@{}", safe(name), safe(v)))
 }
 
-fn request_requirement(name: Option<&str>, range: Option<&str>, status: &str) -> String {
+pub(super) fn request_requirement(name: Option<&str>, range: Option<&str>, status: &str) -> String {
     let mut text = match (name, range) {
         (Some(name), Some(range)) => format!("requires {} {}", safe(name), safe(range)),
         (None, Some(range)) => format!("requires {}", safe(range)),
@@ -568,13 +603,13 @@ fn explanation(value: &str) -> String {
         "project_request_change" => "applying this change requires updating the project requirement".into(),
         "third_party_request_excludes_target" => "parent dependency excludes the target".into(),
         "required_request_excludes_target" => "dependency requirement excludes the target".into(),
-        "parent_candidate_limit" => "upgrade checks for packages requiring vulnerable dependencies reached the service limit".into(),
-        "assignment_limit" => "not all combinations of upgrades to packages requiring vulnerable dependencies could be checked".into(),
+        "parent_candidate_limit" => "the service reached its limit for checking upgrades of packages that depend on this dependency".into(),
+        "assignment_limit" => "the service reached its limit for checking combinations of dependency upgrades".into(),
         "parent_evidence_incomplete" => {
-            "some information about packages requiring vulnerable dependencies was unavailable".into()
+            "metadata needed to check upgrades of packages that depend on this dependency was unavailable; this limitation does not identify the affected packages".into()
         }
         "parent_exact_lookup_limit" => {
-            "metadata checks for packages requiring vulnerable dependencies reached the service limit".into()
+            "the service reached its limit for looking up metadata for packages that depend on this dependency".into()
         }
         "introduction_not_recorded" => "how the dependency was introduced is not recorded".into(),
         "unsupported_selector" => "dependency requirement could not be evaluated".into(),
@@ -583,11 +618,20 @@ fn explanation(value: &str) -> String {
         "represented_routes_cut" => "this candidate removes dependency routes recorded in this report".into(),
         "native_applicability_not_checked" => "whether the dependency requirements apply to this project was not checked".into(),
         "no_checked_parent_upgrade" => {
-            "no upgrade of a package requiring this dependency was verified".into()
+            "no upgrade of a package that depends on this dependency was verified".into()
         }
         "no_checked_leaf" => "no upgrade of this vulnerable dependency was verified".into(),
         "project_preference_change" => "applying this change requires updating the project preference".into(),
         "unresolved_manifest_activation" => "manifest applicability is unresolved".into(),
         _ => UNFAMILIAR_REASON.into(),
+    }
+}
+
+fn constraint_reason(b: &Blocker) -> String {
+    match b.reason.as_str() {
+        "third_party_request_excludes_target" | "required_request_excludes_target" => {
+            "Dependency requirements conflict with this candidate.".into()
+        }
+        _ => explanation(&b.reason),
     }
 }

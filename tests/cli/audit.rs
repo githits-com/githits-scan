@@ -27,6 +27,8 @@ mod audit_remediation;
 mod audit_report;
 #[path = "audit_saved_flags.rs"]
 mod audit_saved_flags;
+#[path = "audit_search.rs"]
+mod audit_search;
 #[path = "npm_workspace.rs"]
 mod npm_workspace;
 
