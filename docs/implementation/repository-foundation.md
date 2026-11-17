@@ -50,11 +50,13 @@ with `toolchain: 1.99.1`. Its generated version branches are rewritten; pins
 from those branches can lose reachable history and fail the online workflow
 audit. The [upstream pinning guidance](https://github.com/dtolnay/rust-toolchain#choice-of-full-length-commit-sha)
 requires `master` history so commits remain available.
-Upstream adds a `master` commit for every Rust release, and zizmor's
-`ref-version-mismatch` audit then fails because the `# master` comment no longer
-names the pinned commit. Re-pin to the new `master` head after checking that
-the upstream delta leaves `action.yml` unchanged, or review the change when it
-does not.
+Keep the installer SHA independent of the moving branch head: do not attach a
+`# master` version comment to a fixed commit. That comment would incorrectly
+claim the branch still names the pinned commit, and zizmor's online
+`ref-version-mismatch` check would fail whenever upstream advances it. The SHA
+remains pinned in `master` history; the explicit `toolchain` input selects Rust.
+Review installer updates on their own merits, rather than re-pinning solely to
+follow a branch comment.
 
 `.pre-commit-config.yaml` runs format, Clippy, rustdoc, cargo-deny on dependency
 changes, and hygiene hooks. Tests and doctests run in CI rather than on every
