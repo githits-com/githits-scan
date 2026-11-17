@@ -31,6 +31,11 @@ fn audit_search_explains_losing_release_without_changing_selected_fix() {
     assert!(text.contains("cargo:example-parent@3.0.0"), "{text}");
     assert!(text.contains("metadata lookup failed"), "{text}");
     assert!(!text.contains("lookup_failed"));
+    assert!(
+        serde_json::to_string(&r["checks"])
+            .expect("checks")
+            .contains("do not change the checks for this suggested fix")
+    );
     assert_eq!(
         r["changes"][0]["summary"],
         blocks(&input())["remediation"]["recommendations"][0]["changes"][0]["summary"]
@@ -178,7 +183,7 @@ fn audit_search_operations_and_stages_explain_scope_without_codes_or_counters() 
         ("domain_reservation", "allocating candidate"),
         ("seed_admission", "starting upgrade combinations"),
         ("frontier_admission", "exploring further"),
-        ("parent_evaluation", "packages that depend"),
+        ("parent_evaluation", "dependent packages"),
     ] {
         let value = with_search(
             "retained",
@@ -283,7 +288,7 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
     assert!(
         serde_json::to_string(&doc["remediation"]["limits"])
             .expect("limits")
-            .contains("alternative upgrades")
+            .contains("does not identify which recommendations or alternatives")
     );
     assert_eq!(
         doc["audit"]["remediation"]["limits"]["omitted_search_details"],
@@ -343,4 +348,132 @@ fn audit_search_indeterminate_result_does_not_deny_supplied_search_evidence() {
             .len(),
         1
     );
+}
+
+#[test]
+fn audit_search_request_clauses_keep_each_result_and_qualification_together() {
+    let mut witness: Value = serde_json::from_str(include_str!(
+        "../../../../../tests/fixtures/audit/search-witness.json"
+    ))
+    .expect("witness");
+    let clause = witness["request_checks"][0]["clauses"][0].clone();
+    let mut clauses = Vec::new();
+    for (name, status, strength, expected) in [
+        ("first", "matched", Some("required"), "requirement matches"),
+        (
+            "second",
+            "mismatched",
+            Some("required"),
+            "requirement excludes",
+        ),
+        (
+            "third",
+            "mismatched",
+            Some("preference"),
+            "preference differs from",
+        ),
+        (
+            "fourth",
+            "unchecked",
+            None,
+            "requirement was not compared with",
+        ),
+        (
+            "fifth",
+            "unchecked",
+            None,
+            "requirement was not compared with",
+        ),
+        (
+            "sixth",
+            "future_status",
+            Some("required"),
+            "cannot interpret the supplied comparison",
+        ),
+    ] {
+        let mut c = clause.clone();
+        c["request"]["dependency_name"] = name.into();
+        c["participation"]["status"] = "conditional".into();
+        c["effective_membership"] = strength.map_or_else(
+            || json!({"status":status,"reason":"unsupported_selector"}),
+            |strength| json!({"status":status,"strength":strength}),
+        );
+        clauses.push((c, name, expected));
+    }
+    witness["request_checks"][0]["clauses"] =
+        Value::Array(clauses.iter().map(|(c, _, _)| c.clone()).collect());
+    let doc = blocks(&with_search(
+        "retained",
+        json!([{"kind":"unavailable","operation":"membership","reasons":["membership_unavailable"],"witness":witness}]),
+    ));
+    let details = doc["remediation"]["recommendations"][0]["search_explanations"][0]["details"]
+        .as_array()
+        .expect("details");
+    for (_, name, expected) in clauses {
+        let line = details
+            .iter()
+            .filter_map(Value::as_str)
+            .find(|line| line.contains(&format!("requires {name} ")))
+            .expect("clause");
+        assert!(
+            line.contains(expected) && line.contains("conditional request"),
+            "{line}"
+        );
+        if name == "fourth" || name == "fifth" {
+            assert!(
+                line.contains("selector this check cannot evaluate"),
+                "{line}"
+            );
+        }
+    }
+}
+
+#[test]
+fn audit_search_summary_does_not_repeat_its_request_versions_or_relationship() {
+    let witness: Value = serde_json::from_str(include_str!(
+        "../../../../../tests/fixtures/audit/search-witness.json"
+    ))
+    .expect("witness");
+    for operation in ["request", "ordering", "boundary"] {
+        let mut w = witness.clone();
+        w["requests"] = json!([]);
+        if operation == "boundary" {
+            remove_summary_subjects(&mut w);
+        }
+        let doc = blocks(&with_search(
+            "retained",
+            json!([{"kind":"unavailable","operation":operation,"reasons":["lookup_failed"],"witness":w}]),
+        ));
+        let details = doc["remediation"]["recommendations"][0]["search_explanations"][0]["details"]
+            .as_array()
+            .expect("details");
+        let text = details
+            .iter()
+            .filter_map(Value::as_str)
+            .collect::<Vec<_>>()
+            .join(" ");
+        match operation {
+            "request" => {
+                assert!(!details.contains(&json!(
+                    "example-parent@2.0.0 requires authored-alias ^1 [Cargo.lock]"
+                )));
+            }
+            "ordering" => assert!(!text.contains("Versions compared:"), "{text}"),
+            _ => assert!(!text.contains("Dependency relationship:"), "{text}"),
+        }
+        assert!(
+            !text.contains("dependency list used for this check is incomplete"),
+            "{text}"
+        );
+        assert!(
+            text.contains("Dependency list: dependency list is incomplete"),
+            "{text}"
+        );
+    }
+}
+
+fn remove_summary_subjects(witness: &mut Value) {
+    for field in ["coordinate", "package", "current", "target", "request"] {
+        witness.as_object_mut().expect("object").remove(field);
+    }
 }

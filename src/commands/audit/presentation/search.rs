@@ -38,11 +38,11 @@ fn explanation(index: usize, detail: &Detail) -> Explanation {
     let (summary, details) = match detail {
         Detail::Unavailable(d) => (
             unavailable(&d.operation, &d.reasons, &d.witness),
-            context(&d.witness),
+            context(&d.witness, subject(&d.witness, Some(&d.operation))),
         ),
         Detail::Stopped(d) => (
             stopped(&d.stage, &d.reason, &d.witness),
-            context(&d.witness),
+            context(&d.witness, subject(&d.witness, None)),
         ),
         Detail::Unrecognized { .. } => (
             "Scan cannot interpret this search detail; its kind is not supported by this version."
@@ -81,7 +81,7 @@ fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String
         _ => {
             return format!(
                 "Upgrade search: Scan cannot identify the reported check{}: {}. See JSON for its operation.",
-                location(w),
+                subject(w, None).text(),
                 reasons
                     .iter()
                     .map(|r| cause(r))
@@ -105,22 +105,7 @@ fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String
         .into_iter()
         .collect::<Vec<_>>()
         .join("; ");
-    let scope = match operation {
-        "request" => w
-            .request
-            .as_ref()
-            .map(|r| format!(" for {}", request_text(r))),
-        "ordering" => match (&w.current, &w.target) {
-            (Some(current), Some(target)) => Some(format!(
-                " from {} to {}",
-                safe(&current.to_string()),
-                safe(&target.to_string())
-            )),
-            _ => None,
-        },
-        _ => None,
-    }
-    .unwrap_or_else(|| location(w));
+    let scope = subject(w, Some(operation)).text();
     format!("Upgrade search: could not {check}{scope}: {causes}.")
 }
 
@@ -132,11 +117,11 @@ fn stopped(stage: &str, reason: &str, w: &SearchWitness) -> String {
         "domain_reservation" => "allocating candidate upgrade checks",
         "seed_admission" => "starting upgrade combinations",
         "frontier_admission" => "exploring further upgrade combinations",
-        "parent_evaluation" => "checking upgrades to packages that depend on this dependency",
+        "parent_evaluation" => "checking upgrades of dependent packages",
         _ => {
             return format!(
                 "Upgrade search: Scan cannot identify the stage that stopped{}: {}. See JSON for the supplied stage.",
-                location(w),
+                subject(w, None).text(),
                 cause(reason)
             );
         }
@@ -148,42 +133,70 @@ fn stopped(stage: &str, reason: &str, w: &SearchWitness) -> String {
     };
     format!(
         "Upgrade search: stopped {work}{}: {}.{scope}",
-        location(w),
+        subject(w, None).text(),
         cause(reason)
     )
 }
 
-fn location(w: &SearchWitness) -> String {
+// Keep the selected subject with its context so renderers do not repeat it.
+#[derive(Clone, Copy)]
+enum Subject<'a> {
+    Coordinate(&'a crate::api::audit::wire::Coordinate),
+    Package(&'a crate::api::audit::remediation::search::witness::WitnessPackage),
+    Versions(
+        &'a crate::api::audit::wire::Coordinate,
+        &'a crate::api::audit::wire::Coordinate,
+    ),
+    Request(&'a Request),
+    Boundary(&'a crate::api::audit::remediation::search::witness::Boundary),
+    Source(&'a Source),
+    None,
+}
+impl Subject<'_> {
+    fn text(self) -> String {
+        match self {
+            Self::Coordinate(c) => format!(" for {}", safe(&c.to_string())),
+            Self::Package(p) => format!(" for {}:{}", safe(&p.registry), safe(&p.name)),
+            Self::Versions(a, b) => {
+                format!(" from {} to {}", safe(&a.to_string()), safe(&b.to_string()))
+            }
+            Self::Request(r) => format!(" for {}", request_text(r)),
+            Self::Boundary(b) => format!(" from {} to {}", source(&b.from), source(&b.to)),
+            Self::Source(s) => format!(" for {}", source(s)),
+            Self::None => String::new(),
+        }
+    }
+}
+fn subject<'a>(w: &'a SearchWitness, operation: Option<&str>) -> Subject<'a> {
+    if operation == Some("request")
+        && let Some(r) = &w.request
+    {
+        return Subject::Request(r);
+    }
+    if operation == Some("ordering")
+        && let (Some(a), Some(b)) = (&w.current, &w.target)
+    {
+        return Subject::Versions(a, b);
+    }
     if let Some(Some(c)) = &w.coordinate {
-        return format!(" for {}", safe(&c.to_string()));
+        return Subject::Coordinate(c);
     }
-    if let Some(package) = &w.package {
-        return format!(" for {}:{}", safe(&package.registry), safe(&package.name));
+    if let Some(p) = &w.package {
+        return Subject::Package(p);
     }
-    if let (Some(current), Some(target)) = (&w.current, &w.target) {
-        return format!(
-            " from {} to {}",
-            safe(&current.to_string()),
-            safe(&target.to_string())
-        );
+    if let (Some(a), Some(b)) = (&w.current, &w.target) {
+        return Subject::Versions(a, b);
     }
-    if let Some(target) = &w.target {
-        return format!(" for {}", safe(&target.to_string()));
+    if let Some(c) = &w.target {
+        return Subject::Coordinate(c);
     }
-    if let Some(request) = &w.request {
-        return format!(" for {}", request_text(request));
+    if let Some(r) = &w.request {
+        return Subject::Request(r);
     }
-    if let Some(boundary) = &w.boundary {
-        return format!(
-            " from {} to {}",
-            source(&boundary.from),
-            source(&boundary.to)
-        );
+    if let Some(b) = &w.boundary {
+        return Subject::Boundary(b);
     }
-    if let Some(source_witness) = &w.source {
-        return format!(" for {}", source(source_witness));
-    }
-    String::new()
+    w.source.as_ref().map_or(Subject::None, Subject::Source)
 }
 
 fn cause(value: &str) -> &'static str {
@@ -234,9 +247,11 @@ fn request_text(r: &Request) -> String {
     )
 }
 
-fn context(w: &SearchWitness) -> Vec<String> {
+fn context(w: &SearchWitness, subject: Subject<'_>) -> Vec<String> {
     let mut lines = Vec::new();
-    if let Some(request) = &w.request {
+    if !matches!(subject, Subject::Request(_))
+        && let Some(request) = &w.request
+    {
         lines.push(request_text(request));
     }
     lines.extend(w.requests.iter().flatten().map(request_text));
@@ -246,7 +261,7 @@ fn context(w: &SearchWitness) -> Vec<String> {
         if coverage.status == "missing" {
             lines.push("The report contains no dependency inventory for this check.".into());
         }
-        if coverage.complete == Some(false) {
+        if coverage.complete == Some(false) && coverage.reasons.is_empty() {
             lines.push("The dependency list used for this check is incomplete.".into());
         }
         lines.extend(
@@ -296,21 +311,27 @@ fn context(w: &SearchWitness) -> Vec<String> {
             safe(&o.path)
         ));
     }
-    if let Some(boundary) = &w.boundary {
+    if !matches!(subject, Subject::Boundary(_))
+        && let Some(boundary) = &w.boundary
+    {
         lines.push(format!(
             "Dependency relationship: {} → {}.",
             source(&boundary.from),
             source(&boundary.to)
         ));
     }
-    if let (Some(current), Some(target)) = (&w.current, &w.target) {
+    if !matches!(subject, Subject::Versions(..))
+        && let (Some(current), Some(target)) = (&w.current, &w.target)
+    {
         lines.push(format!(
             "Versions compared: {} → {}.",
             safe(&current.to_string()),
             safe(&target.to_string())
         ));
     }
-    if let Some(s) = &w.source {
+    if !matches!(subject, Subject::Source(_))
+        && let Some(s) = &w.source
+    {
         lines.push(format!("Source: {}.", source(s)));
     }
     lines.extend(
@@ -372,26 +393,54 @@ fn qualification(w: &SearchWitness, lines: &mut Vec<String>) {
 
 fn request_checks(w: &SearchWitness, lines: &mut Vec<String>) {
     for check in w.request_checks.iter().flatten() {
-        for clause in &check.clauses {
-            request_clause(clause, &check.target, lines);
-        }
+        let result = match check.result.as_str() {
+            "matched" => "requirements match",
+            "blocked" => "requirements conflict",
+            "unchecked" => "requirements were not fully compared",
+            "preference_differs" => "dependency preferences differ",
+            _ => "Scan cannot interpret the supplied requirement check result; see JSON",
+        };
+        lines.push(format!(
+            "Requirement check for {}: {result}.",
+            safe(&check.target.to_string())
+        ));
+        lines.extend(
+            check
+                .clauses
+                .iter()
+                .map(|c| request_clause(c, &check.target)),
+        );
     }
 }
-
 fn request_clause(
     clause: &crate::api::audit::remediation::search::witness::Clause,
     target: &crate::api::audit::wire::Coordinate,
-    lines: &mut Vec<String>,
-) {
-    lines.push(format!(
-        "{}; compared with {}.",
+) -> String {
+    let m = &clause.effective_membership;
+    let comparison = match (m.status.as_str(), m.strength.as_deref()) {
+        ("matched", Some("required")) => "requirement matches",
+        ("matched", Some("preference")) => "preference matches",
+        ("mismatched", Some("required")) => "requirement excludes",
+        ("mismatched", Some("preference")) => "preference differs from",
+        ("unchecked", _) => "requirement was not compared with",
+        _ => "Scan cannot interpret the supplied comparison with",
+    };
+    let qualifier = match clause.participation.status.as_str() {
+        "required" => "",
+        "conditional" => "; conditional request",
+        "unestablished" => "; whether this request participates in the project was not established",
+        _ => "; Scan cannot interpret the supplied request participation; see JSON",
+    };
+    let reason = m
+        .reason
+        .as_ref()
+        .map(|r| format!(": {}", cause(r)))
+        .unwrap_or_default();
+    format!(
+        "{}; {comparison} {}{reason}{qualifier}.",
         request_text(&clause.request),
         safe(&target.to_string())
-    ));
-    participation(&clause.participation.status, lines);
-    if let Some(reason) = &clause.effective_membership.reason {
-        lines.push(format!("Requirement comparison: {}.", cause(reason)));
-    }
+    )
 }
 
 fn declaration_capture(value: &str) -> Option<&'static str> {

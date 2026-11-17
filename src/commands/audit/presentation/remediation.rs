@@ -93,8 +93,14 @@ impl Plan {
         if let Some(message) = super::search::retention(r) {
             limitations.push(message);
         }
-        let checks = checks(r);
+        let mut checks = checks(r);
         let search_explanations = super::search::explain(r);
+        if supported && !search_explanations.is_empty() {
+            checks.push(
+                "The search obstacles below do not change the checks for this suggested fix."
+                    .into(),
+            );
+        }
         let has_details = !constraints.is_empty()
             || !checks.is_empty()
             || !limitations.is_empty()
@@ -295,7 +301,9 @@ fn edit_instruction(b: &Blocker) -> Option<String> {
 fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
     let mut groups: Vec<Constraint> = Vec::new();
     for b in blockers {
-        let summary = edit_instruction(b).unwrap_or_else(|| constraint_reason(b));
+        let instruction = edit_instruction(b);
+        let is_edit = instruction.is_some();
+        let summary = instruction.unwrap_or_else(|| constraint_reason(b));
         let request = format!(
             "{} {} [{}]",
             owner(&b.owner.name, b.owner.version.as_deref()),
@@ -306,7 +314,7 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
             ),
             safe(&b.path)
         );
-        let details = if edit_instruction(b).is_some() && detail == ReasonDetail::Summary {
+        let details = if is_edit && detail == ReasonDetail::Summary {
             Vec::new()
         } else {
             vec![request]
@@ -428,7 +436,7 @@ pub(in crate::commands::audit) fn limits(data: &Remediation) -> Vec<String> {
         ));
     }
     if data.limits.omitted_search_details.is_some_and(|n| n != 0) {
-        lines.push("Search explanations were omitted from this report, including evidence from alternative upgrades.".into());
+        lines.push("Search explanations were omitted from this report; the report does not identify which recommendations or alternatives they belonged to.".into());
     }
     let mut seen = BTreeSet::new();
     lines.extend(
