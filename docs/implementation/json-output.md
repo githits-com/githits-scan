@@ -205,7 +205,7 @@ report. It contains:
 | `context` | Recorded-request explanations when checked effects do not already explain them |
 | `impact` | Addressed and unresolved impact, including explicit absence of reported benefit for partial candidates |
 | `constraints` | Objects grouped by explanation, with a `summary` and sorted unique request contexts in `details`; required project edits stay distinct from actual requirement conflicts |
-| `checks`, `limitations` | Material check qualifications, per-plan limitations and search-retention gaps |
+| `checks`, `limitations` | Material check qualifications, the relationship of search obstacles to a suggested fix, per-plan limitations and search-retention gaps |
 | `search_explanations` | Whole-search obstacle objects with `search_detail_index`, `summary`, and `details`; each index addresses the matching fact record’s `search_details` array |
 
 Each change has `change_index` (zero-based within the matching fact record),

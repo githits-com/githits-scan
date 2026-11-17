@@ -97,8 +97,7 @@ impl Plan {
         let search_explanations = super::search::explain(r);
         if supported && !search_explanations.is_empty() {
             checks.push(
-                "The search obstacles below do not change the checks for this suggested fix."
-                    .into(),
+                "Upgrade search obstacles do not change the checks for this suggested fix.".into(),
             );
         }
         let has_details = !constraints.is_empty()
