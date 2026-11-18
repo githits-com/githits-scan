@@ -360,10 +360,10 @@ not checked”; JSON retains the code and the original coverage facts.
 
 Routine unknown catalog freshness, unchecked native resolution, unknown release
 withdrawal and unassessed parent search are JSON evidence, not a human checklist.
-An explicit override candidate is the exception: when native resolution is the
-supplied `not_checked` state, one `override not verified` note states that
-package-manager support and build were not checked. Unknown future check values
-retain their own neutral display and do not trigger that assertion.
+Candidates remain qualified by their heading and concrete conflicts. Routine
+package-manager/build checks in the supplied `not_checked` state stay in JSON;
+human output does not repeat a generic verification disclaimer. Unknown future
+check values retain their own neutral display.
 Trace retention and omitted graph/detail counts also remain in JSON. Human output
 keeps omitted recommendation counts, actionable planning limits and warnings about
 the target or requirements. Target-check warnings require an actual proposed
@@ -826,6 +826,12 @@ defines retention, association and the consumed witness subset. These obstacles
 include losing alternatives and stay separate from selected-action checks.
 Neither a failed lookup for another candidate nor an empty retained collection
 changes the selected fix verdict or exit status.
+
+Native output groups search explanations under one `Upgrade search` heading.
+Each shared explanation names the operation, affected package/version, request or
+source, and supplied cause in a short statement. Do not repeat a search prefix or
+add a generic reassurance about the selected fix. Known local/shared budget scope
+remains in JSON; unfamiliar scope stays explicit.
 
 Name the affected package/version, request or source and the operation that failed
 or stopped. Translate a supplied cause; if Scan cannot interpret it, state that

@@ -80,9 +80,12 @@ pub(in crate::commands::audit) fn guidance(
     }
     lines(&plan.checks, "    ", out)?;
     lines(&plan.limitations, "    ", out)?;
+    if !plan.search_explanations.is_empty() {
+        writeln!(out, "\n    Upgrade search:")?;
+    }
     for search in &plan.search_explanations {
-        line(&search.summary, "    ", out)?;
-        lines(&search.details, "      ", out)?;
+        line(&search.summary, "      ", out)?;
+        lines(&search.details, "        ", out)?;
     }
     Ok(())
 }

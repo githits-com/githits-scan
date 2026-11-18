@@ -33,7 +33,7 @@ fn audit_ux_advisory_hints_are_not_presented_as_recommendations() {
 }
 
 #[test]
-fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
+fn audit_ux_override_shows_benefit_and_conflicts_without_routine_disclaimer() {
     let mut value = remediation_report();
     let record = &mut value["remediation"]["recommendations"][0];
     record["changes"][0]["strategy"] = "override".into();
@@ -47,9 +47,9 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         .push(second);
     let text = human_report(&value);
     assert!(text.contains("would address the listed advisory"), "{text}");
-    assert_eq!(text.matches("override not verified:").count(), 1, "{text}");
+    assert!(!text.contains("override not verified:"), "{text}");
     assert!(
-        text.contains("package-manager support and build not checked"),
+        !text.contains("package-manager support and build not checked"),
         "{text}"
     );
     assert!(
@@ -57,6 +57,10 @@ fn audit_ux_override_shows_benefit_and_one_truthful_verification_note() {
         "{text}"
     );
     assert!(!text.contains("Suggested fix"), "{text}");
+    assert_eq!(
+        json_report(&value)["remediation"]["recommendations"][0]["checks"]["native_resolution"],
+        "not_checked"
+    );
     value["remediation"]["recommendations"][0]["checks"]["native_resolution"] =
         "future_check".into();
     let text = human_report(&value);

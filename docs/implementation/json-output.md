@@ -205,7 +205,7 @@ report. It contains:
 | `context` | Recorded-request explanations when checked effects do not already explain them |
 | `impact` | Addressed and unresolved impact, including explicit absence of reported benefit for partial candidates |
 | `constraints` | Objects grouped by explanation, with a `summary` and sorted unique request contexts in `details`; required project edits stay distinct from actual requirement conflicts |
-| `checks`, `limitations` | Material check qualifications, the relationship of search obstacles to a suggested fix, per-plan limitations and search-retention gaps |
+| `checks`, `limitations` | Material check qualifications, per-plan limitations and search-retention gaps |
 | `search_explanations` | Whole-search obstacle objects with `search_detail_index`, `summary`, and `details`; each index addresses the matching fact record’s `search_details` array |
 
 Each change has `change_index` (zero-based within the matching fact record),
@@ -317,6 +317,7 @@ recommendations, including omitted recommendations and losing alternatives.
 Known detail kinds are `unavailable` (operation, nonempty reasons, witness) and
 `stopped` (stage, reason, witness). Stopped details require a nullable coordinate
 slot and budget scope; `used` and positive `allowed` occur together when supplied.
+Known local/shared budget scope stays in fact JSON without a routine human note.
 Counts retain producer units in fact JSON; human explanations do not guess units
 or invent deadline counts. A known kind with malformed consumed fields is a
 protocol error. Unfamiliar operation/stage/reason vocabulary stays informational.

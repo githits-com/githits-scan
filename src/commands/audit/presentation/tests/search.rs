@@ -27,14 +27,13 @@ fn audit_search_explains_losing_release_without_changing_selected_fix() {
     let r = &doc["remediation"]["recommendations"][0];
     let detail = &r["search_explanations"][0];
     assert_eq!(detail["search_detail_index"], 0);
-    let text = detail["summary"].as_str().expect("search summary");
-    assert!(text.contains("cargo:example-parent@3.0.0"), "{text}");
-    assert!(text.contains("metadata lookup failed"), "{text}");
-    assert!(!text.contains("lookup_failed"));
-    assert!(
-        serde_json::to_string(&r["checks"])
-            .expect("checks")
-            .contains("do not change the checks for this suggested fix")
+    assert_eq!(
+        detail["summary"],
+        "Release metadata for cargo:example-parent@3.0.0: lookup failed."
+    );
+    assert_eq!(
+        r["checks"],
+        blocks(&input())["remediation"]["recommendations"][0]["checks"]
     );
     assert_eq!(
         r["changes"][0]["summary"],
@@ -148,15 +147,15 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
 #[test]
 fn audit_search_operations_and_stages_explain_scope_without_codes_or_counters() {
     for (operation, phrase) in [
-        ("source", "dependency source"),
-        ("catalog", "available package versions"),
-        ("release", "release metadata"),
-        ("inventory", "dependency list"),
-        ("boundary", "dependency relationship"),
-        ("request", "dependency requirement"),
-        ("membership", "compare dependency requirements"),
-        ("advisories", "advisory applicability"),
-        ("ordering", "current and candidate versions"),
+        ("source", "Dependency source"),
+        ("catalog", "Available package versions"),
+        ("release", "Release metadata"),
+        ("inventory", "Dependency list"),
+        ("boundary", "Dependency relationship"),
+        ("request", "Dependency requirement"),
+        ("membership", "Requirement comparison"),
+        ("advisories", "Advisory applicability"),
+        ("ordering", "Version comparison"),
         ("maven_policy", "Maven dependency requirement"),
     ] {
         let value = with_search(
@@ -171,19 +170,19 @@ fn audit_search_operations_and_stages_explain_scope_without_codes_or_counters() 
         assert!(
             text.contains(phrase)
                 && text.contains("cargo:example-leaf@3.0.0")
-                && text.contains("metadata lookup failed"),
+                && text.contains("lookup failed"),
             "{text}"
         );
         assert!(!text.contains(operation) || !text.contains('_'), "{text}");
     }
     for (stage, phrase) in [
-        ("leaf_evaluation", "candidate dependency versions"),
-        ("domain_construction", "collecting candidate"),
-        ("domain_sampling", "selecting candidate"),
-        ("domain_reservation", "allocating candidate"),
-        ("seed_admission", "starting upgrade combinations"),
-        ("frontier_admission", "exploring further"),
-        ("parent_evaluation", "dependent packages"),
+        ("leaf_evaluation", "Checking candidate versions"),
+        ("domain_construction", "Collecting upgrade versions"),
+        ("domain_sampling", "Selecting upgrade versions"),
+        ("domain_reservation", "Allocating upgrade checks"),
+        ("seed_admission", "Starting upgrade combinations"),
+        ("frontier_admission", "Exploring upgrade combinations"),
+        ("parent_evaluation", "Checking upgrades"),
     ] {
         let value = with_search(
             "retained",
@@ -195,12 +194,18 @@ fn audit_search_operations_and_stages_explain_scope_without_codes_or_counters() 
             .as_str()
             .expect("summary");
         assert!(
-            text.contains(phrase) && text.contains("time limit") && text.contains("shared"),
+            text.contains(phrase)
+                && text.contains("time limit reached")
+                && !text.contains("shared"),
             "{text}"
         );
         assert!(
             !text.contains(stage) && !text.contains("phase_deadline"),
             "{text}"
+        );
+        assert_eq!(
+            doc["audit"]["remediation"]["recommendations"][0]["search_details"][0]["witness"]["budget_scope"],
+            "shared"
         );
     }
 }
@@ -267,7 +272,8 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
         "retained",
         json!([
             {"kind":"unavailable","operation":"release","reasons":["future_reason"],"witness":{"coordinate":coordinate("example-leaf","3.0.0")}},
-            {"kind":"future_kind","private_unused_id":"opaque"}
+            {"kind":"future_kind","private_unused_id":"opaque"},
+            {"kind":"stopped","stage":"parent_evaluation","reason":"future_reason","witness":{"coordinate":coordinate("example-parent","3.0.0"),"budget_scope":"local"}}
         ]),
     );
     value["remediation"]["limits"]["omitted_search_details"] = 2.into();
@@ -279,6 +285,14 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
             .expect("summary")
             .contains("cannot explain the supplied reason")
     );
+    for index in [0, 2] {
+        let summary = entries[index]["summary"].as_str().expect("summary");
+        assert!(
+            summary.contains("check could not be completed")
+                && summary.contains("cannot explain the supplied reason"),
+            "{summary}"
+        );
+    }
     assert!(
         entries[1]["summary"]
             .as_str()
@@ -475,5 +489,32 @@ fn audit_search_summary_does_not_repeat_its_request_versions_or_relationship() {
 fn remove_summary_subjects(witness: &mut Value) {
     for field in ["coordinate", "package", "current", "target", "request"] {
         witness.as_object_mut().expect("object").remove(field);
+    }
+}
+
+#[test]
+fn audit_search_budget_scope_stays_in_facts_without_routine_notes() {
+    for (scope, unfamiliar) in [("local", false), ("shared", false), ("future_scope", true)] {
+        let doc = blocks(&with_search(
+            "retained",
+            json!([{
+                "kind":"stopped", "stage":"parent_evaluation", "reason":"phase_deadline",
+                "witness":{"coordinate":coordinate("example-parent","2.0.0"),"budget_scope":scope}
+            }]),
+        ));
+        let summary = doc["remediation"]["recommendations"][0]["search_explanations"][0]["summary"]
+            .as_str()
+            .expect("summary");
+        assert!(summary.contains("time limit reached"), "{summary}");
+        assert_eq!(
+            summary.contains("cannot interpret which searches"),
+            unfamiliar,
+            "{summary}"
+        );
+        assert!(!summary.contains("future_scope"), "{summary}");
+        assert_eq!(
+            doc["audit"]["remediation"]["recommendations"][0]["search_details"][0]["witness"]["budget_scope"],
+            scope
+        );
     }
 }

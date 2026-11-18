@@ -93,13 +93,8 @@ impl Plan {
         if let Some(message) = super::search::retention(r) {
             limitations.push(message);
         }
-        let mut checks = checks(r);
+        let checks = checks(r);
         let search_explanations = super::search::explain(r);
-        if supported && !search_explanations.is_empty() {
-            checks.push(
-                "Upgrade search obstacles do not change the checks for this suggested fix.".into(),
-            );
-        }
         let has_details = !constraints.is_empty()
             || !checks.is_empty()
             || !limitations.is_empty()
@@ -334,11 +329,6 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
 fn checks(r: &Record) -> Vec<String> {
     let c = &r.checks;
     let mut lines = Vec::new();
-    if r.changes.iter().any(|c| c.data.strategy == "override")
-        && c.native_resolution == "not_checked"
-    {
-        lines.push("override not verified: package-manager support and build not checked".into());
-    }
     for (label, value, normal) in [
         (
             "release availability",

@@ -60,6 +60,11 @@ fn audit_search_binary_one_result_preserves_evidence_through_archive_and_outputs
             "{}",
             stdout(&output)
         );
+        assert_eq!(
+            stdout(&output).matches("\n    Upgrade search:\n").count(),
+            1
+        );
+        assert!(stdout(&output).contains("\n      Release metadata for "));
         assert!(!stdout(&output).contains("lookup_failed"));
     }
     let stored = fs::read_to_string(&archive).expect("saved analysis");

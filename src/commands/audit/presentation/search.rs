@@ -68,19 +68,19 @@ pub(super) fn retention(record: &Record) -> Option<String> {
 
 fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String {
     let check = match operation {
-        "source" => "identify the dependency source",
-        "catalog" => "check available package versions",
-        "release" => "check release metadata",
-        "inventory" => "check the dependency list",
-        "boundary" => "check the dependency relationship",
-        "request" => "assess the dependency requirement",
-        "membership" => "compare dependency requirements with the candidate version",
-        "advisories" => "check advisory applicability",
-        "ordering" => "compare the current and candidate versions",
-        "maven_policy" => "evaluate the Maven dependency requirement",
+        "source" => "Dependency source",
+        "catalog" => "Available package versions",
+        "release" => "Release metadata",
+        "inventory" => "Dependency list",
+        "boundary" => "Dependency relationship",
+        "request" => "Dependency requirement",
+        "membership" => "Requirement comparison",
+        "advisories" => "Advisory applicability",
+        "ordering" => "Version comparison",
+        "maven_policy" => "Maven dependency requirement",
         _ => {
             return format!(
-                "Upgrade search: Scan cannot identify the reported check{}: {}. See JSON for its operation.",
+                "Scan cannot identify which check failed{}: {}. See JSON for its operation.",
                 subject(w, None).text(),
                 reasons
                     .iter()
@@ -106,33 +106,32 @@ fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String
         .collect::<Vec<_>>()
         .join("; ");
     let scope = subject(w, Some(operation)).text();
-    format!("Upgrade search: could not {check}{scope}: {causes}.")
+    format!("{check}{scope}: {causes}.")
 }
 
 fn stopped(stage: &str, reason: &str, w: &SearchWitness) -> String {
     let work = match stage {
-        "leaf_evaluation" => "checking candidate dependency versions",
-        "domain_construction" => "collecting candidate upgrade versions",
-        "domain_sampling" => "selecting candidate upgrade versions",
-        "domain_reservation" => "allocating candidate upgrade checks",
-        "seed_admission" => "starting upgrade combinations",
-        "frontier_admission" => "exploring further upgrade combinations",
-        "parent_evaluation" => "checking upgrades of dependent packages",
+        "leaf_evaluation" => "Checking candidate versions",
+        "domain_construction" => "Collecting upgrade versions",
+        "domain_sampling" => "Selecting upgrade versions",
+        "domain_reservation" => "Allocating upgrade checks",
+        "seed_admission" => "Starting upgrade combinations",
+        "frontier_admission" => "Exploring upgrade combinations",
+        "parent_evaluation" => "Checking upgrades",
         _ => {
             return format!(
-                "Upgrade search: Scan cannot identify the stage that stopped{}: {}. See JSON for the supplied stage.",
+                "Scan cannot identify which part of the upgrade search stopped{}: {}. See JSON for the supplied stage.",
                 subject(w, None).text(),
                 cause(reason)
             );
         }
     };
     let scope = match w.budget_scope.as_deref() {
-        Some("shared") => " The limit is shared across upgrade searches.",
-        Some("local") => " The limit applies to this search.",
-        _ => " Scan cannot interpret the supplied limit scope; see JSON.",
+        Some("shared" | "local") => "",
+        _ => " Scan cannot interpret which searches the limit applies to; see JSON.",
     };
     format!(
-        "Upgrade search: stopped {work}{}: {}.{scope}",
+        "{work}{}: {}.{scope}",
         subject(w, None).text(),
         cause(reason)
     )
@@ -204,27 +203,23 @@ fn cause(value: &str) -> &'static str {
         return reason;
     }
     match value {
-        "lookup_failed" => "the metadata lookup failed",
-        "release_row_unavailable" => "the service had no release metadata",
-        "release_row_unsuitable" => {
-            "the available release metadata could not be used for this check"
-        }
-        "chunk_task_timeout" => "the metadata lookup timed out",
-        "phase_deadline" | "planning_deadline" => "the search reached its time limit",
-        "lookup_limit" | "parent_exact_lookup_limit" => {
-            "the service reached its metadata lookup limit"
-        }
-        "parent_candidate_limit" => {
-            "the service reached its limit for checking dependency upgrades"
-        }
-        "assignment_limit" => "the service reached its limit for checking upgrade combinations",
+        "lookup_failed" => "lookup failed",
+        "release_row_unavailable" => "no release metadata was available",
+        "release_row_unsuitable" => "the available release metadata could not be used",
+        "chunk_task_timeout" => "lookup timed out",
+        "phase_deadline" | "planning_deadline" => "time limit reached",
+        "lookup_limit" | "parent_exact_lookup_limit" => "metadata lookup limit reached",
+        "parent_candidate_limit" => "dependency upgrade check limit reached",
+        "assignment_limit" => "upgrade combination check limit reached",
         "unsupported_selector" => "the requirement uses a selector this check cannot evaluate",
         "request_unavailable" => "the service did not provide a requirement assessment",
         "membership_unavailable" => "the service did not provide a requirement comparison",
         "native_applicability_not_checked" => {
             "whether the dependency requirement applies to this project was not checked"
         }
-        _ => "Scan cannot explain the supplied reason; see JSON for the original value",
+        _ => {
+            "the check could not be completed; Scan cannot explain the supplied reason; see JSON for the original value"
+        }
     }
 }
 
