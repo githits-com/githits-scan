@@ -305,8 +305,8 @@ record's own findings equal the displayed finding context (coordinate, advisory
 and full file set). Weak candidates retain their supplied `would address` findings even when those
 cover the full displayed set. A fully addressed upgrade candidate whose recorded
 requirement blockers are solely project-owned required edits avoids repeating that
-impact when release/advisory/check evidence is recognized and supported. Partial
-and cross-package impact remains explicit. Human
+impact when release availability is observed, advisory checks are non-affecting,
+and all check values are recognized. Partial and cross-package impact remains explicit. Human
 `still unresolved` lines keep remaining advisory/package identities visible, including scoped
 no-upgrade results with no candidate. A package/advisory present in both impact
 lists gets an item-level `(partly)` suffix in both; other advisories are unmarked.

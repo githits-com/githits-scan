@@ -330,9 +330,9 @@ participation, capture and recorded conditions; effective requirement comparison
 coverage and acquisition causes; declaration/observation requirements; and Maven
 requirement policy diagnostics. Unused occurrence references, scope internals,
 markers, policy origins, exclusions and arbitrary additive fields are ignored.
-The schema source is the public development [gateway OpenAPI](https://api-dev.githits.dev/v1/openapi.json)
-with the [producer OpenAPI 1.33.0](https://oss-dev.githits.dev/api/openapi.json)
-as the structural reference. Dev availability does not establish production promotion.
+The adopted service schema is `AuditRemediationSearchDetail`. The
+[public OpenAPI contract](https://api.githits.dev/v1/openapi.json) documents promoted
+API schemas. Availability in development does not establish production promotion.
 
 Search details can describe losing alternatives. They never alter selected-action
 checks, candidate qualification, policy, incompleteness or exit codes. Equal reason

@@ -80,11 +80,11 @@ fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String
         "maven_policy" => "Maven dependency requirement",
         _ => {
             return format!(
-                "Scan cannot identify which check failed{}: {}. See JSON for its operation.",
+                "Scan cannot identify which check failed{}: {}. See JSON for the operation and reasons.",
                 subject(w, None).text(),
                 reasons
                     .iter()
-                    .map(|r| cause(r))
+                    .map(|r| known_cause(r).unwrap_or("Scan cannot explain the supplied reason"))
                     .collect::<BTreeSet<_>>()
                     .into_iter()
                     .collect::<Vec<_>>()
@@ -120,9 +120,9 @@ fn stopped(stage: &str, reason: &str, w: &SearchWitness) -> String {
         "parent_evaluation" => "Checking upgrades",
         _ => {
             return format!(
-                "Scan cannot identify which part of the upgrade search stopped{}: {}. See JSON for the supplied stage.",
+                "Scan cannot identify which part of the upgrade search stopped{}: {}. See JSON for the stage and reason.",
                 subject(w, None).text(),
-                cause(reason)
+                known_cause(reason).unwrap_or("Scan cannot explain the supplied reason")
             );
         }
     };

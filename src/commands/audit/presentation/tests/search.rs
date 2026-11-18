@@ -324,6 +324,8 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
     for detail in [
         json!({"kind":"unavailable","operation":"future_operation","reasons":["lookup_failed"],"witness":{}}),
         json!({"kind":"stopped","stage":"future_stage","reason":"phase_deadline","witness":{"coordinate":null,"budget_scope":"local"}}),
+        json!({"kind":"unavailable","operation":"future_operation","reasons":["future_reason"],"witness":{}}),
+        json!({"kind":"stopped","stage":"future_stage","reason":"future_reason","witness":{"coordinate":null,"budget_scope":"local"}}),
     ] {
         let doc = blocks(&with_search("retained", json!([detail])));
         let text = doc["remediation"]["recommendations"][0]["search_explanations"][0]["summary"]
@@ -331,9 +333,12 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
             .expect("summary");
         assert!(
             text.contains("cannot identify")
-                && (text.contains("lookup failed") || text.contains("time limit")),
+                && (text.contains("lookup failed")
+                    || text.contains("time limit")
+                    || text.contains("cannot explain")),
             "{text}"
         );
+        assert_eq!(text.matches("JSON").count(), 1, "{text}");
         assert!(
             !text.contains("future_operation") && !text.contains("future_stage"),
             "{text}"
