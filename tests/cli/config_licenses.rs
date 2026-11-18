@@ -71,6 +71,50 @@ fn config_policy_git_exception_is_reported_as_excepted_in_json_and_text() {
 }
 
 #[test]
+fn config_policy_git_exception_preserves_unresolved_project_failure() {
+    let document = json!({
+        "bomFormat": "CycloneDX",
+        "properties": [{
+            "name": "githits:resolutions",
+            "value": r#"[{"path":"app/package.json","status":"partial","diagnostics":[{"reason":"unresolved_dependency"}]}]"#
+        }],
+        "components": [{
+            "type": "library", "bom-ref": "fork", "name": "grammar", "version": "1.0.0",
+            "properties": [
+                {"name":"githits:source_kind","value":"LOCKED_PACKAGE_SOURCE_KIND_GIT"},
+                {"name":"githits:source_revision","value":"0123456789abcdef"}
+            ],
+            "externalReferences": [{
+                "type": "vcs",
+                "url": "https://example.invalid/grammar",
+                "comment": r#"{"kind":"vcs_repository","owner":{"type":"source"}}"#
+            }]
+        }]
+    });
+    let repo = repository(&[
+        (
+            "githits-scan.toml",
+            "version=1\n[licenses]\n[[licenses.exceptions]]\nname='grammar'\ngit='https://example.invalid/grammar'\nrev='0123456789abcdef'\nreason='Selected source reviewed'\n",
+        ),
+        ("bom.json", &document.to_string()),
+    ]);
+    let output = githits_scan()
+        .args(["license", "check"])
+        .arg(repo.path())
+        .arg("--sbom")
+        .arg(repo.path().join("bom.json"))
+        .arg("--json")
+        .env_remove("GITHITS_API_TOKEN")
+        .output()
+        .expect("check");
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let report: Value = serde_json::from_slice(&output.stdout).expect("JSON");
+    assert_eq!(report["violations"], json!([]));
+    assert_eq!(report["exceptions_applied"][0]["rev"], "0123456789abcdef");
+    assert_eq!(report["unresolved_projects"][0]["path"], "app/package.json");
+}
+
+#[test]
 fn config_policy_invalid_exceptions_and_ignores_are_usage_errors() {
     for policy in [
         "[licenses]\n[[licenses.exceptions]]\nname='x'\ngit='https://example.invalid/repo'\n",

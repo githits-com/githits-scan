@@ -86,19 +86,29 @@ Exceptions require a nonblank reason and exactly one selector:
   No URL normalization, `.git` rewriting, or short-commit resolution occurs.
   Without `rev`, all revisions of that named source match.
 
-Git identity comes only from components marked
-`githits:source_kind=LOCKED_PACKAGE_SOURCE_KIND_GIT` with one unambiguous
-source-owned `vcs_repository` URL in JSON `githits:source_locations` and optional
-`githits:source_revision`. This shape is supported from observed service output;
-missing, malformed, conflicting or unfamiliar evidence never establishes a match.
-Publisher repository links in `externalReferences` do not establish source identity.
-Ambiguity is judged before URL validation. A safe alternative cannot hide an
-unsafe or malformed source-owned alternative. URLs must use `http`, `https`,
-`ssh`, or `git` with a host, no password, query, fragment or whitespace; username
-is permitted only for SSH. The same validator protects matching and newly exposed
-source diagnostics. Failing JSON includes optional `source: {git, rev?}`;
-`--details` previews these values with the existing abbreviation notice. Use
-JSON for full copyable selector values.
+Git identity requires a component marked
+`githits:source_kind=LOCKED_PACKAGE_SOURCE_KIND_GIT`, one unambiguous source-owned
+repository URL, and the exact `githits:source_revision` when the exception
+specifies a revision. If the component has `githits:source_locations`, that JSON
+array is authoritative. Its `vcs_repository` rows with `owner.type=source`
+determine the URL, and an unusable legacy value prevents a Git match.
+
+When `githits:source_locations` is absent, the URL comes from a CycloneDX
+`externalReferences` entry with `type=vcs` whose JSON `comment` identifies
+`kind=vcs_repository` and `owner.type=source`. Only references with that source
+attribution qualify. The optional `githits:source_location_omissions` property is
+a JSON array of rows carrying `kind`, `owner`, and `omission_reason` without a URL.
+A withheld source-owned VCS location makes a single available URL ambiguous.
+An unreadable or conflicting omission property prevents a Git match.
+
+Identical URL values count once. Ambiguity is judged before URL validation, so
+an unsafe or malformed source-owned alternative prevents a match. URLs must
+use `http`, `https`, `ssh`, or `git` with a host and without a password, query,
+fragment or whitespace. A username is permitted only for SSH. The same
+validator protects matching and source diagnostics. Failing JSON includes an
+optional `source` with `git` and, when available, `rev`. `--details` previews
+these values with the existing abbreviation notice. Use JSON for full copyable
+selector values.
 
 Every applied exception remains in `exceptions_applied` and human
 `Exceptions applied`, including its selector, reason and covered components.

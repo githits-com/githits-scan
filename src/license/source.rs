@@ -30,47 +30,89 @@ pub(super) fn valid_url(git: &str) -> bool {
 }
 
 pub(super) fn recorded(component: &Value) -> Option<GitSource> {
-    if unique_property(component, "githits:source_kind")? != "LOCKED_PACKAGE_SOURCE_KIND_GIT" {
+    let kind = unique_property(component, "githits:source_kind").ok()??;
+    if kind != "LOCKED_PACKAGE_SOURCE_KIND_GIT" {
         return None;
     }
-    let locations: Value =
-        serde_json::from_str(unique_property(component, "githits:source_locations")?).ok()?;
-    let repositories: BTreeSet<_> = locations
-        .as_array()?
-        .iter()
-        .filter(|location| {
-            string(location, "kind") == Some("vcs_repository")
-                && location
-                    .get("owner")
-                    .and_then(|owner| string(owner, "type"))
-                    == Some("source")
-        })
-        .map(|location| string(location, "url"))
-        .collect();
-    // Judge ambiguity before validation: an unsafe or malformed alternative
-    // must not be discarded to manufacture a unique matching source.
-    if repositories.len() != 1 {
-        return None;
-    }
-    let git = repositories.first().copied().flatten()?;
-    if !valid_url(git) {
-        return None;
-    }
+    // Only an absent legacy property permits reading the condensed carriers.
+    let git = match unique_property(component, "githits:source_locations").ok()? {
+        Some(locations) => legacy_repository(locations)?,
+        None => reference_repository(component)?.to_owned(),
+    };
     Some(GitSource {
-        git: git.to_owned(),
+        git,
         rev: unique_property(component, "githits:source_revision")
+            .ok()
+            .flatten()
             .filter(|rev| !rev.trim().is_empty())
             .map(str::to_owned),
     })
 }
 
-fn unique_property<'a>(value: &'a Value, name: &str) -> Option<&'a str> {
-    let mut values = value
-        .get("properties")?
+fn legacy_repository(locations: &str) -> Option<String> {
+    let locations: Value = serde_json::from_str(locations).ok()?;
+    let repositories = locations
         .as_array()?
         .iter()
+        .filter(|location| is_source_repository(location))
+        .map(|location| string(location, "url"))
+        .collect();
+    unique_repository(&repositories).map(str::to_owned)
+}
+
+fn reference_repository(component: &Value) -> Option<&str> {
+    let mut repositories: BTreeSet<_> = component
+        .get("externalReferences")?
+        .as_array()?
+        .iter()
+        .filter(|reference| string(reference, "type") == Some("vcs"))
+        .filter_map(|reference| {
+            let comment: Value = serde_json::from_str(string(reference, "comment")?).ok()?;
+            is_source_repository(&comment).then(|| string(reference, "url"))
+        })
+        .collect();
+
+    if let Some(omissions) = unique_property(component, "githits:source_location_omissions").ok()? {
+        let omissions: Value = serde_json::from_str(omissions).ok()?;
+        if omissions.as_array()?.iter().any(is_source_repository) {
+            repositories.insert(None);
+        }
+    }
+    unique_repository(&repositories)
+}
+
+fn is_source_repository(evidence: &Value) -> bool {
+    string(evidence, "kind") == Some("vcs_repository")
+        && evidence
+            .get("owner")
+            .and_then(|owner| string(owner, "type"))
+            == Some("source")
+}
+
+fn unique_repository<'a>(repositories: &BTreeSet<Option<&'a str>>) -> Option<&'a str> {
+    // Judge ambiguity before validation, including withheld and malformed URLs.
+    if repositories.len() != 1 {
+        return None;
+    }
+    let git = repositories.first().copied().flatten()?;
+    valid_url(git).then_some(git)
+}
+
+// Absent properties are distinct from conflicting or non-string values.
+fn unique_property<'a>(value: &'a Value, name: &str) -> Result<Option<&'a str>, ()> {
+    let mut values = value
+        .get("properties")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
         .filter(|p| string(p, "name") == Some(name))
         .map(|p| string(p, "value"));
-    let first = values.next()??;
-    values.all(|value| value == Some(first)).then_some(first)
+    let Some(first) = values.next() else {
+        return Ok(None);
+    };
+    let first = first.ok_or(())?;
+    values
+        .all(|value| value == Some(first))
+        .then_some(Some(first))
+        .ok_or(())
 }

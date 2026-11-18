@@ -627,6 +627,194 @@ fn git_policy(revision: bool) -> Policy {
     Policy::new(&config.licenses.expect("licenses")).expect("policy")
 }
 
+fn vcs_reference(url: &str) -> Value {
+    serde_json::json!({
+        "type": "vcs",
+        "url": url,
+        "comment": r#"{"kind":"vcs_repository","owner":{"type":"source"}}"#
+    })
+}
+
+fn condensed_git_component() -> Value {
+    let mut component = altered_git_component("missing");
+    component["externalReferences"] =
+        serde_json::json!([vcs_reference("https://example.invalid/grammar")]);
+    component
+}
+
+fn check_git_component(component: &Value) -> Report {
+    check(&document(&component.to_string()), &git_policy(true)).expect("check")
+}
+
+fn git_violation(component: &Value) -> Violation {
+    let report = check_git_component(component);
+    assert!(report.exceptions_applied.is_empty(), "unexpected exception");
+    let [violation] = report.violations.try_into().expect("one violation");
+    violation
+}
+
+#[test]
+fn git_exception_accepts_legacy_condensed_and_dual_carriers() {
+    let legacy = git_component();
+    let mut condensed = condensed_git_component();
+    let mut both = legacy.clone();
+    both["externalReferences"] = condensed["externalReferences"].clone();
+    condensed["externalReferences"]
+        .as_array_mut()
+        .expect("references")
+        .push(vcs_reference("https://example.invalid/grammar"));
+
+    for component in [legacy, condensed, both] {
+        let report = check_git_component(&component);
+        assert_eq!(report.violations, []);
+        assert_eq!(report.exceptions_applied.len(), 1);
+    }
+}
+
+#[test]
+fn git_exception_uses_legacy_carrier_whenever_present() {
+    let mut legacy = git_component();
+    // The conflicting condensed URL is ignored when the legacy carrier is usable.
+    legacy["externalReferences"] =
+        serde_json::json!([vcs_reference("https://example.invalid/other")]);
+    let legacy_property = legacy["properties"][1].clone();
+    legacy["properties"]
+        .as_array_mut()
+        .expect("properties")
+        .push(legacy_property);
+    assert_eq!(check_git_component(&legacy).exceptions_applied.len(), 1);
+
+    let clean_references = &condensed_git_component()["externalReferences"];
+    for mutation in ["malformed", "owner", "ambiguous", "withheld"] {
+        let mut component = altered_git_component(mutation);
+        component["externalReferences"] = clean_references.clone();
+        assert!(git_violation(&component).source.is_none(), "{mutation}");
+    }
+    let mut conflicting = legacy;
+    conflicting["externalReferences"] = clean_references.clone();
+    for invalid in [serde_json::json!(17), serde_json::json!("[]"), Value::Null] {
+        conflicting["properties"][3]["value"] = invalid;
+        assert!(git_violation(&conflicting).source.is_none());
+    }
+}
+
+#[test]
+fn git_exception_requires_a_source_owned_vcs_reference() {
+    let publisher = serde_json::json!({
+        "type": "vcs",
+        "url": "https://example.invalid/grammar",
+        "comment": r#"{"kind":"vcs_repository","owner":{"type":"package"}}"#
+    });
+    for (field, value) in [
+        ("type", serde_json::json!("website")),
+        ("comment", serde_json::json!("Publisher repository")),
+        ("comment", serde_json::json!("{")),
+        ("comment", Value::Null),
+        (
+            "comment",
+            serde_json::json!(r#"{"kind":"download","owner":{"type":"source"}}"#),
+        ),
+    ] {
+        let mut component = condensed_git_component();
+        component["externalReferences"][0][field] = value;
+        assert!(git_violation(&component).source.is_none());
+    }
+
+    let mut component = condensed_git_component();
+    component["externalReferences"] = serde_json::json!([publisher]);
+    assert!(git_violation(&component).source.is_none());
+    component["externalReferences"][0]["url"] = "https://example.invalid/publisher".into();
+    component["externalReferences"]
+        .as_array_mut()
+        .expect("references")
+        .push(vcs_reference("https://example.invalid/grammar"));
+    assert_eq!(check_git_component(&component).exceptions_applied.len(), 1);
+}
+
+#[test]
+fn git_exception_keeps_exact_condensed_source_kind_url_and_revision() {
+    let mut wrong_kind = condensed_git_component();
+    wrong_kind["properties"][0]["value"] = "locked_package_source_kind_git".into();
+    assert!(git_violation(&wrong_kind).source.is_none());
+
+    let mut wrong_url = condensed_git_component();
+    wrong_url["externalReferences"][0]["url"] = "https://example.invalid/grammar.git".into();
+    assert_eq!(
+        git_violation(&wrong_url)
+            .source
+            .expect("recorded source")
+            .git,
+        "https://example.invalid/grammar.git"
+    );
+
+    let mut wrong_revision = condensed_git_component();
+    wrong_revision["properties"][1]["value"] = "0123456".into();
+    assert_eq!(
+        git_violation(&wrong_revision)
+            .source
+            .expect("recorded source")
+            .rev
+            .as_deref(),
+        Some("0123456")
+    );
+    wrong_revision["properties"]
+        .as_array_mut()
+        .expect("properties")
+        .pop();
+    assert!(
+        git_violation(&wrong_revision)
+            .source
+            .expect("recorded source")
+            .rev
+            .is_none()
+    );
+}
+
+#[test]
+fn git_exception_rejects_conflicting_or_unsafe_condensed_urls() {
+    for url in [
+        serde_json::json!("https://example.invalid/other"),
+        serde_json::json!("https://example.invalid/grammar#revision"),
+        Value::Null,
+    ] {
+        let mut component = condensed_git_component();
+        let mut alternative = vcs_reference("https://example.invalid/other");
+        alternative["url"] = url;
+        component["externalReferences"]
+            .as_array_mut()
+            .expect("references")
+            .push(alternative);
+        assert!(git_violation(&component).source.is_none());
+    }
+    let mut component = condensed_git_component();
+    component["externalReferences"][0]["url"] = "https://example.invalid/grammar#revision".into();
+    assert!(git_violation(&component).source.is_none());
+}
+
+#[test]
+fn git_exception_counts_withheld_source_owned_condensed_vcs_locations() {
+    let mut component = condensed_git_component();
+    let properties = component["properties"].as_array_mut().expect("properties");
+    properties.push(serde_json::json!({"name":"githits:source_location_omissions","value":"[]"}));
+
+    for omissions in [
+        "[]",
+        r#"[{"kind":"vcs_repository","owner":{"type":"package"},"omission_reason":"unsafe_url"},{"kind":"download","owner":{"type":"source"},"omission_reason":"unsafe_url"}]"#,
+    ] {
+        component["properties"][2]["value"] = omissions.into();
+        assert_eq!(check_git_component(&component).exceptions_applied.len(), 1);
+    }
+
+    for omissions in [
+        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"omission_reason":"unsafe_url"}]"#,
+        "[",
+        "{}",
+    ] {
+        component["properties"][2]["value"] = omissions.into();
+        assert!(git_violation(&component).source.is_none());
+    }
+}
+
 fn altered_git_component(mutation: &str) -> Value {
     let mut component = git_component();
     match mutation {
@@ -637,6 +825,7 @@ fn altered_git_component(mutation: &str) -> Value {
                 "malformed" => component["properties"][1]["value"] = "{".into(),
                 "missing" => { component["properties"].as_array_mut().expect("properties").remove(1); },
                 "ambiguous" => component["properties"][1]["value"] = r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"},{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/other"}]"#.into(),
+                "withheld" => component["properties"][1]["value"] = r#"[{"kind":"vcs_repository","owner":{"type":"source"},"url":"https://example.invalid/grammar"},{"kind":"vcs_repository","owner":{"type":"source"},"omission_reason":"unsafe_url"}]"#.into(),
                 _ => unreachable!(),
             }
     component
