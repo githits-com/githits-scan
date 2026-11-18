@@ -793,6 +793,8 @@ fn git_exception_rejects_conflicting_or_unsafe_condensed_urls() {
 
 #[test]
 fn git_exception_counts_withheld_source_owned_condensed_vcs_locations() {
+    const WITHHELD: &str =
+        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"omission_reason":"unsafe_url"}]"#;
     let mut component = condensed_git_component();
     let properties = component["properties"].as_array_mut().expect("properties");
     properties.push(serde_json::json!({"name":"githits:source_location_omissions","value":"[]"}));
@@ -805,14 +807,20 @@ fn git_exception_counts_withheld_source_owned_condensed_vcs_locations() {
         assert_eq!(check_git_component(&component).exceptions_applied.len(), 1);
     }
 
-    for omissions in [
-        r#"[{"kind":"vcs_repository","owner":{"type":"source"},"omission_reason":"unsafe_url"}]"#,
-        "[",
-        "{}",
-    ] {
+    for omissions in [WITHHELD, "[", "{}"] {
         component["properties"][2]["value"] = omissions.into();
         assert!(git_violation(&component).source.is_none());
     }
+
+    component["properties"][2]["value"] = "[]".into();
+    let duplicate = component["properties"][2].clone();
+    component["properties"]
+        .as_array_mut()
+        .expect("properties")
+        .push(duplicate);
+    assert_eq!(check_git_component(&component).exceptions_applied.len(), 1);
+    component["properties"][3]["value"] = WITHHELD.into();
+    assert!(git_violation(&component).source.is_none());
 }
 
 fn altered_git_component(mutation: &str) -> Value {

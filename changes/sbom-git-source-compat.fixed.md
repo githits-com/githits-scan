@@ -2,4 +2,7 @@
 "githits-scan": patch
 ---
 
-- **Git license exceptions in CycloneDX** - `license check` recognizes source-owned VCS references and withheld alternatives in CycloneDX documents that omit the legacy source locations property.
+- **Git license exceptions in CycloneDX** - `license check` now uses source-owned
+  VCS references to match Git exceptions when a CycloneDX document omits the
+  legacy source locations property. A withheld alternative source location
+  still blocks the exception.
