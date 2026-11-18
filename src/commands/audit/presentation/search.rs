@@ -94,12 +94,12 @@ fn unavailable(operation: &str, reasons: &[String], w: &SearchWitness) -> String
     };
     let causes = reasons
         .iter()
-        .map(|r| cause(r))
+        .map(|r| incomplete_cause(r))
         .chain(
             w.acquisition
                 .iter()
                 .filter(|_| operation == "release")
-                .map(|r| cause(r)),
+                .map(|r| incomplete_cause(r)),
         )
         .collect::<BTreeSet<_>>()
         .into_iter()
@@ -133,7 +133,7 @@ fn stopped(stage: &str, reason: &str, w: &SearchWitness) -> String {
     format!(
         "{work}{}: {}.{scope}",
         subject(w, None).text(),
-        cause(reason)
+        incomplete_cause(reason)
     )
 }
 
@@ -199,10 +199,17 @@ fn subject<'a>(w: &'a SearchWitness, operation: Option<&str>) -> Subject<'a> {
 }
 
 fn cause(value: &str) -> &'static str {
+    known_cause(value)
+        .unwrap_or("Scan cannot explain the supplied reason; see JSON for the original value")
+}
+fn incomplete_cause(value: &str) -> &'static str {
+    known_cause(value).unwrap_or("the check could not be completed; Scan cannot explain the supplied reason; see JSON for the original value")
+}
+fn known_cause(value: &str) -> Option<&'static str> {
     if let Some(reason) = crate::commands::evidence::reason(value) {
-        return reason;
+        return Some(reason);
     }
-    match value {
+    Some(match value {
         "lookup_failed" => "lookup failed",
         "release_row_unavailable" => "no release metadata was available",
         "release_row_unsuitable" => "the available release metadata could not be used",
@@ -217,10 +224,8 @@ fn cause(value: &str) -> &'static str {
         "native_applicability_not_checked" => {
             "whether the dependency requirement applies to this project was not checked"
         }
-        _ => {
-            "the check could not be completed; Scan cannot explain the supplied reason; see JSON for the original value"
-        }
-    }
+        _ => return None,
+    })
 }
 
 fn source(source: &Source) -> String {

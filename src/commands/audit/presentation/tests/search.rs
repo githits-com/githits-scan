@@ -271,7 +271,7 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
     let mut value = with_search(
         "retained",
         json!([
-            {"kind":"unavailable","operation":"release","reasons":["future_reason"],"witness":{"coordinate":coordinate("example-leaf","3.0.0")}},
+            {"kind":"unavailable","operation":"release","reasons":["future_reason"],"witness":{"coordinate":coordinate("example-leaf","3.0.0"),"coverage":{"status":"present","complete":false,"reasons":["future_coverage"]}}},
             {"kind":"future_kind","private_unused_id":"opaque"},
             {"kind":"stopped","stage":"parent_evaluation","reason":"future_reason","witness":{"coordinate":coordinate("example-parent","3.0.0"),"budget_scope":"local"}}
         ]),
@@ -285,6 +285,13 @@ fn audit_search_unfamiliar_evidence_and_omissions_do_not_invent_causes() {
             .expect("summary")
             .contains("cannot explain the supplied reason")
     );
+    let detail = entries[0]["details"][0].as_str().expect("coverage detail");
+    assert!(
+        detail.starts_with("Dependency list:")
+            && detail.contains("cannot explain the supplied reason"),
+        "{detail}"
+    );
+    assert!(!detail.contains("check could not be completed"), "{detail}");
     for index in [0, 2] {
         let summary = entries[index]["summary"].as_str().expect("summary");
         assert!(
