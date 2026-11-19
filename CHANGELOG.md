@@ -13,6 +13,42 @@ pre-public baseline, not a supported installation target. Historical flags in
 that section describe 0.2.0 only; use the README for current commands and the
 0.3.0 migration notes when updating pre-public automation.
 
+## [0.6.0] - 2026-11-19
+
+### Added
+
+- **Audit presentation JSON** - Use `audit --presentation-json` to export
+  schema-1 remediation explanations alongside schema-2 audit facts from the
+  same analysis. The export also works with `--from-analysis`. Use
+  `audit --json` for the existing fact-only format.
+- **Upgrade-search explanations** - See which package or request was affected
+  when the service reports a failed lookup, an unchecked requirement or a
+  search stop. Scan preserves the supplied evidence in audit JSON and saved
+  analyses. Saved analyses from 0.5.0 remain readable.
+
+### Changed
+
+- **Non-registry coverage notes** - Audit reports explicit non-registry package
+  exclusions as informational. An audit with only these exclusions now exits
+  0 and still records incomplete coverage in JSON. Missing inputs, failed
+  checks, inconsistent evidence and advisories still require attention. For
+  these exclusions, `issues[].actionable` is `false` and `issues[].reason` is
+  an explanatory sentence. Dependency diff shows the coverage notes in text
+  and Markdown and preserves the original JSON.
+- **Rust audit API migration** - Set `audit::Request.format` to an
+  `audit::Format` variant. For saved analyses, set `ReplayRequest.mode` to
+  `ReplayMode::Report(format)` or `ReplayMode::Explain { package, json }`.
+
+### Fixed
+
+- **Clearer remediation guidance** - Keep unresolved prerelease upgrades labeled
+  as candidates, group advisory and constraint context, and show project edits
+  with the change that needs them. Native output wraps longer explanations.
+- **Git license exceptions in CycloneDX** - `license check` now uses source-owned
+  VCS references to match Git exceptions when a CycloneDX document omits the
+  legacy source locations property. A withheld alternative source location
+  still blocks the exception.
+
 ## [0.5.0] - 2026-11-11
 
 ### Changed
