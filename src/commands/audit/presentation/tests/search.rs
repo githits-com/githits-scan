@@ -60,7 +60,7 @@ fn audit_search_limits_for_other_candidates_do_not_qualify_a_supported_bump() {
     let r = &doc["remediation"]["recommendations"][0];
     assert_eq!(
         r["compact_summary"],
-        "Bump npm:demo 1.0.0 -> 1.1.1. Addresses GHSA-demo."
+        "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo."
     );
     assert_eq!(r["details_recommended"], false);
     assert_eq!(
@@ -131,8 +131,7 @@ fn audit_search_keeps_selected_limit_when_losing_alternative_shares_reason() {
     );
 }
 
-#[test]
-fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
+fn input_with_project_edit() -> Value {
     let mut value = input();
     let mut edit = blocker();
     edit["owner_role"] = "project".into();
@@ -143,6 +142,12 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
     let r = &mut value["remediation"]["recommendations"][0];
     r["blockers"] = json!([edit]);
     r["checks"]["requirements"] = "blocked".into();
+    value
+}
+
+#[test]
+fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
+    let mut value = input_with_project_edit();
     let doc = blocks(&value);
     let r = &doc["remediation"]["recommendations"][0];
     assert!(r["heading"].is_null());
@@ -157,18 +162,19 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
         "Applying the candidate requires updating the demo requirement in package.json. Current requirement: ^1.0."
     );
     assert_eq!(r["impact"], json!(["would address the listed advisory"]));
-    assert_eq!(r["details_recommended"], true);
+    assert_eq!(r["details_recommended"], false);
     assert_eq!(
         r["compact_summary"],
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
-            "Requires changing demo in package.json (currently ^1.0)."
+            "Update version constraint for demo in package.json (currently ^1.0)."
         )
     );
     value["remediation"]["recommendations"][0]["outcome"] = "partial".into();
     value["remediation"]["recommendations"][0]["remaining_finding_refs"] = json!([0]);
     let doc = blocks(&value);
     let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(r["details_recommended"], true);
     assert!(
         r["changes"][0]["summary"]
             .as_str()
@@ -179,6 +185,24 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
         serde_json::to_string(&r["impact"])
             .expect("impact")
             .contains("still unresolved")
+    );
+}
+
+#[test]
+fn audit_search_unverified_target_takes_priority_over_project_edit() {
+    let mut value = input_with_project_edit();
+    value["remediation"]["recommendations"][0]["checks"]["release_availability"] =
+        "unverified".into();
+    let doc = blocks(&value);
+    let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(
+        r["compact_summary"],
+        "npm:demo 1.0.0 -> 1.1.1. Target release availability unverified."
+    );
+    assert_eq!(r["details_recommended"], true);
+    assert_eq!(
+        r["constraints"][0]["summary"],
+        "Applying the candidate requires updating the demo requirement in package.json. Current requirement: ^1.0."
     );
 }
 

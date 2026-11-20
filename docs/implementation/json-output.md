@@ -234,8 +234,13 @@ supported upgrade addresses, even when the row covers more advisories than this
 alternative. Joint changes share one summary. Keep independent alternatives
 separate. The summary leads with the version changes and target warnings,
 then highlights the main issue affecting the proposed change. Concrete
-dependency conflicts and required project edits take priority over check gaps.
+dependency conflicts take priority. A release or requirement check gap can
+explain why a proposed change is uncertain. If the report only lacks an
+application method, the summary states that gap directly.
 `Bump` uses the same qualification as a supported upgrade in native output.
+When that upgrade supplies a shared path that Scan recognizes as a lockfile,
+the summary names it even if the detailed blocks omit it as repeated context.
+This describes the recorded scope of the upgrade.
 Proposals with remaining advisories name them so readers can see the limits of
 applying the change. The detailed impact block retains any reported potential
 benefit for a candidate. Target warnings stay with their respective versions.
@@ -243,10 +248,11 @@ A record without a change explains the outcome and includes a reported obstacle
 when available.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
-beside the summary. Scan sets it for candidates and no-change outcomes, and
-for supported upgrades with qualifications such as open advisories, target
-warnings or coordination issues. Required manual edits also set it. Routine
-supported upgrades have it set to false. The flag is presentation guidance.
+beside the summary. Scan sets it for unclear candidates, no-change outcomes
+and upgrades with qualifications such as open advisories, target warnings or
+coordination issues. A routine supported upgrade and a single named project
+constraint edit with a recorded current range and otherwise supported upgrade
+evidence have it set to false. The flag is presentation guidance.
 Limits confined to searching for other alternatives stay in the full blocks
 and leave a supported upgrade's flag false.
 Continue to use audit facts and the exit code for policy. The consumer owns

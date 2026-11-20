@@ -102,7 +102,7 @@ fn assert_alternatives(online: &Value) {
     assert_eq!(records.len(), 2, "alternatives remain independent");
     assert_eq!(
         records[0]["compact_summary"],
-        "Bump npm:demo 1.0.0 -> 1.1.1. Addresses GHSA-demo."
+        "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo."
     );
     assert_eq!(records[0]["details_recommended"], false);
     assert_eq!(records[1]["details_recommended"], true);
@@ -276,7 +276,7 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
     let export = document(&offline(&path, &["--presentation-json"]));
     assert_eq!(
         export["remediation"]["recommendations"][0]["details_recommended"],
-        true
+        false
     );
     let guidance = export["remediation"]["recommendations"][0]["compact_summary"]
         .as_str()
@@ -296,7 +296,7 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
         guidance,
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
-            "Requires changing demo in package.json (currently ~1.0)."
+            "Update version constraint for demo in package.json (currently ~1.0)."
         )
     );
 }

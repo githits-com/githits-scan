@@ -279,7 +279,9 @@ model; native rendering owns grouping, file wrapping and styling. The model also
 produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
 Its compact summary leads with one alternative's proposed versions, highlights
 the main issue and keeps material target warnings with their versions. Supported
-upgrades name their advisory benefit. The associated details flag gives the
+upgrades name their advisory benefit and the supplied lockfile scope. A single
+recorded project constraint edit with otherwise supported evidence names the
+dependency, manifest and current range directly. The details flag gives the
 consumer a signal to link to the full blocks for qualified or unclear guidance.
 Detailed guidance retains any potential benefit reported for a candidate.
 The same model qualifies concise upgrades and detailed guidance. Checked

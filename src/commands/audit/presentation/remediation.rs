@@ -1,11 +1,13 @@
 //! One computation of qualification, impact and the explanations beside changes.
 use super::{context::Context, list, requirement_status, safe};
 use crate::api::audit::remediation::{Blocker, Checks};
+use crate::catalog::{self, Role};
 use crate::commands::audit::view::remediation::{
     Change as ChangeView, Finding, Record, Remediation, reasons::Reason,
 };
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
+use std::path::Path;
 mod reasons;
 pub(in crate::commands::audit) use reasons::ReasonDetail;
 
@@ -17,6 +19,8 @@ const UNFAMILIAR_REASON: &str =
 pub(in crate::commands::audit) struct Plan {
     #[serde(skip)]
     supported: bool,
+    #[serde(skip)]
+    clear_project_edit: bool,
     /// Shared title for joint changes; a single change carries its own qualification.
     pub heading: Option<String>,
     /// Separate outcome explanation when the title cannot express it.
@@ -81,13 +85,15 @@ impl Plan {
         detail: ReasonDetail,
     ) -> Self {
         let planning_known = matches!(status, "completed" | "limited");
-        let supported = supported_fix(r, planning_known);
+        let checked_upgrade = upgrade_evidence(r, planning_known);
+        let supported = checked_upgrade && r.checks.requirements == "matched";
         let common = common_paths(&r.changes);
         let files = common
             .clone()
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
         let constraints = constraints(&r.blockers, detail);
+        let clear_project_edit = checked_upgrade && clear_project_edit(r, &constraints);
         let mut limitations: Vec<_> = limitations(r, &constraints)
             .map(|(_, message)| format!("limit: {message}"))
             .collect();
@@ -102,6 +108,7 @@ impl Plan {
             || !search_explanations.is_empty();
         Self {
             supported,
+            clear_project_edit,
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
                 || r.changes.is_empty())
@@ -135,19 +142,21 @@ impl Plan {
     /// Compose the inline summary and indicate whether a Details link is useful.
     pub(super) fn compact(&self, r: &Record) -> (String, bool) {
         let mut sentences = Vec::new();
-        if let Some(changes) = self.compact_changes() {
+        if let Some(changes) = self.compact_changes(r) {
             sentences.push(changes);
         }
         sentences.extend(self.outcome.iter().cloned());
         let mut target_warnings = action_target_warnings(r).peekable();
-        let issue = self.compact_issue(r);
-        let details_recommended = !self.supported
+        let target_caveat = target_warnings.peek().is_some()
+            || self.changes.iter().any(|change| !change.details.is_empty());
+        let clear_edit = self.clear_project_edit && !target_caveat;
+        let issue = self.compact_issue(r, clear_edit);
+        let details_recommended = !(self.supported || clear_edit)
             || self.outcome.is_some()
             || r.outcome == "partial"
             || !r.remaining_findings.is_empty()
-            || issue.is_some()
-            || target_warnings.peek().is_some()
-            || self.changes.iter().any(|change| !change.details.is_empty());
+            || (issue.is_some() && !clear_edit)
+            || target_caveat;
         sentences.extend(target_warnings.map(|label| format!("Includes a {label} target")));
         if self.supported
             || issue.is_none()
@@ -169,18 +178,18 @@ impl Plan {
         (summary, details_recommended)
     }
 
-    fn compact_issue(&self, r: &Record) -> Option<String> {
+    fn compact_issue(&self, r: &Record, clear_edit: bool) -> Option<String> {
         self.constraints
             .iter()
             .find(|constraint| constraint.excludes_target)
-            .or_else(|| {
-                self.constraints
-                    .iter()
-                    .find(|constraint| constraint.compact_edit.is_some())
-            })
-            .or_else(|| self.constraints.first())
-            .map(Constraint::compact_text)
+            .map(|constraint| constraint.compact_text(clear_edit))
             .or_else(|| self.compact_limit(r, "incompatible_recommendations"))
+            .or_else(|| {
+                target_checks(r)
+                    .next()
+                    .map(|(label, value)| check_line(label, value, true))
+            })
+            .or_else(|| self.compact_constraint(clear_edit))
             .or_else(|| self.search_obstacle())
             .or_else(|| {
                 self.changes
@@ -200,6 +209,14 @@ impl Plan {
                     .then(|| super::search::retention(r))
                     .flatten()
             })
+    }
+
+    fn compact_constraint(&self, clear_edit: bool) -> Option<String> {
+        self.constraints
+            .iter()
+            .find(|constraint| constraint.compact_edit.is_some())
+            .or_else(|| self.constraints.first())
+            .map(|constraint| constraint.compact_text(clear_edit))
     }
 
     fn compact_check(&self, r: &Record) -> Option<String> {
@@ -224,7 +241,7 @@ impl Plan {
             .map(|explanation| explanation.summary.clone())
     }
 
-    fn compact_changes(&self) -> Option<String> {
+    fn compact_changes(&self, r: &Record) -> Option<String> {
         if self.changes.is_empty() {
             return None;
         }
@@ -240,9 +257,26 @@ impl Plan {
         } else {
             ""
         };
-        let paths = location(&self.files);
+        let paths = self.compact_location(r);
         Some(format!("{action}{changes}{together}{paths}"))
     }
+
+    fn compact_location(&self, r: &Record) -> String {
+        if !self.supported || !self.constraints.is_empty() || !self.files.is_empty() {
+            return location(&self.files);
+        }
+        common_paths(&r.changes)
+            .filter(|paths| {
+                paths
+                    .iter()
+                    .all(|path| matches!(file_role(path), Some(Role::Lockfile(_))))
+            })
+            .map_or_else(String::new, |paths| location(&paths))
+    }
+}
+
+fn file_role(path: &str) -> Option<Role> {
+    catalog::classify(Path::new(path)).map(|file| file.role)
 }
 
 fn sentence(mut text: String) -> String {
@@ -267,9 +301,13 @@ fn location(paths: &BTreeSet<String>) -> String {
 }
 
 impl Constraint {
-    fn compact_text(&self) -> String {
-        if let Some(edit) = &self.compact_edit {
-            return edit.clone();
+    fn compact_text(&self, clear_edit: bool) -> String {
+        match (&self.compact_edit, clear_edit) {
+            (Some(edit), true) => return format!("Update {edit}"),
+            (Some(edit), false) => {
+                return format!("Applying the proposal requires updating the {edit}");
+            }
+            (None, _) => {}
         }
         let requests = self.details.join(") and (");
         let label = match (self.excludes_target, self.details.len()) {
@@ -372,21 +410,21 @@ fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str
     match strategy {
         "unknown" => (
             Some("The report lists version changes but does not specify how to apply them."),
-            Some("Application unclear"),
+            Some("The report does not specify how to make this change"),
         ),
         "override" | "upgrade" => (None, None),
         _ => (
             Some(
                 "The service returned an unfamiliar change strategy; applicability could not be determined.",
             ),
-            Some("Application unclear"),
+            Some("The report does not specify how to make this change"),
         ),
     }
 }
 
 fn application_issue(issue: &str, package: &str, joint: bool) -> String {
     if joint {
-        return format!("{issue} for {package}");
+        return format!("The report does not specify how to update {package}");
     }
     issue.into()
 }
@@ -503,7 +541,7 @@ fn edit_instruction(b: &Blocker) -> Option<(String, String)> {
         format!(
             "Applying the candidate requires updating the {name} requirement in {path}. Current requirement: {current}."
         ),
-        format!("Requires changing {name} in {path} (currently {current})"),
+        format!("version constraint for {name} in {path} (currently {current})"),
     ))
 }
 fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
@@ -591,7 +629,9 @@ fn search_only_limit(code: &str) -> bool {
 
 fn check_line(label: &str, value: &str, compact: bool) -> String {
     match (compact, label, value) {
-        (true, "release availability", "unverified") => "Release unverified".into(),
+        (true, "release availability", "unverified") => {
+            "Target release availability unverified".into()
+        }
         (true, "requirements", "not_checked" | "unchecked") => "Requirements unchecked".into(),
         (true, "requirements", "blocked") => {
             "Upgrade conflicts with dependency requirements".into()
@@ -601,10 +641,9 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
     }
 }
 
-fn checks(r: &Record, compact: bool) -> Vec<String> {
+fn target_checks(r: &Record) -> impl Iterator<Item = (&'static str, &str)> {
     let c = &r.checks;
-    let mut lines = Vec::new();
-    for (label, value, normal) in [
+    [
         (
             "release availability",
             c.release_availability.as_str(),
@@ -612,14 +651,21 @@ fn checks(r: &Record, compact: bool) -> Vec<String> {
         ),
         ("target advisories", c.advisories.as_str(), "non_affecting"),
         ("requirements", c.requirements.as_str(), "matched"),
-    ] {
-        if !r.changes.is_empty()
+    ]
+    .into_iter()
+    .filter(move |(label, value, normal)| {
+        !r.changes.is_empty()
             && value != normal
-            && !(label == "requirements" && value == "blocked" && !r.blockers.is_empty())
-        {
-            lines.push(check_line(label, value, compact));
-        }
-    }
+            && !(*label == "requirements" && *value == "blocked" && !r.blockers.is_empty())
+    })
+    .map(|(label, value, _)| (label, value))
+}
+
+fn checks(r: &Record, compact: bool) -> Vec<String> {
+    let c = &r.checks;
+    let mut lines: Vec<_> = target_checks(r)
+        .map(|(label, value)| check_line(label, value, compact))
+        .collect();
     for (label, value, ordinary) in [
         (
             "release withdrawal",
@@ -802,20 +848,34 @@ pub(super) fn request_requirement(name: Option<&str>, range: Option<&str>, statu
     text
 }
 
-fn supported_fix(r: &Record, planning_known: bool) -> bool {
+fn upgrade_evidence(r: &Record, planning_known: bool) -> bool {
     planning_known
         && matches!(r.outcome.as_str(), "proposed" | "partial")
         && known_checks(&r.checks)
         && !r.addressed_findings.is_empty()
         && r.checks.release_availability == "observed"
         && r.checks.advisories == "non_affecting"
-        && r.checks.requirements == "matched"
         && r.changes.iter().all(|c| c.data.strategy == "upgrade")
         && !((r.outcome == "partial" || !r.remaining_findings.is_empty())
             && (r.checks.prerelease_target
                 || r.changes
                     .iter()
                     .any(|c| c.data.prerelease_target == Some(true))))
+}
+
+fn clear_project_edit(r: &Record, constraints: &[Constraint]) -> bool {
+    let ([change], [blocker], [constraint]) =
+        (r.changes.as_slice(), r.blockers.as_slice(), constraints)
+    else {
+        return false;
+    };
+    r.outcome == "proposed"
+        && r.remaining_findings.is_empty()
+        && r.checks.requirements == "blocked"
+        && constraint.compact_edit.is_some()
+        && blocker.dependency_name.as_deref() == Some(change.data.name.as_str())
+        && file_role(&blocker.path) == Some(Role::Manifest)
+        && limitations(r, constraints).all(|(code, _)| search_only_limit(code))
 }
 
 fn known_checks(c: &Checks) -> bool {

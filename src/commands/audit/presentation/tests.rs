@@ -110,7 +110,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
         document["remediation"]["recommendations"][0]["compact_summary"],
         concat!(
             "cargo:example-parent 2.0.0 -> 2.1.0. Still open: GHSA-example. ",
-            "Requires changing example-parent in Cargo.toml (currently ^2.0)."
+            "Applying the proposal requires updating the version constraint for example-parent in Cargo.toml (currently ^2.0)."
         )
     );
     // Layout/serialization consume the computed blocks without a second phrase map.
@@ -284,7 +284,10 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     r["checks"]["release_availability"] = "unverified".into();
     assert_eq!(
         compact_summary(&input),
-        "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Still open: GHSA-demo. Application unclear."
+        concat!(
+            "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Still open: GHSA-demo. ",
+            "Target release availability unverified."
+        )
     );
     let view = project(&input);
     let doc = serde_json::to_value(Document::new(&view)).expect("presentation");
@@ -303,6 +306,12 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
             "would address: none reported",
             "still unresolved: GHSA-demo"
         ])
+    );
+    let checks = &mut input["remediation"]["recommendations"][0]["checks"];
+    checks["release_availability"] = "observed".into();
+    checks["requirements"] = "matched".into();
+    assert!(
+        compact_summary(&input).ends_with("The report does not specify how to make this change.")
     );
 }
 
@@ -323,7 +332,8 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
         compact_summary(&input),
         concat!(
             "Bump npm:demo 1.0.0 -> 1.1.1-rc.1 (prerelease) and ",
-            "npm:parent 2.0.0 -> 2.1.0 (deprecated) together. Addresses GHSA-example. ",
+            "npm:parent 2.0.0 -> 2.1.0 (deprecated) together in package-lock.json. ",
+            "Addresses GHSA-example. ",
             "Do not combine conflicting recommendations."
         )
     );
@@ -331,7 +341,10 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
         "unverified".into();
     let summary = compact_summary(&input);
     assert!(summary.ends_with("Do not combine conflicting recommendations."));
-    assert!(!summary.contains("Release unverified"), "{summary}");
+    assert!(
+        !summary.contains("Target release availability"),
+        "{summary}"
+    );
 }
 
 #[test]
