@@ -227,7 +227,7 @@ fn audit_added_dependencies_compact_preserves_clear_edit() {
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
             "Update version constraint for demo in package.json (currently ^1.0). Addresses GHSA-demo. ",
-            "Registry checks selected new dependency npm:added-child@1.0.0."
+            "Adds new dependency npm:added-child@1.0.0."
         )
     );
 }

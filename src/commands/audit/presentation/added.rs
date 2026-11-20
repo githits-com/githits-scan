@@ -28,7 +28,7 @@ pub(super) fn compact_changes<'a>(
     let intro = if branches.next().is_some() {
         "One new dependency selected by registry checks is"
     } else {
-        "Registry checks selected new dependency"
+        "Adds new dependency"
     };
     Some(format!("{intro} {}@{}", package(first), safe(version)))
 }
