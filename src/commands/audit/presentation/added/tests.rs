@@ -263,6 +263,10 @@ fn audit_added_dependencies_explains_installer_policy_once_per_change() {
     other.authored_name.clone_from(&other.name);
     other.coordinates[0].coordinate.name.clone_from(&other.name);
     let branches = [branch, other];
+    assert_eq!(
+        compact_changes(branches.iter()).as_deref(),
+        Some("Registry checks for multiple additions include npm:added-root@1.0.0")
+    );
     let lines = change_lines(&branches).collect::<Vec<_>>();
     assert_eq!(
         lines

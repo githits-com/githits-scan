@@ -50,6 +50,8 @@ pub(in crate::commands::audit) struct Change {
     compact: String,
     #[serde(skip)]
     application_issue: Option<String>,
+    #[serde(skip)]
+    target_caveat: bool,
     /// Position in the owning fact record’s changes array.
     #[serde(rename = "change_index")]
     pub index: usize,
@@ -118,7 +120,7 @@ impl Plan {
                 .iter()
                 .enumerate()
                 .map(|(index, c)| {
-                    let mut explanation = change(
+                    change(
                         c,
                         index,
                         r,
@@ -126,15 +128,7 @@ impl Plan {
                         supported,
                         common.is_none(),
                         detail,
-                    );
-                    explanation.details.extend(
-                        c.data
-                            .added_dependencies
-                            .as_deref()
-                            .into_iter()
-                            .flat_map(super::added::change_lines),
-                    );
-                    explanation
+                    )
                 })
                 .collect(),
             files,
@@ -156,15 +150,22 @@ impl Plan {
         sentences.extend(self.outcome.iter().cloned());
         let mut target_warnings = action_target_warnings(r).peekable();
         let target_caveat = target_warnings.peek().is_some()
-            || self.changes.iter().any(|change| !change.details.is_empty());
+            || self.changes.iter().any(|change| change.target_caveat);
         let clear_edit = self.clear_project_edit && !target_caveat;
         let mut issue = self.compact_issue(r, clear_edit);
+        let addition = super::added::compact_changes(
+            r.changes
+                .iter()
+                .filter_map(|c| c.data.added_dependencies.as_deref())
+                .flatten(),
+        );
         let details_recommended = !(self.supported || clear_edit)
             || self.outcome.is_some()
             || r.outcome == "partial"
             || !r.remaining_findings.is_empty()
             || (issue.is_some() && !clear_edit)
-            || target_caveat;
+            || target_caveat
+            || addition.is_some();
         sentences.extend(target_warnings.map(|label| format!("Includes a {label} target")));
         if clear_edit {
             sentences.extend(issue.take());
@@ -180,6 +181,9 @@ impl Plan {
                     supported: self.supported || clear_edit,
                 },
             ));
+        }
+        if issue.is_none() {
+            sentences.extend(addition);
         }
         sentences.extend(issue);
         let summary = sentences
@@ -202,7 +206,7 @@ impl Plan {
                     .map(|(label, value)| check_line(label, value, true))
             })
             .or_else(|| self.compact_constraint(clear_edit))
-            .or_else(|| self.search_obstacle())
+            .or_else(|| self.search_obstacle(r))
             .or_else(|| {
                 self.changes
                     .iter()
@@ -244,13 +248,11 @@ impl Plan {
             .map(compact_limitation)
     }
 
-    fn search_obstacle(&self) -> Option<String> {
+    fn search_obstacle(&self, r: &Record) -> Option<String> {
         if !self.changes.is_empty() {
             return None;
         }
-        self.search_explanations
-            .first()
-            .map(|explanation| explanation.summary.clone())
+        super::search::compact_obstacle(r, &self.search_explanations)
     }
 
     fn compact_changes(&self, r: &Record) -> Option<String> {
@@ -406,11 +408,16 @@ fn change(
     } else {
         format!(" ({})", qualifiers.join(", "))
     };
+    let target_caveat = !details.is_empty();
+    if let Some(branches) = &data.added_dependencies {
+        details.extend(super::added::change_lines(branches));
+    }
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),
         application_issue: qualification
             .map(|issue| application_issue(issue, &package, r.changes.len() > 1)),
+        target_caveat,
         summary: format!("{action} {version_change}{partial}"),
         details,
         files,

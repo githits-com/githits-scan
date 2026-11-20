@@ -206,6 +206,90 @@ fn audit_search_unverified_target_takes_priority_over_project_edit() {
     );
 }
 
+fn addition_evidence() -> Value {
+    serde_json::from_slice(include_bytes!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/audit/added-dependencies.json"
+    )))
+    .expect("added dependency evidence")
+}
+
+#[test]
+fn audit_added_dependencies_compact_preserves_clear_edit() {
+    let mut value = input_with_project_edit();
+    value["remediation"]["recommendations"][0]["changes"][0]["added_dependencies"] =
+        addition_evidence()["added_dependencies"].clone();
+    let doc = blocks(&value);
+    let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(r["details_recommended"], true);
+    assert_eq!(
+        r["compact_summary"],
+        concat!(
+            "npm:demo 1.0.0 -> 1.1.1. ",
+            "Update version constraint for demo in package.json (currently ^1.0). Addresses GHSA-demo. ",
+            "Registry checks include new dependency npm:added-child@1.0.0."
+        )
+    );
+}
+
+#[test]
+fn audit_added_dependencies_compact_names_obstacle_when_no_change_was_selected() {
+    let evidence = addition_evidence();
+    let details = &evidence["search_details"];
+    for (index, expected) in [
+        (
+            0,
+            concat!(
+                "Candidate npm:demo@1.2.0 requires added-child ^1. ",
+                "Advisory check for npm:affected-descendant@1.0.0 found applicable advisories ",
+                "(AUDIT-ADDED-affected-descendant)."
+            ),
+        ),
+        (
+            1,
+            concat!(
+                "Candidate npm:demo@1.3.0 requires router ^2.0.0. ",
+                "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
+                "so its dependencies could not be fully checked."
+            ),
+        ),
+    ] {
+        let mut value = with_search("retained", json!([details[2], details[index]]));
+        let r = &mut value["remediation"]["recommendations"][0];
+        r["outcome"] = "indeterminate".into();
+        r["changes"] = json!([]);
+        r["addressed_finding_refs"] = json!([]);
+        r["remaining_finding_refs"] = json!([0]);
+        let doc = blocks(&value);
+        let r = &doc["remediation"]["recommendations"][0];
+        assert_eq!(r["details_recommended"], true);
+        assert_eq!(
+            r["compact_summary"],
+            format!("The service could not determine a mitigation. {expected}")
+        );
+    }
+}
+
+#[test]
+fn audit_added_dependencies_compact_ignores_obstacles_for_other_candidates() {
+    let evidence = addition_evidence();
+    let value = with_search("retained", evidence["search_details"].clone());
+    let doc = blocks(&value);
+    let row = &doc["remediation"]["recommendations"][0];
+    assert_eq!(row["details_recommended"], false);
+    assert_eq!(
+        row["compact_summary"],
+        blocks(&input())["remediation"]["recommendations"][0]["compact_summary"]
+    );
+    assert_eq!(
+        row["search_explanations"]
+            .as_array()
+            .expect("details")
+            .len(),
+        3
+    );
+}
+
 #[test]
 fn audit_search_operations_and_stages_explain_scope_without_codes_or_counters() {
     for (operation, phrase) in [

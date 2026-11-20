@@ -18,14 +18,35 @@ pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> 
         .chain(installer_note(branches))
 }
 
+pub(super) fn compact_changes<'a>(
+    mut branches: impl Iterator<Item = &'a Branch>,
+) -> Option<String> {
+    let first = branches.next()?;
+    let (true, Some(version)) = (registry_resolution(first), &first.selected_version) else {
+        return Some("The report includes checks for new dependency requests".into());
+    };
+    let intro = if branches.next().is_some() {
+        "Registry checks for multiple additions include"
+    } else {
+        "Registry checks include new dependency"
+    };
+    Some(format!("{intro} {}@{}", package(first), safe(version)))
+}
+
 pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
     let path = safe(&detail.witness.source.path);
-    let candidate = detail.witness.coordinate.as_ref().map_or_else(
-        || "A candidate whose release was not supplied".into(),
-        |c| format!("Candidate {}", safe(&c.to_string())),
-    );
+    let candidate = candidate(detail);
     let request = request(&detail.branch);
-    let result = search_result(&detail.branch);
+    let result = match search_problem(&detail.branch) {
+        Some(SearchProblem::Affected(_)) => " An advisory affects a selected version.",
+        Some(SearchProblem::Issue(issue))
+            if issue.reason == "single_version_requirements_conflict" =>
+        {
+            " The checked versions conflict with dependency requirements."
+        }
+        Some(_) => " The service could not complete the checks for this request.",
+        None => "",
+    };
     let summary = format!("{candidate} [{path}] {request} as a new dependency.{result}");
     let details = lines(&detail.branch)
         .chain(installer_note(std::slice::from_ref(&detail.branch)))
@@ -33,29 +54,55 @@ pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
     (summary, details)
 }
 
-fn search_result(branch: &Branch) -> &'static str {
-    if branch
+pub(super) fn compact_search(detail: &AddedDependency) -> Option<String> {
+    let branch = &detail.branch;
+    let obstacle = match search_problem(branch)? {
+        SearchProblem::Affected(checked) | SearchProblem::Unchecked(checked) => {
+            advisory_check(checked)
+        }
+        SearchProblem::Issue(issue) => issue_summary(issue, branch),
+    };
+    Some(format!(
+        "{} {}. {obstacle}",
+        candidate(detail),
+        request(branch)
+    ))
+}
+
+fn candidate(detail: &AddedDependency) -> String {
+    detail.witness.coordinate.as_ref().map_or_else(
+        || "A candidate whose release was not supplied".into(),
+        |c| format!("Candidate {}", safe(&c.to_string())),
+    )
+}
+
+enum SearchProblem<'a> {
+    Affected(&'a CheckedCoordinate),
+    Issue(&'a Issue),
+    Unchecked(&'a CheckedCoordinate),
+}
+
+fn search_problem(branch: &Branch) -> Option<SearchProblem<'_>> {
+    branch
         .coordinates
         .iter()
-        .any(|c| c.advisory_status == "affected")
-    {
-        " An advisory affects a selected version."
-    } else if branch
-        .issues
-        .iter()
-        .any(|i| i.reason == "single_version_requirements_conflict")
-    {
-        " The checked versions conflict with dependency requirements."
-    } else if !branch.issues.is_empty()
-        || branch
-            .coordinates
-            .iter()
-            .any(|c| c.advisory_status != "non_affecting")
-    {
-        " The service could not complete the checks for this request."
-    } else {
-        ""
-    }
+        .find(|c| c.advisory_status == "affected")
+        .map(SearchProblem::Affected)
+        .or_else(|| {
+            branch
+                .issues
+                .iter()
+                .find(|i| i.reason == "single_version_requirements_conflict")
+                .or_else(|| branch.issues.first())
+                .map(SearchProblem::Issue)
+        })
+        .or_else(|| {
+            branch
+                .coordinates
+                .iter()
+                .find(|c| c.advisory_status != "non_affecting")
+                .map(SearchProblem::Unchecked)
+        })
 }
 
 fn request(branch: &Branch) -> String {
@@ -77,7 +124,7 @@ fn installer_note(branches: &[Branch]) -> Option<String> {
 }
 
 fn selection(branch: &Branch) -> String {
-    let package = format!("{}:{}", safe(&branch.registry), safe(&branch.name));
+    let package = package(branch);
     match (registry_resolution(branch), &branch.selected_version) {
         (true, Some(version)) => {
             format!("The registry checks selected {package}@{}.", safe(version))
@@ -164,6 +211,13 @@ fn reported_by_advisory_check(issue: &Issue, coordinates: &[CheckedCoordinate]) 
 }
 
 fn issue_lines(issue: &Issue, branch: &Branch) -> Vec<String> {
+    let mut lines = vec![issue_summary(issue, branch)];
+    version_conflict(issue, &mut lines);
+    activation_input(issue, &mut lines);
+    lines
+}
+
+fn issue_summary(issue: &Issue, branch: &Branch) -> String {
     let operation = match issue.operation.as_str() {
         "catalog" => "Registry version catalog lookup",
         "selection" => "Registry version selection",
@@ -174,14 +228,10 @@ fn issue_lines(issue: &Issue, branch: &Branch) -> Vec<String> {
     };
     let input = issue_input(issue, branch);
     let cause = cause(issue);
-    let summary = issue.http_status.map_or_else(
+    issue.http_status.map_or_else(
         || format!("{operation} for {input} — {cause}."),
         |status| format!("{operation} for {input} — {cause} (HTTP {status})."),
-    );
-    let mut lines = vec![summary];
-    version_conflict(issue, &mut lines);
-    activation_input(issue, &mut lines);
-    lines
+    )
 }
 
 fn issue_input(issue: &Issue, branch: &Branch) -> String {
@@ -215,13 +265,17 @@ fn issue_input(issue: &Issue, branch: &Branch) -> String {
 }
 
 fn branch_input(branch: &Branch, operation: &str) -> String {
-    let package = format!("{}:{}", safe(&branch.registry), safe(&branch.name));
+    let package = package(branch);
     if matches!(operation, "release" | "advisories")
         && let Some(version) = &branch.selected_version
     {
         return format!("{package}@{}", safe(version));
     }
     package
+}
+
+fn package(branch: &Branch) -> String {
+    format!("{}:{}", safe(&branch.registry), safe(&branch.name))
 }
 
 fn version_conflict(issue: &Issue, lines: &mut Vec<String>) {

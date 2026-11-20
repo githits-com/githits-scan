@@ -246,6 +246,11 @@ applying the change. The detailed impact block retains any reported potential
 benefit for a candidate. Target warnings stay with their respective versions.
 A record without a change explains the outcome and includes a reported obstacle
 when available.
+When the selected change includes checked additions, the summary can name one
+registry-selected root and points to the full dependency checks through
+`details_recommended`. A candidate with no applicable change can surface a
+specific addition problem, such as an affecting advisory or the exact release
+whose dependencies could not be checked.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for unclear candidates, no-change outcomes

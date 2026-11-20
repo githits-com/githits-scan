@@ -34,6 +34,17 @@ pub(super) fn explain(record: &Record) -> Vec<Explanation> {
         .map(|(index, detail)| explanation(index, detail))
         .collect()
 }
+
+pub(super) fn compact_obstacle(record: &Record, explanations: &[Explanation]) -> Option<String> {
+    explanations
+        .iter()
+        .zip(record.search_details.iter().flatten())
+        .find_map(|(explanation, detail)| match detail {
+            Detail::AddedDependency(detail) => super::added::compact_search(detail),
+            _ => Some(explanation.summary.clone()),
+        })
+}
+
 fn explanation(index: usize, detail: &Detail) -> Explanation {
     let (summary, details) = match detail {
         Detail::Unavailable(d) => (

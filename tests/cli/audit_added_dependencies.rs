@@ -66,6 +66,14 @@ fn audit_added_dependencies_keeps_checked_branch_and_losing_candidates() {
     }
 
     let presentation = &replay["remediation"]["recommendations"][0];
+    assert_eq!(presentation["details_recommended"], true);
+    assert_eq!(
+        presentation["compact_summary"],
+        concat!(
+            "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. ",
+            "Registry checks include new dependency npm:added-child@1.0.0."
+        )
+    );
     let change = &presentation["changes"][0];
     assert_eq!(change["change_index"], 0);
     let details = change["details"].to_string();
