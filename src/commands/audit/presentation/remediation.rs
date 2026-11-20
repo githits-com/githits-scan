@@ -118,7 +118,7 @@ impl Plan {
                 .iter()
                 .enumerate()
                 .map(|(index, c)| {
-                    change(
+                    let mut explanation = change(
                         c,
                         index,
                         r,
@@ -126,7 +126,15 @@ impl Plan {
                         supported,
                         common.is_none(),
                         detail,
-                    )
+                    );
+                    explanation.details.extend(
+                        c.data
+                            .added_dependencies
+                            .as_deref()
+                            .into_iter()
+                            .flat_map(super::added::change_lines),
+                    );
+                    explanation
                 })
                 .collect(),
             files,
@@ -404,12 +412,7 @@ fn change(
         application_issue: qualification
             .map(|issue| application_issue(issue, &package, r.changes.len() > 1)),
         summary: format!("{action} {version_change}{partial}"),
-        details: {
-            if let Some(branches) = &data.added_dependencies {
-                details.extend(super::added::change_lines(branches));
-            }
-            details
-        },
+        details,
         files,
         reasons: reasons::explain(c, r, detail),
     }

@@ -72,7 +72,7 @@ fn registry_resolution(branch: &Branch) -> bool {
 
 fn installer_note(branches: &[Branch]) -> Option<String> {
     branches.iter().any(registry_resolution).then(|| {
-        "The project installer may select different copies or apply different policy.".into()
+        "The project installer may select different package copies or apply different policy than these registry checks.".into()
     })
 }
 

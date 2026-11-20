@@ -117,8 +117,10 @@ fn assert_native(output: &str) {
         "{output}"
     );
     assert!(
-        selected
-            .contains("project installer may select different copies or apply different policy"),
+        selected.contains(concat!(
+            "project installer may select different package copies or apply different policy ",
+            "than these registry checks."
+        )),
         "{output}"
     );
     assert!(

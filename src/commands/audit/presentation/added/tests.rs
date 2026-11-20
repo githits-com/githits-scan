@@ -267,8 +267,40 @@ fn audit_added_dependencies_explains_installer_policy_once_per_change() {
     assert_eq!(
         lines
             .iter()
-            .filter(|line| line.contains("may select different copies"))
+            .filter(|line| line.contains("may select different package copies"))
             .count(),
         1
+    );
+}
+
+#[test]
+fn audit_added_dependencies_names_conflict_even_when_candidate_release_is_absent() {
+    let branch = branch(
+        "hex",
+        &json!({
+            "operation":"selection",
+            "reason":"single_version_requirements_conflict",
+            "registry":"hex",
+            "name":"added-root",
+            "selected_versions":["1.0.0"],
+            "represented_versions":["2.0.0"],
+            "requirements":["^1"]
+        }),
+    );
+    let detail = serde_json::from_value(json!({
+        "witness": {
+            "coordinate": null,
+            "source": {"path":"mix.lock","coordinate":null,"occurrence_refs":[]}
+        },
+        "added_dependency": branch
+    }))
+    .expect("search detail");
+    let (summary, _) = search(&detail);
+    assert_eq!(
+        summary,
+        concat!(
+            "A candidate whose release was not supplied [mix.lock] requires added-root ^1 as a new dependency. ",
+            "The checked versions conflict with dependency requirements."
+        )
     );
 }
