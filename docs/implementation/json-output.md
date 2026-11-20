@@ -218,8 +218,6 @@ reasons and supporting request inventories. Use the full blocks alongside
 compact text for change reasons and their supporting evidence. Missing or
 unfamiliar reason detail is qualified explicitly in the detailed export.
 
-Checks of new dependencies appear in the owning change’s `details`.
-
 Indices are document-local links, stable only within this complete report. They
 are not backend identifiers or identities across analyses. Coordinates, advisory
 IDs and full file sets retain their existing meaning; no synthetic globally
@@ -387,9 +385,10 @@ selected version. The `issues` array retains the operation, reason and supplied
 evidence, including failed coordinates or requests, HTTP status, conflicting
 requirements and versions, and Cargo feature or Python extra activation inputs.
 Scan preserves these facts in schema-2 output and saved analysis. Presentation
-JSON supplies the same readable change and search details as native audit
-output. `registry_resolution` describes the supplied registry branch. The
-project installer may select different copies or apply different policy.
+JSON supplies the same readable explanations as native audit output in the owning
+change's `details` and the matching `search_explanations` entry.
+`registry_resolution` describes the supplied registry branch. The project
+installer may select different copies or apply different policy.
 Authored dependency names remain separate from requesting owners and canonical targets.
 Search explanations are computed by the shared presentation owner, without another
 backend job. A missing/uninterpretable reason is stated explicitly rather than

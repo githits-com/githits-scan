@@ -160,7 +160,7 @@ fn audit_added_dependencies_explains_catalog_conflicts_and_lookup_failures() {
         (
             json!({"operation":"catalog","reason":"catalog_observation_missing"}),
             vec![
-                "No version was selected for npm:added-root.",
+                "The registry checks did not select a version for npm:added-root.",
                 "Registry version catalog lookup for npm:added-root",
                 "no version catalog was available",
             ],
@@ -195,7 +195,7 @@ fn audit_added_dependencies_explains_catalog_conflicts_and_lookup_failures() {
                 "owner":"added-root@1.0.0","name":"no-match","requested_requirement":"~9","requirement_status":"recorded"
             }),
             vec![
-                "Dependency branch check for added-root@1.0.0 requesting no-match ~9",
+                "Dependency check for added-root@1.0.0 requesting no-match ~9",
                 "no published version matched the requirement",
             ],
         ),
@@ -220,4 +220,55 @@ fn audit_added_dependencies_explains_catalog_conflicts_and_lookup_failures() {
             "{output}"
         );
     }
+}
+
+#[test]
+fn audit_added_dependencies_keeps_one_explanation_for_each_advisory_gap() {
+    let mut branch = branch(
+        "npm",
+        &json!({
+            "operation":"advisories", "reason":"future_reason",
+            "coordinate":{"registry":"npm","name":"added-root","version":"1.0.0"}
+        }),
+    );
+    branch.coordinates[0].advisory_status = "unknown".into();
+    let mut unsupported = branch.coordinates[0].clone();
+    unsupported.coordinate.name = "uncovered".into();
+    unsupported.advisory_status = "unsupported".into();
+    branch.coordinates.push(unsupported);
+
+    let lines = lines(&branch).collect::<Vec<_>>();
+    assert_eq!(
+        lines
+            .iter()
+            .filter(|line| line.contains("Advisory check for npm:added-root@1.0.0"))
+            .count(),
+        1
+    );
+    assert!(
+        lines
+            .iter()
+            .any(|line| line.contains("Scan cannot explain the supplied reason"))
+    );
+    assert!(lines.iter().any(|line| line.contains("Advisory check for npm:uncovered@1.0.0 could not run because advisory checks do not cover this registry")));
+    assert!(!lines.iter().any(|line| line.contains("future_reason")));
+}
+
+#[test]
+fn audit_added_dependencies_explains_installer_policy_once_per_change() {
+    let mut branch = branch("npm", &json!({"operation":"release","reason":"timeout"}));
+    branch.issues.clear();
+    let mut other = branch.clone();
+    other.name = "sibling".into();
+    other.authored_name.clone_from(&other.name);
+    other.coordinates[0].coordinate.name.clone_from(&other.name);
+    let branches = [branch, other];
+    let lines = change_lines(&branches).collect::<Vec<_>>();
+    assert_eq!(
+        lines
+            .iter()
+            .filter(|line| line.contains("may select different copies"))
+            .count(),
+        1
+    );
 }

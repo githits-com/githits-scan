@@ -398,19 +398,18 @@ fn change(
     } else {
         format!(" ({})", qualifiers.join(", "))
     };
-    details.extend(
-        data.added_dependencies
-            .iter()
-            .flatten()
-            .flat_map(super::added::lines),
-    );
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),
         application_issue: qualification
             .map(|issue| application_issue(issue, &package, r.changes.len() > 1)),
         summary: format!("{action} {version_change}{partial}"),
-        details,
+        details: {
+            if let Some(branches) = &data.added_dependencies {
+                details.extend(super::added::change_lines(branches));
+            }
+            details
+        },
         files,
         reasons: reasons::explain(c, r, detail),
     }

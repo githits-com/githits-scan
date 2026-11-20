@@ -70,13 +70,32 @@ fn audit_added_dependencies_keeps_checked_branch_and_losing_candidates() {
     assert_eq!(change["change_index"], 0);
     let details = change["details"].to_string();
     assert!(details.contains("child-alias npm:added-child@^1"));
-    assert!(details.contains("selected version is npm:added-child@1.0.0"));
+    assert!(details.contains("registry checks selected npm:added-child@1.0.0"));
     assert!(details.contains(
         "No affecting advisories found for npm:added-child@1.0.0, npm:optional-descendant@1.0.0."
     ));
     let searches = &presentation["search_explanations"];
     assert_eq!(searches[0]["search_detail_index"], 0);
     assert_eq!(searches[1]["search_detail_index"], 1);
+    assert_eq!(searches[2]["search_detail_index"], 2);
+    for (index, wording) in [
+        (0, "An advisory affects a selected version."),
+        (
+            1,
+            "The service could not complete the checks for this request.",
+        ),
+    ] {
+        assert!(
+            searches[index]["summary"]
+                .as_str()
+                .expect("summary")
+                .contains(wording)
+        );
+    }
+    assert_eq!(
+        searches[2]["summary"],
+        "Candidate npm:demo@1.3.0 [package-lock.json] requires child-alias npm:added-child@^1 as a new dependency."
+    );
 
     for flags in [
         vec!["--no-color"],
@@ -107,12 +126,12 @@ fn assert_native(output: &str) {
         "{output}"
     );
     assert!(
-        search.contains("candidate npm:demo@1.2.0 [package-lock.json]"),
+        search.contains("Candidate npm:demo@1.2.0 [package-lock.json]"),
         "{output}"
     );
     assert!(search.contains("npm:affected-descendant@1.0.0 found applicable advisories (AUDIT-ADDED-affected-descendant)"), "{output}");
     assert!(
-        search.contains("candidate npm:demo@1.3.0 [package-lock.json]"),
+        search.contains("Candidate npm:demo@1.3.0 [package-lock.json]"),
         "{output}"
     );
     assert!(
@@ -125,7 +144,7 @@ fn assert_native(output: &str) {
     );
     assert!(
         search.contains(
-            "Dependency branch check for is-promise@4.0.0 — dependency list unavailable."
+            "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, so its dependencies could not be fully checked."
         ),
         "{output}"
     );
@@ -148,6 +167,6 @@ fn audit_added_dependencies_older_archive_keeps_its_existing_guidance() {
     let output = stdout(&output);
     assert!(output.contains("GHSA-example"), "{output}");
     assert!(output.contains("1.0.0 -> 1.1.1"), "{output}");
-    assert!(!output.contains("registry-resolved branch"), "{output}");
+    assert!(!output.contains("project installer may select"), "{output}");
     assert!(!output.contains("Upgrade search:"), "{output}");
 }

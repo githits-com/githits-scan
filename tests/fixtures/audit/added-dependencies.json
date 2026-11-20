@@ -177,6 +177,54 @@
         "authored_name": "router",
         "requirement_status": "recorded"
       }
+    },
+    {
+      "kind": "added_dependency",
+      "witness": {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.3.0"
+        },
+        "source": {
+          "path": "package-lock.json",
+          "coordinate": {
+            "registry": "npm",
+            "name": "demo",
+            "version": "1.0.0"
+          },
+          "occurrence_refs": [
+            0
+          ]
+        }
+      },
+      "added_dependency": {
+        "name": "added-child",
+        "scope": "runtime",
+        "registry": "npm",
+        "selected_version": "1.0.0",
+        "selection_basis": "registry_resolution",
+        "coordinates": [
+          {
+            "name": "added-child",
+            "version": "1.0.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "optional-descendant",
+            "version": "1.0.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          }
+        ],
+        "issues": [],
+        "requested_requirement": "npm:added-child@^1",
+        "authored_name": "child-alias",
+        "requirement_status": "recorded"
+      }
     }
   ]
 }

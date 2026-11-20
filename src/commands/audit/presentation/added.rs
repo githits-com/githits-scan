@@ -2,45 +2,125 @@
 use super::{
     list, remediation::request_requirement, requirement_status, safe, search::known_cause,
 };
-use crate::api::audit::remediation::added::{Branch, CheckedCoordinate, Issue};
+use crate::api::audit::remediation::{
+    added::{Branch, CheckedCoordinate, Issue},
+    search::AddedDependency,
+};
 
-pub(super) fn lines(branch: &Branch) -> impl Iterator<Item = String> + '_ {
-    let registry_basis = branch.selection_basis == "registry_resolution";
-    let package = format!("{}:{}", safe(&branch.registry), safe(&branch.name));
-    let request = request_requirement(
+pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> + '_ {
+    branches
+        .iter()
+        .flat_map(|branch| {
+            let request = request(branch);
+            std::iter::once(format!("This release {request} as a new dependency."))
+                .chain(lines(branch))
+        })
+        .chain(installer_note(branches))
+}
+
+pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
+    let path = safe(&detail.witness.source.path);
+    let candidate = detail.witness.coordinate.as_ref().map_or_else(
+        || "A candidate whose release was not supplied".into(),
+        |c| format!("Candidate {}", safe(&c.to_string())),
+    );
+    let request = request(&detail.branch);
+    let result = search_result(&detail.branch);
+    let summary = format!("{candidate} [{path}] {request} as a new dependency.{result}");
+    let details = lines(&detail.branch)
+        .chain(installer_note(std::slice::from_ref(&detail.branch)))
+        .collect();
+    (summary, details)
+}
+
+fn search_result(branch: &Branch) -> &'static str {
+    if branch
+        .coordinates
+        .iter()
+        .any(|c| c.advisory_status == "affected")
+    {
+        " An advisory affects a selected version."
+    } else if branch
+        .issues
+        .iter()
+        .any(|i| i.reason == "single_version_requirements_conflict")
+    {
+        " The checked versions conflict with dependency requirements."
+    } else if !branch.issues.is_empty()
+        || branch
+            .coordinates
+            .iter()
+            .any(|c| c.advisory_status != "non_affecting")
+    {
+        " The service could not complete the checks for this request."
+    } else {
+        ""
+    }
+}
+
+fn request(branch: &Branch) -> String {
+    request_requirement(
         Some(&branch.authored_name),
         branch.requested_requirement.as_deref(),
         &branch.requirement_status,
-    );
-    let selected = branch.selected_version.as_ref().map_or_else(
-        || format!("No version was selected for {package}."),
-        |version| format!("The selected version is {package}@{}.", safe(version)),
-    );
-    let basis = if registry_basis {
-        "This is a registry-resolved branch. The project installer may select different copies or apply different policy."
-    } else {
-        "Scan cannot explain how this branch was selected. See JSON for the reported basis."
-    };
-    [
-        format!("This release {request} as a new dependency. {selected}"),
-        basis.into(),
-    ]
-    .into_iter()
-    .chain(non_affecting(&branch.coordinates))
-    .chain(
-        branch
-            .coordinates
-            .iter()
-            .filter(|checked| checked.advisory_status != "non_affecting")
-            .map(advisory_check),
     )
-    .chain(
-        branch
-            .issues
-            .iter()
-            .filter(move |issue| !reported_by_advisory_check(issue, &branch.coordinates))
-            .flat_map(move |issue| issue_lines(issue, branch)),
-    )
+}
+
+fn registry_resolution(branch: &Branch) -> bool {
+    branch.selection_basis == "registry_resolution"
+}
+
+fn installer_note(branches: &[Branch]) -> Option<String> {
+    branches.iter().any(registry_resolution).then(|| {
+        "The project installer may select different copies or apply different policy.".into()
+    })
+}
+
+fn selection(branch: &Branch) -> String {
+    let package = format!("{}:{}", safe(&branch.registry), safe(&branch.name));
+    match (registry_resolution(branch), &branch.selected_version) {
+        (true, Some(version)) => {
+            format!("The registry checks selected {package}@{}.", safe(version))
+        }
+        (true, None) => format!("The registry checks did not select a version for {package}."),
+        (false, Some(version)) => format!(
+            "The selected version is {package}@{}. Scan cannot explain the selection basis.",
+            safe(version)
+        ),
+        (false, None) => format!(
+            "No version was selected for {package}. Scan cannot explain the selection basis."
+        ),
+    }
+}
+
+fn lines(branch: &Branch) -> impl Iterator<Item = String> + '_ {
+    std::iter::once(selection(branch))
+        .chain(non_affecting(&branch.coordinates))
+        .chain(
+            branch
+                .coordinates
+                .iter()
+                .filter(move |checked| needs_advisory_line(checked, &branch.issues))
+                .map(advisory_check),
+        )
+        .chain(
+            branch
+                .issues
+                .iter()
+                .filter(move |issue| !reported_by_advisory_check(issue, &branch.coordinates))
+                .flat_map(move |issue| issue_lines(issue, branch)),
+        )
+}
+
+fn needs_advisory_line(checked: &CheckedCoordinate, issues: &[Issue]) -> bool {
+    match checked.advisory_status.as_str() {
+        "non_affecting" => false,
+        "unknown" => !issues.iter().any(|issue| {
+            issue.operation == "advisories"
+                && issue.coordinate.as_ref() == Some(&checked.coordinate)
+        }),
+        _ => true,
+    }
 }
 
 fn non_affecting(coordinates: &[CheckedCoordinate]) -> Option<String> {
@@ -88,7 +168,7 @@ fn issue_lines(issue: &Issue, branch: &Branch) -> Vec<String> {
         "catalog" => "Registry version catalog lookup",
         "selection" => "Registry version selection",
         "release" => "Release metadata lookup",
-        "closure" => "Dependency branch check",
+        "closure" => "Dependency check",
         "advisories" => "Advisory check",
         _ => "Check the service did not identify in terms Scan recognizes",
     };
@@ -169,7 +249,7 @@ fn version_conflict(issue: &Issue, lines: &mut Vec<String>) {
 fn activation_input(issue: &Issue, lines: &mut Vec<String>) {
     if let Some(group) = &issue.feature {
         lines.push(format!(
-            "The declaration uses Cargo feature group {}.",
+            "The declaring crate's Cargo feature group {} affects whether this dependency is enabled.",
             safe(group)
         ));
     }
@@ -223,6 +303,9 @@ fn cause(issue: &Issue) -> &'static str {
             "the requested release could not be found"
         }
         "selected_release_row_missing" => "no metadata was returned for the selected release",
+        "dependency_list_unavailable" => {
+            "the dependency list was unavailable, so its dependencies could not be fully checked"
+        }
         "single_version_requirements_conflict"
             if issue
                 .represented_versions
