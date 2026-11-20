@@ -256,23 +256,35 @@ fn audit_added_dependencies_keeps_one_explanation_for_each_advisory_gap() {
 
 #[test]
 fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request() {
-    let mut branch = branch("npm", &json!({"operation":"release","reason":"timeout"}));
-    branch.issues.clear();
-    let mut other = branch.clone();
+    let mut resolved = branch("npm", &json!({"operation":"release","reason":"timeout"}));
+    resolved.issues.clear();
+    let mut other = resolved.clone();
     other.name = "sibling".into();
     other.authored_name.clone_from(&other.name);
     other.coordinates[0].coordinate.name.clone_from(&other.name);
-    let branches = [branch, other];
     assert_eq!(
-        compact_changes(branches.iter()).as_deref(),
+        compact_changes([&resolved, &other].into_iter()).as_deref(),
         Some("Registry checks selected npm:added-root@1.0.0 for one of 2 new dependency requests")
     );
-    let mut unresolved = branches[0].clone();
+    let mut unresolved = branch(
+        "npm",
+        &json!({"operation":"selection","reason":"no_matching_version"}),
+    );
     unresolved.selected_version = None;
     unresolved.coordinates.clear();
     assert_eq!(
         compact_changes(std::iter::once(&unresolved)).as_deref(),
-        Some("The release requires added-root ^1 as a new dependency")
+        Some(concat!(
+            "The release requires added-root ^1 as a new dependency. ",
+            "Registry version selection for npm:added-root — no published version matched the requirement."
+        ))
+    );
+    assert_eq!(
+        compact_changes([&other, &unresolved].into_iter()).as_deref(),
+        Some(concat!(
+            "The release requires added-root ^1 as one of 2 new dependency requests. ",
+            "Registry version selection for npm:added-root — no published version matched the requirement."
+        ))
     );
 }
 

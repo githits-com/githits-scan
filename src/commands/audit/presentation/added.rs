@@ -24,20 +24,21 @@ pub(super) fn compact_changes<'a>(branches: impl Iterator<Item = &'a Branch>) ->
             Some(_) => 1,
             None => 2,
         })?;
-    let summary = if let (true, Some(version)) =
-        (registry_resolution(branch), &branch.selected_version)
-    {
-        let coordinate = format!("{}@{}", package(branch), safe(version));
-        if count == 1 {
-            format!("Registry checks selected {coordinate} for the new dependency")
-        } else {
-            format!(
-                "Registry checks selected {coordinate} for one of {count} new dependency requests"
-            )
-        }
+    let scope = if count == 1 {
+        "a new dependency".into()
     } else {
-        format!("The release {} as a new dependency", request(branch))
+        format!("one of {count} new dependency requests")
     };
+    let summary =
+        if let (true, Some(version)) = (registry_resolution(branch), &branch.selected_version) {
+            format!(
+                "Registry checks selected {}@{} for {scope}",
+                package(branch),
+                safe(version)
+            )
+        } else {
+            format!("The release {} as {scope}", request(branch))
+        };
     Some(match problem {
         Some(problem) => format!("{summary}. {}", problem.explain(branch)),
         None => summary,
