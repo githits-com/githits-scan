@@ -227,7 +227,7 @@ fn audit_added_dependencies_compact_preserves_clear_edit() {
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
             "Update version constraint for demo in package.json (currently ^1.0). Addresses GHSA-demo. ",
-            "Registry checks include new dependency npm:added-child@1.0.0."
+            "Registry checks selected new dependency npm:added-child@1.0.0."
         )
     );
 }
@@ -240,7 +240,7 @@ fn audit_added_dependencies_compact_names_obstacle_when_no_change_was_selected()
         (
             0,
             concat!(
-                "Candidate npm:demo@1.2.0 requires added-child ^1. ",
+                "Candidate npm:demo@1.2.0 requires added-child ^1 as a new dependency. ",
                 "Advisory check for npm:affected-descendant@1.0.0 found applicable advisories ",
                 "(AUDIT-ADDED-affected-descendant)."
             ),
@@ -248,7 +248,7 @@ fn audit_added_dependencies_compact_names_obstacle_when_no_change_was_selected()
         (
             1,
             concat!(
-                "Candidate npm:demo@1.3.0 requires router ^2.0.0. ",
+                "Candidate npm:demo@1.3.0 requires router ^2.0.0 as a new dependency. ",
                 "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
                 "so its dependencies could not be fully checked."
             ),

@@ -265,7 +265,7 @@ fn audit_added_dependencies_explains_installer_policy_once_per_change() {
     let branches = [branch, other];
     assert_eq!(
         compact_changes(branches.iter()).as_deref(),
-        Some("Registry checks for multiple additions include npm:added-root@1.0.0")
+        Some("One new dependency selected by registry checks is npm:added-root@1.0.0")
     );
     let lines = change_lines(&branches).collect::<Vec<_>>();
     assert_eq!(
@@ -274,6 +274,13 @@ fn audit_added_dependencies_explains_installer_policy_once_per_change() {
             .filter(|line| line.contains("may select different package copies"))
             .count(),
         1
+    );
+    let mut unresolved = branches[0].clone();
+    unresolved.selected_version = None;
+    unresolved.coordinates.clear();
+    assert_eq!(
+        compact_changes(std::iter::once(&unresolved)).as_deref(),
+        Some("The report includes checks for new dependency requests")
     );
 }
 

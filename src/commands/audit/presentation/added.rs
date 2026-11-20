@@ -26,9 +26,9 @@ pub(super) fn compact_changes<'a>(
         return Some("The report includes checks for new dependency requests".into());
     };
     let intro = if branches.next().is_some() {
-        "Registry checks for multiple additions include"
+        "One new dependency selected by registry checks is"
     } else {
-        "Registry checks include new dependency"
+        "Registry checks selected new dependency"
     };
     Some(format!("{intro} {}@{}", package(first), safe(version)))
 }
@@ -63,7 +63,7 @@ pub(super) fn compact_search(detail: &AddedDependency) -> Option<String> {
         SearchProblem::Issue(issue) => issue_summary(issue, branch),
     };
     Some(format!(
-        "{} {}. {obstacle}",
+        "{} {} as a new dependency. {obstacle}",
         candidate(detail),
         request(branch)
     ))

@@ -71,7 +71,7 @@ fn audit_added_dependencies_keeps_checked_branch_and_losing_candidates() {
         presentation["compact_summary"],
         concat!(
             "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. ",
-            "Registry checks include new dependency npm:added-child@1.0.0."
+            "Registry checks selected new dependency npm:added-child@1.0.0."
         )
     );
     let change = &presentation["changes"][0];
