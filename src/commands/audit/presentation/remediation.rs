@@ -206,15 +206,13 @@ impl Constraint {
         if let Some(edit) = &self.compact_edit {
             return edit.clone();
         }
-        let requests = self.details.join(", ");
-        if self.excludes_target {
-            return format!("Conflicting request ({requests})");
-        }
-        capitalize(format!(
-            "{} ({})",
-            self.summary.trim_end_matches('.'),
-            requests
-        ))
+        let requests = self.details.join(") and (");
+        let label = match (self.excludes_target, self.details.len()) {
+            (true, 1) => "Conflicting request",
+            (true, _) => "Conflicting requests",
+            (false, _) => self.summary.trim_end_matches('.'),
+        };
+        capitalize(format!("{label} ({requests})"))
     }
 }
 
@@ -261,9 +259,13 @@ fn change(
     let mut details: Vec<String> = applicability.into_iter().map(str::to_owned).collect();
     let mut qualifiers = Vec::new();
     if !data.conflicting_target_versions.is_empty() {
-        let targets = list(&data.conflicting_target_versions);
-        details.push(format!("conflicting targets: {targets}"));
-        qualifiers.push(format!("conflicts with {targets}"));
+        let targets = data
+            .conflicting_target_versions
+            .iter()
+            .map(|target| safe(target))
+            .collect::<Vec<_>>();
+        details.push(format!("conflicting targets: {}", targets.join(", ")));
+        qualifiers.push(format!("conflicts with {}", targets.join(" and ")));
     }
     for (label, flag) in [
         ("prerelease", data.prerelease_target),

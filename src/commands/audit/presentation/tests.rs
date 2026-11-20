@@ -330,6 +330,21 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
             "(express@5.1.0 requires demo ~1.0 [package-lock.json])."
         )
     );
+    let r = &mut input["remediation"]["recommendations"][0];
+    let mut second = r["blockers"][0].clone();
+    second["owner"]["name"] = "other".into();
+    second["requested_requirement"] = ">=1, <1.1".into();
+    r["blockers"].as_array_mut().expect("requests").push(second);
+    r["changes"][1]["conflicting_target_versions"] = json!(["2.2.0", "2.3.0"]);
+    let summary = compact_summary(&input);
+    assert!(summary.contains("(conflicts with 2.2.0 and 2.3.0, deprecated)"));
+    assert!(
+        summary.contains(concat!(
+            "Conflicting requests (express@5.1.0 requires demo ~1.0 [package-lock.json]) ",
+            "and (other@5.1.0 requires demo >=1, <1.1 [package-lock.json])."
+        )),
+        "{summary}"
+    );
 }
 
 #[test]
