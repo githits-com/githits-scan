@@ -15,6 +15,8 @@ const UNFAMILIAR_REASON: &str =
 /// Complete qualified guidance for one independent recommendation.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Plan {
+    #[serde(skip)]
+    supported: bool,
     /// Shared title for joint changes; a single change carries its own qualification.
     pub heading: Option<String>,
     /// Separate outcome explanation when the title cannot express it.
@@ -40,6 +42,8 @@ pub(in crate::commands::audit) struct Plan {
 /// Explanation of one change, linked to its position in the owning fact record.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Change {
+    #[serde(skip)]
+    compact: String,
     /// Position in the owning fact record’s changes array.
     #[serde(rename = "change_index")]
     pub index: usize,
@@ -60,9 +64,10 @@ pub(in crate::commands::audit) struct Constraint {
     pub summary: String,
     /// Sorted unique owner, requirement and path contexts for this explanation.
     pub details: Vec<String>,
-    /// An explicit project edit already identifies the request in its summary.
     #[serde(skip)]
-    is_edit: bool,
+    compact_edit: Option<String>,
+    #[serde(skip)]
+    excludes_target: bool,
 }
 
 impl Plan {
@@ -81,28 +86,20 @@ impl Plan {
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
         let constraints = constraints(&r.blockers, detail);
-        let mut seen_limits = BTreeSet::new();
-        let mut limitations: Vec<_> = r
-            .limitations
-            .iter()
-            .filter(|l| l.as_str() != "withdrawal_not_observed")
-            .filter_map(|l| {
-                let message = explanation(l);
-                (!constraints.iter().any(|c| c.summary == message))
-                    .then(|| format!("limit: {message}"))
-            })
-            .filter(|message| seen_limits.insert(message.clone()))
+        let mut limitations: Vec<_> = limitations(r, &constraints)
+            .map(|message| format!("limit: {message}"))
             .collect();
         if let Some(message) = super::search::retention(r) {
             limitations.push(message);
         }
-        let checks = checks(r);
+        let checks = checks(r, false);
         let search_explanations = super::search::explain(r);
         let has_details = !constraints.is_empty()
             || !checks.is_empty()
             || !limitations.is_empty()
             || !search_explanations.is_empty();
         Self {
+            supported,
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
                 || r.changes.is_empty())
@@ -135,29 +132,19 @@ impl Plan {
 
     /// Compose standalone text from the same explanations as native guidance.
     pub(super) fn compact_summary(&self, r: &Record) -> String {
-        let mut blocks = self.outcome.iter().cloned().collect::<Vec<_>>();
-        if !self.changes.is_empty() {
-            let changes = self
-                .changes
-                .iter()
-                .map(Change::compact_text)
-                .collect::<Vec<_>>()
-                .join(" + ");
-            blocks.push(match &self.heading {
-                Some(heading) => format!("{heading}: {changes}"),
-                None => changes,
-            });
+        let mut sentences = Vec::new();
+        if let Some(changes) = self.compact_changes() {
+            sentences.push(changes);
         }
-        if !self.files.is_empty() {
-            blocks.push(format!("Change in: {}", list(&self.files)));
-        }
-        blocks.extend(impact(r, AddressedDisplay::Named));
-        blocks.extend(self.constraints.iter().map(Constraint::compact_text));
-        blocks.extend(self.checks.iter().cloned());
-        blocks.extend(self.limitations.iter().cloned());
+        sentences.extend(self.outcome.iter().cloned());
+        sentences.extend(impact(r, AddressedDisplay::Compact));
+        sentences.extend(self.constraints.iter().map(Constraint::compact_text));
+        sentences.extend(checks(r, true));
+        sentences.extend(limitations(r, &self.constraints).map(capitalize));
         if self.changes.is_empty() {
+            sentences.extend(super::search::retention(r));
             let mut seen = BTreeSet::new();
-            blocks.extend(
+            sentences.extend(
                 self.search_explanations
                     .iter()
                     .map(|s| &s.summary)
@@ -165,43 +152,69 @@ impl Plan {
                     .cloned(),
             );
         }
-        blocks.join(" · ")
+        sentences
+            .into_iter()
+            .map(sentence)
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    fn compact_changes(&self) -> Option<String> {
+        if self.changes.is_empty() {
+            return None;
+        }
+        let changes = self
+            .changes
+            .iter()
+            .map(|change| change.compact.as_str())
+            .collect::<Vec<_>>()
+            .join(" and ");
+        let action = if self.supported { "Bump " } else { "" };
+        let together = if self.changes.len() > 1 {
+            " together"
+        } else {
+            ""
+        };
+        let paths = location(&self.files);
+        Some(format!("{action}{changes}{together}{paths}"))
     }
 }
 
-impl Change {
-    fn compact_text(&self) -> String {
-        let files = (!self.files.is_empty()).then(|| format!("files: {}", list(&self.files)));
-        let mut seen = BTreeSet::new();
-        let qualifications = self
-            .details
-            .iter()
-            .chain(&files)
-            .chain(
-                self.reasons
-                    .iter()
-                    .filter(|r| r.show_in_summary && seen.insert(&r.summary))
-                    .map(|r| &r.summary),
-            )
-            .map(String::as_str)
-            .collect::<Vec<_>>();
-        if qualifications.is_empty() {
-            return self.summary.clone();
-        }
-        format!("{} ({})", self.summary, qualifications.join(" / "))
+fn sentence(mut text: String) -> String {
+    if !text.ends_with('.') {
+        text.push('.');
     }
+    text
+}
+
+fn capitalize(mut text: String) -> String {
+    if let Some(initial) = text.get_mut(..1) {
+        initial.make_ascii_uppercase();
+    }
+    text
+}
+
+fn location(paths: &BTreeSet<String>) -> String {
+    if paths.is_empty() {
+        return String::new();
+    }
+    format!(" in {}", list(paths))
 }
 
 impl Constraint {
     fn compact_text(&self) -> String {
-        if self.is_edit {
-            return self.summary.clone();
+        if let Some(edit) = &self.compact_edit {
+            return edit.clone();
         }
-        format!(
+        let requests = self.details.join(", ");
+        if self.excludes_target {
+            return format!("Conflicting request ({requests})");
+        }
+        capitalize(format!(
             "{} ({})",
             self.summary.trim_end_matches('.'),
-            self.details.join(" / ")
-        )
+            requests
+        ))
     }
 }
 
@@ -244,23 +257,13 @@ fn change(
     } else {
         ""
     };
-    let mut details = Vec::new();
-    match data.strategy.as_str() {
-        "unknown" => {
-            details.push(
-                "The report lists version changes but does not specify how to apply them.".into(),
-            );
-        }
-        "upgrade" | "override" => {}
-        _ => {
-            details.push("The service returned an unfamiliar change strategy; applicability could not be determined.".into());
-        }
-    }
+    let (applicability, qualification) = change_strategy(&data.strategy);
+    let mut details: Vec<String> = applicability.into_iter().map(str::to_owned).collect();
+    let mut qualifiers = Vec::new();
     if !data.conflicting_target_versions.is_empty() {
-        details.push(format!(
-            "conflicting targets: {}",
-            list(&data.conflicting_target_versions)
-        ));
+        let targets = list(&data.conflicting_target_versions);
+        details.push(format!("conflicting targets: {targets}"));
+        qualifiers.push(format!("conflicts with {targets}"));
     }
     for (label, flag) in [
         ("prerelease", data.prerelease_target),
@@ -268,20 +271,47 @@ fn change(
     ] {
         if flag == Some(true) {
             details.push(format!("target is {label}"));
+            qualifiers.push(label.into());
         }
     }
+    qualifiers.extend(qualification.map(str::to_owned));
+    let files = data.paths.iter().filter(|_| show_files).cloned().collect();
+    let version_change = format!(
+        "{}:{} {} -> {}",
+        safe(&data.registry),
+        safe(&data.name),
+        safe(&data.from_version),
+        safe(&data.target_version)
+    );
+    let note = if qualifiers.is_empty() {
+        String::new()
+    } else {
+        format!(" ({})", qualifiers.join(", "))
+    };
     Change {
         index,
-        summary: format!(
-            "{action} {}:{} {} -> {}{partial}",
-            safe(&data.registry),
-            safe(&data.name),
-            safe(&data.from_version),
-            safe(&data.target_version)
-        ),
+        compact: format!("{version_change}{note}{}", location(&files)),
+        summary: format!("{action} {version_change}{partial}"),
         details,
-        files: data.paths.iter().filter(|_| show_files).cloned().collect(),
+        files,
         reasons: reasons::explain(c, r, detail),
+    }
+}
+
+fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str>) {
+    match strategy {
+        "unknown" => (
+            Some("The report lists version changes but does not specify how to apply them."),
+            Some("application unclear"),
+        ),
+        "override" => (None, Some("override")),
+        "upgrade" => (None, None),
+        _ => (
+            Some(
+                "The service returned an unfamiliar change strategy; applicability could not be determined.",
+            ),
+            Some("application unclear"),
+        ),
     }
 }
 
@@ -317,6 +347,7 @@ enum AddressedDisplay {
     Named,
     Listed,
     Omitted,
+    Compact,
 }
 
 fn addressed_display(r: &Record, supported: bool, context: &Context<'_>) -> AddressedDisplay {
@@ -339,6 +370,10 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
     let mut lines = Vec::new();
     if !r.addressed_findings.is_empty() {
         match display {
+            AddressedDisplay::Compact => lines.push(format!(
+                "Could address {}",
+                finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
+            )),
             AddressedDisplay::Named => lines.push(format!(
                 "would address: {}",
                 finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
@@ -350,13 +385,27 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
             AddressedDisplay::Omitted => {}
         }
     }
-    if r.outcome == "partial" && r.addressed_findings.is_empty() {
-        lines.push("would address: none reported".into());
+    if r.addressed_findings.is_empty() {
+        match display {
+            AddressedDisplay::Compact
+                if r.remaining_findings.is_empty() && !r.changes.is_empty() =>
+            {
+                lines.push("Advisory benefit unverified".into());
+            }
+            AddressedDisplay::Compact => {}
+            _ if r.outcome == "partial" => lines.push("would address: none reported".into()),
+            _ => {}
+        }
     }
     if !r.remaining_findings.is_empty() {
+        let remaining = finding_names(&r.remaining_findings, &r.addressed_findings, &r.subject);
         lines.push(format!(
-            "still unresolved: {}",
-            finding_names(&r.remaining_findings, &r.addressed_findings, &r.subject)
+            "{}{remaining}",
+            if matches!(display, AddressedDisplay::Compact) {
+                "Still open: "
+            } else {
+                "still unresolved: "
+            }
         ));
     }
     lines
@@ -367,23 +416,35 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
 fn project_edit(b: &Blocker) -> bool {
     b.owner_role == "project" && b.reason == "project_request_change"
 }
-fn edit_instruction(b: &Blocker) -> Option<String> {
+fn edit_instruction(b: &Blocker) -> Option<(String, String)> {
     if !project_edit(b) || b.requirement_status != "recorded" {
         return None;
     }
-    Some(format!(
-        "Applying the candidate requires updating the {} requirement in {}. Current requirement: {}.",
-        safe(b.dependency_name.as_deref()?),
-        safe(&b.path),
-        safe(b.requested_requirement.as_deref()?)
+    let name = safe(b.dependency_name.as_deref()?);
+    let path = safe(&b.path);
+    let current = safe(b.requested_requirement.as_deref()?);
+    Some((
+        format!(
+            "Applying the candidate requires updating the {name} requirement in {path}. Current requirement: {current}."
+        ),
+        format!("Requires changing {name} in {path} (currently {current})"),
     ))
 }
 fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
     let mut groups: Vec<Constraint> = Vec::new();
     for b in blockers {
-        let instruction = edit_instruction(b);
-        let is_edit = instruction.is_some();
-        let summary = instruction.unwrap_or_else(|| constraint_reason(b));
+        let excludes_target = matches!(
+            b.reason.as_str(),
+            "third_party_request_excludes_target" | "required_request_excludes_target"
+        );
+        let (summary, compact_edit) = match edit_instruction(b) {
+            Some((full, compact)) => (full, Some(compact)),
+            None if excludes_target => (
+                "Dependency requirements conflict with this candidate.".into(),
+                None,
+            ),
+            None => (explanation(&b.reason), None),
+        };
         let request = format!(
             "{} {} [{}]",
             owner(&b.owner.name, b.owner.version.as_deref()),
@@ -394,7 +455,7 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
             ),
             safe(&b.path)
         );
-        let details = if is_edit && detail == ReasonDetail::Summary {
+        let details = if compact_edit.is_some() && detail == ReasonDetail::Summary {
             Vec::new()
         } else {
             vec![request]
@@ -406,7 +467,8 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
         groups.push(Constraint {
             summary,
             details,
-            is_edit,
+            compact_edit,
+            excludes_target,
         });
     }
     for group in &mut groups {
@@ -416,7 +478,30 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
     groups
 }
 
-fn checks(r: &Record) -> Vec<String> {
+fn limitations<'a>(
+    r: &'a Record,
+    constraints: &'a [Constraint],
+) -> impl Iterator<Item = String> + 'a {
+    let mut seen = BTreeSet::new();
+    r.limitations
+        .iter()
+        .filter(|l| l.as_str() != "withdrawal_not_observed")
+        .map(|l| explanation(l))
+        .filter(move |message| {
+            !constraints.iter().any(|c| c.summary == *message) && seen.insert(message.clone())
+        })
+}
+
+fn check_line(label: &str, value: &str, compact: bool) -> String {
+    match (compact, label, value) {
+        (true, "release availability", "unverified") => "Release unverified".into(),
+        (true, "requirements", "not_checked" | "unchecked") => "Requirements unchecked".into(),
+        (true, _, _) => capitalize(format!("{label}: {}", check_text(value))),
+        (false, _, _) => format!("{label}: {}", check_text(value)),
+    }
+}
+
+fn checks(r: &Record, compact: bool) -> Vec<String> {
     let c = &r.checks;
     let mut lines = Vec::new();
     for (label, value, normal) in [
@@ -432,7 +517,7 @@ fn checks(r: &Record) -> Vec<String> {
             && value != normal
             && !(label == "requirements" && value == "blocked" && !r.blockers.is_empty())
         {
-            lines.push(format!("{label}: {}", check_text(value)));
+            lines.push(check_line(label, value, compact));
         }
     }
     for (label, value, ordinary) in [
@@ -453,7 +538,7 @@ fn checks(r: &Record) -> Vec<String> {
         ),
     ] {
         if !ordinary.contains(&value) {
-            lines.push(format!("{label}: {}", check_text(value)));
+            lines.push(check_line(label, value, compact));
         }
     }
     match c.parent_search.as_str() {
@@ -475,9 +560,10 @@ fn checks(r: &Record) -> Vec<String> {
         c.availability_source.as_str(),
         "catalog" | "exact_metadata" | "mixed" | "not_assessed"
     ) {
-        lines.push(format!(
-            "availability source: {}",
-            check_text(&c.availability_source)
+        lines.push(check_line(
+            "availability source",
+            &c.availability_source,
+            compact,
         ));
     }
     if c.preference_differences != 0 {
@@ -489,7 +575,14 @@ fn checks(r: &Record) -> Vec<String> {
             .iter()
             .any(|c| c.data.prerelease_target == Some(true))
     {
-        lines.push("action includes a prerelease target".into());
+        lines.push(
+            if compact {
+                "Includes a prerelease target"
+            } else {
+                "action includes a prerelease target"
+            }
+            .into(),
+        );
     }
     if c.deprecated_target
         && !r
@@ -497,7 +590,14 @@ fn checks(r: &Record) -> Vec<String> {
             .iter()
             .any(|c| c.data.deprecated_target == Some(true))
     {
-        lines.push("action includes a deprecated target".into());
+        lines.push(
+            if compact {
+                "Includes a deprecated target"
+            } else {
+                "action includes a deprecated target"
+            }
+            .into(),
+        );
     }
     lines
 }
@@ -707,14 +807,5 @@ fn explanation(value: &str) -> String {
         "project_preference_change" => "applying this change requires updating the project preference".into(),
         "unresolved_manifest_activation" => "manifest applicability is unresolved".into(),
         _ => UNFAMILIAR_REASON.into(),
-    }
-}
-
-fn constraint_reason(b: &Blocker) -> String {
-    match b.reason.as_str() {
-        "third_party_request_excludes_target" | "required_request_excludes_target" => {
-            "Dependency requirements conflict with this candidate.".into()
-        }
-        _ => explanation(&b.reason),
     }
 }

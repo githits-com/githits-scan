@@ -109,11 +109,8 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     assert_eq!(
         document["remediation"]["recommendations"][0]["compact_summary"],
         concat!(
-            "Candidate upgrade: cargo:example-parent 2.0.0 -> 2.1.0 (partial) ",
-            "(why: removes a route to cargo:example-leaf@1.0.0) · ",
-            "would address: none reported · still unresolved: GHSA-example · ",
-            "Applying the candidate requires updating the example-parent requirement in Cargo.toml. ",
-            "Current requirement: ^2.0."
+            "cargo:example-parent 2.0.0 -> 2.1.0. Still open: GHSA-example. ",
+            "Requires changing example-parent in Cargo.toml (currently ^2.0)."
         )
     );
     // Layout/serialization consume the computed blocks without a second phrase map.
@@ -251,12 +248,10 @@ fn prerelease_qualification_checks_both_flags_and_preserves_complete_proposals()
                     .any(|s| s.contains("prerelease"))
             );
             let compact = compact_summary(&input);
-            assert_eq!(compact.starts_with("Suggested fix:"), supported);
-            assert!(compact.contains("would address: GHSA-demo"), "{compact}");
-            assert!(
-                compact.contains("prerelease target") || compact.contains("target is prerelease")
-            );
-            assert_eq!(compact.contains("still unresolved:"), !supported);
+            assert_eq!(compact.starts_with("Bump "), supported);
+            assert!(compact.contains("Could address GHSA-demo"), "{compact}");
+            assert!(compact.contains("prerelease"));
+            assert_eq!(compact.contains("Still open:"), !supported);
         }
     }
 }
@@ -285,10 +280,8 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     assert_eq!(
         compact_summary(&input),
         concat!(
-            "Candidate change: npm:demo 1.0.0 -> 1.2.0-rc.1 (partial) ",
-            "(The report lists version changes but does not specify how to apply them. / ",
-            "target is prerelease) · would address: none reported · still unresolved: GHSA-demo · ",
-            "release availability: not verified · requirements: not checked"
+            "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease, application unclear). ",
+            "Still open: GHSA-demo. Release unverified. Requirements unchecked."
         )
     );
 }
@@ -309,11 +302,10 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
     assert_eq!(
         compact_summary(&input),
         concat!(
-            "Suggested fix — change together: Upgrade npm:demo 1.0.0 -> 1.1.1-rc.1 ",
-            "(target is prerelease) + Upgrade npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
-            "would address: GHSA-example · ",
-            "limit: another recommendation changes a checked dependency; recheck combined changes · ",
-            "limit: conflicting recommendation targets; do not combine them"
+            "Bump npm:demo 1.0.0 -> 1.1.1-rc.1 (prerelease) and ",
+            "npm:parent 2.0.0 -> 2.1.0 (deprecated) together. Could address GHSA-example. ",
+            "Another recommendation changes a checked dependency; recheck combined changes. ",
+            "Conflicting recommendation targets; do not combine them."
         )
     );
 }
@@ -333,10 +325,9 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
     assert_eq!(
         compact_summary(&input),
         concat!(
-            "Candidate changes — change together: Upgrade of npm:demo 1.0.0 -> 1.1.1 + ",
-            "Upgrade of npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
-            "would address: GHSA-example · Dependency requirements conflict with this candidate ",
-            "(express@5.1.0 requires demo ~1.0 [package-lock.json])"
+            "npm:demo 1.0.0 -> 1.1.1 and npm:parent 2.0.0 -> 2.1.0 (deprecated) together. ",
+            "Could address GHSA-example. Conflicting request ",
+            "(express@5.1.0 requires demo ~1.0 [package-lock.json])."
         )
     );
 }

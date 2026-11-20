@@ -277,9 +277,10 @@ vulnerability inventory and advisory hints.
 Remediation wording and semantic selection live in the audit command presentation
 model; native rendering owns grouping, file wrapping and styling. The model also
 produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
-Its compact summary puts one alternative's proposed changes and material
-qualifications in a single line, including the addressed and unresolved advisory
-identities. It reuses native guidance wording and checked-effect selection.
+Its compact summary leads with one alternative's proposed versions and uses
+short sentences for material qualifications and reported advisory impact.
+The same model qualifies concise upgrades and detailed guidance. Checked
+effects, supporting requests and search evidence remain in the full blocks.
 Ordinary audit and focused saved-analysis explanation keep their grouped,
 line-wrapped layout and exact displayed context.
 Project requirement/preference edits are described as necessary when applying the

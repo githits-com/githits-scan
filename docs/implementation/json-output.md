@@ -212,11 +212,10 @@ report. It contains:
 Each change has `change_index` (zero-based within the matching fact record),
 `summary`, `details`, `files` and `reasons`. Each reason has `summary` and
 `evidence` (supporting request explanations). Detailed reason evidence is always
-exported when available. Ordinary native output and the exported compact summary
-can suppress redundant advisory reasons and supporting request inventories.
-All explanation selection and wording still come
-from the same model. Missing or unfamiliar reason detail is qualified explicitly
-in the detailed export; it never becomes an invented checked benefit.
+exported when available. Ordinary native output can suppress redundant advisory
+reasons and supporting request inventories. Use the full blocks alongside
+compact text for change reasons and their supporting evidence. Missing or
+unfamiliar reason detail is qualified explicitly in the detailed export.
 
 Indices are document-local links, stable only within this complete report. They
 are not backend identifiers or identities across analyses. Coordinates, advisory
@@ -231,13 +230,15 @@ metadata in `audit.vulnerabilities`.
 Use `compact_summary` directly beside the finding identities that associate the
 alternative with the row. It names the exact changes and reported advisory impact,
 even when the row covers more advisories than this alternative. Joint changes
-share one summary. Keep independent alternatives separate. The summary includes
-material target and application qualifications, explicit file scope where it
-differs from the finding context, checked effects such as a parent change that
-removes a recorded route, conflicting requests and coordination warnings. A required
-project edit describes what applying the candidate entails. A partial candidate
-keeps its reported benefit and unresolved findings visible. A record without a
-change explains the outcome and includes reported obstacles when available.
+share one summary. Keep independent alternatives separate. The summary leads
+with the version changes, then names material caveats in short sentences.
+`Bump` uses the same qualification as a supported upgrade in native output.
+Candidate versions are presented neutrally. Target warnings stay with their
+respective versions. The summary retains explicit file scope, conflicting
+requests, required project edits and material checks or coordination warnings.
+A partial candidate can name the advisories still open without a separate
+statement about missing benefit. A record without a change explains the outcome
+and includes reported obstacles when available.
 
 Use the full blocks for supporting requests, checked-effect evidence and detailed
 upgrade searches. Display report-wide `messages` and `limits` once with the

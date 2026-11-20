@@ -102,7 +102,7 @@ fn assert_alternatives(online: &Value) {
     assert_eq!(records.len(), 2, "alternatives remain independent");
     assert_eq!(
         records[0]["compact_summary"],
-        "Suggested fix: Upgrade npm:demo 1.0.0 -> 1.1.1 · would address: GHSA-demo"
+        "Bump npm:demo 1.0.0 -> 1.1.1. Could address GHSA-demo."
     );
     let alternative = records[1]["compact_summary"]
         .as_str()
@@ -110,9 +110,8 @@ fn assert_alternatives(online: &Value) {
     assert_eq!(
         alternative,
         concat!(
-            "Suggested fix: Upgrade npm:demo 1.0.0 -> 1.2.0-rc.1<&|`\\n\\u{1b}[2J ",
-            "(target is prerelease) · Change in: other/mark|<`>\\npackage-lock.json · ",
-            "would address: GHSA-demo"
+            "Bump npm:demo 1.0.0 -> 1.2.0-rc.1<&|`\\n\\u{1b}[2J ",
+            "(prerelease) in other/mark|<`>\\npackage-lock.json. Could address GHSA-demo."
         )
     );
     assert!(!alternative.contains(['\n', '\u{1b}']));
@@ -287,10 +286,11 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
             "{native}"
         );
     }
-    assert!(
-        guidance.contains(change)
-            && guidance.contains(edit)
-            && guidance.contains("would address: GHSA-demo"),
-        "{guidance}"
+    assert_eq!(
+        guidance,
+        concat!(
+            "npm:demo 1.0.0 -> 1.1.1. Could address GHSA-demo. ",
+            "Requires changing demo in package.json (currently ~1.0)."
+        )
     );
 }

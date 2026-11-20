@@ -134,9 +134,8 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
     assert_eq!(
         r["compact_summary"],
         concat!(
-            "Candidate upgrade: npm:demo 1.0.0 -> 1.1.1 · would address: GHSA-demo · ",
-            "Applying the candidate requires updating the demo requirement in package.json. ",
-            "Current requirement: ^1.0."
+            "npm:demo 1.0.0 -> 1.1.1. Could address GHSA-demo. ",
+            "Requires changing demo in package.json (currently ^1.0)."
         )
     );
     value["remediation"]["recommendations"][0]["outcome"] = "partial".into();
@@ -384,7 +383,7 @@ fn audit_search_indeterminate_result_does_not_deny_supplied_search_evidence() {
     assert_eq!(
         r["compact_summary"],
         concat!(
-            "The service could not determine a mitigation. · still unresolved: GHSA-demo · ",
+            "The service could not determine a mitigation. Still open: GHSA-demo. ",
             "Release metadata for cargo:example-parent@3.0.0: lookup failed."
         )
     );
