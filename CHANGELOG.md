@@ -13,6 +13,22 @@ pre-public baseline, not a supported installation target. Historical flags in
 that section describe 0.2.0 only; use the README for current commands and the
 0.3.0 migration notes when updating pre-public automation.
 
+## [0.6.1] - 2026-11-20
+
+### Added
+
+- **Compact audit fix guidance** - `audit --presentation-json` adds
+  `compact_summary` and `details_recommended` to each alternative within
+  presentation schema 1. Use them to show the proposed versions and the main
+  issue beside a finding and link to the full evidence when needed. Terminal
+  audit and saved explanations state which project edits are required to apply
+  a candidate and keep changes that must be made together in one group.
+- **Checked dependencies introduced by upgrades** - When the audit report
+  supplies this evidence, Scan shows the new dependency requests, the versions
+  selected by the registry checks, and the advisory results for each checked
+  version. Search explanations show which candidate introduced the request and
+  where a check failed. Audit JSON and saved analyses retain the supplied evidence.
+
 ## [0.6.0] - 2026-11-19
 
 ### Added
