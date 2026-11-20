@@ -232,7 +232,8 @@ fn change(
         && matches!(r.outcome.as_str(), "proposed" | "partial")
         && known_checks(&r.checks);
     let action = match (known, data.strategy.as_str(), r.changes.len() > 1) {
-        (true, "upgrade", true) => "Upgrade",
+        (true, "upgrade", true) if supported => "Upgrade",
+        (true, "upgrade", true) => "Upgrade of",
         (_, _, true) => "Change",
         (true, "upgrade", false) if supported => "Suggested fix: Upgrade",
         (true, "upgrade", false) => "Candidate upgrade:",

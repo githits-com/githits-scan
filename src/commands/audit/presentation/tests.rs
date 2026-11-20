@@ -333,8 +333,8 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
     assert_eq!(
         compact_summary(&input),
         concat!(
-            "Candidate changes — change together: Upgrade npm:demo 1.0.0 -> 1.1.1 + ",
-            "Upgrade npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
+            "Candidate changes — change together: Upgrade of npm:demo 1.0.0 -> 1.1.1 + ",
+            "Upgrade of npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
             "would address: GHSA-example · Dependency requirements conflict with this candidate ",
             "(express@5.1.0 requires demo ~1.0 [package-lock.json])"
         )
