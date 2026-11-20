@@ -322,6 +322,20 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
 }
 
 #[test]
+fn compact_summary_attributes_an_unfamiliar_joint_update_method() {
+    let mut input: Value = serde_json::from_slice(include_bytes!(
+        "../../../../tests/fixtures/audit/graph.json"
+    ))
+    .expect("joint report");
+    input["remediation"]["recommendations"][0]["changes"][1]["strategy"] = "future_strategy".into();
+    let summary = compact_summary(&input);
+    assert!(
+        summary.ends_with("Scan does not recognize the update method for npm:parent."),
+        "{summary}"
+    );
+}
+
+#[test]
 fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordination() {
     let mut input: Value = serde_json::from_slice(include_bytes!(
         "../../../../tests/fixtures/audit/graph.json"
