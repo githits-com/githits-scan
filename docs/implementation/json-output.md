@@ -246,11 +246,13 @@ applying the change. The detailed impact block retains any reported potential
 benefit for a candidate. Target warnings stay with their respective versions.
 A record without a change explains the outcome and includes a reported obstacle
 when available.
-When the selected change includes checked additions, the summary can name one
-registry-selected version and prioritize an affecting advisory or an incomplete
-check on an added dependency. The `details_recommended` cue points to the full
-dependency checks. A candidate with no applicable change can also name a
-specific problem with a new dependency request.
+When the registry check finds an advisory on a dependency introduced by a
+proposed change, the summary names the affected version and supplied advisory
+IDs. It keeps concrete constraints inline and leaves general check limitations
+with the full evidence. An incomplete addition check can also explain an
+uncertain candidate. The `details_recommended` cue points to the full checks.
+A candidate with no applicable change can name a specific problem with a new
+dependency request.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for unclear candidates, no-change outcomes

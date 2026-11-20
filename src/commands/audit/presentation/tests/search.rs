@@ -242,6 +242,7 @@ fn audit_added_dependencies_compact_prioritizes_selected_branch_problems() {
         (
             json!([clean, incomplete]),
             concat!(
+                "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. ",
                 "Registry checks selected npm:router@2.3.0 for one of 2 new dependency requests. ",
                 "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
                 "so its dependencies could not be fully checked."
@@ -250,9 +251,9 @@ fn audit_added_dependencies_compact_prioritizes_selected_branch_problems() {
         (
             json!([clean, incomplete, affected]),
             concat!(
-                "Registry checks selected npm:added-child@1.0.0 for one of 3 new dependency requests. ",
-                "Advisory check for npm:affected-descendant@1.0.0 found applicable advisories ",
-                "(AUDIT-ADDED-affected-descendant)."
+                "The registry check found that upgrading npm:demo from 1.0.0 to 1.1.1 in package-lock.json ",
+                "introduces a new dependency, npm:affected-descendant@1.0.0, affected by ",
+                "AUDIT-ADDED-affected-descendant. Addresses GHSA-demo."
             ),
         ),
     ] {
@@ -261,13 +262,54 @@ fn audit_added_dependencies_compact_prioritizes_selected_branch_problems() {
         let doc = blocks(&value);
         let r = &doc["remediation"]["recommendations"][0];
         assert_eq!(r["details_recommended"], true);
-        assert_eq!(
-            r["compact_summary"],
-            format!(
-                "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. {expected}"
-            )
-        );
+        assert_eq!(r["compact_summary"], expected);
     }
+}
+
+#[test]
+fn audit_added_dependencies_advisory_precedes_unchecked_requirements() {
+    let evidence = addition_evidence();
+    let mut value = input();
+    let r = &mut value["remediation"]["recommendations"][0];
+    r["checks"]["requirements"] = "unchecked".into();
+    r["changes"][0]["added_dependencies"] =
+        json!([evidence["search_details"][0]["added_dependency"]]);
+    let doc = blocks(&value);
+    let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(r["details_recommended"], true);
+    assert_eq!(
+        r["compact_summary"],
+        concat!(
+            "The registry check found that upgrading npm:demo from 1.0.0 to 1.1.1 introduces ",
+            "a new dependency, npm:affected-descendant@1.0.0, affected by AUDIT-ADDED-affected-descendant."
+        )
+    );
+    assert_eq!(
+        r["checks"],
+        json!([
+            "The audit did not check whether the project's dependency requirements allow this change."
+        ])
+    );
+}
+
+#[test]
+fn audit_added_dependencies_advisory_keeps_concrete_project_edit_conditional() {
+    let evidence = addition_evidence();
+    let mut value = input_with_project_edit();
+    let r = &mut value["remediation"]["recommendations"][0];
+    r["changes"][0]["added_dependencies"] =
+        json!([evidence["search_details"][0]["added_dependency"]]);
+    let doc = blocks(&value);
+    let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(r["details_recommended"], true);
+    assert_eq!(
+        r["compact_summary"],
+        concat!(
+            "The registry check found that upgrading npm:demo from 1.0.0 to 1.1.1 introduces ",
+            "a new dependency, npm:affected-descendant@1.0.0, affected by AUDIT-ADDED-affected-descendant. ",
+            "Applying the proposal requires updating the version constraint for demo in package.json (currently ^1.0)."
+        )
+    );
 }
 
 #[test]

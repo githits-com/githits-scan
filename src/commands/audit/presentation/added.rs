@@ -14,7 +14,14 @@ pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> 
     })
 }
 
-pub(super) fn compact_changes<'a>(branches: impl Iterator<Item = &'a Branch>) -> Option<String> {
+pub(super) enum CompactAddition {
+    Advisory(String),
+    Description(String),
+}
+
+pub(super) fn compact_changes<'a>(
+    branches: impl Iterator<Item = &'a Branch>,
+) -> Option<CompactAddition> {
     let mut count = 0;
     let (branch, problem) = branches
         .inspect(|_| count += 1)
@@ -24,6 +31,19 @@ pub(super) fn compact_changes<'a>(branches: impl Iterator<Item = &'a Branch>) ->
             Some(_) => 1,
             None => 2,
         })?;
+    if let Some(SearchProblem::Affected(checked)) = &problem
+        && registry_resolution(branch)
+    {
+        let coordinate = safe(&checked.coordinate.to_string());
+        let advisory = if checked.advisory_ids.is_empty() {
+            "with an advisory the report did not identify".into()
+        } else {
+            format!("affected by {}", list(&checked.advisory_ids))
+        };
+        return Some(CompactAddition::Advisory(format!(
+            "a new dependency, {coordinate}, {advisory}"
+        )));
+    }
     let scope = if count == 1 {
         "a new dependency".into()
     } else {
@@ -39,10 +59,10 @@ pub(super) fn compact_changes<'a>(branches: impl Iterator<Item = &'a Branch>) ->
         } else {
             format!("The release {} as {scope}", request(branch))
         };
-    Some(match problem {
+    Some(CompactAddition::Description(match problem {
         Some(problem) => format!("{summary}. {}", problem.explain(branch)),
         None => summary,
-    })
+    }))
 }
 
 pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {

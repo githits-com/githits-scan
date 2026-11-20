@@ -256,6 +256,10 @@ fn audit_added_dependencies_keeps_one_explanation_for_each_advisory_gap() {
 
 #[test]
 fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request() {
+    let description = |summary| match summary {
+        Some(CompactAddition::Description(text)) => Some(text),
+        _ => None,
+    };
     let mut resolved = branch("npm", &json!({"operation":"release","reason":"timeout"}));
     resolved.issues.clear();
     let mut other = resolved.clone();
@@ -263,7 +267,7 @@ fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request
     other.authored_name.clone_from(&other.name);
     other.coordinates[0].coordinate.name.clone_from(&other.name);
     assert_eq!(
-        compact_changes([&resolved, &other].into_iter()).as_deref(),
+        description(compact_changes([&resolved, &other].into_iter())).as_deref(),
         Some("Registry checks selected npm:added-root@1.0.0 for one of 2 new dependency requests")
     );
     let mut unresolved = branch(
@@ -273,14 +277,14 @@ fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request
     unresolved.selected_version = None;
     unresolved.coordinates.clear();
     assert_eq!(
-        compact_changes(std::iter::once(&unresolved)).as_deref(),
+        description(compact_changes(std::iter::once(&unresolved))).as_deref(),
         Some(concat!(
             "The release requires added-root ^1 as a new dependency. ",
             "Registry version selection for npm:added-root — no published version matched the requirement."
         ))
     );
     assert_eq!(
-        compact_changes([&other, &unresolved].into_iter()).as_deref(),
+        description(compact_changes([&other, &unresolved].into_iter())).as_deref(),
         Some(concat!(
             "The release requires added-root ^1 as one of 2 new dependency requests. ",
             "Registry version selection for npm:added-root — no published version matched the requirement."

@@ -334,7 +334,11 @@ fn audit_remediation_material_warnings_remain_visible() {
             "unverified",
             "release availability: not verified",
         ),
-        ("requirements", "unchecked", "requirements: not checked"),
+        (
+            "requirements",
+            "unchecked",
+            "The audit did not check whether the project's dependency requirements",
+        ),
         (
             "requirements",
             "blocked",
@@ -855,7 +859,10 @@ fn audit_remediation_native_disagreement_keeps_the_candidate_qualified() {
         text.contains("Candidate upgrade:") || text.contains("Candidate change:"),
         "{text}"
     );
-    assert!(text.contains("requirements: not checked"), "{text}");
+    assert!(
+        text.contains("The audit did not check whether the project's dependency requirements"),
+        "{text}"
+    );
     assert!(
         text.contains("limit: manifest and lockfile disagree"),
         "{text}"

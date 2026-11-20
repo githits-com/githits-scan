@@ -213,7 +213,10 @@ fn audit_remediation_grouping_keeps_unowned_problems_and_independent_checks() {
     );
     let second = text.split_once("Alternative 2").expect("second").1;
     assert!(second.contains("Candidate change:"), "{text}");
-    assert!(second.contains("requirements: not checked"), "{text}");
+    assert!(
+        second.contains("The audit did not check whether the project's dependency requirements"),
+        "{text}"
+    );
     assert!(!second.contains("project resolver/build not run"), "{text}");
     assert_eq!(text.matches("1.0.0 -> 1.1.1").count(), 2, "{text}");
 }

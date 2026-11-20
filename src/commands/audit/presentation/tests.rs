@@ -297,7 +297,7 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
         recommendation["checks"],
         json!([
             "release availability: not verified",
-            "requirements: not checked"
+            "The audit did not check whether the project's dependency requirements allow this change."
         ])
     );
     assert_eq!(

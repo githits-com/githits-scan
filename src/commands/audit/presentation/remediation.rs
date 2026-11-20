@@ -1,5 +1,5 @@
 //! One computation of qualification, impact and the explanations beside changes.
-use super::{context::Context, list, requirement_status, safe};
+use super::{added::CompactAddition, context::Context, list, requirement_status, safe};
 use crate::api::audit::remediation::{Blocker, Checks};
 use crate::catalog::{self, Role};
 use crate::commands::audit::view::remediation::{
@@ -152,26 +152,32 @@ impl Plan {
 
     /// Compose the inline summary and indicate whether a Details link is useful.
     pub(super) fn compact(&self, r: &Record) -> (String, bool) {
-        let mut sentences = Vec::new();
-        if let Some(changes) = self.compact_changes(r) {
-            sentences.push(changes);
-        }
-        sentences.extend(self.outcome.iter().cloned());
-        let mut target_warnings = action_target_warnings(r).peekable();
-        let target_caveat = target_warnings.peek().is_some()
-            || self.changes.iter().any(|change| change.target_caveat);
-        let clear_edit = self.clear_project_edit && !target_caveat;
-        let mut issue = self.compact_issue(r, clear_edit);
         let addition = super::added::compact_changes(
             r.changes
                 .iter()
                 .filter_map(|c| c.data.added_dependencies.as_deref())
                 .flatten(),
         );
+        let advisory = match &addition {
+            Some(CompactAddition::Advisory(text)) => Some(text.as_str()),
+            _ => None,
+        };
+        let mut sentences = Vec::new();
+        if let Some(changes) = self.compact_changes(r, advisory) {
+            sentences.push(changes);
+        }
+        sentences.extend(self.outcome.iter().cloned());
+        let mut target_warnings = action_target_warnings(r).peekable();
+        let target_caveat = target_warnings.peek().is_some()
+            || self.changes.iter().any(|change| change.target_caveat);
+        let clear_edit = self.clear_project_edit && !target_caveat && advisory.is_none();
+        let mut issue = self.compact_issue(r, clear_edit, advisory.is_some());
+        let has_changes = !self.changes.is_empty();
+        let has_remaining_findings = !r.remaining_findings.is_empty();
         let details_recommended = !(self.supported || clear_edit)
             || self.outcome.is_some()
             || r.outcome == "partial"
-            || !r.remaining_findings.is_empty()
+            || has_remaining_findings
             || (issue.is_some() && !clear_edit)
             || target_caveat
             || addition.is_some();
@@ -181,8 +187,8 @@ impl Plan {
         }
         if self.supported
             || clear_edit
-            || issue.is_none()
-            || (!r.remaining_findings.is_empty() && !self.changes.is_empty())
+            || (issue.is_none() && advisory.is_none())
+            || (has_remaining_findings && has_changes)
         {
             sentences.extend(impact(
                 r,
@@ -191,8 +197,10 @@ impl Plan {
                 },
             ));
         }
-        if issue.is_none() {
-            sentences.extend(addition);
+        if issue.is_none()
+            && let Some(CompactAddition::Description(description)) = addition
+        {
+            sentences.push(description);
         }
         sentences.extend(issue);
         let summary = sentences
@@ -203,12 +211,17 @@ impl Plan {
         (summary, details_recommended)
     }
 
-    fn compact_issue(&self, r: &Record, clear_edit: bool) -> Option<String> {
-        self.constraints
+    fn compact_issue(&self, r: &Record, clear_edit: bool, added_advisory: bool) -> Option<String> {
+        let conflict = self
+            .constraints
             .iter()
             .find(|constraint| constraint.excludes_target)
             .map(|constraint| constraint.compact_text(clear_edit))
-            .or_else(|| self.compact_limit(r, "incompatible_recommendations"))
+            .or_else(|| self.compact_limit(r, "incompatible_recommendations"));
+        if added_advisory {
+            return conflict.or_else(|| self.compact_constraint(clear_edit));
+        }
+        conflict
             .or_else(|| {
                 target_checks(r)
                     .next()
@@ -264,9 +277,26 @@ impl Plan {
         super::search::compact_obstacle(r, &self.search_explanations)
     }
 
-    fn compact_changes(&self, r: &Record) -> Option<String> {
+    fn compact_changes(&self, r: &Record, added_advisory: Option<&str>) -> Option<String> {
         if self.changes.is_empty() {
             return None;
+        }
+        let paths = self.compact_location(r);
+        if let (Some(advisory), [change], [text]) = (
+            added_advisory,
+            r.changes.as_slice(),
+            self.changes.as_slice(),
+        ) && change.data.strategy == "upgrade"
+            && !text.target_caveat
+        {
+            let data = &change.data;
+            return Some(format!(
+                "The registry check found that upgrading {}:{} from {} to {}{paths} introduces {advisory}",
+                safe(&data.registry),
+                safe(&data.name),
+                safe(&data.from_version),
+                safe(&data.target_version),
+            ));
         }
         let changes = self
             .changes
@@ -274,14 +304,21 @@ impl Plan {
             .map(|change| change.compact.as_str())
             .collect::<Vec<_>>()
             .join(" and ");
-        let action = if self.supported { "Bump " } else { "" };
+        let action = if self.supported && added_advisory.is_none() {
+            "Bump "
+        } else {
+            ""
+        };
         let together = if self.changes.len() > 1 {
             " together"
         } else {
             ""
         };
-        let paths = self.compact_location(r);
-        Some(format!("{action}{changes}{together}{paths}"))
+        let summary = format!("{action}{changes}{together}{paths}");
+        Some(match added_advisory {
+            Some(advisory) => format!("{summary}. The registry check found {advisory}"),
+            None => summary,
+        })
     }
 
     fn compact_location(&self, r: &Record) -> String {
@@ -654,7 +691,8 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
         (true, "release availability", "unverified") => {
             "Target release availability unverified".into()
         }
-        (true, "requirements", "not_checked" | "unchecked") => "Requirements unchecked".into(),
+        (_, "requirements", "not_checked" | "unchecked" | "not_assessed") =>
+            "The audit did not check whether the project's dependency requirements allow this change.".into(),
         (true, "requirements", "blocked") => {
             "Upgrade conflicts with dependency requirements".into()
         }
