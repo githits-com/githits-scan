@@ -199,6 +199,7 @@ report. It contains:
 | `subject` | Existing subject coordinate; never a new opaque plan ID |
 | `findings`, `addressed_findings`, `remaining_findings` | Existing `{package, advisory, files}` fact identities, unchanged |
 | `compact_summary` | Nonempty single-line plain text for this alternative. Added after Scan 0.6.0 within schema 1 |
+| `details_recommended` | Boolean presentation cue to link to this alternative's full blocks when a reader needs more context |
 | `heading` | Shared qualified heading for joint changes; null for a single change whose summary carries its qualification, or when no changes were supplied |
 | `outcome` | Plain-language separate outcome, or null when the heading suffices |
 | `changes` | Ordered changes that belong together within this alternative |
@@ -231,24 +232,30 @@ Use `compact_summary` directly beside the finding identities that associate the
 alternative with the row. It names the exact changes and the advisories a
 supported upgrade addresses, even when the row covers more advisories than this
 alternative. Joint changes share one summary. Keep independent alternatives
-separate. The summary leads with the version changes, then names material
-caveats in short sentences.
+separate. The summary leads with the version changes and target warnings,
+then highlights the main issue affecting the proposed change. Concrete
+dependency conflicts and required project edits take priority over check gaps.
 `Bump` uses the same qualification as a supported upgrade in native output.
-Candidate summaries show the versions, material caveats and unresolved
-advisories. Any reported potential benefit for a candidate is available in the
-detailed impact block. Target warnings stay with their respective versions.
-The summary retains explicit file scope, conflicting
-requests, required project edits and material checks or coordination warnings.
-A partial candidate can name the advisories still open without a separate
-statement about missing benefit. A record without a change explains the outcome
-and includes reported obstacles when available.
+Candidate summaries can name the unresolved advisories when the report
+supplies no more specific issue. The detailed impact block retains any
+reported potential benefit. Target warnings stay with their respective
+versions. A record without a change explains the outcome and includes a
+reported obstacle when available.
+
+Use `details_recommended` to decide whether to show a link such as **Details**
+beside the summary. Scan sets it for candidates and no-change outcomes, and
+for supported upgrades with qualifications such as open advisories, target
+warnings or coordination issues. Required manual edits also set it. Routine
+supported upgrades have it set to false. The flag is presentation guidance.
+Continue to use audit facts and the exit code for policy. The consumer owns
+the link and its target.
 
 Use the full blocks for supporting requests, checked-effect evidence and detailed
 upgrade searches. Display report-wide `messages` and `limits` once with the
 guidance. Scan provides a single line without a fixed byte budget. Consumers own
 layout, escaping and links, including where to put longer qualified alternatives
 when space is limited. Keep the qualifications with the proposed changes.
-For schema-1 output from Scan 0.6.0, feature-detect the absent field and use the
+For schema-1 output from Scan 0.6.0, feature-detect the absent fields and use the
 full explanation blocks if supporting that release. Existing saved analyses
 produce the field when replayed with a binary that supports it.
 

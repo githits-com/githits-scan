@@ -43,6 +43,7 @@ fn audit_search_explains_losing_release_without_changing_selected_fix() {
         r["compact_summary"],
         blocks(&input())["remediation"]["recommendations"][0]["compact_summary"]
     );
+    assert_eq!(r["details_recommended"], false);
     assert_eq!(
         doc["audit"]["remediation"]["recommendations"][0]["search_details"][0]["witness"]["coordinate"],
         coordinate("example-parent", "3.0.0")
@@ -131,6 +132,7 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
         "Applying the candidate requires updating the demo requirement in package.json. Current requirement: ^1.0."
     );
     assert_eq!(r["impact"], json!(["would address the listed advisory"]));
+    assert_eq!(r["details_recommended"], true);
     assert_eq!(
         r["compact_summary"],
         concat!(
@@ -380,10 +382,11 @@ fn audit_search_indeterminate_result_does_not_deny_supplied_search_evidence() {
         r["outcome"],
         "The service could not determine a mitigation."
     );
+    assert_eq!(r["details_recommended"], true);
     assert_eq!(
         r["compact_summary"],
         concat!(
-            "The service could not determine a mitigation. Still open: GHSA-demo. ",
+            "The service could not determine a mitigation. ",
             "Release metadata for cargo:example-parent@3.0.0: lookup failed."
         )
     );

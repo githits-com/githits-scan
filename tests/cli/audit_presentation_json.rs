@@ -104,6 +104,8 @@ fn assert_alternatives(online: &Value) {
         records[0]["compact_summary"],
         "Bump npm:demo 1.0.0 -> 1.1.1. Addresses GHSA-demo."
     );
+    assert_eq!(records[0]["details_recommended"], false);
+    assert_eq!(records[1]["details_recommended"], true);
     let alternative = records[1]["compact_summary"]
         .as_str()
         .expect("compact text");
@@ -272,6 +274,10 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
     );
     let focused = offline(&path, &["--explain", "npm:demo@1.0.0", "--no-color"]);
     let export = document(&offline(&path, &["--presentation-json"]));
+    assert_eq!(
+        export["remediation"]["recommendations"][0]["details_recommended"],
+        true
+    );
     let guidance = export["remediation"]["recommendations"][0]["compact_summary"]
         .as_str()
         .expect("compact text");

@@ -47,6 +47,7 @@ struct Recommendation<'a> {
     addressed_findings: &'a [Finding],
     remaining_findings: &'a [Finding],
     compact_summary: String,
+    details_recommended: bool,
     #[serde(flatten)]
     explanation: Plan,
 }
@@ -80,6 +81,7 @@ impl<'a> Remediation<'a> {
                     addressed_findings: &r.addressed_findings,
                     remaining_findings: &r.remaining_findings,
                     compact_summary: explanation.compact_summary(r),
+                    details_recommended: explanation.details_recommended(r),
                     explanation,
                 }
             })

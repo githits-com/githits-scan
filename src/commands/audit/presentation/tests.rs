@@ -109,7 +109,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     assert_eq!(
         document["remediation"]["recommendations"][0]["compact_summary"],
         concat!(
-            "cargo:example-parent 2.0.0 -> 2.1.0. Still open: GHSA-example. ",
+            "cargo:example-parent 2.0.0 -> 2.1.0. ",
             "Requires changing example-parent in Cargo.toml (currently ^2.0)."
         )
     );
@@ -284,10 +284,25 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     r["checks"]["release_availability"] = "unverified".into();
     assert_eq!(
         compact_summary(&input),
-        concat!(
-            "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease, application unclear). ",
-            "Still open: GHSA-demo. Release unverified. Requirements unchecked."
-        )
+        "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Application unclear."
+    );
+    let view = project(&input);
+    let doc = serde_json::to_value(Document::new(&view)).expect("presentation");
+    let recommendation = &doc["remediation"]["recommendations"][0];
+    assert_eq!(recommendation["details_recommended"], true);
+    assert_eq!(
+        recommendation["checks"],
+        json!([
+            "release availability: not verified",
+            "requirements: not checked"
+        ])
+    );
+    assert_eq!(
+        recommendation["impact"],
+        json!([
+            "would address: none reported",
+            "still unresolved: GHSA-demo"
+        ])
     );
 }
 
@@ -309,8 +324,7 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
         concat!(
             "Bump npm:demo 1.0.0 -> 1.1.1-rc.1 (prerelease) and ",
             "npm:parent 2.0.0 -> 2.1.0 (deprecated) together. Addresses GHSA-example. ",
-            "Another recommendation changes a checked dependency; recheck combined changes. ",
-            "Conflicting recommendation targets; do not combine them."
+            "Do not combine conflicting recommendations."
         )
     );
 }
@@ -327,11 +341,12 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
     constraint["requested_requirement"] = "~1.0".into();
     r["blockers"] = json!([constraint]);
     r["checks"]["requirements"] = "blocked".into();
+    r["checks"]["release_availability"] = "unverified".into();
     assert_eq!(
         compact_summary(&input),
         concat!(
             "npm:demo 1.0.0 -> 1.1.1 and npm:parent 2.0.0 -> 2.1.0 (deprecated) together. ",
-            "Conflicting request ",
+            "Upgrade conflict on a requirement ",
             "(express@5.1.0 requires demo ~1.0 [package-lock.json])."
         )
     );
@@ -345,7 +360,7 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
     assert!(summary.contains("(conflicts with 2.2.0 and 2.3.0, deprecated)"));
     assert!(
         summary.contains(concat!(
-            "Conflicting requests (express@5.1.0 requires demo ~1.0 [package-lock.json]) ",
+            "Upgrade conflict on requirements (express@5.1.0 requires demo ~1.0 [package-lock.json]) ",
             "and (other@5.1.0 requires demo >=1, <1.1 [package-lock.json])."
         )),
         "{summary}"

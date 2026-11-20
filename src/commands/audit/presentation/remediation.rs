@@ -44,6 +44,8 @@ pub(in crate::commands::audit) struct Plan {
 pub(in crate::commands::audit) struct Change {
     #[serde(skip)]
     compact: String,
+    #[serde(skip)]
+    application_issue: Option<&'static str>,
     /// Position in the owning fact record’s changes array.
     #[serde(rename = "change_index")]
     pub index: usize,
@@ -87,7 +89,7 @@ impl Plan {
             .unwrap_or_default();
         let constraints = constraints(&r.blockers, detail);
         let mut limitations: Vec<_> = limitations(r, &constraints)
-            .map(|message| format!("limit: {message}"))
+            .map(|(_, message)| format!("limit: {message}"))
             .collect();
         if let Some(message) = super::search::retention(r) {
             limitations.push(message);
@@ -137,31 +139,76 @@ impl Plan {
             sentences.push(changes);
         }
         sentences.extend(self.outcome.iter().cloned());
-        sentences.extend(impact(
-            r,
-            AddressedDisplay::Compact {
-                supported: self.supported,
-            },
-        ));
-        sentences.extend(self.constraints.iter().map(Constraint::compact_text));
-        sentences.extend(checks(r, true));
-        sentences.extend(limitations(r, &self.constraints).map(capitalize));
-        if self.changes.is_empty() {
-            sentences.extend(super::search::retention(r));
-            let mut seen = BTreeSet::new();
-            sentences.extend(
-                self.search_explanations
-                    .iter()
-                    .map(|s| &s.summary)
-                    .filter(|summary| seen.insert(*summary))
-                    .cloned(),
-            );
+        sentences
+            .extend(action_target_warnings(r).map(|label| format!("Includes a {label} target")));
+        let issue = self.compact_issue(r);
+        if self.supported || issue.is_none() {
+            sentences.extend(impact(
+                r,
+                AddressedDisplay::Compact {
+                    supported: self.supported,
+                },
+            ));
         }
+        sentences.extend(issue);
         sentences
             .into_iter()
             .map(sentence)
             .collect::<Vec<_>>()
             .join(" ")
+    }
+
+    /// Indicate whether the reader should have a link to the full alternative.
+    pub(super) fn details_recommended(&self, r: &Record) -> bool {
+        !self.supported
+            || self.outcome.is_some()
+            || r.outcome == "partial"
+            || !r.remaining_findings.is_empty()
+            || !self.constraints.is_empty()
+            || !self.checks.is_empty()
+            || !self.limitations.is_empty()
+            || self.changes.iter().any(|change| !change.details.is_empty())
+    }
+
+    fn compact_issue(&self, r: &Record) -> Option<String> {
+        self.constraints
+            .iter()
+            .find(|constraint| constraint.excludes_target)
+            .or_else(|| {
+                self.constraints
+                    .iter()
+                    .find(|constraint| constraint.compact_edit.is_some())
+            })
+            .or_else(|| self.constraints.first())
+            .map(Constraint::compact_text)
+            .or_else(|| self.search_obstacle())
+            .or_else(|| {
+                self.changes
+                    .iter()
+                    .find_map(|change| change.application_issue)
+                    .map(str::to_owned)
+            })
+            .or_else(|| checks(r, true).into_iter().next())
+            .or_else(|| {
+                limitations(r, &self.constraints)
+                    .min_by_key(|(code, _)| *code != "incompatible_recommendations")
+                    .map(compact_limitation)
+            })
+            .or_else(|| {
+                self.changes
+                    .is_empty()
+                    .then(|| super::search::retention(r))
+                    .flatten()
+            })
+    }
+
+    fn search_obstacle(&self) -> Option<String> {
+        if !self.changes.is_empty() {
+            return None;
+        }
+        self.search_explanations
+            .first()
+            .map(|explanation| explanation.summary.clone())
     }
 
     fn compact_changes(&self) -> Option<String> {
@@ -213,8 +260,8 @@ impl Constraint {
         }
         let requests = self.details.join(") and (");
         let label = match (self.excludes_target, self.details.len()) {
-            (true, 1) => "Conflicting request",
-            (true, _) => "Conflicting requests",
+            (true, 1) => "Upgrade conflict on a requirement",
+            (true, _) => "Upgrade conflict on requirements",
             (false, _) => self.summary.trim_end_matches('.'),
         };
         capitalize(format!("{label} ({requests})"))
@@ -281,7 +328,6 @@ fn change(
             qualifiers.push(label.into());
         }
     }
-    qualifiers.extend(qualification.map(str::to_owned));
     let files = data.paths.iter().filter(|_| show_files).cloned().collect();
     let version_change = format!(
         "{}:{} {} -> {}",
@@ -298,6 +344,7 @@ fn change(
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),
+        application_issue: qualification,
         summary: format!("{action} {version_change}{partial}"),
         details,
         files,
@@ -309,15 +356,15 @@ fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str
     match strategy {
         "unknown" => (
             Some("The report lists version changes but does not specify how to apply them."),
-            Some("application unclear"),
+            Some("Application unclear"),
         ),
-        "override" => (None, Some("override")),
+        "override" => (None, Some("Override proposal")),
         "upgrade" => (None, None),
         _ => (
             Some(
                 "The service returned an unfamiliar change strategy; applicability could not be determined.",
             ),
-            Some("application unclear"),
+            Some("Application unclear"),
         ),
     }
 }
@@ -392,17 +439,17 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
             AddressedDisplay::Omitted | AddressedDisplay::Compact { supported: false } => {}
         }
     }
-    if r.addressed_findings.is_empty() {
-        match display {
-            AddressedDisplay::Compact { .. }
-                if r.remaining_findings.is_empty() && !r.changes.is_empty() =>
-            {
-                lines.push("Advisory benefit unverified".into());
-            }
-            AddressedDisplay::Compact { .. } => {}
-            _ if r.outcome == "partial" => lines.push("would address: none reported".into()),
-            _ => {}
+    match display {
+        AddressedDisplay::Compact { supported: false }
+            if r.remaining_findings.is_empty() && !r.changes.is_empty() =>
+        {
+            lines.push("Upgrade not verified".into());
         }
+        AddressedDisplay::Compact { .. } => {}
+        _ if r.outcome == "partial" && r.addressed_findings.is_empty() => {
+            lines.push("would address: none reported".into());
+        }
+        _ => {}
     }
     if !r.remaining_findings.is_empty() {
         let remaining = finding_names(&r.remaining_findings, &r.addressed_findings, &r.subject);
@@ -488,21 +535,34 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
 fn limitations<'a>(
     r: &'a Record,
     constraints: &'a [Constraint],
-) -> impl Iterator<Item = String> + 'a {
+) -> impl Iterator<Item = (&'a str, String)> + 'a {
     let mut seen = BTreeSet::new();
     r.limitations
         .iter()
         .filter(|l| l.as_str() != "withdrawal_not_observed")
-        .map(|l| explanation(l))
-        .filter(move |message| {
+        .map(|l| (l.as_str(), explanation(l)))
+        .filter(move |(_, message)| {
             !constraints.iter().any(|c| c.summary == *message) && seen.insert(message.clone())
         })
+}
+
+fn compact_limitation((code, message): (&str, String)) -> String {
+    match code {
+        "incompatible_recommendations" => "Do not combine conflicting recommendations".into(),
+        "checked_occurrence_changed_by_other_recommendation" => {
+            "Recheck before combining recommendations".into()
+        }
+        _ => capitalize(message),
+    }
 }
 
 fn check_line(label: &str, value: &str, compact: bool) -> String {
     match (compact, label, value) {
         (true, "release availability", "unverified") => "Release unverified".into(),
         (true, "requirements", "not_checked" | "unchecked") => "Requirements unchecked".into(),
+        (true, "requirements", "blocked") => {
+            "Upgrade conflicts with dependency requirements".into()
+        }
         (true, _, _) => capitalize(format!("{label}: {}", check_text(value))),
         (false, _, _) => format!("{label}: {}", check_text(value)),
     }
@@ -576,37 +636,28 @@ fn checks(r: &Record, compact: bool) -> Vec<String> {
     if c.preference_differences != 0 {
         lines.push("Some dependency requests have different version preferences.".into());
     }
-    if c.prerelease_target
-        && !r
-            .changes
-            .iter()
-            .any(|c| c.data.prerelease_target == Some(true))
-    {
-        lines.push(
-            if compact {
-                "Includes a prerelease target"
-            } else {
-                "action includes a prerelease target"
-            }
-            .into(),
-        );
-    }
-    if c.deprecated_target
-        && !r
-            .changes
-            .iter()
-            .any(|c| c.data.deprecated_target == Some(true))
-    {
-        lines.push(
-            if compact {
-                "Includes a deprecated target"
-            } else {
-                "action includes a deprecated target"
-            }
-            .into(),
+    if !compact {
+        lines.extend(
+            action_target_warnings(r).map(|label| format!("action includes a {label} target")),
         );
     }
     lines
+}
+
+fn action_target_warnings(r: &Record) -> impl Iterator<Item = &'static str> {
+    let prerelease = r.checks.prerelease_target
+        && !r
+            .changes
+            .iter()
+            .any(|c| c.data.prerelease_target == Some(true));
+    let deprecated = r.checks.deprecated_target
+        && !r
+            .changes
+            .iter()
+            .any(|c| c.data.deprecated_target == Some(true));
+    [("prerelease", prerelease), ("deprecated", deprecated)]
+        .into_iter()
+        .filter_map(|(label, warning)| warning.then_some(label))
 }
 
 /// Explain shared limits without changing findings or command outcome.
