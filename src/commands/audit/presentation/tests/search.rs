@@ -167,7 +167,7 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
         r["compact_summary"],
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
-            "Update version constraint for demo in package.json (currently ^1.0)."
+            "Update version constraint for demo in package.json (currently ^1.0). Addresses GHSA-demo."
         )
     );
     value["remediation"]["recommendations"][0]["outcome"] = "partial".into();

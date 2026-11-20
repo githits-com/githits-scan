@@ -311,7 +311,13 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     checks["release_availability"] = "observed".into();
     checks["requirements"] = "matched".into();
     assert!(
-        compact_summary(&input).ends_with("The report does not specify how to make this change.")
+        compact_summary(&input)
+            .ends_with("The report does not specify how to update this dependency.")
+    );
+    input["remediation"]["recommendations"][0]["changes"][0]["strategy"] = "future_strategy".into();
+    assert!(
+        compact_summary(&input)
+            .ends_with("Scan does not recognize the update method for this dependency.")
     );
 }
 

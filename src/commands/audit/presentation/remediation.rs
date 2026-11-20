@@ -150,7 +150,7 @@ impl Plan {
         let target_caveat = target_warnings.peek().is_some()
             || self.changes.iter().any(|change| !change.details.is_empty());
         let clear_edit = self.clear_project_edit && !target_caveat;
-        let issue = self.compact_issue(r, clear_edit);
+        let mut issue = self.compact_issue(r, clear_edit);
         let details_recommended = !(self.supported || clear_edit)
             || self.outcome.is_some()
             || r.outcome == "partial"
@@ -158,14 +158,18 @@ impl Plan {
             || (issue.is_some() && !clear_edit)
             || target_caveat;
         sentences.extend(target_warnings.map(|label| format!("Includes a {label} target")));
+        if clear_edit {
+            sentences.extend(issue.take());
+        }
         if self.supported
+            || clear_edit
             || issue.is_none()
             || (!r.remaining_findings.is_empty() && !self.changes.is_empty())
         {
             sentences.extend(impact(
                 r,
                 AddressedDisplay::Compact {
-                    supported: self.supported,
+                    supported: self.supported || clear_edit,
                 },
             ));
         }
@@ -410,23 +414,21 @@ fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str
     match strategy {
         "unknown" => (
             Some("The report lists version changes but does not specify how to apply them."),
-            Some("The report does not specify how to make this change"),
+            Some("The report does not specify how to update"),
         ),
         "override" | "upgrade" => (None, None),
         _ => (
             Some(
                 "The service returned an unfamiliar change strategy; applicability could not be determined.",
             ),
-            Some("The report does not specify how to make this change"),
+            Some("Scan does not recognize the update method for"),
         ),
     }
 }
 
 fn application_issue(issue: &str, package: &str, joint: bool) -> String {
-    if joint {
-        return format!("The report does not specify how to update {package}");
-    }
-    issue.into()
+    let target = if joint { package } else { "this dependency" };
+    format!("{issue} {target}")
 }
 
 fn recorded_requests(r: &Record) -> Vec<String> {

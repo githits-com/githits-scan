@@ -296,7 +296,7 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
         guidance,
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
-            "Update version constraint for demo in package.json (currently ~1.0)."
+            "Update version constraint for demo in package.json (currently ~1.0). Addresses GHSA-demo."
         )
     );
 }

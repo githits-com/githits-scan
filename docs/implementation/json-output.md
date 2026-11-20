@@ -252,7 +252,8 @@ beside the summary. Scan sets it for unclear candidates, no-change outcomes
 and upgrades with qualifications such as open advisories, target warnings or
 coordination issues. A routine supported upgrade and a single named project
 constraint edit with a recorded current range and otherwise supported upgrade
-evidence have it set to false. The flag is presentation guidance.
+evidence have it set to false. A clear edit names the advisories the upgrade
+addresses after the edit. The flag is presentation guidance.
 Limits confined to searching for other alternatives stay in the full blocks
 and leave a supported upgrade's flag false.
 Continue to use audit facts and the exit code for policy. The consumer owns
