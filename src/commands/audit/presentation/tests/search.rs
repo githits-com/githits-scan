@@ -51,6 +51,31 @@ fn audit_search_explains_losing_release_without_changing_selected_fix() {
 }
 
 #[test]
+fn audit_search_limits_for_other_candidates_do_not_qualify_a_supported_bump() {
+    let mut value = with_search("retained", json!([]));
+    let r = &mut value["remediation"]["recommendations"][0];
+    r["checks"]["parent_search"] = "limited".into();
+    r["limitations"] = json!(["parent_candidate_limit"]);
+    let doc = blocks(&value);
+    let r = &doc["remediation"]["recommendations"][0];
+    assert_eq!(
+        r["compact_summary"],
+        "Bump npm:demo 1.0.0 -> 1.1.1. Addresses GHSA-demo."
+    );
+    assert_eq!(r["details_recommended"], false);
+    assert_eq!(
+        r["checks"],
+        json!(["Upgrades to packages using this dependency were not fully checked."])
+    );
+    assert!(
+        r["limitations"][0]
+            .as_str()
+            .expect("limit")
+            .contains("limit for checking")
+    );
+}
+
+#[test]
 fn audit_search_retention_and_legacy_absence_are_not_success_claims() {
     for (status, expected) in [
         ("retained", None),

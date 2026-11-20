@@ -236,17 +236,19 @@ separate. The summary leads with the version changes and target warnings,
 then highlights the main issue affecting the proposed change. Concrete
 dependency conflicts and required project edits take priority over check gaps.
 `Bump` uses the same qualification as a supported upgrade in native output.
-Candidate summaries can name the unresolved advisories when the report
-supplies no more specific issue. The detailed impact block retains any
-reported potential benefit. Target warnings stay with their respective
-versions. A record without a change explains the outcome and includes a
-reported obstacle when available.
+Proposals with remaining advisories name them so readers can see the limits of
+applying the change. The detailed impact block retains any reported potential
+benefit for a candidate. Target warnings stay with their respective versions.
+A record without a change explains the outcome and includes a reported obstacle
+when available.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for candidates and no-change outcomes, and
 for supported upgrades with qualifications such as open advisories, target
 warnings or coordination issues. Required manual edits also set it. Routine
 supported upgrades have it set to false. The flag is presentation guidance.
+Limits confined to searching for other alternatives stay in the full blocks
+and leave a supported upgrade's flag false.
 Continue to use audit facts and the exit code for policy. The consumer owns
 the link and its target.
 

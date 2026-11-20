@@ -109,7 +109,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     assert_eq!(
         document["remediation"]["recommendations"][0]["compact_summary"],
         concat!(
-            "cargo:example-parent 2.0.0 -> 2.1.0. ",
+            "cargo:example-parent 2.0.0 -> 2.1.0. Still open: GHSA-example. ",
             "Requires changing example-parent in Cargo.toml (currently ^2.0)."
         )
     );
@@ -284,7 +284,7 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     r["checks"]["release_availability"] = "unverified".into();
     assert_eq!(
         compact_summary(&input),
-        "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Application unclear."
+        "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Still open: GHSA-demo. Application unclear."
     );
     let view = project(&input);
     let doc = serde_json::to_value(Document::new(&view)).expect("presentation");
@@ -327,6 +327,11 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
             "Do not combine conflicting recommendations."
         )
     );
+    input["remediation"]["recommendations"][0]["checks"]["release_availability"] =
+        "unverified".into();
+    let summary = compact_summary(&input);
+    assert!(summary.ends_with("Do not combine conflicting recommendations."));
+    assert!(!summary.contains("Release unverified"), "{summary}");
 }
 
 #[test]
@@ -356,8 +361,11 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
     second["requested_requirement"] = ">=1, <1.1".into();
     r["blockers"].as_array_mut().expect("requests").push(second);
     r["changes"][1]["conflicting_target_versions"] = json!(["2.2.0", "2.3.0"]);
+    r["changes"][1]["strategy"] = "override".into();
     let summary = compact_summary(&input);
-    assert!(summary.contains("(conflicts with 2.2.0 and 2.3.0, deprecated)"));
+    assert!(summary.contains(
+        "npm:parent 2.0.0 -> 2.1.0 (conflicts with 2.2.0 and 2.3.0, deprecated, override proposal)"
+    ));
     assert!(
         summary.contains(concat!(
             "Upgrade conflict on requirements (express@5.1.0 requires demo ~1.0 [package-lock.json]) ",

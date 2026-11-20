@@ -74,14 +74,15 @@ impl<'a> Remediation<'a> {
                     &context::Context::record(r),
                     ReasonDetail::Evidence,
                 );
+                let (compact_summary, details_recommended) = explanation.compact(r);
                 Recommendation {
                     index,
                     subject: &r.subject,
                     findings: &r.findings,
                     addressed_findings: &r.addressed_findings,
                     remaining_findings: &r.remaining_findings,
-                    compact_summary: explanation.compact_summary(r),
-                    details_recommended: explanation.details_recommended(r),
+                    compact_summary,
+                    details_recommended,
                     explanation,
                 }
             })

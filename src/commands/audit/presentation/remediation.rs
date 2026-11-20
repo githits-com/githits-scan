@@ -45,7 +45,7 @@ pub(in crate::commands::audit) struct Change {
     #[serde(skip)]
     compact: String,
     #[serde(skip)]
-    application_issue: Option<&'static str>,
+    application_issue: Option<String>,
     /// Position in the owning fact record’s changes array.
     #[serde(rename = "change_index")]
     pub index: usize,
@@ -132,17 +132,27 @@ impl Plan {
         }
     }
 
-    /// Compose standalone text from the same explanations as native guidance.
-    pub(super) fn compact_summary(&self, r: &Record) -> String {
+    /// Compose the inline summary and indicate whether a Details link is useful.
+    pub(super) fn compact(&self, r: &Record) -> (String, bool) {
         let mut sentences = Vec::new();
         if let Some(changes) = self.compact_changes() {
             sentences.push(changes);
         }
         sentences.extend(self.outcome.iter().cloned());
-        sentences
-            .extend(action_target_warnings(r).map(|label| format!("Includes a {label} target")));
+        let mut target_warnings = action_target_warnings(r).peekable();
         let issue = self.compact_issue(r);
-        if self.supported || issue.is_none() {
+        let details_recommended = !self.supported
+            || self.outcome.is_some()
+            || r.outcome == "partial"
+            || !r.remaining_findings.is_empty()
+            || issue.is_some()
+            || target_warnings.peek().is_some()
+            || self.changes.iter().any(|change| !change.details.is_empty());
+        sentences.extend(target_warnings.map(|label| format!("Includes a {label} target")));
+        if self.supported
+            || issue.is_none()
+            || (!r.remaining_findings.is_empty() && !self.changes.is_empty())
+        {
             sentences.extend(impact(
                 r,
                 AddressedDisplay::Compact {
@@ -151,23 +161,12 @@ impl Plan {
             ));
         }
         sentences.extend(issue);
-        sentences
+        let summary = sentences
             .into_iter()
             .map(sentence)
             .collect::<Vec<_>>()
-            .join(" ")
-    }
-
-    /// Indicate whether the reader should have a link to the full alternative.
-    pub(super) fn details_recommended(&self, r: &Record) -> bool {
-        !self.supported
-            || self.outcome.is_some()
-            || r.outcome == "partial"
-            || !r.remaining_findings.is_empty()
-            || !self.constraints.is_empty()
-            || !self.checks.is_empty()
-            || !self.limitations.is_empty()
-            || self.changes.iter().any(|change| !change.details.is_empty())
+            .join(" ");
+        (summary, details_recommended)
     }
 
     fn compact_issue(&self, r: &Record) -> Option<String> {
@@ -181,17 +180,18 @@ impl Plan {
             })
             .or_else(|| self.constraints.first())
             .map(Constraint::compact_text)
+            .or_else(|| self.compact_limit(r, "incompatible_recommendations"))
             .or_else(|| self.search_obstacle())
             .or_else(|| {
                 self.changes
                     .iter()
-                    .find_map(|change| change.application_issue)
+                    .find_map(|change| change.application_issue.as_deref())
                     .map(str::to_owned)
             })
-            .or_else(|| checks(r, true).into_iter().next())
+            .or_else(|| self.compact_check(r))
             .or_else(|| {
                 limitations(r, &self.constraints)
-                    .min_by_key(|(code, _)| *code != "incompatible_recommendations")
+                    .find(|(code, _)| !self.supported || !search_only_limit(code))
                     .map(compact_limitation)
             })
             .or_else(|| {
@@ -200,6 +200,19 @@ impl Plan {
                     .then(|| super::search::retention(r))
                     .flatten()
             })
+    }
+
+    fn compact_check(&self, r: &Record) -> Option<String> {
+        if self.supported {
+            return None;
+        }
+        checks(r, true).into_iter().next()
+    }
+
+    fn compact_limit(&self, r: &Record, reason: &str) -> Option<String> {
+        limitations(r, &self.constraints)
+            .find(|(code, _)| *code == reason)
+            .map(compact_limitation)
     }
 
     fn search_obstacle(&self) -> Option<String> {
@@ -328,11 +341,13 @@ fn change(
             qualifiers.push(label.into());
         }
     }
+    if data.strategy == "override" {
+        qualifiers.push("override proposal".into());
+    }
     let files = data.paths.iter().filter(|_| show_files).cloned().collect();
+    let package = format!("{}:{}", safe(&data.registry), safe(&data.name));
     let version_change = format!(
-        "{}:{} {} -> {}",
-        safe(&data.registry),
-        safe(&data.name),
+        "{package} {} -> {}",
         safe(&data.from_version),
         safe(&data.target_version)
     );
@@ -344,7 +359,8 @@ fn change(
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),
-        application_issue: qualification,
+        application_issue: qualification
+            .map(|issue| application_issue(issue, &package, r.changes.len() > 1)),
         summary: format!("{action} {version_change}{partial}"),
         details,
         files,
@@ -358,8 +374,7 @@ fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str
             Some("The report lists version changes but does not specify how to apply them."),
             Some("Application unclear"),
         ),
-        "override" => (None, Some("Override proposal")),
-        "upgrade" => (None, None),
+        "override" | "upgrade" => (None, None),
         _ => (
             Some(
                 "The service returned an unfamiliar change strategy; applicability could not be determined.",
@@ -367,6 +382,13 @@ fn change_strategy(strategy: &str) -> (Option<&'static str>, Option<&'static str
             Some("Application unclear"),
         ),
     }
+}
+
+fn application_issue(issue: &str, package: &str, joint: bool) -> String {
+    if joint {
+        return format!("{issue} for {package}");
+    }
+    issue.into()
 }
 
 fn recorded_requests(r: &Record) -> Vec<String> {
@@ -554,6 +576,17 @@ fn compact_limitation((code, message): (&str, String)) -> String {
         }
         _ => capitalize(message),
     }
+}
+
+// These limits describe the wider search rather than the supported change.
+fn search_only_limit(code: &str) -> bool {
+    matches!(
+        code,
+        "parent_candidate_limit"
+            | "parent_evidence_incomplete"
+            | "parent_exact_lookup_limit"
+            | "assignment_limit"
+    )
 }
 
 fn check_line(label: &str, value: &str, compact: bool) -> String {
