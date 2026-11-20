@@ -25,13 +25,13 @@ pub(in crate::commands::audit) struct Explanation {
     pub details: Vec<String>,
 }
 
-pub(super) fn explain(record: &Record) -> Vec<Explanation> {
+pub(super) fn explain(record: &Record, installer_note_pending: &mut bool) -> Vec<Explanation> {
     record
         .search_details
         .iter()
         .flatten()
         .enumerate()
-        .map(|(index, detail)| explanation(index, detail))
+        .map(|(index, detail)| explanation(index, detail, installer_note_pending))
         .collect()
 }
 
@@ -45,7 +45,7 @@ pub(super) fn compact_obstacle(record: &Record, explanations: &[Explanation]) ->
         })
 }
 
-fn explanation(index: usize, detail: &Detail) -> Explanation {
+fn explanation(index: usize, detail: &Detail, installer_note_pending: &mut bool) -> Explanation {
     let (summary, details) = match detail {
         Detail::Unavailable(d) => (
             unavailable(&d.operation, &d.reasons, &d.witness),
@@ -55,7 +55,14 @@ fn explanation(index: usize, detail: &Detail) -> Explanation {
             stopped(&d.stage, &d.reason, &d.witness),
             context(&d.witness, subject(&d.witness, None)),
         ),
-        Detail::AddedDependency(d) => super::added::search(d),
+        Detail::AddedDependency(d) => {
+            let (summary, mut details) = super::added::search(d);
+            details.extend(super::added::installer_note(
+                std::slice::from_ref(&d.branch),
+                installer_note_pending,
+            ));
+            (summary, details)
+        }
         Detail::Unrecognized { .. } => (
             "Scan cannot interpret this search detail; its kind is not supported by this version."
                 .into(),

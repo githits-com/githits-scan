@@ -867,8 +867,10 @@ blocks without additional analysis or token use.
 When a recommended change introduces a dependency request, Scan shows the
 authored name and requirement beside that change. It names the canonical
 selection and gives the advisory result for each supplied exact root or
-transitive version. These versions describe a registry-resolved branch. The
-project installer may select different copies or apply different policy.
+transitive version. The first registry-resolved branch in a recommendation
+explains that the project installer may select different copies or apply
+different policy. The explanation applies to all such branches in that
+recommendation, including upgrade search results.
 
 An added-dependency search detail names the candidate release and project file
 where the request surfaced. It keeps completed checks visible alongside the

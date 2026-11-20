@@ -255,7 +255,7 @@ fn audit_added_dependencies_keeps_one_explanation_for_each_advisory_gap() {
 }
 
 #[test]
-fn audit_added_dependencies_explains_installer_policy_once_per_change() {
+fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request() {
     let mut branch = branch("npm", &json!({"operation":"release","reason":"timeout"}));
     branch.issues.clear();
     let mut other = branch.clone();
@@ -265,22 +265,14 @@ fn audit_added_dependencies_explains_installer_policy_once_per_change() {
     let branches = [branch, other];
     assert_eq!(
         compact_changes(branches.iter()).as_deref(),
-        Some("One new dependency selected by registry checks is npm:added-root@1.0.0")
-    );
-    let lines = change_lines(&branches).collect::<Vec<_>>();
-    assert_eq!(
-        lines
-            .iter()
-            .filter(|line| line.contains("may select different package copies"))
-            .count(),
-        1
+        Some("Registry checks selected npm:added-root@1.0.0 for one of 2 new dependency requests")
     );
     let mut unresolved = branches[0].clone();
     unresolved.selected_version = None;
     unresolved.coordinates.clear();
     assert_eq!(
         compact_changes(std::iter::once(&unresolved)).as_deref(),
-        Some("The report includes checks for new dependency requests")
+        Some("The release requires added-root ^1 as a new dependency")
     );
 }
 

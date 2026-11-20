@@ -8,29 +8,40 @@ use crate::api::audit::remediation::{
 };
 
 pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> + '_ {
-    branches
-        .iter()
-        .flat_map(|branch| {
-            let request = request(branch);
-            std::iter::once(format!("This release {request} as a new dependency."))
-                .chain(lines(branch))
-        })
-        .chain(installer_note(branches))
+    branches.iter().flat_map(|branch| {
+        let request = request(branch);
+        std::iter::once(format!("This release {request} as a new dependency.")).chain(lines(branch))
+    })
 }
 
-pub(super) fn compact_changes<'a>(
-    mut branches: impl Iterator<Item = &'a Branch>,
-) -> Option<String> {
-    let first = branches.next()?;
-    let (true, Some(version)) = (registry_resolution(first), &first.selected_version) else {
-        return Some("The report includes checks for new dependency requests".into());
-    };
-    let intro = if branches.next().is_some() {
-        "One new dependency selected by registry checks is"
+pub(super) fn compact_changes<'a>(branches: impl Iterator<Item = &'a Branch>) -> Option<String> {
+    let mut count = 0;
+    let (branch, problem) = branches
+        .inspect(|_| count += 1)
+        .map(|branch| (branch, search_problem(branch)))
+        .min_by_key(|(_, problem)| match problem {
+            Some(SearchProblem::Affected(_)) => 0,
+            Some(_) => 1,
+            None => 2,
+        })?;
+    let summary = if let (true, Some(version)) =
+        (registry_resolution(branch), &branch.selected_version)
+    {
+        let coordinate = format!("{}@{}", package(branch), safe(version));
+        if count == 1 {
+            format!("Registry checks selected {coordinate} for the new dependency")
+        } else {
+            format!(
+                "Registry checks selected {coordinate} for one of {count} new dependency requests"
+            )
+        }
     } else {
-        "Adds new dependency"
+        format!("The release {} as a new dependency", request(branch))
     };
-    Some(format!("{intro} {}@{}", package(first), safe(version)))
+    Some(match problem {
+        Some(problem) => format!("{summary}. {}", problem.explain(branch)),
+        None => summary,
+    })
 }
 
 pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
@@ -48,20 +59,12 @@ pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
         None => "",
     };
     let summary = format!("{candidate} [{path}] {request} as a new dependency.{result}");
-    let details = lines(&detail.branch)
-        .chain(installer_note(std::slice::from_ref(&detail.branch)))
-        .collect();
-    (summary, details)
+    (summary, lines(&detail.branch).collect())
 }
 
 pub(super) fn compact_search(detail: &AddedDependency) -> Option<String> {
     let branch = &detail.branch;
-    let obstacle = match search_problem(branch)? {
-        SearchProblem::Affected(checked) | SearchProblem::Unchecked(checked) => {
-            advisory_check(checked)
-        }
-        SearchProblem::Issue(issue) => issue_summary(issue, branch),
-    };
+    let obstacle = search_problem(branch)?.explain(branch);
     Some(format!(
         "{} {} as a new dependency. {obstacle}",
         candidate(detail),
@@ -80,6 +83,15 @@ enum SearchProblem<'a> {
     Affected(&'a CheckedCoordinate),
     Issue(&'a Issue),
     Unchecked(&'a CheckedCoordinate),
+}
+
+impl SearchProblem<'_> {
+    fn explain(&self, branch: &Branch) -> String {
+        match self {
+            Self::Affected(checked) | Self::Unchecked(checked) => advisory_check(checked),
+            Self::Issue(issue) => issue_summary(issue, branch),
+        }
+    }
 }
 
 fn search_problem(branch: &Branch) -> Option<SearchProblem<'_>> {
@@ -117,10 +129,12 @@ fn registry_resolution(branch: &Branch) -> bool {
     branch.selection_basis == "registry_resolution"
 }
 
-fn installer_note(branches: &[Branch]) -> Option<String> {
-    branches.iter().any(registry_resolution).then(|| {
-        "The project installer may select different package copies or apply different policy than these registry checks.".into()
-    })
+pub(super) fn installer_note(branches: &[Branch], pending: &mut bool) -> Option<String> {
+    if !*pending || !branches.iter().any(registry_resolution) {
+        return None;
+    }
+    *pending = false;
+    Some("The project installer may select different package copies or apply different policy than these registry checks.".into())
 }
 
 fn selection(branch: &Branch) -> String {

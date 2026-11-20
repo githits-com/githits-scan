@@ -227,9 +227,47 @@ fn audit_added_dependencies_compact_preserves_clear_edit() {
         concat!(
             "npm:demo 1.0.0 -> 1.1.1. ",
             "Update version constraint for demo in package.json (currently ^1.0). Addresses GHSA-demo. ",
-            "Adds new dependency npm:added-child@1.0.0."
+            "Registry checks selected npm:added-child@1.0.0 for the new dependency."
         )
     );
+}
+
+#[test]
+fn audit_added_dependencies_compact_prioritizes_selected_branch_problems() {
+    let evidence = addition_evidence();
+    let clean = &evidence["added_dependencies"][0];
+    let incomplete = &evidence["search_details"][1]["added_dependency"];
+    let affected = &evidence["search_details"][0]["added_dependency"];
+    for (branches, expected) in [
+        (
+            json!([clean, incomplete]),
+            concat!(
+                "Registry checks selected npm:router@2.3.0 for one of 2 new dependency requests. ",
+                "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
+                "so its dependencies could not be fully checked."
+            ),
+        ),
+        (
+            json!([clean, incomplete, affected]),
+            concat!(
+                "Registry checks selected npm:added-child@1.0.0 for one of 3 new dependency requests. ",
+                "Advisory check for npm:affected-descendant@1.0.0 found applicable advisories ",
+                "(AUDIT-ADDED-affected-descendant)."
+            ),
+        ),
+    ] {
+        let mut value = input();
+        value["remediation"]["recommendations"][0]["changes"][0]["added_dependencies"] = branches;
+        let doc = blocks(&value);
+        let r = &doc["remediation"]["recommendations"][0];
+        assert_eq!(r["details_recommended"], true);
+        assert_eq!(
+            r["compact_summary"],
+            format!(
+                "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. {expected}"
+            )
+        );
+    }
 }
 
 #[test]
@@ -266,6 +304,17 @@ fn audit_added_dependencies_compact_names_obstacle_when_no_change_was_selected()
         assert_eq!(
             r["compact_summary"],
             format!("The service could not determine a mitigation. {expected}")
+        );
+        let searches = &r["search_explanations"];
+        assert!(
+            searches[0]["details"]
+                .to_string()
+                .contains("The project installer may select")
+        );
+        assert!(
+            !searches[1]["details"]
+                .to_string()
+                .contains("The project installer may select")
         );
     }
 }

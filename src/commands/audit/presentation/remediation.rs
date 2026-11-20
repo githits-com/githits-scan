@@ -103,7 +103,31 @@ impl Plan {
             limitations.push(message);
         }
         let checks = checks(r, false);
-        let search_explanations = super::search::explain(r);
+        let mut installer_note_pending = true;
+        let changes = r
+            .changes
+            .iter()
+            .enumerate()
+            .map(|(index, c)| {
+                let mut change = change(
+                    c,
+                    index,
+                    r,
+                    planning_known,
+                    supported,
+                    common.is_none(),
+                    detail,
+                );
+                let branches = c.data.added_dependencies.as_deref().unwrap_or_default();
+                change.details.extend(super::added::change_lines(branches));
+                change.details.extend(super::added::installer_note(
+                    branches,
+                    &mut installer_note_pending,
+                ));
+                change
+            })
+            .collect();
+        let search_explanations = super::search::explain(r, &mut installer_note_pending);
         let has_details = !constraints.is_empty()
             || !checks.is_empty()
             || !limitations.is_empty()
@@ -115,22 +139,7 @@ impl Plan {
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
                 || r.changes.is_empty())
             .then(|| outcome(r, planning_known, has_details)),
-            changes: r
-                .changes
-                .iter()
-                .enumerate()
-                .map(|(index, c)| {
-                    change(
-                        c,
-                        index,
-                        r,
-                        planning_known,
-                        supported,
-                        common.is_none(),
-                        detail,
-                    )
-                })
-                .collect(),
+            changes,
             files,
             context: recorded_requests(r),
             impact: impact(r, addressed_display(r, supported, context)),
@@ -408,16 +417,12 @@ fn change(
     } else {
         format!(" ({})", qualifiers.join(", "))
     };
-    let target_caveat = !details.is_empty();
-    if let Some(branches) = &data.added_dependencies {
-        details.extend(super::added::change_lines(branches));
-    }
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),
         application_issue: qualification
             .map(|issue| application_issue(issue, &package, r.changes.len() > 1)),
-        target_caveat,
+        target_caveat: !details.is_empty(),
         summary: format!("{action} {version_change}{partial}"),
         details,
         files,

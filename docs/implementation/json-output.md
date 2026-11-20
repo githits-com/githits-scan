@@ -247,10 +247,10 @@ benefit for a candidate. Target warnings stay with their respective versions.
 A record without a change explains the outcome and includes a reported obstacle
 when available.
 When the selected change includes checked additions, the summary can name one
-registry-selected root and points to the full dependency checks through
-`details_recommended`. A candidate with no applicable change can surface a
-specific addition problem, such as an affecting advisory or the exact release
-whose dependencies could not be checked.
+registry-selected version and prioritize an affecting advisory or an incomplete
+check on an added dependency. The `details_recommended` cue points to the full
+dependency checks. A candidate with no applicable change can also name a
+specific problem with a new dependency request.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for unclear candidates, no-change outcomes
@@ -392,8 +392,11 @@ requirements and versions, and Cargo feature or Python extra activation inputs.
 Scan preserves these facts in schema-2 output and saved analysis. Presentation
 JSON supplies the same readable explanations as native audit output in the owning
 change's `details` and the matching `search_explanations` entry.
-`registry_resolution` describes the supplied registry branch. The project
-installer may select different copies or apply different policy.
+`registry_resolution` describes the supplied registry branch. The first such
+branch in the recommendation's full blocks explains that the project installer
+may select different copies or apply different policy. Display those blocks
+together or use each branch's `selection_basis` to qualify independently
+displayed evidence.
 Authored dependency names remain separate from requesting owners and canonical targets.
 Search explanations are computed by the shared presentation owner, without another
 backend job. A missing/uninterpretable reason is stated explicitly rather than

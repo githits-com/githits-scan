@@ -26,8 +26,8 @@ that section describe 0.2.0 only; use the README for current commands and the
 - **Checked dependencies introduced by upgrades** - When the audit report
   supplies this evidence, Scan shows the new dependency requests, the versions
   selected by the registry checks, and the advisory results for each checked
-  version. Search explanations show which candidate introduced the request and
-  where a check failed. Audit JSON and saved analyses retain the supplied evidence.
+  version. Upgrade search details show which candidate introduced each request
+  and where a check failed. Audit JSON and saved analyses retain the supplied evidence.
 
 ## [0.6.0] - 2026-11-19
 
