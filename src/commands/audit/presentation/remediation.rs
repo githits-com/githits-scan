@@ -137,7 +137,12 @@ impl Plan {
             sentences.push(changes);
         }
         sentences.extend(self.outcome.iter().cloned());
-        sentences.extend(impact(r, AddressedDisplay::Compact));
+        sentences.extend(impact(
+            r,
+            AddressedDisplay::Compact {
+                supported: self.supported,
+            },
+        ));
         sentences.extend(self.constraints.iter().map(Constraint::compact_text));
         sentences.extend(checks(r, true));
         sentences.extend(limitations(r, &self.constraints).map(capitalize));
@@ -349,7 +354,7 @@ enum AddressedDisplay {
     Named,
     Listed,
     Omitted,
-    Compact,
+    Compact { supported: bool },
 }
 
 fn addressed_display(r: &Record, supported: bool, context: &Context<'_>) -> AddressedDisplay {
@@ -372,8 +377,8 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
     let mut lines = Vec::new();
     if !r.addressed_findings.is_empty() {
         match display {
-            AddressedDisplay::Compact => lines.push(format!(
-                "Could address {}",
+            AddressedDisplay::Compact { supported: true } => lines.push(format!(
+                "Addresses {}",
                 finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
             )),
             AddressedDisplay::Named => lines.push(format!(
@@ -384,17 +389,17 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
                 lines.push("would address the listed advisory".into());
             }
             AddressedDisplay::Listed => lines.push("would address all listed advisories".into()),
-            AddressedDisplay::Omitted => {}
+            AddressedDisplay::Omitted | AddressedDisplay::Compact { supported: false } => {}
         }
     }
     if r.addressed_findings.is_empty() {
         match display {
-            AddressedDisplay::Compact
+            AddressedDisplay::Compact { .. }
                 if r.remaining_findings.is_empty() && !r.changes.is_empty() =>
             {
                 lines.push("Advisory benefit unverified".into());
             }
-            AddressedDisplay::Compact => {}
+            AddressedDisplay::Compact { .. } => {}
             _ if r.outcome == "partial" => lines.push("would address: none reported".into()),
             _ => {}
         }
@@ -403,7 +408,7 @@ fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
         let remaining = finding_names(&r.remaining_findings, &r.addressed_findings, &r.subject);
         lines.push(format!(
             "{}{remaining}",
-            if matches!(display, AddressedDisplay::Compact) {
+            if matches!(display, AddressedDisplay::Compact { .. }) {
                 "Still open: "
             } else {
                 "still unresolved: "

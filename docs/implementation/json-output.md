@@ -228,13 +228,16 @@ wording to that context. A consumer may use the fact identities to link to advis
 metadata in `audit.vulnerabilities`.
 
 Use `compact_summary` directly beside the finding identities that associate the
-alternative with the row. It names the exact changes and reported advisory impact,
-even when the row covers more advisories than this alternative. Joint changes
-share one summary. Keep independent alternatives separate. The summary leads
-with the version changes, then names material caveats in short sentences.
+alternative with the row. It names the exact changes and the advisories a
+supported upgrade addresses, even when the row covers more advisories than this
+alternative. Joint changes share one summary. Keep independent alternatives
+separate. The summary leads with the version changes, then names material
+caveats in short sentences.
 `Bump` uses the same qualification as a supported upgrade in native output.
-Candidate versions are presented neutrally. Target warnings stay with their
-respective versions. The summary retains explicit file scope, conflicting
+Candidate summaries show the versions, material caveats and unresolved
+advisories. Any reported potential benefit for a candidate is available in the
+detailed impact block. Target warnings stay with their respective versions.
+The summary retains explicit file scope, conflicting
 requests, required project edits and material checks or coordination warnings.
 A partial candidate can name the advisories still open without a separate
 statement about missing benefit. A record without a change explains the outcome

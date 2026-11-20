@@ -134,7 +134,7 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
     assert_eq!(
         r["compact_summary"],
         concat!(
-            "npm:demo 1.0.0 -> 1.1.1. Could address GHSA-demo. ",
+            "npm:demo 1.0.0 -> 1.1.1. ",
             "Requires changing demo in package.json (currently ^1.0)."
         )
     );

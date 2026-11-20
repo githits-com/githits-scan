@@ -249,7 +249,12 @@ fn prerelease_qualification_checks_both_flags_and_preserves_complete_proposals()
             );
             let compact = compact_summary(&input);
             assert_eq!(compact.starts_with("Bump "), supported);
-            assert!(compact.contains("Could address GHSA-demo"), "{compact}");
+            assert_eq!(
+                compact.contains("Addresses GHSA-demo"),
+                supported,
+                "{compact}"
+            );
+            assert!(!compact.contains("Could address"), "{compact}");
             assert!(compact.contains("prerelease"));
             assert_eq!(compact.contains("Still open:"), !supported);
         }
@@ -303,7 +308,7 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
         compact_summary(&input),
         concat!(
             "Bump npm:demo 1.0.0 -> 1.1.1-rc.1 (prerelease) and ",
-            "npm:parent 2.0.0 -> 2.1.0 (deprecated) together. Could address GHSA-example. ",
+            "npm:parent 2.0.0 -> 2.1.0 (deprecated) together. Addresses GHSA-example. ",
             "Another recommendation changes a checked dependency; recheck combined changes. ",
             "Conflicting recommendation targets; do not combine them."
         )
@@ -326,7 +331,7 @@ fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
         compact_summary(&input),
         concat!(
             "npm:demo 1.0.0 -> 1.1.1 and npm:parent 2.0.0 -> 2.1.0 (deprecated) together. ",
-            "Could address GHSA-example. Conflicting request ",
+            "Conflicting request ",
             "(express@5.1.0 requires demo ~1.0 [package-lock.json])."
         )
     );
