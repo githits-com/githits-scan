@@ -277,13 +277,16 @@ vulnerability inventory and advisory hints.
 Remediation wording and semantic selection live in the audit command presentation
 model; native rendering owns grouping, file wrapping and styling. The model also
 produces the separate [audit presentation JSON contract](json-output.md#audit-presentation-schema-1).
+Its compact summary puts one alternative's proposed changes and material
+qualifications in a single line, including the addressed and unresolved advisory
+identities. It reuses native guidance wording and checked-effect selection.
+Ordinary audit and focused saved-analysis explanation keep their grouped,
+line-wrapped layout and exact displayed context.
 Project requirement/preference edits are described as necessary when applying the
 change, distinct from actual third-party requirement exclusions. A supplied
-project-owned required edit with a recorded dependency name, range and file can
-be a direct instruction inside a candidate block: update that requirement, with
-its current range stated. This is the edit needed to apply the candidate, not an
-unconditional instruction to upgrade or evidence of installability. Native compact
-output omits the repeated owner context when that instruction already names the
+project-owned edit names the recorded dependency requirement, current range and
+file as a condition for applying the candidate. Native compact
+output omits repeated owner context when that explanation already names the
 requirement and file; detailed presentation retains it.
 
 The guidance names exact from/target versions, requesting blockers and material
@@ -302,11 +305,9 @@ second heading. Override strategies use neutral candidate-change wording and
 retain actual requirement conflicts; Scan does not prescribe an override. Joint action sets stay together; partial results distinguish addressed
 and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
 record's own findings equal the displayed finding context (coordinate, advisory
-and full file set). Weak candidates retain their supplied `would address` findings even when those
-cover the full displayed set. A fully addressed upgrade candidate whose recorded
-requirement blockers are solely project-owned required edits avoids repeating that
-impact when release availability is observed, advisory checks are non-affecting,
-and all check values are recognized. Partial and cross-package impact remains explicit. Human
+and full file set). Candidates retain their supplied `would address` impact even
+when a required project edit is their only constraint or they cover the full
+displayed set. Partial and cross-package impact remains explicit. Human
 `still unresolved` lines keep remaining advisory/package identities visible, including scoped
 no-upgrade results with no candidate. A package/advisory present in both impact
 lists gets an item-level `(partly)` suffix in both; other advisories are unmarked.

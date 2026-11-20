@@ -198,6 +198,7 @@ report. It contains:
 | `recommendation_index` | Zero-based position in this document's `audit.remediation.recommendations` |
 | `subject` | Existing subject coordinate; never a new opaque plan ID |
 | `findings`, `addressed_findings`, `remaining_findings` | Existing `{package, advisory, files}` fact identities, unchanged |
+| `compact_summary` | Nonempty single-line plain text for this alternative. Added after Scan 0.6.0 within schema 1 |
 | `heading` | Shared qualified heading for joint changes; null for a single change whose summary carries its qualification, or when no changes were supplied |
 | `outcome` | Plain-language separate outcome, or null when the heading suffices |
 | `changes` | Ordered changes that belong together within this alternative |
@@ -226,17 +227,25 @@ different advisory context; the same builder adjusts redundant impact and file
 wording to that context. A consumer may use the fact identities to link to advisory
 metadata in `audit.vulnerabilities`.
 
-For a table, show a supplied `heading` together with every `changes[].summary`.
-For a single change, its summary carries the supported/candidate and partial
-qualification; there is no extra heading to repeat.
-Place checked reasons, `impact`, constraints, limitations and search explanations in the same row or its
-associated details. A project requirement by itself is context for applying a
-change, not a substitute for the candidate's changed package/version. Keep joint
-changes together, and keep alternative records separate. A removed route does not
-prove every advisory occurrence closes. `Suggested fix` describes the supplied
-checks, not successful native installation or a verified build. Partial/unresolved
-prerelease proposals remain candidates even if some findings are addressed;
-complete supported proposals retain their explicit prerelease warning.
+Use `compact_summary` directly beside the finding identities that associate the
+alternative with the row. It names the exact changes and reported advisory impact,
+even when the row covers more advisories than this alternative. Joint changes
+share one summary. Keep independent alternatives separate. The summary includes
+material target and application qualifications, explicit file scope where it
+differs from the finding context, checked effects such as a parent change that
+removes a recorded route, requirements and coordination warnings. A required
+project edit describes what applying the candidate entails. A partial candidate
+keeps its reported benefit and unresolved findings visible. A record without a
+change explains the outcome and includes reported obstacles when available.
+
+Use the full blocks for supporting requests, checked-effect evidence and detailed
+upgrade searches. Display report-wide `messages` and `limits` once with the
+guidance. Scan provides a single line without a fixed byte budget. Consumers own
+layout, escaping and links, including where to put longer qualified alternatives
+when space is limited. Keep the qualifications with the proposed changes.
+For schema-1 output from Scan 0.6.0, feature-detect the absent field and use the
+full explanation blocks if supporting that release. Existing saved analyses
+produce the field when replayed with a binary that supports it.
 
 When planning is absent with vulnerabilities, `messages` says guidance is
 unavailable; absent planning without vulnerabilities has empty arrays. Unverified
@@ -259,7 +268,7 @@ values for their own output context: Markdown tables, GitHub HTML, URLs, shell
 commands or terminal output. Do not parse terminal output, split prose into
 meaning, or turn these strings into executable commands.
 
-After adoption, a consumer such as scan-action can remove its duplicate candidate
+After adoption, a consumer can remove its duplicate candidate
 qualification, blocker/reason phrase mapping, compact plan semantic selection,
 partial-impact wording and explanation-meaning tests. Scan owns those cases.
 Retain consumer tests for schema support, associations, missing evidence, inclusion

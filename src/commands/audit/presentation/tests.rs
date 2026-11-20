@@ -96,7 +96,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     );
     assert_eq!(
         plan.constraints[0].summary,
-        "Update the example-parent requirement in Cargo.toml. Current requirement: ^2.0."
+        "Applying the candidate requires updating the example-parent requirement in Cargo.toml. Current requirement: ^2.0."
     );
     assert!(
         plan.context.is_empty(),
@@ -106,6 +106,16 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
     audit::render::write(&view, false, &mut text, crate::style::Palette::PLAIN).expect("text");
     let text = String::from_utf8(text).expect("utf8");
     let document = serde_json::to_value(Document::new(&view)).expect("presentation");
+    assert_eq!(
+        document["remediation"]["recommendations"][0]["compact_summary"],
+        concat!(
+            "Candidate upgrade: cargo:example-parent 2.0.0 -> 2.1.0 (partial) ",
+            "(why: removes a route to cargo:example-leaf@1.0.0) · ",
+            "would address: none reported · still unresolved: GHSA-example · ",
+            "Applying the candidate requires updating the example-parent requirement in Cargo.toml. ",
+            "Current requirement: ^2.0."
+        )
+    );
     // Layout/serialization consume the computed blocks without a second phrase map.
     for value in [
         &plan.changes[0].summary,
@@ -240,8 +250,72 @@ fn prerelease_qualification_checks_both_flags_and_preserves_complete_proposals()
                     .chain(&plan.changes[0].details)
                     .any(|s| s.contains("prerelease"))
             );
+            let compact = compact_summary(&input);
+            assert_eq!(compact.starts_with("Suggested fix:"), supported);
+            assert!(compact.contains("would address: GHSA-demo"), "{compact}");
+            assert!(
+                compact.contains("prerelease target") || compact.contains("target is prerelease")
+            );
+            assert_eq!(compact.contains("still unresolved:"), !supported);
         }
     }
+}
+
+fn compact_summary(input: &Value) -> String {
+    let view = project(input);
+    serde_json::to_value(Document::new(&view)).expect("presentation")["remediation"]
+        ["recommendations"][0]["compact_summary"]
+        .as_str()
+        .expect("compact text")
+        .to_owned()
+}
+
+#[test]
+fn compact_summary_preserves_partial_benefit_and_unverified_application() {
+    let mut input = input();
+    let r = &mut input["remediation"]["recommendations"][0];
+    r["outcome"] = "partial".into();
+    r["remaining_finding_refs"] = json!([0]);
+    r["addressed_finding_refs"] = json!([]);
+    r["changes"][0]["strategy"] = "unknown".into();
+    r["changes"][0]["target_version"] = "1.2.0-rc.1".into();
+    r["changes"][0]["prerelease_target"] = true.into();
+    r["checks"]["requirements"] = "unchecked".into();
+    r["checks"]["release_availability"] = "unverified".into();
+    assert_eq!(
+        compact_summary(&input),
+        concat!(
+            "Candidate change: npm:demo 1.0.0 -> 1.2.0-rc.1 (partial) ",
+            "(The report lists version changes but does not specify how to apply them. / ",
+            "target is prerelease) · would address: none reported · still unresolved: GHSA-demo · ",
+            "release availability: not verified · requirements: not checked"
+        )
+    );
+}
+
+#[test]
+fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordination() {
+    let mut input: Value = serde_json::from_slice(include_bytes!(
+        "../../../../tests/fixtures/audit/graph.json"
+    ))
+    .expect("joint report");
+    let r = &mut input["remediation"]["recommendations"][0];
+    r["changes"][0]["prerelease_target"] = true.into();
+    r["changes"][0]["target_version"] = "1.1.1-rc.1".into();
+    r["limitations"] = json!([
+        "checked_occurrence_changed_by_other_recommendation",
+        "incompatible_recommendations"
+    ]);
+    assert_eq!(
+        compact_summary(&input),
+        concat!(
+            "Suggested fix — change together: Upgrade npm:demo 1.0.0 -> 1.1.1-rc.1 ",
+            "(target is prerelease) + Upgrade npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
+            "would address: GHSA-example · ",
+            "limit: another recommendation changes a checked dependency; recheck combined changes · ",
+            "limit: conflicting recommendation targets; do not combine them"
+        )
+    );
 }
 
 #[test]
@@ -308,7 +382,8 @@ fn outcomes_without_changes_explain_what_was_not_established() {
         let r = &mut input["remediation"]["recommendations"][0];
         r["outcome"] = outcome.into();
         r["changes"] = json!([]);
-        let plan = plan(&project(&input));
+        let view = project(&input);
+        let plan = plan(&view);
         assert!(plan.heading.is_none());
         let text = plan.outcome.expect("explanation");
         assert_ne!(text, outcome);
@@ -320,6 +395,7 @@ fn outcomes_without_changes_explain_what_was_not_established() {
             }),
             "{text}"
         );
+        assert!(compact_summary(&input).starts_with(&text));
     }
 }
 

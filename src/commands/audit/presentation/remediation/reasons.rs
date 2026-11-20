@@ -21,6 +21,9 @@ pub(in crate::commands::audit) struct Explanation {
     pub summary: String,
     /// Supporting requests, included for detailed output.
     pub evidence: Vec<String>,
+    /// Whether this effect belongs in concise guidance at either output surface.
+    #[serde(skip)]
+    pub show_in_summary: bool,
 }
 
 pub(super) fn explain(change: &Change, record: &Record, detail: ReasonDetail) -> Vec<Explanation> {
@@ -30,6 +33,7 @@ pub(super) fn explain(change: &Change, record: &Record, detail: ReasonDetail) ->
         .iter()
         .flatten()
         .filter_map(|r| explanation(r, change, record, detail))
+        .filter(|r| detail == ReasonDetail::Evidence || r.show_in_summary)
         .filter(|r| seen.insert((r.summary.clone(), r.evidence.clone())))
         .collect()
 }
@@ -41,11 +45,13 @@ fn explanation(
     detail: ReasonDetail,
 ) -> Option<Explanation> {
     let mut requests = Vec::new();
+    let mut show_in_summary = true;
     let summary = match reason {
         Reason::Advisory { findings } => {
-            if findings.is_empty() || redundant(findings, record, detail) {
+            if findings.is_empty() {
                 return None;
             }
+            show_in_summary = !redundant(findings, record);
             let changed = format!(
                 "{}:{}@{}",
                 change.data.registry, change.data.name, change.data.from_version
@@ -85,22 +91,23 @@ fn explanation(
                 file(path, change)
             )
         }
-        Reason::Unavailable if detail == ReasonDetail::Evidence => {
+        Reason::Unavailable => {
+            show_in_summary = false;
             "The report does not include a checked explanation for this change.".into()
         }
-        Reason::Unknown { .. } if detail == ReasonDetail::Evidence => {
+        Reason::Unknown { .. } => {
+            show_in_summary = false;
             super::UNFAMILIAR_REASON.into()
         }
-        Reason::Unavailable | Reason::Unknown { .. } => return None,
     };
     Some(Explanation {
         summary,
         evidence: requests,
+        show_in_summary,
     })
 }
-fn redundant(findings: &[Finding], record: &Record, detail: ReasonDetail) -> bool {
-    detail == ReasonDetail::Summary
-        && record.changes.len() == 1
+fn redundant(findings: &[Finding], record: &Record) -> bool {
+    record.changes.len() == 1
         && findings.iter().collect::<BTreeSet<_>>() == record.addressed_findings.iter().collect()
 }
 fn file(path: &str, change: &Change) -> String {

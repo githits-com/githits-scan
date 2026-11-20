@@ -122,12 +122,70 @@ impl Plan {
                 .collect(),
             files,
             context: recorded_requests(r),
-            impact: impact(r, supported, context),
+            impact: impact(r, addressed_display(r, supported, context)),
             constraints,
             checks,
             limitations,
             search_explanations,
         }
+    }
+
+    /// Compose standalone text from the same explanations as native guidance.
+    pub(super) fn compact_summary(&self, r: &Record) -> String {
+        let mut blocks = self.outcome.iter().cloned().collect::<Vec<_>>();
+        if !self.changes.is_empty() {
+            let changes = self
+                .changes
+                .iter()
+                .map(Change::compact_text)
+                .collect::<Vec<_>>()
+                .join(" + ");
+            blocks.push(match &self.heading {
+                Some(heading) => format!("{heading}: {changes}"),
+                None => changes,
+            });
+        }
+        if !self.files.is_empty() {
+            blocks.push(format!("Change in: {}", list(&self.files)));
+        }
+        blocks.extend(impact(r, AddressedDisplay::Named));
+        blocks.extend(self.constraints.iter().map(|c| c.summary.clone()));
+        blocks.extend(self.checks.iter().cloned());
+        blocks.extend(self.limitations.iter().cloned());
+        if self.changes.is_empty() {
+            let mut seen = BTreeSet::new();
+            blocks.extend(
+                self.search_explanations
+                    .iter()
+                    .map(|s| &s.summary)
+                    .filter(|summary| seen.insert(*summary))
+                    .cloned(),
+            );
+        }
+        blocks.join(" · ")
+    }
+}
+
+impl Change {
+    fn compact_text(&self) -> String {
+        let files = (!self.files.is_empty()).then(|| format!("files: {}", list(&self.files)));
+        let mut seen = BTreeSet::new();
+        let qualifications = self
+            .details
+            .iter()
+            .chain(&files)
+            .chain(
+                self.reasons
+                    .iter()
+                    .filter(|r| r.show_in_summary && seen.insert(&r.summary))
+                    .map(|r| &r.summary),
+            )
+            .map(String::as_str)
+            .collect::<Vec<_>>();
+        if qualifications.is_empty() {
+            return self.summary.clone();
+        }
+        format!("{} ({})", self.summary, qualifications.join(" / "))
     }
 }
 
@@ -241,28 +299,43 @@ fn recorded_requests(r: &Record) -> Vec<String> {
         .collect()
 }
 
-fn impact(r: &Record, supported: bool, context: &Context<'_>) -> Vec<String> {
-    let addressed: BTreeSet<_> = r.addressed_findings.iter().collect();
-    let covers = r.outcome == "proposed"
+#[derive(Clone, Copy)]
+enum AddressedDisplay {
+    Named,
+    Listed,
+    Omitted,
+}
+
+fn addressed_display(r: &Record, supported: bool, context: &Context<'_>) -> AddressedDisplay {
+    if r.outcome == "proposed"
         && r.remaining_findings.is_empty()
-        && r.findings.iter().collect::<BTreeSet<_>>() == addressed
-        && context.matches(&r.findings);
+        && context.matches(&r.findings)
+        && r.findings.iter().collect::<BTreeSet<_>>()
+            == r.addressed_findings.iter().collect::<BTreeSet<_>>()
+    {
+        return if supported {
+            AddressedDisplay::Omitted
+        } else {
+            AddressedDisplay::Listed
+        };
+    }
+    AddressedDisplay::Named
+}
+
+fn impact(r: &Record, display: AddressedDisplay) -> Vec<String> {
     let mut lines = Vec::new();
-    let required_edit = r.checks.release_availability == "observed"
-        && r.checks.advisories == "non_affecting"
-        && known_checks(&r.checks)
-        && r.changes.iter().all(|c| c.data.strategy == "upgrade")
-        && !r.blockers.is_empty()
-        && r.blockers.iter().all(project_edit);
-    if !(r.addressed_findings.is_empty() || (supported || required_edit) && covers) {
-        lines.push(match (covers, r.addressed_findings.len()) {
-            (true, 1) => "would address the listed advisory".into(),
-            (true, _) => "would address all listed advisories".into(),
-            (false, _) => format!(
+    if !r.addressed_findings.is_empty() {
+        match display {
+            AddressedDisplay::Named => lines.push(format!(
                 "would address: {}",
                 finding_names(&r.addressed_findings, &r.remaining_findings, &r.subject)
-            ),
-        });
+            )),
+            AddressedDisplay::Listed if r.addressed_findings.len() == 1 => {
+                lines.push("would address the listed advisory".into());
+            }
+            AddressedDisplay::Listed => lines.push("would address all listed advisories".into()),
+            AddressedDisplay::Omitted => {}
+        }
     }
     if r.outcome == "partial" && r.addressed_findings.is_empty() {
         lines.push("would address: none reported".into());
@@ -286,7 +359,7 @@ fn edit_instruction(b: &Blocker) -> Option<String> {
         return None;
     }
     Some(format!(
-        "Update the {} requirement in {}. Current requirement: {}.",
+        "Applying the candidate requires updating the {} requirement in {}. Current requirement: {}.",
         safe(b.dependency_name.as_deref()?),
         safe(&b.path),
         safe(b.requested_requirement.as_deref()?)
@@ -391,10 +464,7 @@ fn checks(r: &Record) -> Vec<String> {
         ));
     }
     if c.preference_differences != 0 {
-        lines.push(format!(
-            "requests with different preferences: {}",
-            c.preference_differences
-        ));
+        lines.push("Some dependency requests have different version preferences.".into());
     }
     if c.prerelease_target
         && !r

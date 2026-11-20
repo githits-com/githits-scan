@@ -8,7 +8,9 @@ fn input() -> Value {
         serde_json::from_slice(include_bytes!("../fixtures/audit/remediation.json"))
             .expect("remediation");
     let mut alternative = input["remediation"]["recommendations"][0].clone();
-    alternative["changes"][0]["target_version"] = "1.2.0".into();
+    alternative["changes"][0]["target_version"] = "1.2.0-rc.1<&|`\n\u{1b}[2J".into();
+    alternative["changes"][0]["prerelease_target"] = true.into();
+    alternative["changes"][0]["paths"] = json!(["other/mark|<`>\npackage-lock.json"]);
     input["remediation"]["recommendations"]
         .as_array_mut()
         .expect("records")
@@ -69,10 +71,51 @@ fn audit_presentation_json_online_and_offline_share_facts_blocks_and_exit() {
         )),
         replay
     );
+    assert_alternatives(&online);
+    assert!(
+        !serde_json::to_string(&online)
+            .expect("JSON")
+            .contains("private_unused_id")
+    );
+    let destination = root.path().join("presentation.json");
+    let output = offline(
+        &archive,
+        &[
+            "--presentation-json",
+            "--quiet",
+            "--output",
+            destination.to_str().expect("path"),
+        ],
+    );
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    assert!(output.stdout.is_empty() && output.stderr.is_empty());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&fs::read(destination).expect("file")).expect("JSON"),
+        replay
+    );
+}
+
+fn assert_alternatives(online: &Value) {
     let records = online["remediation"]["recommendations"]
         .as_array()
         .expect("records");
     assert_eq!(records.len(), 2, "alternatives remain independent");
+    assert_eq!(
+        records[0]["compact_summary"],
+        "Suggested fix: Upgrade npm:demo 1.0.0 -> 1.1.1 · would address: GHSA-demo"
+    );
+    let alternative = records[1]["compact_summary"]
+        .as_str()
+        .expect("compact text");
+    assert_eq!(
+        alternative,
+        concat!(
+            "Suggested fix: Upgrade npm:demo 1.0.0 -> 1.2.0-rc.1<&|`\\n\\u{1b}[2J ",
+            "(target is prerelease) · Change in: other/mark|<`>\\npackage-lock.json · ",
+            "would address: GHSA-demo"
+        )
+    );
+    assert!(!alternative.contains(['\n', '\u{1b}']));
     for (index, explanation) in records.iter().enumerate() {
         let fact = &online["audit"]["remediation"]["recommendations"][index];
         assert_eq!(explanation["recommendation_index"], index);
@@ -96,27 +139,6 @@ fn audit_presentation_json_online_and_offline_share_facts_blocks_and_exit() {
             assert!(fact["changes"][change_index].is_object());
         }
     }
-    assert!(
-        !serde_json::to_string(&online)
-            .expect("JSON")
-            .contains("private_unused_id")
-    );
-    let destination = root.path().join("presentation.json");
-    let output = offline(
-        &archive,
-        &[
-            "--presentation-json",
-            "--quiet",
-            "--output",
-            destination.to_str().expect("path"),
-        ],
-    );
-    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-    assert!(output.stdout.is_empty() && output.stderr.is_empty());
-    assert_eq!(
-        serde_json::from_slice::<Value>(&fs::read(destination).expect("file")).expect("JSON"),
-        replay
-    );
 }
 
 #[test]
@@ -213,10 +235,62 @@ fn audit_presentation_json_replay_preserves_stored_ignore_policy() {
         "Authored review decision"
     );
     assert!(
-        !presentation["remediation"]["recommendations"]
-            .as_array()
-            .expect("records")
-            .is_empty(),
+        presentation["remediation"]["recommendations"][0]["compact_summary"]
+            .as_str()
+            .is_some_and(|text| !text.is_empty()),
         "stored policy must not discard explanations"
+    );
+}
+
+#[test]
+fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_replay() {
+    let root = repo();
+    let path = root.path().join("analysis.json");
+    let mut input = input();
+    let r = &mut input["remediation"]["recommendations"][0];
+    r["checks"]["requirements"] = "blocked".into();
+    r["blockers"] = json!([{
+        "owner": {"name":"application", "version":null},
+        "owner_role":"project",
+        "path":"package.json",
+        "kind":"dependency",
+        "dependency_name":"demo",
+        "requested_requirement":"~1.0",
+        "requirement_status":"recorded",
+        "basis":"manifest",
+        "context":{},
+        "reason":"project_request_change"
+    }]);
+    let mock = server(&serde_json::to_vec(&input).expect("report"));
+    let online = run(
+        root.path(),
+        Some(&mock.origin()),
+        &[
+            "--no-color",
+            "--save-analysis",
+            path.to_str().expect("path"),
+        ],
+    );
+    let focused = offline(&path, &["--explain", "npm:demo@1.0.0", "--no-color"]);
+    let export = document(&offline(&path, &["--presentation-json"]));
+    let guidance = export["remediation"]["recommendations"][0]["compact_summary"]
+        .as_str()
+        .expect("compact text");
+    let edit = "Applying the candidate requires updating the demo requirement in package.json.";
+    let change = "Candidate upgrade: npm:demo 1.0.0 -> 1.1.1";
+    for output in [online, focused] {
+        assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+        let native = prose(&stdout(&output));
+        assert!(native.contains(change) && native.contains(edit), "{native}");
+        assert!(
+            native.contains("would address the listed advisory"),
+            "{native}"
+        );
+    }
+    assert!(
+        guidance.contains(change)
+            && guidance.contains(edit)
+            && guidance.contains("would address: GHSA-demo"),
+        "{guidance}"
     );
 }

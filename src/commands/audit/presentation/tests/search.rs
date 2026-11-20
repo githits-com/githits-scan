@@ -40,6 +40,10 @@ fn audit_search_explains_losing_release_without_changing_selected_fix() {
         blocks(&input())["remediation"]["recommendations"][0]["changes"][0]["summary"]
     );
     assert_eq!(
+        r["compact_summary"],
+        blocks(&input())["remediation"]["recommendations"][0]["compact_summary"]
+    );
+    assert_eq!(
         doc["audit"]["remediation"]["recommendations"][0]["search_details"][0]["witness"]["coordinate"],
         coordinate("example-parent", "3.0.0")
     );
@@ -124,9 +128,17 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
     );
     assert_eq!(
         r["constraints"][0]["summary"],
-        "Update the demo requirement in package.json. Current requirement: ^1.0."
+        "Applying the candidate requires updating the demo requirement in package.json. Current requirement: ^1.0."
     );
-    assert_eq!(r["impact"], json!([]));
+    assert_eq!(r["impact"], json!(["would address the listed advisory"]));
+    assert_eq!(
+        r["compact_summary"],
+        concat!(
+            "Candidate upgrade: npm:demo 1.0.0 -> 1.1.1 · would address: GHSA-demo · ",
+            "Applying the candidate requires updating the demo requirement in package.json. ",
+            "Current requirement: ^1.0."
+        )
+    );
     value["remediation"]["recommendations"][0]["outcome"] = "partial".into();
     value["remediation"]["recommendations"][0]["remaining_finding_refs"] = json!([0]);
     let doc = blocks(&value);
@@ -357,6 +369,8 @@ fn audit_search_indeterminate_result_does_not_deny_supplied_search_evidence() {
     );
     let r = &mut value["remediation"]["recommendations"][0];
     r["outcome"] = "indeterminate".into();
+    r["addressed_finding_refs"] = json!([]);
+    r["remaining_finding_refs"] = json!([0]);
     r["changes"] = json!([]);
     r["blockers"] = json!([]);
     r["limitations"] = json!([]);
@@ -366,6 +380,13 @@ fn audit_search_indeterminate_result_does_not_deny_supplied_search_evidence() {
     assert_eq!(
         r["outcome"],
         "The service could not determine a mitigation."
+    );
+    assert_eq!(
+        r["compact_summary"],
+        concat!(
+            "The service could not determine a mitigation. · still unresolved: GHSA-demo · ",
+            "Release metadata for cargo:example-parent@3.0.0: lookup failed."
+        )
     );
     assert_eq!(
         r["search_explanations"]
