@@ -221,6 +221,7 @@ fn known_cause(value: &str) -> Option<&'static str> {
         "unsupported_selector" => "the requirement uses a selector this check cannot evaluate",
         "request_unavailable" => "the service did not provide a requirement assessment",
         "membership_unavailable" => "the service did not provide a requirement comparison",
+        "new_dependency_not_checked" => "a new dependency was not checked",
         "native_applicability_not_checked" => {
             "whether the dependency requirement applies to this project was not checked"
         }
