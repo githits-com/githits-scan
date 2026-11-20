@@ -25,6 +25,17 @@ pub(super) fn optional<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
     T::deserialize(d).map(Some)
 }
 
+/// Retain explicit null separately from an omitted field.
+#[expect(
+    clippy::option_option,
+    reason = "Some(None) preserves the explicit null from the wire"
+)]
+pub(super) fn present_nullable<'de, D: serde::Deserializer<'de>, T: Deserialize<'de>>(
+    d: D,
+) -> Result<Option<Option<T>>, D::Error> {
+    nullable(d).map(Some)
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Coordinate {
     #[serde(flatten, skip_serializing)]

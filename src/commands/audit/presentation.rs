@@ -6,6 +6,7 @@ use super::view::{
 use crate::commands::safe;
 use serde::Serialize;
 
+mod added;
 pub(super) mod context;
 pub(super) mod remediation;
 mod search;

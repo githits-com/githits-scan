@@ -206,6 +206,7 @@ impl Serialize for CompactChange<'_> {
             prerelease_target,
             deprecated_target,
             reasons: _,
+            added_dependencies,
         } = &self.0.data;
         let mut map = serializer.serialize_map(None)?;
         for (key, value) in [
@@ -231,6 +232,9 @@ impl Serialize for CompactChange<'_> {
         }
         if let Some(value) = deprecated_target {
             map.serialize_entry("deprecated_target", value)?;
+        }
+        if let Some(branches) = added_dependencies {
+            map.serialize_entry("added_dependencies", branches)?;
         }
         if let Some(reasons) = &self.0.reasons {
             map.serialize_entry("reasons", reasons)?;

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::super::Owner;
 use super::super::reasons::Request;
-use crate::api::audit::wire::{Additional, Coordinate, nullable, optional};
+use crate::api::audit::wire::{Additional, Coordinate, nullable, optional, present_nullable};
 
 /// The consumed portion of a whole-search witness.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -142,18 +142,6 @@ pub(crate) struct SearchWitness {
         skip_serializing_if = "Option::is_none"
     )]
     pub(crate) observation: Option<Observation>,
-}
-
-#[expect(
-    clippy::option_option,
-    reason = "The wire field distinguishes absence, explicit null and a coordinate"
-)]
-fn present_nullable<'de, D, T>(deserializer: D) -> Result<Option<Option<T>>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-    T: Deserialize<'de>,
-{
-    Option::<T>::deserialize(deserializer).map(Some)
 }
 
 /// A package identity without a version.

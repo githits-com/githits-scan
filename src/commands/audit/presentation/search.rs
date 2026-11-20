@@ -44,6 +44,14 @@ fn explanation(index: usize, detail: &Detail) -> Explanation {
             stopped(&d.stage, &d.reason, &d.witness),
             context(&d.witness, subject(&d.witness, None)),
         ),
+        Detail::AddedDependency(d) => {
+            let path = safe(&d.witness.source.path);
+            let summary = d.witness.coordinate.as_ref().map_or_else(
+                || format!("New dependency considered for a candidate whose release was not supplied [{path}]."),
+                |c| format!("New dependency considered for candidate {} [{path}].", safe(&c.to_string())),
+            );
+            (summary, super::added::lines(&d.branch).collect())
+        }
         Detail::Unrecognized { .. } => (
             "Scan cannot interpret this search detail; its kind is not supported by this version."
                 .into(),
@@ -205,7 +213,7 @@ fn cause(value: &str) -> &'static str {
 fn incomplete_cause(value: &str) -> &'static str {
     known_cause(value).unwrap_or("the check could not be completed; Scan cannot explain the supplied reason; see JSON for the original value")
 }
-fn known_cause(value: &str) -> Option<&'static str> {
+pub(super) fn known_cause(value: &str) -> Option<&'static str> {
     if let Some(reason) = crate::commands::evidence::reason(value) {
         return Some(reason);
     }

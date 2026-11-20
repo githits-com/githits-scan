@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use super::wire::{Additional, Coordinate, nullable, optional};
 
+/// Registry selection and advisory evidence for candidate additions.
+pub(crate) mod added;
 /// Checked reason DTOs used by recommendation changes.
 pub(crate) mod reasons;
 /// Typed search evidence consumed from recommendation details.
@@ -111,6 +113,13 @@ pub(crate) struct Change {
         skip_serializing_if = "Option::is_none"
     )]
     pub reasons: Option<Vec<Reason>>,
+    /// Checked branches for new dependency requests made by this change.
+    #[serde(
+        default,
+        deserialize_with = "optional",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub added_dependencies: Option<Vec<added::Branch>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

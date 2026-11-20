@@ -1,11 +1,12 @@
 //! Whole-search obstacles, independent of selected-action checks and findings.
-use crate::api::audit::wire::{Additional, optional};
+use super::added::Branch;
+use crate::api::audit::wire::{Additional, Coordinate, nullable, optional};
 use serde::{Deserialize, Deserializer, Serialize, Serializer, de::Error as _};
 use serde_json::Value;
 use std::num::NonZeroU64;
 /// Screened witness fields used by Scan's explanations.
 pub(crate) mod witness;
-use witness::SearchWitness;
+use witness::{SearchWitness, Source};
 
 /// An unavailable answer, observed work stop, or uninterpretable future kind.
 /// Detailed payloads are boxed so a future-kind entry does not reserve a full witness.
@@ -15,6 +16,8 @@ pub(crate) enum Detail {
     Unavailable(Box<Unavailable>),
     /// Work stopped at a reported search stage.
     Stopped(Box<Stopped>),
+    /// Evidence for an added dependency considered during the search.
+    AddedDependency(Box<AddedDependency>),
     /// An unfamiliar kind, without interpreting its payload.
     Unrecognized {
         /// The service kind, retained without interpreting its additional fields.
@@ -59,6 +62,31 @@ pub(crate) struct Stopped {
     /// Coordinate and budget scope of the observed stop.
     pub witness: SearchWitness,
 }
+
+/// A candidate's new dependency request and the branch evidence retained by search.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub(crate) struct AddedDependency {
+    #[serde(flatten, skip_serializing)]
+    _additional: Additional,
+    /// Candidate release and project source where it surfaced.
+    pub witness: AddedDependencyWitness,
+    /// Registry branch considered for this request.
+    #[serde(rename = "added_dependency")]
+    pub branch: Branch,
+}
+
+/// Candidate identity and source for an added-dependency search detail.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub(crate) struct AddedDependencyWitness {
+    #[serde(flatten, skip_serializing)]
+    _additional: Additional,
+    /// The release considered by search, which the schema permits to be null.
+    #[serde(deserialize_with = "nullable")]
+    pub coordinate: Option<Coordinate>,
+    /// The project source considered for that release.
+    pub source: Source,
+}
+
 impl Detail {
     fn valid(&self) -> bool {
         match self {
@@ -69,7 +97,7 @@ impl Detail {
                     && d.witness.budget_scope.is_some()
                     && witness_valid(&d.witness)
             }
-            Self::Unrecognized { .. } => true,
+            Self::AddedDependency(_) | Self::Unrecognized { .. } => true,
         }
     }
 }
@@ -88,6 +116,9 @@ impl<'de> Deserialize<'de> for Detail {
             "stopped" => Self::Stopped(
                 serde_json::from_value(Value::Object(object)).map_err(D::Error::custom)?,
             ),
+            "added_dependency" => Self::AddedDependency(
+                serde_json::from_value(Value::Object(object)).map_err(D::Error::custom)?,
+            ),
             _ => Self::Unrecognized { kind: kind.clone() },
         };
         if !detail.valid() {
@@ -103,12 +134,15 @@ enum DetailRef<'a> {
     Unavailable(&'a Unavailable),
     #[serde(rename = "stopped")]
     Stopped(&'a Stopped),
+    #[serde(rename = "added_dependency")]
+    AddedDependency(&'a AddedDependency),
 }
 impl Serialize for Detail {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         match self {
             Self::Unavailable(d) => DetailRef::Unavailable(d).serialize(s),
             Self::Stopped(d) => DetailRef::Stopped(d).serialize(s),
+            Self::AddedDependency(d) => DetailRef::AddedDependency(d).serialize(s),
             Self::Unrecognized { kind } => {
                 use serde::ser::SerializeMap as _;
                 let mut object = s.serialize_map(Some(1))?;

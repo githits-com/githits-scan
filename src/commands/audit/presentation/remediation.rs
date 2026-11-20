@@ -398,6 +398,12 @@ fn change(
     } else {
         format!(" ({})", qualifiers.join(", "))
     };
+    details.extend(
+        data.added_dependencies
+            .iter()
+            .flatten()
+            .flat_map(super::added::lines),
+    );
     Change {
         index,
         compact: format!("{version_change}{note}{}", location(&files)),

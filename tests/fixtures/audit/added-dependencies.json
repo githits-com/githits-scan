@@ -1,0 +1,182 @@
+{
+  "added_dependencies": [
+    {
+      "name": "added-child",
+      "scope": "runtime",
+      "registry": "npm",
+      "selected_version": "1.0.0",
+      "selection_basis": "registry_resolution",
+      "coordinates": [
+        {
+          "name": "added-child",
+          "version": "1.0.0",
+          "registry": "npm",
+          "advisory_ids": [],
+          "advisory_status": "non_affecting"
+        },
+        {
+          "name": "optional-descendant",
+          "version": "1.0.0",
+          "registry": "npm",
+          "advisory_ids": [],
+          "advisory_status": "non_affecting"
+        }
+      ],
+      "issues": [],
+      "requested_requirement": "npm:added-child@^1",
+      "authored_name": "child-alias",
+      "requirement_status": "recorded"
+    }
+  ],
+  "search_details": [
+    {
+      "kind": "added_dependency",
+      "witness": {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.2.0"
+        },
+        "source": {
+          "path": "package-lock.json",
+          "coordinate": {
+            "registry": "npm",
+            "name": "demo",
+            "version": "1.0.0"
+          },
+          "occurrence_refs": [
+            0
+          ]
+        }
+      },
+      "added_dependency": {
+        "name": "added-child",
+        "scope": "runtime",
+        "registry": "npm",
+        "selected_version": "1.0.0",
+        "selection_basis": "registry_resolution",
+        "coordinates": [
+          {
+            "name": "added-child",
+            "version": "1.0.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "affected-descendant",
+            "version": "1.0.0",
+            "registry": "npm",
+            "advisory_ids": [
+              "AUDIT-ADDED-affected-descendant"
+            ],
+            "advisory_status": "affected"
+          }
+        ],
+        "issues": [
+          {
+            "operation": "advisories",
+            "reason": "added_coordinate_affected",
+            "coordinate": {
+              "registry": "npm",
+              "name": "affected-descendant",
+              "version": "1.0.0"
+            }
+          }
+        ],
+        "requested_requirement": "^1",
+        "authored_name": "added-child",
+        "requirement_status": "recorded"
+      }
+    },
+    {
+      "kind": "added_dependency",
+      "witness": {
+        "coordinate": {
+          "registry": "npm",
+          "name": "demo",
+          "version": "1.3.0"
+        },
+        "source": {
+          "path": "package-lock.json",
+          "coordinate": {
+            "registry": "npm",
+            "name": "demo",
+            "version": "1.0.0"
+          },
+          "occurrence_refs": [
+            0
+          ]
+        }
+      },
+      "added_dependency": {
+        "name": "router",
+        "scope": "runtime",
+        "registry": "npm",
+        "selected_version": "2.3.0",
+        "selection_basis": "registry_resolution",
+        "coordinates": [
+          {
+            "name": "debug",
+            "version": "4.4.3",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "depd",
+            "version": "2.0.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "is-promise",
+            "version": "4.0.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "ms",
+            "version": "2.1.3",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "parseurl",
+            "version": "1.3.3",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "path-to-regexp",
+            "version": "8.4.2",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          },
+          {
+            "name": "router",
+            "version": "2.3.0",
+            "registry": "npm",
+            "advisory_ids": [],
+            "advisory_status": "non_affecting"
+          }
+        ],
+        "issues": [
+          {
+            "owner": "is-promise@4.0.0",
+            "reason": "dependency_list_unavailable",
+            "operation": "closure"
+          }
+        ],
+        "requested_requirement": "^2.0.0",
+        "authored_name": "router",
+        "requirement_status": "recorded"
+      }
+    }
+  ]
+}

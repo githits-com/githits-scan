@@ -861,3 +861,23 @@ expressions do not establish active features, markers or platforms. Witness
 counters and occurrence references are not explanations, and package-manager or
 build success is never inferred. Online and saved replay render the same shared
 blocks without additional analysis or token use.
+
+### Checked additions
+
+When a recommended change introduces a dependency request, Scan shows the
+authored name and requirement beside that change. It names the canonical
+selection and gives the advisory result for each supplied exact root or
+transitive version. These versions describe a registry-resolved branch. The
+project installer may select different copies or apply different policy.
+
+An added-dependency search detail names the candidate release and project file
+where the request surfaced. It keeps completed checks visible alongside the
+specific issue, including an unavailable catalog or release, an unresolved
+request, an advisory that affects an exact version, or a conflict with the
+versions retained for the project. Cargo feature settings and Python extras and
+markers describe the inputs to the check. Gaps in activation evidence qualify
+the branch without erasing completed advisory checks or changing the guidance
+for an independently checked alternative.
+
+Scan uses the branch supplied by the audit report in each output format and saved
+replay. It performs no registry resolution or installer checks for this display.
