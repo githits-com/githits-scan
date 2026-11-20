@@ -47,6 +47,12 @@ fn audit_ux_override_shows_benefit_and_conflicts_without_routine_disclaimer() {
         .push(second);
     let text = human_report(&value);
     assert!(text.contains("would address the listed advisory"), "{text}");
+    assert!(
+        text.contains("Candidate changes — change together:")
+            && text.contains("      Change npm:demo 1.0.0 -> 1.1.1")
+            && text.contains("      Change npm:other 1.0.0 -> 1.1.1"),
+        "{text}"
+    );
     assert!(!text.contains("override not verified:"), "{text}");
     assert!(
         !text.contains("package-manager support and build not checked"),

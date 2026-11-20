@@ -60,6 +60,9 @@ pub(in crate::commands::audit) struct Constraint {
     pub summary: String,
     /// Sorted unique owner, requirement and path contexts for this explanation.
     pub details: Vec<String>,
+    /// An explicit project edit already identifies the request in its summary.
+    #[serde(skip)]
+    is_edit: bool,
 }
 
 impl Plan {
@@ -149,7 +152,7 @@ impl Plan {
             blocks.push(format!("Change in: {}", list(&self.files)));
         }
         blocks.extend(impact(r, AddressedDisplay::Named));
-        blocks.extend(self.constraints.iter().map(|c| c.summary.clone()));
+        blocks.extend(self.constraints.iter().map(Constraint::compact_text));
         blocks.extend(self.checks.iter().cloned());
         blocks.extend(self.limitations.iter().cloned());
         if self.changes.is_empty() {
@@ -189,6 +192,19 @@ impl Change {
     }
 }
 
+impl Constraint {
+    fn compact_text(&self) -> String {
+        if self.is_edit {
+            return self.summary.clone();
+        }
+        format!(
+            "{} ({})",
+            self.summary.trim_end_matches('.'),
+            self.details.join(" / ")
+        )
+    }
+}
+
 fn heading(r: &Record, supported: bool) -> Option<String> {
     if r.changes.len() < 2 {
         return None;
@@ -199,12 +215,7 @@ fn heading(r: &Record, supported: bool) -> Option<String> {
         (false, "partial") => "Candidate changes (partial)",
         _ => "Candidate changes",
     };
-    let together = if r.changes.len() > 1 {
-        " — change together"
-    } else {
-        ""
-    };
-    Some(format!("{label}{together}"))
+    Some(format!("{label} — change together"))
 }
 
 fn change(
@@ -220,10 +231,11 @@ fn change(
     let known = planning_known
         && matches!(r.outcome.as_str(), "proposed" | "partial")
         && known_checks(&r.checks);
-    let action = match (known, data.strategy.as_str()) {
-        (true, "upgrade") if supported && r.changes.len() == 1 => "Suggested fix: Upgrade",
-        (true, "upgrade") if supported => "Upgrade",
-        (true, "upgrade") => "Candidate upgrade:",
+    let action = match (known, data.strategy.as_str(), r.changes.len() > 1) {
+        (true, "upgrade", true) => "Upgrade",
+        (_, _, true) => "Change",
+        (true, "upgrade", false) if supported => "Suggested fix: Upgrade",
+        (true, "upgrade", false) => "Candidate upgrade:",
         _ => "Candidate change:",
     };
     let partial = if r.changes.len() == 1 && r.outcome == "partial" {
@@ -390,7 +402,11 @@ fn constraints(blockers: &[Blocker], detail: ReasonDetail) -> Vec<Constraint> {
             group.details.extend(details);
             continue;
         }
-        groups.push(Constraint { summary, details });
+        groups.push(Constraint {
+            summary,
+            details,
+            is_edit,
+        });
     }
     for group in &mut groups {
         group.details.sort();
@@ -635,13 +651,12 @@ fn known_checks(c: &Checks) -> bool {
 
 fn check_text(value: &str) -> String {
     match value {
-        "not_checked" => "not checked (project resolver/build not run)".into(),
         "not_assessed" => "not assessed".into(),
         "not_retained" => "not retained".into(),
         "preference_differs" => "preference differs".into(),
         "affected" => "still affected by known advisories".into(),
         "blocked" => "blocked by dependency requirements".into(),
-        "unchecked" => "not checked".into(),
+        "not_checked" | "unchecked" => "not checked".into(),
         "unverified" => "not verified".into(),
         "unknown" => "not determined from the supplied evidence".into(),
         "unsupported" => "advisory checking is not supported for this target".into(),

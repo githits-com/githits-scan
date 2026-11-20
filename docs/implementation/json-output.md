@@ -212,8 +212,9 @@ report. It contains:
 Each change has `change_index` (zero-based within the matching fact record),
 `summary`, `details`, `files` and `reasons`. Each reason has `summary` and
 `evidence` (supporting request explanations). Detailed reason evidence is always
-exported when available; native compact output can suppress redundant advisory
-reasons and request inventories. All explanation selection and wording still come
+exported when available. Ordinary native output and the exported compact summary
+can suppress redundant advisory reasons and supporting request inventories.
+All explanation selection and wording still come
 from the same model. Missing or unfamiliar reason detail is qualified explicitly
 in the detailed export; it never becomes an invented checked benefit.
 
@@ -233,7 +234,7 @@ even when the row covers more advisories than this alternative. Joint changes
 share one summary. Keep independent alternatives separate. The summary includes
 material target and application qualifications, explicit file scope where it
 differs from the finding context, checked effects such as a parent change that
-removes a recorded route, requirements and coordination warnings. A required
+removes a recorded route, conflicting requests and coordination warnings. A required
 project edit describes what applying the candidate entails. A partial candidate
 keeps its reported benefit and unresolved findings visible. A record without a
 change explains the outcome and includes reported obstacles when available.
@@ -259,7 +260,7 @@ arrays mean no additional blocks to display, not an all-clear determination.
 
 ### Plain text and consumer responsibilities
 
-Explanation strings contain no ANSI styling, HTML or Markdown. Scan escapes
+Scan produces plain text without adding ANSI styling, HTML or Markdown. It escapes
 control characters for display (for example a newline becomes the literal `\n`)
 and preserves ordinary punctuation such as `<`, `&`, pipes and backticks. JSON
 encoding remains normal JSON escaping; decode it once. Fact values and path arrays

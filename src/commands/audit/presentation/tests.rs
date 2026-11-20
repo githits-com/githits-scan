@@ -319,6 +319,29 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
 }
 
 #[test]
+fn compact_summary_names_conflicting_requests_in_a_joint_candidate() {
+    let mut input: Value = serde_json::from_slice(include_bytes!(
+        "../../../../tests/fixtures/audit/graph.json"
+    ))
+    .expect("joint report");
+    let r = &mut input["remediation"]["recommendations"][0];
+    let mut constraint = blocker();
+    constraint["dependency_name"] = "demo".into();
+    constraint["requested_requirement"] = "~1.0".into();
+    r["blockers"] = json!([constraint]);
+    r["checks"]["requirements"] = "blocked".into();
+    assert_eq!(
+        compact_summary(&input),
+        concat!(
+            "Candidate changes — change together: Upgrade npm:demo 1.0.0 -> 1.1.1 + ",
+            "Upgrade npm:parent 2.0.0 -> 2.1.0 (target is deprecated) · ",
+            "would address: GHSA-example · Dependency requirements conflict with this candidate ",
+            "(express@5.1.0 requires demo ~1.0 [package-lock.json])"
+        )
+    );
+}
+
+#[test]
 fn displayed_context_controls_compression_without_changing_impact_meaning() {
     let view = project(&input());
     let data = match &view.remediation {
@@ -436,6 +459,13 @@ fn indeterminate_checks_are_retained_without_claiming_no_reason_was_supplied() {
             !plan.checks.is_empty(),
             "{field} must have a visible qualification"
         );
+        if field == "preference_differences" {
+            assert_eq!(
+                plan.checks,
+                ["Some dependency requests have different version preferences."]
+            );
+            assert!(compact_summary(&input).contains(&plan.checks[0]));
+        }
         assert_eq!(
             plan.outcome.as_deref(),
             Some("The service could not determine a mitigation.")

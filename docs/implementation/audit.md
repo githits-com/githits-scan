@@ -285,9 +285,9 @@ line-wrapped layout and exact displayed context.
 Project requirement/preference edits are described as necessary when applying the
 change, distinct from actual third-party requirement exclusions. A supplied
 project-owned edit names the recorded dependency requirement, current range and
-file as a condition for applying the candidate. Native compact
-output omits repeated owner context when that explanation already names the
-requirement and file; detailed presentation retains it.
+file as a condition for applying the candidate. Ordinary native output and the
+exported compact summary omit repeated owner context when that explanation
+already names the requirement and file. Detailed presentation retains it.
 
 The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
@@ -300,8 +300,9 @@ is never a confirmed fix. Complete proposed prereleases with no remaining findin
 retain supported wording and their explicit warning. Weaker facts, missing
 addressed evidence, overrides and future strategies retain neutral
 candidate wording; partial candidates keep their partial qualifier in the single-change
-summary or joint heading. A single change has one qualified summary, without a
-second heading. Override strategies use neutral candidate-change wording and
+summary or joint heading. A single change has one qualified summary. For joint
+changes, the heading supplies the qualification for each change in the group.
+Override strategies use neutral change wording and
 retain actual requirement conflicts; Scan does not prescribe an override. Joint action sets stay together; partial results distinguish addressed
 and remaining findings. A supported complete proposed fix avoids repeating advisory IDs only when the
 record's own findings equal the displayed finding context (coordinate, advisory
@@ -320,7 +321,8 @@ explanation use this same comparison, so grouping never broadens a fix's scope. 
 owner, supplied dependency name, requirement, path and readable reasons; role/kind/basis/recorded-status
 bookkeeping stays in JSON. Exclusion groups state that dependency requirements conflict with the candidate;
 other and unknown groups retain the supplied readable explanation. Each group
-keeps its requesting packages, requirements and files as details. This does not turn an unevaluated
+keeps its requesting packages, requirements and files beside the explanation.
+This does not turn an unevaluated
 selector or a deliberate override into a blocked verdict. An override signals
 departure from a represented requirement, not proof of a valid package-manager
 override or build. Unknown
@@ -365,6 +367,8 @@ Candidates remain qualified by their heading and concrete conflicts. Routine
 package-manager/build checks in the supplied `not_checked` state stay in JSON;
 human output does not repeat a generic verification disclaimer. Unknown future
 check values retain their own neutral display.
+When requests differ in version preference, guidance explains the difference
+and the audit facts retain the count.
 Trace retention and omitted graph/detail counts also remain in JSON. Human output
 keeps omitted recommendation counts, actionable planning limits and warnings about
 the target or requirements. Target-check warnings require an actual proposed
