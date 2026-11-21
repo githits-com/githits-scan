@@ -242,7 +242,7 @@ fn audit_added_dependencies_compact_prioritizes_selected_branch_problems() {
         (
             json!([clean, incomplete]),
             concat!(
-                "Bump npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. ",
+                "npm:demo 1.0.0 -> 1.1.1 in package-lock.json. Addresses GHSA-demo. ",
                 "Registry checks selected npm:router@2.3.0 for one of 2 new dependency requests. ",
                 "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
                 "so its dependencies could not be fully checked."
@@ -290,6 +290,51 @@ fn audit_added_dependencies_advisory_precedes_unchecked_requirements() {
             "The audit did not check whether the project's dependency requirements allow this change."
         ])
     );
+}
+
+#[test]
+fn audit_added_dependencies_failed_checks_precede_unchecked_requirements() {
+    let evidence = addition_evidence();
+    let incomplete = &evidence["search_details"][1]["added_dependency"];
+    let mut unresolved = incomplete.clone();
+    unresolved["selected_version"] = Value::Null;
+    unresolved["coordinates"] = json!([]);
+    unresolved["issues"] = json!([{"operation":"selection","reason":"no_matching_version"}]);
+    for (branch, expected) in [
+        (
+            incomplete,
+            concat!(
+                "Registry checks selected npm:router@2.3.0 for a new dependency. ",
+                "Dependency check for is-promise@4.0.0 — the dependency list was unavailable, ",
+                "so its dependencies could not be fully checked."
+            ),
+        ),
+        (
+            &unresolved,
+            concat!(
+                "The release requires router ^2.0.0 as a new dependency. ",
+                "Registry version selection for npm:router — no published version matched the requirement."
+            ),
+        ),
+    ] {
+        let mut value = input();
+        let r = &mut value["remediation"]["recommendations"][0];
+        r["checks"]["requirements"] = "unchecked".into();
+        r["changes"][0]["added_dependencies"] = json!([branch]);
+        let doc = blocks(&value);
+        let r = &doc["remediation"]["recommendations"][0];
+        assert_eq!(r["details_recommended"], true);
+        assert_eq!(
+            r["compact_summary"],
+            format!("npm:demo 1.0.0 -> 1.1.1. {expected}")
+        );
+        assert_eq!(
+            r["checks"],
+            json!([
+                "The audit did not check whether the project's dependency requirements allow this change."
+            ])
+        );
+    }
 }
 
 #[test]

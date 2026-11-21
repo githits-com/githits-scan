@@ -26,7 +26,7 @@ that section describe 0.2.0 only; use the README for current commands and the
 - **Checked dependencies introduced by upgrades** - When the audit report
   supplies this evidence, Scan shows the new dependency requests, the versions
   selected by the registry checks, and the advisory results for each checked
-  version. Compact guidance names an affected new dependency and its advisory.
+  version. Compact guidance names an advisory or a failed check on an added dependency.
   Upgrade search details show which candidate introduced each request and where
   a check failed. Audit JSON and saved analyses retain the supplied evidence.
 

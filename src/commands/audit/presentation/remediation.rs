@@ -158,20 +158,17 @@ impl Plan {
                 .filter_map(|c| c.data.added_dependencies.as_deref())
                 .flatten(),
         );
-        let advisory = match &addition {
-            Some(CompactAddition::Advisory(text)) => Some(text.as_str()),
-            _ => None,
-        };
+        let added_problem = addition.as_ref().is_some_and(CompactAddition::is_problem);
         let mut sentences = Vec::new();
-        if let Some(changes) = self.compact_changes(r, advisory) {
+        if let Some(changes) = self.compact_changes(r, addition.as_ref()) {
             sentences.push(changes);
         }
         sentences.extend(self.outcome.iter().cloned());
         let mut target_warnings = action_target_warnings(r).peekable();
         let target_caveat = target_warnings.peek().is_some()
             || self.changes.iter().any(|change| change.target_caveat);
-        let clear_edit = self.clear_project_edit && !target_caveat && advisory.is_none();
-        let mut issue = self.compact_issue(r, clear_edit, advisory.is_some());
+        let clear_edit = self.clear_project_edit && !target_caveat && !added_problem;
+        let mut issue = self.compact_issue(r, clear_edit, added_problem);
         let has_changes = !self.changes.is_empty();
         let has_remaining_findings = !r.remaining_findings.is_empty();
         let details_recommended = !(self.supported || clear_edit)
@@ -187,7 +184,7 @@ impl Plan {
         }
         if self.supported
             || clear_edit
-            || (issue.is_none() && advisory.is_none())
+            || (issue.is_none() && !added_problem)
             || (has_remaining_findings && has_changes)
         {
             sentences.extend(impact(
@@ -197,10 +194,12 @@ impl Plan {
                 },
             ));
         }
-        if issue.is_none()
-            && let Some(CompactAddition::Description(description)) = addition
-        {
-            sentences.push(description);
+        match addition {
+            Some(CompactAddition::Problem(problem)) => sentences.push(problem),
+            Some(CompactAddition::Description(description)) if issue.is_none() => {
+                sentences.push(description);
+            }
+            _ => {}
         }
         sentences.extend(issue);
         let summary = sentences
@@ -211,14 +210,14 @@ impl Plan {
         (summary, details_recommended)
     }
 
-    fn compact_issue(&self, r: &Record, clear_edit: bool, added_advisory: bool) -> Option<String> {
+    fn compact_issue(&self, r: &Record, clear_edit: bool, added_problem: bool) -> Option<String> {
         let conflict = self
             .constraints
             .iter()
             .find(|constraint| constraint.excludes_target)
             .map(|constraint| constraint.compact_text(clear_edit))
             .or_else(|| self.compact_limit(r, "incompatible_recommendations"));
-        if added_advisory {
+        if added_problem {
             return conflict.or_else(|| self.compact_constraint(clear_edit));
         }
         conflict
@@ -277,10 +276,14 @@ impl Plan {
         super::search::compact_obstacle(r, &self.search_explanations)
     }
 
-    fn compact_changes(&self, r: &Record, added_advisory: Option<&str>) -> Option<String> {
+    fn compact_changes(&self, r: &Record, addition: Option<&CompactAddition>) -> Option<String> {
         if self.changes.is_empty() {
             return None;
         }
+        let added_advisory = match addition {
+            Some(CompactAddition::Advisory(text)) => Some(text.as_str()),
+            _ => None,
+        };
         let paths = self.compact_location(r);
         if let (Some(advisory), [change], [text]) = (
             added_advisory,
@@ -304,7 +307,7 @@ impl Plan {
             .map(|change| change.compact.as_str())
             .collect::<Vec<_>>()
             .join(" and ");
-        let action = if self.supported && added_advisory.is_none() {
+        let action = if self.supported && !addition.is_some_and(CompactAddition::is_problem) {
             "Bump "
         } else {
             ""

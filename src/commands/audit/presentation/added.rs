@@ -16,7 +16,14 @@ pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> 
 
 pub(super) enum CompactAddition {
     Advisory(String),
+    Problem(String),
     Description(String),
+}
+
+impl CompactAddition {
+    pub(super) const fn is_problem(&self) -> bool {
+        matches!(self, Self::Advisory(_) | Self::Problem(_))
+    }
 }
 
 pub(super) fn compact_changes<'a>(
@@ -59,10 +66,12 @@ pub(super) fn compact_changes<'a>(
         } else {
             format!("The release {} as {scope}", request(branch))
         };
-    Some(CompactAddition::Description(match problem {
-        Some(problem) => format!("{summary}. {}", problem.explain(branch)),
-        None => summary,
-    }))
+    Some(match problem {
+        Some(problem) => {
+            CompactAddition::Problem(format!("{summary}. {}", problem.explain(branch)))
+        }
+        None => CompactAddition::Description(summary),
+    })
 }
 
 pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {

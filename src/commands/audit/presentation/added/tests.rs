@@ -260,6 +260,10 @@ fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request
         Some(CompactAddition::Description(text)) => Some(text),
         _ => None,
     };
+    let problem = |summary| match summary {
+        Some(CompactAddition::Problem(text)) => Some(text),
+        _ => None,
+    };
     let mut resolved = branch("npm", &json!({"operation":"release","reason":"timeout"}));
     resolved.issues.clear();
     let mut other = resolved.clone();
@@ -277,14 +281,14 @@ fn audit_added_dependencies_compact_counts_requests_and_names_unresolved_request
     unresolved.selected_version = None;
     unresolved.coordinates.clear();
     assert_eq!(
-        description(compact_changes(std::iter::once(&unresolved))).as_deref(),
+        problem(compact_changes(std::iter::once(&unresolved))).as_deref(),
         Some(concat!(
             "The release requires added-root ^1 as a new dependency. ",
             "Registry version selection for npm:added-root — no published version matched the requirement."
         ))
     );
     assert_eq!(
-        description(compact_changes([&other, &unresolved].into_iter())).as_deref(),
+        problem(compact_changes([&other, &unresolved].into_iter())).as_deref(),
         Some(concat!(
             "The release requires added-root ^1 as one of 2 new dependency requests. ",
             "Registry version selection for npm:added-root — no published version matched the requirement."
