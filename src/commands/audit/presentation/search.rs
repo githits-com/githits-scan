@@ -225,6 +225,19 @@ pub(super) fn known_cause(value: &str) -> Option<&'static str> {
         "lookup_failed" => "lookup failed",
         "release_row_unavailable" => "no release metadata was available",
         "release_row_unsuitable" => "the available release metadata could not be used",
+        "exact_release_lookup_timed_out" => "the registry lookup timed out",
+        "exact_release_lookup_not_started" => {
+            "the time limit expired before the registry lookup started"
+        }
+        "exact_metadata_authorization_deadline" => {
+            "the time limit expired while checking access to release metadata"
+        }
+        "exact_stored_metadata_read_deadline" => {
+            "the time limit expired while reading stored release metadata"
+        }
+        "exact_metadata_deadline_before_start" => {
+            "the time limit expired before release metadata checking started"
+        }
         "chunk_task_timeout" => "lookup timed out",
         "phase_deadline" | "planning_deadline" => "time limit reached",
         "lookup_limit" | "parent_exact_lookup_limit" => "metadata lookup limit reached",

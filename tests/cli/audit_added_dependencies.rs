@@ -1,6 +1,6 @@
 //! Registry branch facts travel through live and saved audit presentation.
 use super::*;
-use serde_json::Value;
+use serde_json::{Value, json};
 
 fn report() -> Value {
     let mut value = fixture();
@@ -15,11 +15,14 @@ fn document(output: &Output) -> Value {
     serde_json::from_slice(&output.stdout).expect("document")
 }
 
+fn branches() -> Value {
+    serde_json::from_slice(include_bytes!("../fixtures/audit/added-dependencies.json"))
+        .expect("branches")
+}
+
 #[test]
 fn audit_added_dependencies_keeps_checked_branch_and_losing_candidates() {
-    let branches: Value =
-        serde_json::from_slice(include_bytes!("../fixtures/audit/added-dependencies.json"))
-            .expect("branches");
+    let branches = branches();
     let mut value = report();
     let r = &mut value["remediation"]["recommendations"][0];
     r["changes"][0]["added_dependencies"] = branches["added_dependencies"].clone();
@@ -161,6 +164,86 @@ fn assert_native(output: &str) {
     assert!(!output.contains("added_coordinate_affected"));
     assert!(!output.contains("registry_resolution"));
     assert!(!output.contains("dependency_list_unavailable"));
+}
+
+const EXACT_RELEASE_CUTOFFS: [(&str, &str); 5] = [
+    (
+        "exact_release_lookup_timed_out",
+        "the registry lookup timed out",
+    ),
+    (
+        "exact_release_lookup_not_started",
+        "the time limit expired before the registry lookup started",
+    ),
+    (
+        "exact_metadata_authorization_deadline",
+        "the time limit expired while checking access to release metadata",
+    ),
+    (
+        "exact_stored_metadata_read_deadline",
+        "the time limit expired while reading stored release metadata",
+    ),
+    (
+        "exact_metadata_deadline_before_start",
+        "the time limit expired before release metadata checking started",
+    ),
+];
+
+#[test]
+fn audit_added_dependencies_replays_exact_release_cutoffs() {
+    let root = repo();
+    let archive = root.path().join("analysis.json");
+    let branches = branches();
+    let coordinate = json!({"registry": "npm", "name": "is-promise", "version": "4.0.0"});
+    let mut saved: Value =
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
+    for (reason, wording) in EXACT_RELEASE_CUTOFFS {
+        let mut branch = branches["search_details"][1].clone();
+        branch["added_dependency"]["issues"] = json!([{
+            "operation": "release", "reason": reason, "coordinate": coordinate
+        }]);
+        let inventory = json!({
+            "kind": "unavailable", "operation": "inventory",
+            "reasons": ["replacement_dependency_list_unknown", reason],
+            "witness": {
+                "coordinate": coordinate, "acquisition": "lookup_failed",
+                "coverage": {"status": "missing", "reasons": []}
+            }
+        });
+        let record = &mut saved["producer_report"]["remediation"]["recommendations"][0];
+        record["search_detail_status"] = "retained".into();
+        record["search_details"] = json!([branch, inventory]);
+        fs::write(&archive, serde_json::to_vec(&saved).expect("JSON")).expect("archive file");
+
+        let output = offline(&archive, &["--details", "--no-color"]);
+        assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+        let text = prose(&stdout(&output));
+        assert!(
+            text.contains("The registry checks selected npm:router@2.3.0."),
+            "{text}"
+        );
+        assert!(
+            text.contains("No affecting advisories found for npm:debug@4.4.3"),
+            "{text}"
+        );
+        assert!(
+            text.contains(&format!(
+                "Release metadata lookup for npm:is-promise@4.0.0 — {wording}."
+            )),
+            "{text}"
+        );
+        let (_, inventory_text) = text
+            .split_once("Dependency list for npm:is-promise@4.0.0: ")
+            .expect(&text);
+        let (causes, _) = inventory_text.split_once(". ").expect(&text);
+        assert!(causes.contains(wording), "{text}");
+        assert!(!text.contains(reason), "{text}");
+
+        let facts = document(&offline(&archive, &["--json"]));
+        let details = &facts["remediation"]["recommendations"][0]["search_details"];
+        assert_eq!(details[0]["added_dependency"], branch["added_dependency"]);
+        assert_eq!(details[1], inventory);
+    }
 }
 
 #[test]

@@ -879,5 +879,11 @@ markers describe the inputs to the check. Gaps in activation evidence qualify
 the branch without erasing completed advisory checks or changing the guidance
 for an independently checked alternative.
 
+When the time limit stops an exact-release check, both added-dependency and
+dependency inventory explanations name the package version and distinguish a
+registry lookup that timed out from one that never started. They name earlier
+stops before metadata checking started, while checking access, or while reading
+stored metadata. JSON retains the original reason.
+
 Scan uses the branch supplied by the audit report in each output format and saved
 replay. It performs no registry resolution or installer checks for this display.
