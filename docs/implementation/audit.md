@@ -74,9 +74,9 @@ terminal output; color never carries meaning.
 Outdated, duplicate or manifest/lock disagreement findings alone cause exit 1.
 This is an attention gate across unignored findings and evidence gaps. When
 attention is needed and the service reported zero vulnerabilities, the text report
-says so and keeps any reported coverage limits visible. An update whose version
-change the service did not classify keeps its package, versions and source in
-text. JSON preserves the original classification.
+says so and keeps any reported coverage limits visible. For an unclassified or
+unrecognized version change, text explains the limitation and keeps the package,
+versions and source. JSON preserves the original classification.
 
 ## Local advisory policy
 

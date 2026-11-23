@@ -32,7 +32,9 @@ fn audit_saved_flags_help_distinguishes_scan_and_replay() {
         );
         assert!(help.contains("Directory to scan (online only)"), "{help}");
         assert!(
-            help.contains("Omit PATH and scan-selection options"),
+            help.contains(
+                "Omit PATH, --config, --no-check, --lockfiles-only, --exclude and --save-analysis"
+            ),
             "{help}"
         );
         assert!(

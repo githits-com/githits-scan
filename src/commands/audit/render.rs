@@ -287,7 +287,8 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     if let Some(change) = &f.change {
         let label = match change.as_str() {
             "major" | "minor" | "patch" => change.as_str(),
-            _ => "the service did not classify the version change",
+            "unknown" => "the service did not classify the version change",
+            _ => "this Scan version does not recognize the reported version change classification",
         };
         write!(out, " ({label})")?;
     }

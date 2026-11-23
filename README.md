@@ -199,7 +199,8 @@ githits-scan audit --from-analysis analysis.json --details -o audit.txt
 
 `--save-analysis` creates a new archive and writes the report to stdout. To keep
 both files, redirect stdout to a separate path. `--from-analysis` reads the saved
-archive offline. Omit the repository path and scan-selection flags when replaying.
+archive offline. When replaying, omit the repository path, `--config`,
+`--no-check`, `--lockfiles-only`, `--exclude` and `--save-analysis`.
 
 Audit requests native lifecycle report v3 automatically. Findings, retained lifecycle
 warnings and actionable incomplete checks exit 1. An outdated version or an actionable

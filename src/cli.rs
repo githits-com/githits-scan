@@ -145,7 +145,7 @@ struct AuditArgs {
     /// Save analysis to a new file and write the report to stdout. Omit -o/--output
     #[arg(long, value_name = "FILE", value_parser = analysis_path, conflicts_with_all = ["from_analysis", "output"], display_order = 70)]
     save_analysis: Option<PathBuf>,
-    /// Re-display a saved analysis offline (no token or network). Omit PATH and scan-selection options
+    /// Re-display a saved analysis offline (no token or network). Omit PATH, --config, --no-check, --lockfiles-only, --exclude and --save-analysis
     #[arg(long, value_name = "FILE", value_parser = analysis_path, conflicts_with_all = ["path", "config", "exclude", "lockfiles_only", "no_check", "save_analysis"], display_order = 5)]
     from_analysis: Option<PathBuf>,
     /// Explain an exact vulnerable registry:name@version in the saved analysis

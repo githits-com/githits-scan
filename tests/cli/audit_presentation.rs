@@ -277,32 +277,36 @@ fn audit_presentation_explains_unexpanded_dependency_lists_without_inventing_a_r
 fn audit_presentation_distinguishes_outdated_findings_from_vulnerabilities() {
     let mut value = clean();
     value["findings"]["outdated"] = fixture()["findings"]["outdated"].clone();
-    value["findings"]["outdated"][0]["change_type"] = "unknown".into();
     value["summary"]["outdated"] = 1.into();
     let root = repo();
-    let report = serde_json::to_vec(&value).expect("report");
+    for (change, explanation) in [
+        ("unknown", "the service did not classify the version change"),
+        (
+            "future_delta",
+            "this Scan version does not recognize the reported version change classification",
+        ),
+    ] {
+        value["findings"]["outdated"][0]["change_type"] = change.into();
+        let report = serde_json::to_vec(&value).expect("report");
+        let mock = server(&report);
+        let output = run(root.path(), Some(&mock.origin()), &["--quiet", "--details"]);
+        assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+        let text = stdout(&output);
+        assert!(text.contains("1 outdated version"), "{text}");
+        assert!(
+            text.contains("No vulnerabilities were reported in the available evidence."),
+            "{text}"
+        );
+        assert!(text.contains(explanation), "{text}");
+        assert!(!text.contains(&format!("({change})")), "{text}");
+        assert_eq!(mock.requests().len(), 3);
 
-    let mock = server(&report);
-    let output = run(root.path(), Some(&mock.origin()), &["--quiet", "--details"]);
-    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-    let text = stdout(&output);
-    assert!(text.contains("1 outdated version"), "{text}");
-    assert!(
-        text.contains("No vulnerabilities were reported in the available evidence."),
-        "{text}"
-    );
-    assert!(
-        text.contains("the service did not classify the version change"),
-        "{text}"
-    );
-    assert!(!text.contains("(unknown)"), "{text}");
-    assert_eq!(mock.requests().len(), 3);
-
-    let mock = server(&report);
-    let output = run(root.path(), Some(&mock.origin()), &["--json"]);
-    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-    let json: Value = serde_json::from_slice(&output.stdout).expect("audit JSON");
-    assert_eq!(json["outdated"][0]["change"], "unknown");
-    assert_eq!(json["summary"]["vulnerabilities"], 0);
-    assert_eq!(mock.requests().len(), 3);
+        let mock = server(&report);
+        let output = run(root.path(), Some(&mock.origin()), &["--json"]);
+        assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+        let json: Value = serde_json::from_slice(&output.stdout).expect("audit JSON");
+        assert_eq!(json["outdated"][0]["change"], change);
+        assert_eq!(json["summary"]["vulnerabilities"], 0);
+        assert_eq!(mock.requests().len(), 3);
+    }
 }
