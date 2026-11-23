@@ -443,9 +443,8 @@ pub fn evaluate(
     }
     for ambiguous in &inventory.ambiguous {
         let path = ambiguous.path.as_str();
-        let excluded = invocation_excludes.is_match(path)
-            || config.is_some_and(|config| config.is_excluded(path))
-            || is_default_excluded(path);
+        let excluded =
+            has_authored_exclusion(config, invocation_excludes, path) || is_default_excluded(path);
         if excluded {
             evaluation
                 .statuses
@@ -497,10 +496,17 @@ fn go_exclusions<'a>(
     inventory
         .go_supplements
         .keys()
-        .filter(move |path| {
-            invocation.is_match(path) || config.is_some_and(|c| c.is_excluded(path))
-        })
+        .filter(move |path| has_authored_exclusion(config, invocation, path))
         .map(|path| (path.clone(), Status::Excluded))
+}
+
+/// Whether an invocation or configuration glob excludes an implicitly selected path.
+pub(crate) fn has_authored_exclusion(
+    config: Option<&Config>,
+    invocation: &GlobSet,
+    path: &str,
+) -> bool {
+    invocation.is_match(path) || config.is_some_and(|config| config.is_excluded(path))
 }
 
 // A shared owner stays selected when any included sibling lock retains it.

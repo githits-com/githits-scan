@@ -112,7 +112,11 @@ pub(super) fn prepare(
     let upload = UploadSet::try_new(files)?;
     if options.progress {
         super::progress::message(
-            &format!("submitting {}...", plan.file_counts(upload.len())),
+            &format!(
+                "submitting {}{}...",
+                plan.file_counts(),
+                plan.go_count_suffix(upload.len())
+            ),
             stderr,
         )
         .map_err(Error::Output)?;
@@ -203,9 +207,7 @@ fn go_markers(
     let directories = config::directory_filter(config, exclude)?;
     let cli = config::exclude_set(exclude, Path::new(config::CLI_EXCLUDE))?;
     let include_file = |path: &str| {
-        !cli.is_match(path)
-            && config.is_none_or(|c| !c.is_excluded(path))
-            && !config::is_default_excluded(path)
+        !config::has_authored_exclusion(config, &cli, path) && !config::is_default_excluded(path)
     };
     Ok(modules
         .filter_map(|module| {
@@ -458,34 +460,37 @@ impl Plan {
         }
     }
 
-    fn file_counts(&self, total: usize) -> String {
-        let mut counts = format!(
+    fn file_counts(&self) -> String {
+        format!(
             "{} and {}",
             plural(self.lockfiles, "lockfile"),
             plural(self.manifests.len(), "manifest")
-        );
+        )
+    }
+
+    fn go_count_suffix(&self, total: usize) -> String {
         let supplemental = total - self.lockfiles - self.manifests.len();
-        if supplemental > 0 {
-            let _ = write!(
-                counts,
-                ", plus {}",
-                plural(supplemental, "Go evidence file")
-            );
+        if supplemental == 0 {
+            return String::new();
         }
-        counts
+        format!(", plus {}", plural(supplemental, "Go evidence file"))
     }
 
     fn summary(&self, palette: Palette, total: usize) -> String {
-        let mut text = format!("uploaded {}", self.file_counts(total));
+        let mut text = format!("uploaded {}", self.file_counts());
         let paths = self
             .manifests
             .iter()
             .map(|p| p.escape_debug().to_string())
             .collect::<Vec<_>>()
             .join(", ");
-        if !paths.is_empty() && text.chars().count() + paths.chars().count() + 3 <= 100 {
+        let go_count = self.go_count_suffix(total);
+        if !paths.is_empty()
+            && text.chars().count() + paths.chars().count() + go_count.len() + 3 <= 100
+        {
             let _ = write!(text, " ({paths})");
         }
+        text.push_str(&go_count);
         if !self.skipped_manifest_only.is_empty() {
             let reason = self.skip_reason();
             let note = format!(

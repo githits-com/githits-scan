@@ -51,6 +51,14 @@ fn go_modules_detect_and_send_the_same_paths_and_original_bytes() {
         serde_json::json!(selected.map(|(path, _)| path))
     );
     let human = stdout(&detect(repo.path(), &[]));
+    assert!(
+        human.contains("Go evidence included in the upload"),
+        "{human}"
+    );
+    assert!(
+        human.contains(".githits-go.json (generated from a Go package main declaration)"),
+        "{human}"
+    );
     assert!(human.contains("tools/go.sum"), "{human}");
     assert!(human.contains("go.work.sum"), "{human}");
     assert!(!human.contains("orphan/go.sum"), "{human}");
@@ -59,6 +67,12 @@ fn go_modules_detect_and_send_the_same_paths_and_original_bytes() {
     let output = generate(repo.path(), Some("test-token"), Some(&server.origin()), &[]);
     let requests = server.requests();
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert!(
+        stderr(&output).lines().any(|line| line.trim()
+            == "uploaded 0 lockfiles and 2 manifests (go.mod, tools/go.mod), plus 5 Go evidence files"),
+        "{}",
+        stderr(&output)
+    );
     let request = String::from_utf8_lossy(&requests[0]);
     assert_eq!(request.matches("filename=").count(), selected.len());
     for (path, contents) in selected {
@@ -223,5 +237,17 @@ fn go_modules_count_generated_evidence_against_the_upload_limit() {
     assert_eq!(
         upload_paths(&excluded).as_array().expect("paths").len(),
         256
+    );
+}
+
+#[test]
+fn go_modules_accept_a_complete_package_clause_before_a_split_code_point() {
+    let source = format!("{MAIN}//{}é\n", " ".repeat(8_191 - MAIN.len() - 2));
+    let repo = repository(&[("go.mod", MODULE), ("main.go", &source)]);
+    let output = detect(repo.path(), &["--json"]);
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(
+        upload_paths(&output),
+        serde_json::json!([".githits-go.json", "go.mod"])
     );
 }

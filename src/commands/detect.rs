@@ -677,7 +677,7 @@ fn write_go_supplements(view: &View<'_>, out: &mut dyn Write) -> std::io::Result
                 .is_some_and(|name| name == catalog::GO_MAIN_EVIDENCE)
             {
                 Some(format!(
-                    "{} (generated application evidence)",
+                    "{} (generated from a Go package main declaration)",
                     super::safe(path)
                 ))
             } else {

@@ -82,10 +82,10 @@ fn observe_source<'a>(
     }
     // A file with a build constraint cannot conflict with unconditional
     // observations. An unreadable or unrecognized eligible file can.
-    let observation = read_prefix(path).map_or(Some(false), |bytes| {
-        let eof = (bytes.len() as u64) < SOURCE_PREFIX_BYTES;
-        std::str::from_utf8(&bytes).map_or(Some(false), |source| package_main(source, eof))
-    });
+    let observation = read_prefix(path)
+        .as_deref()
+        .and_then(prefix_text)
+        .map_or(Some(false), |(source, eof)| package_main(source, eof));
     Some((path.parent()?, observation?))
 }
 
@@ -97,6 +97,20 @@ fn read_prefix(path: &Path) -> Option<Vec<u8>> {
         .read_to_end(&mut bytes)
         .ok()?;
     Some(bytes)
+}
+
+fn prefix_text(bytes: &[u8]) -> Option<(&str, bool)> {
+    let eof = (bytes.len() as u64) < SOURCE_PREFIX_BYTES;
+    match std::str::from_utf8(bytes) {
+        Ok(source) => Some((source, eof)),
+        // The byte bound can cut off a code point after a complete package clause.
+        Err(error) if !eof && error.error_len().is_none() => {
+            std::str::from_utf8(&bytes[..error.valid_up_to()])
+                .ok()
+                .map(|source| (source, false))
+        }
+        Err(_) => None,
+    }
 }
 
 // None is a build-constrained source. False includes an ambiguous or missing clause.
