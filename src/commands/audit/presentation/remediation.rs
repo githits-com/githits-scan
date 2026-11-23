@@ -201,6 +201,9 @@ impl Plan {
             }
             _ => {}
         }
+        if added_problem {
+            sentences.extend(confirmed_target_problems(r));
+        }
         sentences.extend(issue);
         let summary = sentences
             .into_iter()
@@ -699,6 +702,9 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
         (true, "requirements", "blocked") => {
             "Upgrade conflicts with dependency requirements".into()
         }
+        (true, "target advisories", "affected") => {
+            "The proposed upgrade includes a version affected by known advisories".into()
+        }
         (true, _, _) => capitalize(format!("{label}: {}", check_text(value))),
         (false, _, _) => format!("{label}: {}", check_text(value)),
     }
@@ -722,6 +728,17 @@ fn target_checks(r: &Record) -> impl Iterator<Item = (&'static str, &str)> {
             && !(*label == "requirements" && *value == "blocked" && !r.blockers.is_empty())
     })
     .map(|(label, value, _)| (label, value))
+}
+
+fn confirmed_target_problems(r: &Record) -> impl Iterator<Item = String> + '_ {
+    target_checks(r)
+        .filter(|check| {
+            matches!(
+                check,
+                ("target advisories", "affected") | ("requirements", "blocked")
+            )
+        })
+        .map(|(label, value)| check_line(label, value, true))
 }
 
 fn checks(r: &Record, compact: bool) -> Vec<String> {

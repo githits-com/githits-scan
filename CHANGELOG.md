@@ -26,9 +26,21 @@ that section describe 0.2.0 only; use the README for current commands and the
 - **Checked dependencies introduced by upgrades** - When the audit report
   supplies this evidence, Scan shows the new dependency requests, the versions
   selected by the registry checks, and the advisory results for each checked
-  version. Compact guidance names an advisory or a failed check on an added dependency.
-  Upgrade search details show which candidate introduced each request and where
-  a check failed. Audit JSON and saved analyses retain the supplied evidence.
+  version. Compact guidance names an advisory or a failed check on an added
+  dependency. Upgrade search details show which candidate introduced each
+  request and where a check failed. Audit JSON and saved analyses retain the
+  supplied evidence.
+
+### Fixed
+
+- **Incomplete audit dependency checks** - See which dependency version was
+  being checked when the time limit expired, including whether a registry
+  lookup timed out or never started.
+
+### Security
+
+- **URL parsing dependency** - Require `url` 2.5.9 or later to address
+  [RUSTSEC-2026-0592](https://rustsec.org/advisories/RUSTSEC-2026-0592.html).
 
 ## [0.6.0] - 2026-11-19
 

@@ -338,6 +338,42 @@ fn audit_added_dependencies_failed_checks_precede_unchecked_requirements() {
 }
 
 #[test]
+fn audit_added_dependencies_keeps_confirmed_target_problems_inline() {
+    let evidence = addition_evidence();
+    for (branch, added_problem) in [
+        (
+            &evidence["search_details"][0]["added_dependency"],
+            "affected by AUDIT-ADDED-affected-descendant.",
+        ),
+        (
+            &evidence["search_details"][1]["added_dependency"],
+            "Dependency check for is-promise@4.0.0",
+        ),
+    ] {
+        let mut value = input();
+        let r = &mut value["remediation"]["recommendations"][0];
+        r["checks"]["advisories"] = "affected".into();
+        r["checks"]["requirements"] = "blocked".into();
+        r["checks"]["release_availability"] = "unverified".into();
+        r["changes"][0]["added_dependencies"] = json!([branch]);
+        let doc = blocks(&value);
+        let r = &doc["remediation"]["recommendations"][0];
+        let summary = r["compact_summary"].as_str().expect("summary");
+        assert!(summary.contains(added_problem), "{summary}");
+        assert!(
+            summary.ends_with(concat!(
+                "The proposed upgrade includes a version affected by known advisories. ",
+                "Upgrade conflicts with dependency requirements."
+            )),
+            "{summary}"
+        );
+        assert!(!summary.contains("unverified"), "{summary}");
+        assert_eq!(r["details_recommended"], true);
+        assert_eq!(r["checks"][0], "release availability: not verified");
+    }
+}
+
+#[test]
 fn audit_added_dependencies_advisory_keeps_concrete_project_edit_conditional() {
     let evidence = addition_evidence();
     let mut value = input_with_project_edit();

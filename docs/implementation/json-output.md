@@ -248,18 +248,20 @@ A record without a change explains the outcome and includes a reported obstacle
 when available.
 When a proposed change introduces a dependency with a reported problem, the
 summary names the affected version and supplied advisory IDs, or explains the
-specific failed or incomplete check. It keeps concrete constraints inline and
-leaves general check limitations with the full evidence. A candidate with no
-applicable change can also name a specific problem with a new dependency
-request. The `details_recommended` cue points to the full checks.
+specific failed or incomplete check. Confirmed target advisories and concrete
+requirement conflicts stay inline alongside that result. General check
+limitations remain with the full evidence. A candidate with no applicable
+change can also name a specific problem with a new dependency request. The
+`details_recommended` cue points to the full checks.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for unclear candidates, no-change outcomes
 and upgrades with qualifications such as open advisories, target warnings or
-coordination issues. A routine supported upgrade and a single named project
-constraint edit with a recorded current range and otherwise supported upgrade
-evidence have it set to false. A clear edit names the advisories the upgrade
-addresses after the edit. The flag is presentation guidance.
+coordination issues. A change with checked additions also recommends Details,
+including when those checks report no problem. Without these qualifications,
+a routine supported upgrade or a single named project constraint edit with a
+recorded current range has it set to false. A clear edit names the advisories
+the upgrade addresses after the edit. The flag is presentation guidance.
 Limits confined to searching for other alternatives stay in the full blocks
 and leave a supported upgrade's flag false.
 Continue to use audit facts and the exit code for policy. The consumer owns
