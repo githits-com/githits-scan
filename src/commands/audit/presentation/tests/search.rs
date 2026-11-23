@@ -215,6 +215,47 @@ fn addition_evidence() -> Value {
 }
 
 #[test]
+fn audit_search_keeps_reported_blockers_ahead_of_unverified_target() {
+    for (reason, explanation) in [
+        (
+            "manifest_lock_disagreement",
+            "Manifest and lockfile disagree",
+        ),
+        (
+            "project_request_change",
+            "Applying this change requires updating the project requirement",
+        ),
+    ] {
+        let mut value = input_with_project_edit();
+        let r = &mut value["remediation"]["recommendations"][0];
+        r["checks"]["release_availability"] = "unverified".into();
+        r["blockers"][0]["reason"] = reason.into();
+        r["blockers"][0]["requirement_status"] = "not_recorded".into();
+        r["blockers"][0]["requested_requirement"] = Value::Null;
+        let doc = blocks(&value);
+        let r = &doc["remediation"]["recommendations"][0];
+        let summary = r["compact_summary"].as_str().expect("summary");
+        assert!(
+            summary.starts_with(&format!("npm:demo 1.0.0 -> 1.1.1. {explanation}")),
+            "{summary}"
+        );
+        assert!(
+            summary.contains("demo") && summary.contains("package.json"),
+            "{summary}"
+        );
+        assert!(
+            !summary.contains("proposed versions are available"),
+            "{summary}"
+        );
+        assert_eq!(r["details_recommended"], true);
+        assert_eq!(
+            r["checks"][0],
+            "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation."
+        );
+    }
+}
+
+#[test]
 fn audit_added_dependencies_compact_preserves_clear_edit() {
     let mut value = input_with_project_edit();
     value["remediation"]["recommendations"][0]["changes"][0]["added_dependencies"] =

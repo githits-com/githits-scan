@@ -234,7 +234,8 @@ impl Plan {
                     .map(|constraint| constraint.compact_text(clear_edit))
             });
         let other_constraint = || self.constraints.first().map(|c| c.compact_text(clear_edit));
-        if confirmed_problem {
+        let reported_blocker = r.checks.requirements == "blocked" && !self.constraints.is_empty();
+        if confirmed_problem || reported_blocker {
             return conflict.or_else(other_constraint);
         }
         conflict
