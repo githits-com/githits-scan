@@ -531,6 +531,10 @@ fn polish_selected_adjacent_manifests_remain_in_json_and_appear_once_in_human_ou
 }
 
 fn help_line_has_flag(line: &str, flag: &str) -> bool {
+    // Clap indents option descriptions more than option declarations.
+    if !(line.starts_with("      --") || line.starts_with("  -")) {
+        return false;
+    }
     let mut words = line.split_ascii_whitespace();
     let Some(first) = words.next() else {
         return false;
