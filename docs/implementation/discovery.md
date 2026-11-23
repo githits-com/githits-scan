@@ -58,7 +58,9 @@ For application typing, Scan checks up to 8 KiB from the start of eligible Go
 files in selected modules. It honors discovery ignores and exclusions, skips
 Go test files, fixture and example paths, build-constrained source, and
 nested module directories, including those whose `go.mod` is ignored or
-excluded. A directory with conflicting or unreadable package declarations
+excluded. For an explicitly selected module under a fixture directory, Scan
+applies source eligibility from that module's own directory. A directory with
+conflicting or unreadable package declarations
 provides no positive observation. An unambiguous `package main` yields a
 generated application hint for its module. The hint records only the
 observation. Build targets, package reachability, test dependencies and

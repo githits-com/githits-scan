@@ -246,9 +246,11 @@ pub(crate) fn is_go_source(file_name: &str) -> bool {
     if stem.is_empty() || stem.starts_with(['.', '_']) || stem.ends_with("_test") {
         return false;
     }
-    // Go's filename constraints use the final OS or architecture suffix.
-    // Source: Go's internal/syslist KnownOS and KnownArch tables.
-    !stem.rsplit_once('_').is_some_and(|(_, suffix)| {
+    // Go's goodOSArchFile checks the name before the first dot and removes
+    // a trailing _test before consulting its KnownOS and KnownArch tables.
+    let first = stem.split_once('.').map_or(stem, |(first, _)| first);
+    let platform_stem = first.strip_suffix("_test").unwrap_or(first);
+    !platform_stem.rsplit_once('_').is_some_and(|(_, suffix)| {
         matches!(
             suffix,
             "aix"

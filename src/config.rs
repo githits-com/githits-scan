@@ -500,7 +500,7 @@ fn go_exclusions<'a>(
         .map(|path| (path.clone(), Status::Excluded))
 }
 
-/// Whether an invocation or configuration glob excludes an implicitly selected path.
+/// Whether an invocation or configuration glob excludes the path.
 pub(crate) fn has_authored_exclusion(
     config: Option<&Config>,
     invocation: &GlobSet,

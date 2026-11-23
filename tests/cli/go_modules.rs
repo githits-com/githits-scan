@@ -153,7 +153,7 @@ fn go_modules_require_a_positive_production_package_in_each_module() {
         ("go.mod", MODULE),
         ("tools/go.mod", TOOLS),
         (
-            "tools/cmd/tool/entry.go",
+            "tools/cmd/tool/entry.misc_linux.go",
             "\u{feff}/* header */\npackage /* name */ main // command\nfunc main() {}\n",
         ),
         ("mixed/entry.go", MAIN),
@@ -175,6 +175,8 @@ fn go_modules_require_a_positive_production_package_in_each_module() {
             "// +build ignore\n\npackage main\n",
         ),
         ("conditional/entry_linux_arm64.go", MAIN),
+        ("conditional/cmd_linux.gen.go", MAIN),
+        ("conditional/cmd_linux_test.gen.go", MAIN),
     ]);
     let output = detect(repo.path(), &["--json"]);
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
@@ -249,5 +251,38 @@ fn go_modules_accept_a_complete_package_clause_before_a_split_code_point() {
     assert_eq!(
         upload_paths(&output),
         serde_json::json!([".githits-go.json", "go.mod"])
+    );
+}
+
+#[test]
+fn go_modules_probe_explicit_fixture_modules_within_their_own_boundary() {
+    let repo = repository(&[
+        ("testdata/app/go.mod", MODULE),
+        ("testdata/app/go.sum", SUM),
+        ("testdata/app/main.go", MAIN),
+        ("testdata/app/fixtures/helper/main.go", MAIN),
+        (
+            "githits-scan.toml",
+            "version = 1\n[lockfiles]\nmanifests = ['testdata/app/go.mod']\n",
+        ),
+    ]);
+    let output = detect(repo.path(), &["--json"]);
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(
+        upload_paths(&output),
+        serde_json::json!([
+            "testdata/app/.githits-go.json",
+            "testdata/app/go.mod",
+            "testdata/app/go.sum"
+        ])
+    );
+    let excluded = detect(
+        repo.path(),
+        &["--json", "--exclude", "testdata/app/main.go"],
+    );
+    assert_eq!(excluded.status.code(), Some(0), "{}", stderr(&excluded));
+    assert_eq!(
+        upload_paths(&excluded),
+        serde_json::json!(["testdata/app/go.mod", "testdata/app/go.sum"])
     );
 }

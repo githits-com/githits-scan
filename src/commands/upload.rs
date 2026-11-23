@@ -206,14 +206,20 @@ fn go_markers(
     }
     let directories = config::directory_filter(config, exclude)?;
     let cli = config::exclude_set(exclude, Path::new(config::CLI_EXCLUDE))?;
-    let include_file = |path: &str| {
-        !config::has_authored_exclusion(config, &cli, path) && !config::is_default_excluded(path)
-    };
+    let admitted = |path: &str| !config::has_authored_exclusion(config, &cli, path);
     Ok(modules
         .filter_map(|module| {
             let marker = catalog::beside_go_manifest(module, catalog::GO_MAIN_EVIDENCE);
-            (include_file(&marker)
-                && go::has_main_package(root, module, directories.clone(), include_file))
+            // The selected module has already passed fixture policy at its root.
+            let prefix = module.strip_suffix(catalog::GO_MANIFEST)?;
+            let include_source = |path: &str| {
+                admitted(path)
+                    && path
+                        .strip_prefix(prefix)
+                        .is_some_and(|relative| !config::is_default_excluded(relative))
+            };
+            (admitted(&marker)
+                && go::has_main_package(root, module, directories.clone(), include_source))
             .then_some(marker)
         })
         .collect())
