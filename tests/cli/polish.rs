@@ -531,7 +531,15 @@ fn polish_selected_adjacent_manifests_remain_in_json_and_appear_once_in_human_ou
 }
 
 fn help_line_has_flag(line: &str, flag: &str) -> bool {
-    line.trim_start().starts_with(flag) || line.contains(&format!(", {flag}"))
+    let mut words = line.split_ascii_whitespace();
+    let Some(first) = words.next() else {
+        return false;
+    };
+    first == flag
+        || (first.len() == 3
+            && first.starts_with('-')
+            && first.ends_with(',')
+            && words.next() == Some(flag))
 }
 
 #[test]
