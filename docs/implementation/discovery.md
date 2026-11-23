@@ -48,7 +48,10 @@ to the workspace file's directory and matched inside the scan root. The same
 rule applies at the root and in nested directories. An included workspace
 carries its eligible same-directory `go.work.sum`. Workspace definitions under
 default fixture directories are skipped. Workspaces supply evidence for already
-selected modules. The service owns graph interpretation.
+selected modules. A workspace definition that exceeds the per-file limit or
+cannot be read as UTF-8 stops preparation because its membership is unavailable.
+An explicit exclusion can remove that definition from the scan. The service
+owns graph interpretation.
 
 Checksum and workspace files count toward the upload limits. Lockfile counts
 and saved configuration continue to reflect the primary evidence files. Existing

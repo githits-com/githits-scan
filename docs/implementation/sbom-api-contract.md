@@ -70,9 +70,12 @@ filenames, and request limits. Scan reads bounded source headers locally and
 uploads the hint without source bytes. See
 [Go module evidence](discovery.md#go-module-evidence) for selection.
 
-The receiving API must recognize these supplemental filenames before a Scan
-release ships this behavior. Go version selection, workspace association,
-dependency coverage and application typing are service responsibilities.
+Before a Scan release ships this behavior, the receiving API must recognize
+these supplemental filenames and admit every workspace whose `use` declarations
+match an uploaded module. Multiple workspaces can name the same module. Each
+remains admissible when the service uses a preferred workspace for resolution.
+Go version selection, workspace association, dependency coverage and
+application typing are service responsibilities.
 
 ### Output formats
 
