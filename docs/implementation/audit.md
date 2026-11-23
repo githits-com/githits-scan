@@ -72,7 +72,11 @@ terminal output; color never carries meaning.
 | 3 | Transport, rate limit, service/problem execution, malformed/unsupported returned report or output error |
 
 Outdated, duplicate or manifest/lock disagreement findings alone cause exit 1.
-This is an attention gate across unignored findings and evidence gaps.
+This is an attention gate across unignored findings and evidence gaps. When
+attention is needed and the service reported zero vulnerabilities, the text report
+says so and keeps any reported coverage limits visible. For an unclassified or
+unrecognized version change, text explains the limitation and keeps the package,
+versions and source. JSON preserves the original classification.
 
 ## Local advisory policy
 
@@ -108,7 +112,9 @@ workflow.
 ## Saved analysis and component investigation
 
 `audit --save-analysis FILE` adds an explicit, new analysis file to the ordinary
-one-job audit. It does not replace the compact stdout report. Known existing
+one-job audit. The report goes to stdout. To keep both outputs, redirect stdout
+to a separate file. `-o/--output` conflicts with this mode, which keeps the
+create-only archive and report destination from aliasing within Scan. Known existing
 files, directories and symlinks fail with usage exit 2 before discovery/upload;
 write-time `create_new` also prevents overwriting a path created during the job.
 Live token/client setup is unchanged. The archive is encoded and written before

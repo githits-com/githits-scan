@@ -200,13 +200,20 @@ SBOM generation submits one job and writes the complete returned document.
 githits-scan audit
 githits-scan audit --json -o audit.json
 githits-scan audit --presentation-json -o audit-presentation.json
-githits-scan audit --save-analysis analysis.json
-githits-scan audit --from-analysis analysis.json     # offline replay
+githits-scan audit . --json --save-analysis analysis.json > audit.json
+githits-scan audit --from-analysis analysis.json --details -o audit.txt
 ```
 
+`--save-analysis` creates a new archive and writes the report to stdout. To keep
+both files, redirect stdout to a separate path. `--from-analysis` reads the saved
+archive offline. When replaying, omit the repository path, `--config`,
+`--no-check`, `--lockfiles-only`, `--exclude` and `--save-analysis`.
+
 Audit requests native lifecycle report v3 automatically. Findings, retained lifecycle
-warnings and actionable incomplete checks exit 1. Expected Git coverage limits appear
-as informational notes and do not fail alone. Lifecycle collection limits and checks
+warnings and actionable incomplete checks exit 1. An outdated version or an actionable
+evidence gap can trigger exit 1 even when the report lists no vulnerabilities.
+Expected Git coverage limits appear as informational notes and do not fail alone.
+Lifecycle collection limits and checks
 that do not apply alone exit 0; `--details` explains them. Results cover only the
 selected evidence, not proof of an installed build's safety. JSON and saved
 analyses retain findings independently of human presentation. Audit JSON keeps factual
@@ -375,7 +382,7 @@ inclusion overrides remain unless the CLI excludes them. See
 
 This complete GitHub Actions workflow runs on pushes and manual dispatch. It
 requires a reviewed `githits-scan.toml` with a `[licenses]` policy and a repository
-secret named `GITHITS_API_TOKEN`. The job installs a pinned version, `0.5.0`,
+secret named `GITHITS_API_TOKEN`. The job installs a pinned version, `0.6.1`,
 from crates.io. Save as `.github/workflows/dependencies.yml`:
 
 ```yaml
@@ -394,7 +401,7 @@ jobs:
         with:
           toolchain: 1.99.1
       - name: Install githits-scan
-        run: cargo install githits-scan --locked --version 0.5.0
+        run: cargo install githits-scan --locked --version 0.6.1
       - name: Generate the SBOM (fails on inventory drift)
         env:
           GITHITS_API_TOKEN: ${{ secrets.GITHITS_API_TOKEN }}
@@ -433,7 +440,7 @@ cargo install githits-scan --locked
 For a pinned installation, specify the release version:
 
 ```bash
-cargo install githits-scan --locked --version 0.5.0
+cargo install githits-scan --locked --version 0.6.1
 ```
 
 **Prebuilt binaries:** the [release workflow](docs/implementation/release-process.md)

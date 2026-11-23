@@ -135,13 +135,13 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
     if let Some(analysis) = &view.analysis {
         writeln!(out, "Saved analysis from {}", safe(&analysis.generated_at))?;
     }
-    let headline = if view.vulnerabilities.iter().any(|finding| !finding.ignored)
+    let has_findings = view.vulnerabilities.iter().any(|finding| !finding.ignored)
         || !view.lifecycle.findings.is_empty()
         || !view.lifecycle.retained_warnings.is_empty()
         || !view.outdated.is_empty()
         || !view.duplicates.is_empty()
-        || !view.manifest_lock_mismatches.is_empty()
-    {
+        || !view.manifest_lock_mismatches.is_empty();
+    let headline = if has_findings {
         "Audit findings"
     } else if view.actionable_incomplete {
         "Audit results"
@@ -192,6 +192,12 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
                 out,
                 "{ignored} ignored {} (included in the total)",
                 noun(ignored, "vulnerability", "vulnerabilities")
+            )?;
+        }
+        if s.vulnerabilities == 0 && (has_findings || view.actionable_incomplete) {
+            writeln!(
+                out,
+                "No vulnerabilities were reported in the available evidence."
             )?;
         }
     }
@@ -279,7 +285,12 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
         write!(out, " ({})", safe(&severity))?;
     }
     if let Some(change) = &f.change {
-        write!(out, " ({})", safe(change))?;
+        let label = match change.as_str() {
+            "major" | "minor" | "patch" => change.as_str(),
+            "unknown" => "the service did not classify the version change",
+            _ => "this Scan version does not recognize the reported version change classification",
+        };
+        write!(out, " ({label})")?;
     }
     if f.malicious {
         write!(out, " MALICIOUS")?;

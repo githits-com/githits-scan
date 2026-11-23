@@ -56,7 +56,9 @@ enum Command {
     Detect(DetectArgs),
     /// Audit dependency vulnerabilities, native lifecycle warnings and input disagreements
     #[command(
-        long_about = "Audit selected repository evidence through one asynchronous audit job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 for any unignored vulnerability, native lifecycle or retained registry warning, outdated version, duplicate group, manifest/lock disagreement or actionable unknown/incomplete evidence. Expected Git registry/graph/source-binding limits are informational coverage notes and do not fail alone. Lifecycle checks not collected or not applicable do not fail alone; use --details or JSON for collection limits, including uncollected archival checks. Exit 0 means no findings or actionable gaps in available evidence, not proof that every check was collected. Unsupported returned report formats are execution error 3; completed jobs are never resubmitted automatically. Advisories ignored by [[audit.ignore]] stay visible with reasons. Publisher replacement advice is not a verified upgrade. Versions are source evidence, not constraint-compatible upgrade guarantees."
+        long_about = "Audit selected repository evidence through one asynchronous audit job (GITHITS_API_TOKEN required), or re-display --from-analysis offline.\n\nExit 1 means the audit needs attention. Outdated versions and actionable evidence gaps can each cause exit 1 even when no vulnerabilities were reported. Other causes include unignored vulnerabilities, native lifecycle or retained registry warnings, duplicate groups and manifest/lock disagreements. Expected Git registry/graph/source-binding limits are informational coverage notes and do not fail alone. Lifecycle checks not collected or not applicable do not fail alone; use --details or JSON for collection limits, including uncollected archival checks. Exit 0 means no findings or actionable gaps in available evidence, not proof that every check was collected. Unsupported returned report formats are execution error 3; completed jobs are never resubmitted automatically. Advisories ignored by [[audit.ignore]] stay visible with reasons. Publisher replacement advice is not a verified upgrade. Versions are source evidence, not constraint-compatible upgrade guarantees.",
+        override_usage = "githits-scan audit [OPTIONS] [PATH]\n       githits-scan audit --from-analysis <FILE> [OPTIONS]",
+        after_help = "Examples:\n  githits-scan audit . --json --save-analysis analysis.json > audit.json\n  githits-scan audit --from-analysis analysis.json --details -o audit.txt"
     )]
     Audit(AuditArgs),
     /// Compare repository dependencies (experimental, informational)
@@ -114,7 +116,7 @@ struct DiffArgs {
     reason = "independent command-line switches"
 )]
 struct AuditArgs {
-    /// Directory to scan
+    /// Directory to scan (online only)
     #[arg(value_name = "PATH", default_value = ".")]
     path: PathBuf,
     /// Existing configuration file (default: githits-scan.toml in PATH)
@@ -137,13 +139,13 @@ struct AuditArgs {
     /// Include lifecycle source observations, affected files, collection limits and outdated/duplicate lists
     #[arg(long, display_order = 65)]
     details: bool,
-    /// Write the selected report representation to FILE ('-' means stdout)
+    /// Write the report to FILE ('-' means stdout). Incompatible with --save-analysis
     #[arg(short, long, value_name = "FILE", display_order = 80)]
     output: Option<PathBuf>,
-    /// Save consumed analysis facts to a new file for later offline inspection
+    /// Save analysis to a new file and write the report to stdout. Omit -o/--output
     #[arg(long, value_name = "FILE", value_parser = analysis_path, conflicts_with_all = ["from_analysis", "output"], display_order = 70)]
     save_analysis: Option<PathBuf>,
-    /// Re-display a saved analysis offline (no token or network)
+    /// Re-display a saved analysis offline (no token or network). Omit PATH, --config, --no-check, --lockfiles-only, --exclude and --save-analysis
     #[arg(long, value_name = "FILE", value_parser = analysis_path, conflicts_with_all = ["path", "config", "exclude", "lockfiles_only", "no_check", "save_analysis"], display_order = 5)]
     from_analysis: Option<PathBuf>,
     /// Explain an exact vulnerable registry:name@version in the saved analysis

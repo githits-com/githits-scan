@@ -17,6 +17,58 @@ fn assert_usage_error(output: &std::process::Output, diagnostic: &str, context: 
 }
 
 #[test]
+fn audit_saved_flags_help_distinguishes_scan_and_replay() {
+    for flag in ["--help", "-h"] {
+        let output = run(&["audit", flag]);
+        assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+        let help = prose(&stdout(&output));
+        assert!(
+            help.contains("githits-scan audit [OPTIONS] [PATH]"),
+            "{help}"
+        );
+        assert!(
+            help.contains("githits-scan audit --from-analysis <FILE> [OPTIONS]"),
+            "{help}"
+        );
+        assert!(help.contains("Directory to scan (online only)"), "{help}");
+        assert!(
+            help.contains(
+                "Omit PATH, --config, --no-check, --lockfiles-only, --exclude and --save-analysis"
+            ),
+            "{help}"
+        );
+        assert!(
+            help.contains("write the report to stdout. Omit -o/--output"),
+            "{help}"
+        );
+        assert!(
+            help.contains("githits-scan audit . --json --save-analysis analysis.json > audit.json"),
+            "{help}"
+        );
+        assert!(
+            help.contains(
+                "githits-scan audit --from-analysis analysis.json --details -o audit.txt"
+            ),
+            "{help}"
+        );
+    }
+}
+
+#[test]
+fn audit_saved_flags_reject_report_output_with_save_analysis() {
+    for flag in ["-o", "--output"] {
+        let output = run(&[
+            "audit",
+            "--save-analysis",
+            "analysis.json",
+            flag,
+            "report.json",
+        ]);
+        assert_usage_error(&output, "cannot be used with", flag);
+    }
+}
+
+#[test]
 fn audit_saved_flags_reject_conflicts_before_execution() {
     let conflict_rows = [
         ("explicit PATH", vec!["."]),
