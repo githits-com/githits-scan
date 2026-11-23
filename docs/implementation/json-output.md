@@ -249,8 +249,9 @@ when available.
 The summary keeps confirmed target advisories and concrete requirement
 conflicts visible alongside any reported problem with a new dependency. For
 that dependency, it names the affected version and supplied advisory IDs or
-explains the specific failed or incomplete check. The full checks explain
-what remains unverified and say when the check supplies no reason. Related
+explains the specific failed or incomplete check. The full checks show
+confirmed target warnings first, then explain what remains unverified and
+say when a check supplies no reason. Related
 limitations and search explanations keep the scope reported by the service.
 A candidate with no applicable change can also name a specific problem with a
 new dependency request. The `details_recommended` cue points to the full checks.

@@ -369,7 +369,7 @@ fn audit_added_dependencies_keeps_confirmed_target_problems_inline() {
         assert!(
             summary.ends_with(concat!(
                 "A proposed version is still affected by known advisories. ",
-                "Upgrade conflicts with dependency requirements."
+                "The upgrade conflicts with dependency requirements."
             )),
             "{summary}"
         );
@@ -379,8 +379,12 @@ fn audit_added_dependencies_keeps_confirmed_target_problems_inline() {
         );
         assert_eq!(r["details_recommended"], true);
         assert_eq!(
-            r["checks"][0],
-            "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation."
+            r["checks"],
+            json!([
+                "A proposed version is still affected by known advisories.",
+                "The upgrade conflicts with dependency requirements.",
+                "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation."
+            ])
         );
     }
 }

@@ -342,7 +342,7 @@ fn audit_remediation_material_warnings_remain_visible() {
         (
             "requirements",
             "blocked",
-            "blocked by dependency requirements",
+            "The upgrade conflicts with dependency requirements.",
         ),
         (
             "parent_search",

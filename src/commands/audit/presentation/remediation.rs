@@ -727,11 +727,11 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
         };
     }
     match (compact, label, value) {
-        (true, "requirements", "blocked") => {
-            "Upgrade conflicts with dependency requirements".into()
+        (_, "requirements", "blocked") => {
+            "The upgrade conflicts with dependency requirements.".into()
         }
-        (true, "target advisories", "affected") => {
-            "A proposed version is still affected by known advisories".into()
+        (_, "target advisories", "affected") => {
+            "A proposed version is still affected by known advisories.".into()
         }
         (true, _, _) => capitalize(format!("{label}: {}", check_text(value))),
         (false, _, _) => format!("{label}: {}", check_text(value)),
@@ -740,7 +740,7 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
 
 fn target_checks(r: &Record) -> impl Iterator<Item = (&'static str, &str)> {
     let c = &r.checks;
-    [
+    let mut checks = [
         (
             "release availability",
             c.release_availability.as_str(),
@@ -748,24 +748,28 @@ fn target_checks(r: &Record) -> impl Iterator<Item = (&'static str, &str)> {
         ),
         ("target advisories", c.advisories.as_str(), "non_affecting"),
         ("requirements", c.requirements.as_str(), "matched"),
-    ]
-    .into_iter()
-    .filter(move |(label, value, normal)| {
-        !r.changes.is_empty()
-            && value != normal
-            && !(*label == "requirements" && *value == "blocked" && !r.blockers.is_empty())
-    })
-    .map(|(label, value, _)| (label, value))
+    ];
+    checks.sort_by_key(|(label, value, _)| !confirmed_target_problem(label, value));
+    checks
+        .into_iter()
+        .filter(move |(label, value, normal)| {
+            !r.changes.is_empty()
+                && value != normal
+                && !(*label == "requirements" && *value == "blocked" && !r.blockers.is_empty())
+        })
+        .map(|(label, value, _)| (label, value))
+}
+
+fn confirmed_target_problem(label: &str, value: &str) -> bool {
+    matches!(
+        (label, value),
+        ("target advisories", "affected") | ("requirements", "blocked")
+    )
 }
 
 fn confirmed_target_problems(r: &Record) -> impl Iterator<Item = String> + '_ {
     target_checks(r)
-        .filter(|check| {
-            matches!(
-                check,
-                ("target advisories", "affected") | ("requirements", "blocked")
-            )
-        })
+        .filter(|(label, value)| confirmed_target_problem(label, value))
         .map(|(label, value)| check_line(label, value, true))
 }
 
