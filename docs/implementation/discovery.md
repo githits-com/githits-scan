@@ -41,12 +41,14 @@ Files are grouped by project directory and ecosystem. Each lockfile attaches to 
 
 Each `go.mod` is selected independently as a manifest. Root and nested modules
 keep their repository-relative filenames. An admitted `go.sum` joins the upload
-only when the `go.mod` in its directory is selected. When at least one Go
-module is selected, Scan also includes an admitted `go.work` at the scan root
-and its `go.work.sum`, if present. Excluding `go.work` also omits its checksum
-file. The service interprets workspace declarations using the supplied inputs.
-A workspace file never selects additional modules or causes reads outside the
-scan root.
+only when the `go.mod` in its directory is selected. Scan reads admitted
+`go.work` definitions using the per-file upload bound and includes only those
+whose explicit `use` paths name a selected module. Paths are interpreted relative
+to the workspace file's directory and matched inside the scan root. The same
+rule applies at the root and in nested directories. An included workspace
+carries its eligible same-directory `go.work.sum`. Workspace definitions under
+default fixture directories are skipped. Workspaces supply evidence for already
+selected modules. The service owns graph interpretation.
 
 Checksum and workspace files count toward the upload limits. Lockfile counts
 and saved configuration continue to reflect the primary evidence files. Existing

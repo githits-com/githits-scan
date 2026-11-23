@@ -1,6 +1,8 @@
 //! Native Cargo member hints over admitted paths, never a resolver or filesystem walk.
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Component, Path};
+use std::path::Path;
+
+use super::relative_directory;
 
 use globset::{GlobBuilder, GlobMatcher};
 use toml_edit::{DocumentMut, Item, TableLike};
@@ -50,8 +52,14 @@ impl Workspace {
             return BTreeSet::new();
         };
         let base = directory(&self.root);
-        let member_paths: Vec<_> = members.iter().filter_map(|p| relative(base, p)).collect();
-        let exclude_paths: Vec<_> = excludes.iter().filter_map(|p| relative(base, p)).collect();
+        let member_paths: Vec<_> = members
+            .iter()
+            .filter_map(|p| relative_directory(base, p))
+            .collect();
+        let exclude_paths: Vec<_> = excludes
+            .iter()
+            .filter_map(|p| relative_directory(base, p))
+            .collect();
         let globs: Vec<_> = member_paths.iter().filter_map(|p| member_glob(p)).collect();
         let allowed =
             |dir: &str| within(dir, base) && !excluded(dir, &member_paths, &exclude_paths);
@@ -106,26 +114,6 @@ fn within(path: &str, prefix: &str) -> bool {
     Path::new(path).starts_with(prefix)
 }
 
-/// Normalize declarations, not filesystem paths: only inventory matches can be selected.
-fn relative(base: &str, path: &str) -> Option<String> {
-    let mut parts: Vec<_> = base
-        .split('/')
-        .filter(|s| !s.is_empty())
-        .map(str::to_owned)
-        .collect();
-    for part in Path::new(path).components() {
-        match part {
-            Component::CurDir => (),
-            Component::ParentDir => {
-                parts.pop()?;
-            }
-            Component::Normal(value) => parts.push(value.to_str()?.to_owned()),
-            Component::RootDir | Component::Prefix(_) => return None,
-        }
-    }
-    Some(parts.join("/"))
-}
-
 fn strings(item: Option<&Item>) -> Option<Vec<&str>> {
     let Some(item) = item else {
         return Some(Vec::new());
@@ -163,8 +151,9 @@ fn belongs(doc: &DocumentMut, path: &str, root: &str) -> bool {
         .and_then(Item::as_table_like)
         .and_then(|p| p.get("workspace"))
         .and_then(Item::as_str);
-    declared
-        .is_none_or(|value| relative(directory(path), value).as_deref() == Some(directory(root)))
+    declared.is_none_or(|value| {
+        relative_directory(directory(path), value).as_deref() == Some(directory(root))
+    })
 }
 
 fn dependency_tables(doc: &DocumentMut) -> Vec<&dyn TableLike> {
@@ -207,14 +196,14 @@ fn dependency_path(
 ) -> Option<String> {
     let value = value.as_table_like()?;
     if value.get("workspace").and_then(Item::as_bool) != Some(true) {
-        return relative(directory, value.get("path")?.as_str()?);
+        return relative_directory(directory, value.get("path")?.as_str()?);
     }
     let inherited = workspace
         .get("dependencies")?
         .as_table_like()?
         .get(name)?
         .as_table_like()?;
-    relative(base, inherited.get("path")?.as_str()?)
+    relative_directory(base, inherited.get("path")?.as_str()?)
 }
 
 #[cfg(test)]

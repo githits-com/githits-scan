@@ -27,6 +27,11 @@ pub(crate) mod cargo;
 pub(crate) mod go;
 #[expect(
     clippy::redundant_pub_crate,
+    reason = "crate-only Go workspace evidence"
+)]
+pub(crate) mod go_work;
+#[expect(
+    clippy::redundant_pub_crate,
     reason = "crate-only native upload selection"
 )]
 pub(crate) mod npm;
@@ -626,6 +631,26 @@ fn ancestor_lockfile<'a>(
         }
     }
     None
+}
+
+/// Normalize declarations, not filesystem paths: only inventory matches can be selected.
+fn relative_directory(base: &str, path: &str) -> Option<String> {
+    let mut parts: Vec<_> = base
+        .split('/')
+        .filter(|s| !s.is_empty())
+        .map(str::to_owned)
+        .collect();
+    for part in Path::new(path).components() {
+        match part {
+            Component::CurDir => (),
+            Component::ParentDir => {
+                parts.pop()?;
+            }
+            Component::Normal(value) => parts.push(value.to_str()?.to_owned()),
+            Component::RootDir | Component::Prefix(_) => return None,
+        }
+    }
+    Some(parts.join("/"))
 }
 
 /// Join the normal components of a relative path with forward slashes.

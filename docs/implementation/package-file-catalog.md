@@ -40,7 +40,7 @@ Each lockfile is uploaded with the manifest that owns it: the file its tool writ
 | Erlang | `rebar.lock` | `rebar.config` | |
 | Conan | `conan.lock` | none | |
 | Go dep | `Gopkg.lock` | none | |
-| Go | none | | `go.mod` with same-directory `go.sum` and root workspace evidence |
+| Go | none | | `go.mod` with same-directory `go.sum` and matching workspace evidence |
 | vcpkg | none | | `vcpkg.json` (manifest-only) |
 | Zig | none | | `build.zig.zon` (manifest-only) |
 

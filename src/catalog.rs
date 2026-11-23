@@ -56,7 +56,7 @@ pub enum Ecosystem {
     /// Go dep: `Gopkg.lock`. `go.mod` belongs to Go modules and is not paired.
     GoDep,
     /// Go modules: `go.mod`, a manifest without a lockfile. `go.sum` records
-    /// checksums, and a root `go.work` describes a workspace.
+    /// checksums, and `go.work` describes a workspace.
     Go,
     /// vcpkg manifest mode: `vcpkg.json`, a manifest without a lockfile.
     Vcpkg,
@@ -185,8 +185,6 @@ pub struct Classification {
 enum Matcher {
     /// The final path component equals this name (case-sensitive).
     Name(&'static str),
-    /// An exact name at the scan root.
-    RootName(&'static str),
     /// The final path component ends with this suffix, including the leading dot.
     Suffix(&'static str),
     /// The final component ends with this suffix and the two parent components
@@ -231,10 +229,16 @@ pub(crate) fn is_go_manifest(path: &str) -> bool {
         .is_some_and(|name| name == GO_MANIFEST)
 }
 
-/// Name a supplemental part in a selected module's directory with forward slashes.
-pub(crate) fn beside_go_manifest(manifest: &str, name: &str) -> String {
-    manifest
-        .rsplit_once('/')
+/// Whether the path's final component is the Go workspace definition.
+pub(crate) fn is_go_workspace(path: &str) -> bool {
+    Path::new(path)
+        .file_name()
+        .is_some_and(|name| name == GO_WORK)
+}
+
+/// Name a supplemental part beside its Go module or workspace with forward slashes.
+pub(crate) fn beside_go_file(path: &str, name: &str) -> String {
+    path.rsplit_once('/')
         .map_or_else(|| name.to_owned(), |(parent, _)| format!("{parent}/{name}"))
 }
 
@@ -412,8 +416,8 @@ const RULES: &[Rule] = &[
     lockfile("Gopkg.lock", Ecosystem::GoDep, Owner::Uncombinable),
     manifest(GO_MANIFEST, Ecosystem::Go),
     go_supplement(Matcher::Name(GO_SUM)),
-    go_supplement(Matcher::RootName(GO_WORK)),
-    go_supplement(Matcher::RootName(GO_WORK_SUM)),
+    go_supplement(Matcher::Name(GO_WORK)),
+    go_supplement(Matcher::Name(GO_WORK_SUM)),
     manifest("vcpkg.json", Ecosystem::Vcpkg),
     manifest("build.zig.zon", Ecosystem::Zig),
 ];
@@ -528,7 +532,6 @@ pub fn owning_directory(relative_path: &Path) -> Option<&Path> {
 fn matches(matcher: Matcher, path: &Path, file_name: &str) -> bool {
     match matcher {
         Matcher::Name(expected) => file_name == expected,
-        Matcher::RootName(expected) => file_name == expected && path.components().count() == 1,
         Matcher::Suffix(expected) => has_stem_and_suffix(file_name, expected),
         Matcher::SuffixUnderDirectories(expected, directories) => {
             has_stem_and_suffix(file_name, expected) && parent_directories(path) == directories
@@ -703,8 +706,6 @@ mod tests {
         for path in [
             "bun.lock.bak",
             "bun.lockb",
-            "nested/go.work",
-            "nested/go.work.sum",
             ".githits-go.json",
             "build.zig",
             "vcpkg-configuration.json",

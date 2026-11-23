@@ -60,7 +60,8 @@ Lockfiles may be uploaded alone. A compatible lockfile in the same directory as 
 ### Go module parts
 
 Scan sends the original UTF-8 bytes of selected `go.mod` files, their
-same-directory `go.sum` files, and admitted root `go.work` / `go.work.sum`.
+same-directory `go.sum` files, and matching `go.work` / `go.work.sum` at
+their original repository-relative paths.
 The sums carry checksum evidence and require their associated manifest or
 workspace. Scan can add a generated `.githits-go.json` beside a selected
 `go.mod` with the exact JSON `{"main_package":true}` after an unambiguous

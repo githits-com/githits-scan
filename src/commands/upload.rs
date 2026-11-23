@@ -11,7 +11,7 @@ use super::{
 use crate::api::{self, UploadFile, UploadSet};
 use crate::catalog::{self, WorkspaceFamily};
 use crate::config::{self, Evaluation, Status};
-use crate::discover::{self, CoveredManifest, Inventory, Lockfile, cargo, go, npm};
+use crate::discover::{self, CoveredManifest, Inventory, Lockfile, cargo, go, go_work, npm};
 use crate::style::Palette;
 
 const GO_MAIN_JSON: &str = r#"{"main_package":true}"#;
@@ -209,7 +209,7 @@ fn go_markers(
     let admitted = |path: &str| !config::has_authored_exclusion(config, &cli, path);
     Ok(modules
         .filter_map(|module| {
-            let marker = catalog::beside_go_manifest(module, catalog::GO_MAIN_EVIDENCE);
+            let marker = catalog::beside_go_file(module, catalog::GO_MAIN_EVIDENCE);
             // The selected module has already passed fixture policy at its root.
             let prefix = module.strip_suffix(catalog::GO_MANIFEST)?;
             let include_source = |path: &str| {
@@ -238,7 +238,7 @@ fn read_selected(
         .iter()
         .map(|m| (m.path.as_str(), m.bytes))
         .collect();
-    let mut files = BTreeMap::new();
+    let mut files = read_go_workspaces(plan, inventory, evaluation, &mut read)?;
     while let Some(path) = plan
         .files
         .keys()
@@ -440,7 +440,7 @@ impl Plan {
                 .map(|(path, bytes)| (path.clone(), bytes)),
         );
         files.extend(manifests.iter().map(|(path, bytes)| (path.clone(), *bytes)));
-        files.extend(go_supplements(manifests.keys(), inventory, evaluation));
+        files.extend(go_module_sums(manifests.keys(), inventory, evaluation));
         Self {
             files,
             lockfiles: lockfiles.len(),
@@ -510,35 +510,73 @@ impl Plan {
     }
 }
 
-fn go_supplements<'a>(
+fn go_module_sums<'a>(
     manifests: impl Iterator<Item = &'a String>,
     inventory: &Inventory,
     evaluation: Option<&Evaluation>,
 ) -> Vec<(String, u64)> {
-    let selected = |path: &str| {
-        if evaluation.and_then(|evaluation| evaluation.status(path)) == Some(Status::Excluded) {
-            return None;
-        }
-        inventory
-            .go_supplements
-            .get(path)
-            .map(|&bytes| (path.to_owned(), bytes))
-    };
-    let mut modules = manifests
+    manifests
         .filter(|path| catalog::is_go_manifest(path))
-        .peekable();
-    let mut additions = Vec::new();
-    if modules.peek().is_none() {
-        return additions;
+        .map(|path| catalog::beside_go_file(path, catalog::GO_SUM))
+        .filter_map(|path| {
+            go_supplement_size(inventory, evaluation, &path).map(|bytes| (path, bytes))
+        })
+        .collect()
+}
+
+fn go_supplement_size(
+    inventory: &Inventory,
+    evaluation: Option<&Evaluation>,
+    path: &str,
+) -> Option<u64> {
+    if evaluation.and_then(|evaluation| evaluation.status(path)) == Some(Status::Excluded) {
+        return None;
     }
-    additions.extend(
-        modules.filter_map(|path| selected(&catalog::beside_go_manifest(path, catalog::GO_SUM))),
-    );
-    if let Some(workspace) = selected(catalog::GO_WORK) {
-        additions.push(workspace);
-        additions.extend(selected(catalog::GO_WORK_SUM));
+    inventory.go_supplements.get(path).copied()
+}
+
+/// A workspace can supplement the Go modules already selected by the plan.
+/// Probe one admitted definition at a time and keep the original bytes only
+/// when an explicit member is selected. Both filesystem and Git use this path.
+fn read_go_workspaces(
+    plan: &mut Plan,
+    inventory: &Inventory,
+    evaluation: Option<&Evaluation>,
+    read: &mut impl FnMut(&str) -> Result<String, Error>,
+) -> Result<BTreeMap<String, UploadFile>, Error> {
+    let mut files = BTreeMap::new();
+    let modules: BTreeSet<_> = plan
+        .manifests
+        .iter()
+        .filter(|path| catalog::is_go_manifest(path))
+        .map(String::as_str)
+        .collect();
+    if modules.is_empty() {
+        return Ok(files);
     }
-    additions
+    for path in inventory
+        .go_supplements
+        .keys()
+        .filter(|path| catalog::is_go_workspace(path) && !config::is_default_excluded(path))
+    {
+        let Some(bytes) = go_supplement_size(inventory, evaluation, path) else {
+            continue;
+        };
+        api::upload::check_plan([(path.as_str(), bytes)])?;
+        let contents = read(path)?;
+        if !go_work::members(path, &contents).any(|member| modules.contains(member.as_str())) {
+            continue;
+        }
+        plan.files.insert(path.clone(), contents.len() as u64);
+        let sum = catalog::beside_go_file(path, catalog::GO_WORK_SUM);
+        if let Some(bytes) = go_supplement_size(inventory, evaluation, &sum) {
+            plan.files.insert(sum, bytes);
+        }
+        api::upload::check_plan(plan.entries())?;
+        let path = path.clone();
+        files.insert(path.clone(), UploadFile { path, contents });
+    }
+    Ok(files)
 }
 
 fn empty_message(root: &Path, plan: &Plan, directory_exclusions: bool) -> String {

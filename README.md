@@ -120,7 +120,7 @@ make its format supported. Owning manifests are included when present.
 | Erlang / Rebar3 | `rebar.lock` | `rebar.config` |
 | C/C++ / Conan | `conan.lock` | No paired manifest |
 | Go dep (legacy) | `Gopkg.lock` | No paired manifest |
-| Go modules | None | `go.mod`, same-directory `go.sum`, and root `go.work` / `go.work.sum` |
+| Go modules | None | `go.mod`, same-directory `go.sum`, and matching `go.work` / `go.work.sum` |
 | C/C++ / vcpkg | None | `vcpkg.json` |
 | Zig | None | `build.zig.zon` |
 
@@ -130,7 +130,8 @@ build. Resolution and audit coverage vary by ecosystem; incomplete evidence
 remains visible. `--lockfiles-only` skips unconfigured manifest-only projects,
 while retaining owning companions and eligible Cargo/npm/Bun workspace members.
 
-Go checksum files supplement selected modules and workspaces. In a selected Go
+Go checksum files supplement selected modules and workspaces. A workspace is
+included when its `use` directives name a selected module. In a selected Go
 module, Scan can inspect source headers locally and send an application hint
 when it finds an unambiguous production `package main`. Go source stays local.
 This is a repository inventory. The exact packages in a built binary depend on

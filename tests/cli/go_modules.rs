@@ -6,6 +6,7 @@ const MODULE: &str = "module example.com/project\n\ngo 1.23.0\n";
 const TOOLS: &str = "module example.com/project/tools\n\ngo 1.23.0\n";
 const SUM: &str = "example.com/dep v1.2.3 h1:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n";
 const WORK: &str = "go 1.23.0\n\nuse (\n\t.\n\t./tools\n)\n";
+const NESTED_WORK: &str = "go 1.23.0\nuse .\n";
 const MAIN: &str = "/* Copyright example */\npackage main\n\nfunc main() {}\n";
 const MAIN_HINT: &str = r#"{"main_package":true}"#;
 
@@ -25,7 +26,7 @@ fn go_modules_detect_and_send_the_same_paths_and_original_bytes() {
         ("tools/go.mod", TOOLS),
         ("tools/go.sum", SUM),
         ("tools/library.go", "package tools\n"),
-        ("tools/go.work", WORK),
+        ("tools/go.work", NESTED_WORK),
         ("tools/go.work.sum", SUM),
         ("orphan/go.sum", SUM),
         ("vendor/dep/go.mod", MODULE),
@@ -43,6 +44,8 @@ fn go_modules_detect_and_send_the_same_paths_and_original_bytes() {
         ("go.work.sum", SUM),
         ("tools/go.mod", TOOLS),
         ("tools/go.sum", SUM),
+        ("tools/go.work", NESTED_WORK),
+        ("tools/go.work.sum", SUM),
     ];
     let detected = detect(repo.path(), &["--json"]);
     assert_eq!(detected.status.code(), Some(0), "{}", stderr(&detected));
@@ -69,7 +72,7 @@ fn go_modules_detect_and_send_the_same_paths_and_original_bytes() {
     assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
     assert!(
         stderr(&output).lines().any(|line| line.trim()
-            == "uploaded 0 lockfiles and 2 manifests (go.mod, tools/go.mod), plus 5 Go evidence files"),
+            == "uploaded 0 lockfiles and 2 manifests (go.mod, tools/go.mod), plus 7 Go evidence files"),
         "{}",
         stderr(&output)
     );
@@ -284,5 +287,94 @@ fn go_modules_probe_explicit_fixture_modules_within_their_own_boundary() {
     assert_eq!(
         upload_paths(&excluded),
         serde_json::json!(["testdata/app/go.mod", "testdata/app/go.sum"])
+    );
+}
+
+#[test]
+fn go_modules_workspaces_follow_explicit_members_in_the_selected_scope() {
+    let repo = repository(&[
+        ("go.mod", MODULE),
+        ("tools/go.mod", TOOLS),
+        ("dir with spaces/go.mod", "module example.com/spaces\n"),
+        ("go.work", "go 1.23.0\nuse ./tools\n"),
+        ("go.work.sum", SUM),
+        (
+            "work/go.work",
+            r#"go 1.23.0
+// (
+replace (
+    example.com/pkg => ../unselected
+)
+use( // members
+    "../dir\x20with spaces" // quoted directory
+    ../tools/../tools
+) // done
+"#,
+        ),
+        ("work/go.work.sum", SUM),
+        ("other/go.work", "use ../../outside\n"),
+        ("other/go.work.sum", SUM),
+        ("testdata/fixture/go.work", "use ../..\n"),
+        ("testdata/fixture/go.work.sum", SUM),
+    ]);
+    let root_only = detect(
+        repo.path(),
+        &[
+            "--json",
+            "--exclude",
+            "tools/**",
+            "--exclude",
+            "dir with spaces/**",
+        ],
+    );
+    assert_eq!(root_only.status.code(), Some(0), "{}", stderr(&root_only));
+    assert_eq!(upload_paths(&root_only), serde_json::json!(["go.mod"]));
+
+    let nested = detect(
+        repo.path(),
+        &[
+            "--json",
+            "--exclude",
+            "tools/**",
+            "--exclude",
+            "work/go.work.sum",
+        ],
+    );
+    assert_eq!(nested.status.code(), Some(0), "{}", stderr(&nested));
+    assert_eq!(
+        upload_paths(&nested),
+        serde_json::json!(["dir with spaces/go.mod", "go.mod", "work/go.work"])
+    );
+    let no_nested_workspace = detect(repo.path(), &["--json", "--exclude", "work/go.work"]);
+    assert_eq!(
+        no_nested_workspace.status.code(),
+        Some(0),
+        "{}",
+        stderr(&no_nested_workspace)
+    );
+    assert_eq!(
+        upload_paths(&no_nested_workspace),
+        serde_json::json!([
+            "dir with spaces/go.mod",
+            "go.mod",
+            "go.work",
+            "go.work.sum",
+            "tools/go.mod"
+        ])
+    );
+
+    let selected = detect(repo.path(), &["--json"]);
+    assert_eq!(selected.status.code(), Some(0), "{}", stderr(&selected));
+    assert_eq!(
+        upload_paths(&selected),
+        serde_json::json!([
+            "dir with spaces/go.mod",
+            "go.mod",
+            "go.work",
+            "go.work.sum",
+            "tools/go.mod",
+            "work/go.work",
+            "work/go.work.sum"
+        ])
     );
 }

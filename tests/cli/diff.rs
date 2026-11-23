@@ -571,14 +571,18 @@ fn diff_go_modules_preserve_supplemental_paths_in_each_snapshot() {
         ("go.work.sum", "workspace checksum\n"),
         ("tools/go.mod", "module example.com/root/tools\n"),
         ("tools/go.sum", "tools checksum\n"),
+        ("workspace/go.work", "use ../tools\n"),
+        ("workspace/go.work.sum", "nested workspace checksum\n"),
         ("main.go", "package main\n\nfunc main() {}\n"),
         ("orphan/go.sum", "orphan checksum\n"),
     ]);
     committed(repo.path());
     fs::write(repo.path().join("go.sum"), "head checksum\n").expect("head checksum");
+    fs::write(repo.path().join("workspace/go.work"), "use ../missing\n")
+        .expect("head workspace changes membership");
     git(
         repo.path(),
-        &["commit", "--quiet", "-am", "update checksum"],
+        &["commit", "--quiet", "-am", "update workspace and checksum"],
     );
     let report = serde_json::to_vec(&fixture::report()).expect("report");
     let server = ScriptedServer::respond_with(fixture::exchanges(&report));
@@ -597,6 +601,13 @@ fn diff_go_modules_preserve_supplemental_paths_in_each_snapshot() {
     };
     part("base", "go.sum", "base checksum\n");
     part("head", "go.sum", "head checksum\n");
+    part("base", "workspace/go.work", "use ../tools\n");
+    part(
+        "base",
+        "workspace/go.work.sum",
+        "nested workspace checksum\n",
+    );
+    assert!(!body.contains("name=\"head_files[]\"; filename=\"workspace/go.work"));
     for side in ["base", "head"] {
         part(side, "go.work", "go 1.23.0\nuse (\n.\n./tools\n)\n");
         part(side, "go.work.sum", "workspace checksum\n");
