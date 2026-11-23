@@ -193,13 +193,19 @@ SBOM generation submits one job and writes the complete returned document.
 githits-scan audit
 githits-scan audit --json -o audit.json
 githits-scan audit --presentation-json -o audit-presentation.json
-githits-scan audit --save-analysis analysis.json
-githits-scan audit --from-analysis analysis.json     # offline replay
+githits-scan audit . --json --save-analysis analysis.json > audit.json
+githits-scan audit --from-analysis analysis.json --details -o audit.txt
 ```
 
+`--save-analysis` creates a new archive and writes the report to stdout. To keep
+both files, redirect stdout to a separate path. `--from-analysis` reads the saved
+archive offline. Omit the repository path and scan-selection flags when replaying.
+
 Audit requests native lifecycle report v3 automatically. Findings, retained lifecycle
-warnings and actionable incomplete checks exit 1. Expected Git coverage limits appear
-as informational notes and do not fail alone. Lifecycle collection limits and checks
+warnings and actionable incomplete checks exit 1. An outdated version or an actionable
+evidence gap can trigger exit 1 even when the report lists no vulnerabilities.
+Expected Git coverage limits appear as informational notes and do not fail alone.
+Lifecycle collection limits and checks
 that do not apply alone exit 0; `--details` explains them. Results cover only the
 selected evidence, not proof of an installed build's safety. JSON and saved
 analyses retain findings independently of human presentation. Audit JSON keeps factual

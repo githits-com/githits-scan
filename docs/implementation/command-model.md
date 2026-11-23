@@ -47,15 +47,17 @@ previously completed output intact. See [dependency diff](dependency-diff.md#out
 | `--lockfiles-only` | Leave manifest-only projects out of the inventory (`detect`) and the upload (`sbom generate`, `license report`, `license check`, `audit`, `diff`); by default they are part of both and resolved from their declared constraints |
 | `--exclude <GLOB>` | Omit matching package files, including owning/workspace manifests; patterns ending in `/**` prune subtrees (repeatable; same glob rules as `lockfiles.exclude`). `detect --save` merges the patterns into the configuration. Conflicts with `license check --sbom` |
 
-All commands accept `-o/--output FILE` (`-` means stdout). `license check --details` adds component references, package URLs and bounded
+All commands accept `-o/--output FILE` (`-` means stdout) where compatible with the selected mode. `license check --details` adds component references, package URLs and bounded
 recorded Git-source previews; JSON retains full selector values. Detect quiet suppresses save notes, preserving the inventory.
 
 Per-command arguments: `license report --details`, `license report --from-report FILE` and `-o/--output FILE` (human or exact public JSON with `--json`); `detect --save`; `sbom generate --format <cyclonedx|spdx|text>` and `-o, --output <FILE>`; `license check --sbom <FILE>`; `audit -o/--output <FILE>` (human by default, compact result JSON with `--json`, or facts plus shared remediation
 explanations with `--presentation-json`);
 `audit --details` (expand maintenance lists in ordinary human reports, including saved replay);
 `audit --save-analysis FILE`; `audit --from-analysis FILE [--explain PACKAGE]`.
-`--save-analysis` conflicts with `--output`; saved replay accepts `--output`, including explanations.
-Offline mode rejects scan-selection arguments and requires no token.
+`--save-analysis` writes the report to stdout and conflicts with `--output`. To
+keep both files, redirect stdout to a separate path. Saved replay accepts
+`--output`, including explanations. Omit `PATH` and scan-selection arguments in
+offline mode, which uses the saved inputs and requires no token.
 `audit --presentation-json` also supports whole-report replay and conflicts with
 `--json` and focused `--explain`; see [presentation JSON](json-output.md#audit-presentation-schema-1).
 
