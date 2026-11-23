@@ -221,7 +221,7 @@ impl Plan {
         clear_edit: bool,
         confirmed_problem: bool,
     ) -> Option<String> {
-        let conflict = self
+        let constraint = self
             .constraints
             .iter()
             .find(|constraint| constraint.excludes_target)
@@ -232,19 +232,14 @@ impl Plan {
                     .iter()
                     .find(|constraint| constraint.compact_edit.is_some())
                     .map(|constraint| constraint.compact_text(clear_edit))
-            });
-        let other_constraint = || self.constraints.first().map(|c| c.compact_text(clear_edit));
-        let reported_blocker = r.checks.requirements == "blocked" && !self.constraints.is_empty();
-        if confirmed_problem || reported_blocker {
-            return conflict.or_else(other_constraint);
-        }
-        conflict
-            .or_else(|| {
-                target_checks(r)
-                    .next()
-                    .map(|(label, value)| check_line(label, value, true))
             })
-            .or_else(other_constraint)
+            .or_else(|| self.constraints.first().map(|c| c.compact_text(clear_edit)));
+        if confirmed_problem || constraint.is_some() {
+            return constraint;
+        }
+        target_checks(r)
+            .next()
+            .map(|(label, value)| check_line(label, value, true))
             .or_else(|| self.search_obstacle(r))
             .or_else(|| {
                 self.changes

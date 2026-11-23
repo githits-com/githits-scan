@@ -237,7 +237,9 @@ then highlights the main issue affecting the proposed change. Concrete
 dependency conflicts take priority. A release or requirement check gap can
 explain why a proposed change is uncertain. If the report only lacks an
 application method, the summary states that gap directly.
-`Bump` uses the same qualification as a supported upgrade in native output.
+`Bump` requires the same evidence as a supported native upgrade. If the
+report also shows a problem with an added dependency, the summary states the
+proposed versions and the problem without an instruction to upgrade.
 When that upgrade supplies a shared path that Scan recognizes as a lockfile,
 the summary names it even if the detailed blocks omit it as repeated context.
 This describes the recorded scope of the upgrade.

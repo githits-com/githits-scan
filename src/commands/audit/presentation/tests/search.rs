@@ -216,18 +216,26 @@ fn addition_evidence() -> Value {
 
 #[test]
 fn audit_search_keeps_reported_blockers_ahead_of_unverified_target() {
-    for (reason, explanation) in [
+    for (requirements, reason, explanation) in [
         (
+            "blocked",
             "manifest_lock_disagreement",
             "Manifest and lockfile disagree",
         ),
         (
+            "unchecked",
+            "manifest_lock_disagreement",
+            "Manifest and lockfile disagree",
+        ),
+        (
+            "blocked",
             "project_request_change",
             "Applying this change requires updating the project requirement",
         ),
     ] {
         let mut value = input_with_project_edit();
         let r = &mut value["remediation"]["recommendations"][0];
+        r["checks"]["requirements"] = requirements.into();
         r["checks"]["release_availability"] = "unverified".into();
         r["blockers"][0]["reason"] = reason.into();
         r["blockers"][0]["requirement_status"] = "not_recorded".into();
