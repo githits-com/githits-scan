@@ -280,10 +280,16 @@ fn audit_presentation_distinguishes_outdated_findings_from_vulnerabilities() {
     value["summary"]["outdated"] = 1.into();
     let root = repo();
     for (change, explanation) in [
-        ("unknown", "the service did not classify the version change"),
+        ("major", "(major)"),
+        ("minor", "(minor)"),
+        ("patch", "(patch)"),
+        (
+            "unknown",
+            "(the service did not classify the version change)",
+        ),
         (
             "future_delta",
-            "this Scan version does not recognize the reported version change classification",
+            "(this Scan version does not recognize the reported version change classification)",
         ),
     ] {
         value["findings"]["outdated"][0]["change_type"] = change.into();
@@ -298,7 +304,10 @@ fn audit_presentation_distinguishes_outdated_findings_from_vulnerabilities() {
             "{text}"
         );
         assert!(text.contains(explanation), "{text}");
-        assert!(!text.contains(&format!("({change})")), "{text}");
+        assert!(
+            !text.contains("(unknown)") && !text.contains("(future_delta)"),
+            "{text}"
+        );
         assert_eq!(mock.requests().len(), 3);
 
         let mock = server(&report);

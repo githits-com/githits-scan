@@ -41,6 +41,16 @@ fn audit_saved_flags_help_distinguishes_scan_and_replay() {
             help.contains("write the report to stdout. Omit -o/--output"),
             "{help}"
         );
+        assert!(
+            help.contains("githits-scan audit . --json --save-analysis analysis.json > audit.json"),
+            "{help}"
+        );
+        assert!(
+            help.contains(
+                "githits-scan audit --from-analysis analysis.json --details -o audit.txt"
+            ),
+            "{help}"
+        );
     }
 }
 
