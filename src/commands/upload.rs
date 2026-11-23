@@ -11,8 +11,10 @@ use super::{
 use crate::api::{self, UploadFile, UploadSet};
 use crate::catalog::{self, WorkspaceFamily};
 use crate::config::{self, Evaluation, Status};
-use crate::discover::{self, CoveredManifest, Inventory, Lockfile, cargo, npm};
+use crate::discover::{self, CoveredManifest, Inventory, Lockfile, cargo, go, npm};
 use crate::style::Palette;
+
+const GO_MAIN_JSON: &str = r#"{"main_package":true}"#;
 
 pub(super) struct Options<'a> {
     pub root: &'a Path,
@@ -99,22 +101,25 @@ pub(super) fn prepare(
     if options.progress {
         super::progress::message("preparing upload...", stderr).map_err(Error::Output)?;
     }
-    let files = read_within_limits(options.root, &mut plan, &inventory, evaluation.as_ref())?;
+    let files = read_local(
+        options.root,
+        &mut plan,
+        &inventory,
+        evaluation.as_ref(),
+        config.as_ref(),
+        options.exclude,
+    )?;
     let upload = UploadSet::try_new(files)?;
     if options.progress {
         super::progress::message(
-            &format!(
-                "submitting {} and {}...",
-                plural(plan.lockfiles, "lockfile"),
-                plural(plan.manifests.len(), "manifest")
-            ),
+            &format!("submitting {}...", plan.file_counts(upload.len())),
             stderr,
         )
         .map_err(Error::Output)?;
     }
     Ok(Some(Prepared {
+        summary: plan.summary(palette, upload.len()),
         upload,
-        summary: plan.summary(palette),
         manifests: plan.manifests,
         audit_policy: config.map(|config| config.audit).unwrap_or_default(),
     }))
@@ -143,29 +148,73 @@ pub(super) fn preview(
     inventory: &Inventory,
     evaluation: Option<&Evaluation>,
     include_manifests: bool,
+    config: Option<&config::Config>,
+    exclude: &[String],
 ) -> Result<BTreeSet<String>, Error> {
     let mut plan = Plan::new(inventory, evaluation, include_manifests);
     if plan.files.is_empty() {
         return Ok(BTreeSet::new());
     }
     api::upload::check_plan(plan.entries())?;
-    read_within_limits(root, &mut plan, inventory, evaluation)?;
-    Ok(plan.files.into_keys().collect())
+    let files = read_local(root, &mut plan, inventory, evaluation, config, exclude)?;
+    Ok(files.into_iter().map(|file| file.path).collect())
 }
 
 /// Read the planned files, keeping memory within the body limit even when a
 /// file grew after the scan: each read is capped at the per-file limit, and
 /// the expanded plan is checked with the sizes seen so far before the next
 /// file is read. Supported workspace declarations can add admitted member evidence.
-fn read_within_limits(
+fn read_local(
     root: &Path,
     plan: &mut Plan,
     inventory: &Inventory,
     evaluation: Option<&Evaluation>,
+    config: Option<&config::Config>,
+    exclude: &[String],
 ) -> Result<Vec<UploadFile>, Error> {
+    let markers = go_markers(root, &plan.manifests, config, exclude)?;
+    for path in &markers {
+        plan.files.insert(path.clone(), GO_MAIN_JSON.len() as u64);
+    }
+    if !markers.is_empty() {
+        api::upload::check_plan(plan.entries())?;
+    }
     read_selected(plan, inventory, evaluation, |path| {
+        if markers.contains(path) {
+            return Ok(GO_MAIN_JSON.to_owned());
+        }
         discover::read_file(root, path, api::MAX_FILE_BYTES).map_err(Error::from)
     })
+}
+
+fn go_markers(
+    root: &Path,
+    manifests: &[String],
+    config: Option<&config::Config>,
+    exclude: &[String],
+) -> Result<BTreeSet<String>, Error> {
+    let mut modules = manifests
+        .iter()
+        .filter(|path| catalog::is_go_manifest(path))
+        .peekable();
+    if modules.peek().is_none() {
+        return Ok(BTreeSet::new());
+    }
+    let directories = config::directory_filter(config, exclude)?;
+    let cli = config::exclude_set(exclude, Path::new(config::CLI_EXCLUDE))?;
+    let include_file = |path: &str| {
+        !cli.is_match(path)
+            && config.is_none_or(|c| !c.is_excluded(path))
+            && !config::is_default_excluded(path)
+    };
+    Ok(modules
+        .filter_map(|module| {
+            let marker = catalog::beside_go_manifest(module, catalog::GO_MAIN_EVIDENCE);
+            (include_file(&marker)
+                && go::has_main_package(root, module, directories.clone(), include_file))
+            .then_some(marker)
+        })
+        .collect())
 }
 
 fn read_selected(
@@ -383,6 +432,7 @@ impl Plan {
                 .map(|(path, bytes)| (path.clone(), bytes)),
         );
         files.extend(manifests.iter().map(|(path, bytes)| (path.clone(), *bytes)));
+        files.extend(go_supplements(manifests.keys(), inventory, evaluation));
         Self {
             files,
             lockfiles: lockfiles.len(),
@@ -408,12 +458,25 @@ impl Plan {
         }
     }
 
-    fn summary(&self, palette: Palette) -> String {
-        let mut text = format!(
-            "uploaded {} and {}",
+    fn file_counts(&self, total: usize) -> String {
+        let mut counts = format!(
+            "{} and {}",
             plural(self.lockfiles, "lockfile"),
             plural(self.manifests.len(), "manifest")
         );
+        let supplemental = total - self.lockfiles - self.manifests.len();
+        if supplemental > 0 {
+            let _ = write!(
+                counts,
+                ", plus {}",
+                plural(supplemental, "Go evidence file")
+            );
+        }
+        counts
+    }
+
+    fn summary(&self, palette: Palette, total: usize) -> String {
+        let mut text = format!("uploaded {}", self.file_counts(total));
         let paths = self
             .manifests
             .iter()
@@ -434,6 +497,37 @@ impl Plan {
         }
         text
     }
+}
+
+fn go_supplements<'a>(
+    manifests: impl Iterator<Item = &'a String>,
+    inventory: &Inventory,
+    evaluation: Option<&Evaluation>,
+) -> Vec<(String, u64)> {
+    let selected = |path: &str| {
+        if evaluation.and_then(|evaluation| evaluation.status(path)) == Some(Status::Excluded) {
+            return None;
+        }
+        inventory
+            .go_supplements
+            .get(path)
+            .map(|&bytes| (path.to_owned(), bytes))
+    };
+    let mut modules = manifests
+        .filter(|path| catalog::is_go_manifest(path))
+        .peekable();
+    let mut additions = Vec::new();
+    if modules.peek().is_none() {
+        return additions;
+    }
+    additions.extend(
+        modules.filter_map(|path| selected(&catalog::beside_go_manifest(path, catalog::GO_SUM))),
+    );
+    if let Some(workspace) = selected(catalog::GO_WORK) {
+        additions.push(workspace);
+        additions.extend(selected(catalog::GO_WORK_SUM));
+    }
+    additions
 }
 
 fn empty_message(root: &Path, plan: &Plan, directory_exclusions: bool) -> String {
@@ -494,8 +588,8 @@ mod tests {
         fs::write(repo.path().join("b/Cargo.lock"), &big).expect("grow b");
         let mut plan = Plan::new(&inventory, None, false);
 
-        let error =
-            read_within_limits(repo.path(), &mut plan, &inventory, None).expect_err("body limit");
+        let error = read_local(repo.path(), &mut plan, &inventory, None, None, &[])
+            .expect_err("body limit");
 
         assert_eq!(error.kind(), ErrorKind::Usage);
         assert!(
@@ -529,7 +623,7 @@ mod tests {
         .expect("grow b");
         let mut plan = Plan::new(&inventory, None, false);
 
-        let files = read_within_limits(repo.path(), &mut plan, &inventory, None).expect("fits");
+        let files = read_local(repo.path(), &mut plan, &inventory, None, None, &[]).expect("fits");
 
         assert_eq!(files.len(), 2);
         assert_eq!(files[0].contents.len(), 0);
@@ -570,8 +664,15 @@ mod native_tests {
                 config::inventory_evaluation(None, &exclude, &inventory, include_manifests)
                     .expect("selection");
             let mut plan = Plan::new(&inventory, evaluation.as_ref(), include_manifests);
-            let files = read_within_limits(repo.path(), &mut plan, &inventory, evaluation.as_ref())
-                .expect("upload");
+            let files = read_local(
+                repo.path(),
+                &mut plan,
+                &inventory,
+                evaluation.as_ref(),
+                None,
+                &[],
+            )
+            .expect("upload");
             let paths: Vec<_> = files.iter().map(|f| f.path.as_str()).collect();
             assert_eq!(
                 paths,
@@ -629,7 +730,7 @@ mod native_tests {
             fs::remove_file(path).expect("remove before-read probe");
         }
         let mut plan = Plan::new(&inventory, None, false);
-        let error = read_within_limits(repo.path(), &mut plan, &inventory, None)
+        let error = read_local(repo.path(), &mut plan, &inventory, None, None, &[])
             .expect_err("expanded limit precedes member read");
         assert_eq!(error.kind(), ErrorKind::Usage, "{error}");
         assert!(error.to_string().contains(message), "{error}");
@@ -739,7 +840,7 @@ mod native_tests {
             fs::remove_file(path).expect("remove read probe");
         }
         let mut plan = Plan::new(&inventory, None, false);
-        let error = read_within_limits(repo.path(), &mut plan, &inventory, None)
+        let error = read_local(repo.path(), &mut plan, &inventory, None, None, &[])
             .expect_err("expanded limit");
         assert_eq!(error.kind(), ErrorKind::Usage, "{error}");
         assert!(error.to_string().contains(message), "{error}");

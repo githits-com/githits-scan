@@ -120,7 +120,7 @@ make its format supported. Owning manifests are included when present.
 | Erlang / Rebar3 | `rebar.lock` | `rebar.config` |
 | C/C++ / Conan | `conan.lock` | No paired manifest |
 | Go dep (legacy) | `Gopkg.lock` | No paired manifest |
-| Go modules | None | `go.mod` |
+| Go modules | None | `go.mod`, same-directory `go.sum`, and root `go.work` / `go.work.sum` |
 | C/C++ / vcpkg | None | `vcpkg.json` |
 | Zig | None | `build.zig.zon` |
 
@@ -129,6 +129,13 @@ constraints, so the result can differ from an installed or previously locked
 build. Resolution and audit coverage vary by ecosystem; incomplete evidence
 remains visible. `--lockfiles-only` skips unconfigured manifest-only projects,
 while retaining owning companions and eligible Cargo/npm/Bun workspace members.
+
+Go checksum files supplement selected modules and workspaces. In a selected Go
+module, Scan can inspect source headers locally and send an application hint
+when it finds an unambiguous production `package main`. Go source stays local.
+This is a repository inventory. The exact packages in a built binary depend on
+its build inputs and targets. See [Go evidence](docs/implementation/discovery.md#go-module-evidence).
+
 See the [catalog](docs/implementation/package-file-catalog.md) and
 [selection rules](docs/implementation/discovery.md).
 
@@ -138,7 +145,6 @@ See the [catalog](docs/implementation/package-file-catalog.md) and
 | Deno `deno.lock` | No native Deno input support |
 | Maven `pom.xml` | No native Maven input support |
 | Binary Bun `bun.lockb` | Use text `bun.lock` |
-| Go `go.sum`, `go.work` | Scan selects `go.mod`; these files are not uploaded |
 | CocoaPods `Podfile.lock`, Nix `flake.lock`, NuGet `packages.config` / `project.assets.json` | Not cataloged |
 
 Notices identify `requirements.txt`, `deno.lock`, and `pom.xml`. Other omitted

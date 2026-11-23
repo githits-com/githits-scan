@@ -40,7 +40,7 @@ Each lockfile is uploaded with the manifest that owns it: the file its tool writ
 | Erlang | `rebar.lock` | `rebar.config` | |
 | Conan | `conan.lock` | none | |
 | Go dep | `Gopkg.lock` | none | |
-| Go | none | | `go.mod` (manifest-only) |
+| Go | none | | `go.mod` with same-directory `go.sum` and root workspace evidence |
 | vcpkg | none | | `vcpkg.json` (manifest-only) |
 | Zig | none | | `build.zig.zon` (manifest-only) |
 
@@ -54,6 +54,8 @@ The owner is what makes a pair: automatic pairing attaches only the owning manif
 A `packages.lock.json` beside several `.csproj` files cannot be attributed to one project; NuGet gives each project in a shared directory its own `packages.<project_name>.lock.json`, which the scanner does not discover yet (see [service pairing changes](#service-pairing-changes)). Such a lockfile is **ambiguous**: it is not uploaded, its projects become manifest-only, and `detect` and `sbom generate` print a warning until an exclude pattern matches the lockfile.
 
 Ecosystems never pair across each other, which encodes the service's rules that `conan.lock` does not cover `vcpkg.json` and `Gopkg.lock` does not cover `go.mod`. Go modules, vcpkg, and Zig have no cataloged lockfile, so their manifests are always manifest-only projects: reported by `detect` and uploaded for the service to resolve from registries, unless the run is `--lockfiles-only` and the configuration does not list them.
+Go checksums supplement selected manifests without changing their configuration
+role. See [Go module evidence](discovery.md#go-module-evidence).
 
 The legacy Gradle rule matches `<name>.lockfile` only when the two nearest parent directories are exactly `gradle/dependency-locks`; such a lockfile belongs to the project two directories up, so that project's build script is uncombined rather than manifest-only. The `.csproj` rule requires a non-empty stem.
 
@@ -122,7 +124,6 @@ Hidden directories (any component starting with `.`, such as `.tox`, `.bundle`, 
 | --- | --- |
 | `bun.lockb` | Binary Bun lockfiles are outside the text-upload contract and would fail as `invalid_utf8`; only text `bun.lock` is cataloged |
 | `Cartfile.resolved`, `paket.lock`, `glide.lock`, Nebula `dependencies.lock`, Maven `lockfile.json`, clj-nix `deps-lock.json`, `zig.lock`, `zigmod.lock`, `gyro.lock` | Not cataloged; require public API documentation or production qualification before admission |
-| `go.sum`, `go.work` | `go.sum` records module checksums, not a version selection; neither file is cataloged |
 | `pom.xml`, `build.sbt`, `*.versions.toml`, `*.gemspec`, `deps.edn`, `project.clj` | Not cataloged; require a documented and qualified upload/resolution contract |
 | `requirements*.txt`, `constraints.txt`, `Pipfile`, `setup.py`, `setup.cfg` | Not cataloged; `Pipfile` needs qualified pairing (see [service pairing changes](#service-pairing-changes)) |
 | `pnpm-lock.env.yaml` | Rare variant; not documented publicly |

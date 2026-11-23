@@ -57,6 +57,22 @@ support; see `package-file-catalog.md`.
 
 Lockfiles may be uploaded alone. A compatible lockfile in the same directory as a manifest supplies recorded versions for that manifest. The public OpenAPI states that a nested manifest does not automatically inherit an ancestor lockfile. Workspace association through native membership evidence belongs to backend parsing, not Scan's directory-containment heuristic; preserve relative paths exactly. An uploaded manifest not associated with recorded lock evidence can be resolved by the service from its declared constraints. Manifest-only inputs are selected unless the run is `--lockfiles-only` or configuration omits them; eligible Cargo and supported npm/Bun members are selected automatically, including under `--lockfiles-only`, under the [Cargo](discovery.md#cargo-member-evidence) and [JavaScript](discovery.md#javascript-workspace-member-evidence) evidence contracts; other nested manifests require explicit configuration. The upload summary reports selected files, not backend resolution mode.
 
+### Go module parts
+
+Scan sends the original UTF-8 bytes of selected `go.mod` files, their
+same-directory `go.sum` files, and admitted root `go.work` / `go.work.sum`.
+The sums carry checksum evidence and require their associated manifest or
+workspace. Scan can add a generated `.githits-go.json` beside a selected
+`go.mod` with the exact JSON `{"main_package":true}` after an unambiguous
+local observation. All parts use the existing `files[]` field, repository-relative
+filenames, and request limits. Scan reads bounded source headers locally and
+uploads the hint without source bytes. See
+[Go module evidence](discovery.md#go-module-evidence) for selection.
+
+The receiving API must recognize these supplemental filenames before a Scan
+release ships this behavior. Go version selection, workspace association,
+dependency coverage and application typing are service responsibilities.
+
 ### Output formats
 
 | `format` | Response `Content-Type` | Contents | Suggested file name |

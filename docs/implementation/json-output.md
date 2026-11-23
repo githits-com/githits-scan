@@ -21,7 +21,7 @@ Consumers should ignore unfamiliar additive fields. Human text is presentation.
 - `manifest_only`: `{path, ecosystem, bytes}` entries.
 - `unsupported`: `{path, hint}` entries, sorted by path, filtered by exclusions;
   these files are not read or uploaded. Diagnostic paths replace non-UTF-8 characters for display and never select uploads. Hints are explanatory text.
-- `upload_paths`: sorted exact locally prepared upload paths, including admitted workspace members; null when preparation fails, with an additive `upload_error` description. Preparation is offline and bounded by the same API limits as uploads; drift can still block submission.
+- `upload_paths`: sorted exact locally prepared upload paths, including admitted workspace members and generated Go application hints whose paths may not exist on disk; null when preparation fails, with an additive `upload_error` description. Preparation is offline and bounded by the same API limits as uploads; drift can still block submission.
 - `excluded_directory_patterns`: configured/invocation patterns ending in `/**`; matching subtrees are not inspected except to preserve explicit file inclusions. These are patterns, not measured omitted file counts.
 - `test_paths`: sorted, deduplicated selected package paths (non-excluded candidates when preparation is blocked) under fixture or
   test-looking directories, for selection review; annotations do not select uploads.

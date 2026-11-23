@@ -23,6 +23,8 @@ use crate::catalog::{self, Ecosystem, Owner, Role};
     reason = "crate-only native upload selection"
 )]
 pub(crate) mod cargo;
+#[expect(clippy::redundant_pub_crate, reason = "crate-only Go evidence")]
+pub(crate) mod go;
 #[expect(
     clippy::redundant_pub_crate,
     reason = "crate-only native upload selection"
@@ -136,6 +138,8 @@ pub struct Inventory {
     pub ambiguous: Vec<AmbiguousLockfile>,
     /// Manifests that no lockfile covers.
     pub manifest_only: Vec<ManifestOnly>,
+    /// Cataloged Go checksum and workspace paths with their metadata sizes.
+    pub go_supplements: BTreeMap<String, u64>,
 }
 
 impl Inventory {
@@ -259,15 +263,8 @@ pub(crate) fn scan_filtered(
     require_directory(root)?;
     let filter_root = root.to_path_buf();
     let mut groups: BTreeMap<(String, Ecosystem), Group> = BTreeMap::new();
-    let mut unsupported = Vec::new();
-    let walker = WalkBuilder::new(root)
-        .hidden(true)
-        .ignore(false)
-        .git_ignore(true)
-        .git_global(true)
-        .git_exclude(true)
-        .require_git(false)
-        .follow_links(false)
+    let mut inventory = Inventory::default();
+    let walker = repository_walker(root)
         .filter_entry(move |entry| {
             if entry.depth() == 0 || !entry.file_type().is_some_and(|t| t.is_dir()) {
                 return true;
@@ -299,7 +296,7 @@ pub(crate) fn scan_filtered(
                 path: entry.path().to_path_buf(),
             })?;
         if let Some(hint) = catalog::unsupported_hint(relative) {
-            unsupported.push(UnsupportedFile {
+            inventory.unsupported.push(UnsupportedFile {
                 // Diagnostic paths never select uploads, so native names can be displayed lossily.
                 path: relative
                     .components()
@@ -320,58 +317,80 @@ pub(crate) fn scan_filtered(
                 source,
             })?
             .len();
-        add_candidate(&mut groups, path, bytes, classification)?;
+        add_candidate(&mut groups, &mut inventory, path, bytes, classification)?;
     }
-    unsupported.sort_by(|a, b| a.path.cmp(&b.path));
-    let mut inventory = pair(&groups);
-    inventory.unsupported = unsupported;
+    inventory.unsupported.sort_by(|a, b| a.path.cmp(&b.path));
+    pair(&mut inventory, &groups);
     Ok(inventory)
 }
 
 /// Pair an already filtered Git inventory through the same rules as a filesystem walk.
 pub(crate) fn from_files(files: &BTreeMap<String, u64>) -> Result<Inventory, DiscoverError> {
     let mut groups = BTreeMap::new();
-    let mut unsupported = Vec::new();
+    let mut inventory = Inventory::default();
     for (path, bytes) in files {
         let relative = Path::new(path);
         if let Some(classification) = catalog::classify(relative) {
-            add_candidate(&mut groups, path.clone(), *bytes, classification)?;
+            add_candidate(
+                &mut groups,
+                &mut inventory,
+                path.clone(),
+                *bytes,
+                classification,
+            )?;
         } else if let Some(hint) = catalog::unsupported_hint(relative) {
-            unsupported.push(UnsupportedFile {
+            inventory.unsupported.push(UnsupportedFile {
                 path: path.clone(),
                 hint,
             });
         }
     }
-    let mut inventory = pair(&groups);
-    inventory.unsupported = unsupported;
+    pair(&mut inventory, &groups);
     Ok(inventory)
+}
+
+fn repository_walker(root: &Path) -> WalkBuilder {
+    let mut walker = WalkBuilder::new(root);
+    walker
+        .hidden(true)
+        .ignore(false)
+        .git_ignore(true)
+        .git_global(true)
+        .git_exclude(true)
+        .require_git(false)
+        .follow_links(false);
+    walker
 }
 
 fn add_candidate(
     groups: &mut BTreeMap<(String, Ecosystem), Group>,
+    inventory: &mut Inventory,
     path: String,
     bytes: u64,
     classification: catalog::Classification,
 ) -> Result<(), DiscoverError> {
-    let relative = Path::new(&path);
-    let directory = match classification.role {
-        Role::Lockfile(_) => catalog::owning_directory(relative)
-            .map(relative_string)
-            .transpose()?
-            .unwrap_or_default(),
-        Role::Manifest => directory_of(&path),
-    };
-    let group = groups
-        .entry((directory, classification.ecosystem))
-        .or_default();
-    let candidate = Candidate { path, bytes };
+    let file = Candidate { path, bytes };
+    let ecosystem = classification.ecosystem;
     match classification.role {
-        Role::Lockfile(owner) => group.lockfiles.push(LockCandidate {
-            file: candidate,
-            owner,
-        }),
-        Role::Manifest => group.manifests.push(candidate),
+        Role::Lockfile(owner) => {
+            let directory = catalog::owning_directory(Path::new(&file.path))
+                .map(relative_string)
+                .transpose()?
+                .unwrap_or_default();
+            groups
+                .entry((directory, ecosystem))
+                .or_default()
+                .lockfiles
+                .push(LockCandidate { file, owner });
+        }
+        Role::Manifest => groups
+            .entry((directory_of(&file.path), ecosystem))
+            .or_default()
+            .manifests
+            .push(file),
+        Role::GoSupplement => {
+            inventory.go_supplements.insert(file.path, file.bytes);
+        }
     }
     Ok(())
 }
@@ -440,12 +459,11 @@ pub(crate) fn require_directory(root: &Path) -> Result<(), DiscoverError> {
 /// candidate owners become manifest-only. Remaining manifests are uncombined
 /// when their directory holds a lockfile of their ecosystem, nested under an
 /// ancestor lockfile, or, failing both, manifest-only projects.
-fn pair(groups: &BTreeMap<(String, Ecosystem), Group>) -> Inventory {
-    let mut inventory = Inventory::default();
+fn pair(inventory: &mut Inventory, groups: &BTreeMap<(String, Ecosystem), Group>) {
     let mut covering: BTreeMap<(&str, Ecosystem), &str> = BTreeMap::new();
     let mut pending: Vec<(&str, Ecosystem, &Candidate)> = Vec::new();
     for ((directory, ecosystem), group) in groups {
-        let paired = pair_lockfiles(&mut inventory, *ecosystem, group);
+        let paired = pair_lockfiles(inventory, *ecosystem, group);
         if let Some(first) = paired.first {
             covering.insert((directory.as_str(), *ecosystem), first);
         }
@@ -477,7 +495,6 @@ fn pair(groups: &BTreeMap<(String, Ecosystem), Group>) -> Inventory {
     inventory.uncombined.sort_by(|a, b| a.path.cmp(&b.path));
     inventory.ambiguous.sort_by(|a, b| a.path.cmp(&b.path));
     inventory.manifest_only.sort_by(|a, b| a.path.cmp(&b.path));
-    inventory
 }
 
 /// What pairing one group's lockfiles decided about its manifests.

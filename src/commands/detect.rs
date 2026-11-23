@@ -126,6 +126,8 @@ pub fn run(
         &inventory,
         evaluation.as_ref(),
         request.include_manifests,
+        config.as_ref(),
+        request.exclude,
     );
     let (upload_paths, upload_error) = match preview {
         Ok(paths) => (paths, None),
@@ -617,6 +619,7 @@ fn write_human(view: &View<'_>, out: &mut dyn Write, palette: Palette) -> std::i
         let rows = skipped;
         write_table(&rows, with_status, out, palette)?;
     }
+    write_go_supplements(view, out)?;
     write_directory_patterns(view, out)?;
     write_automatic(view, out, palette)?;
     write_nested(view, with_status, out, palette)?;
@@ -660,6 +663,36 @@ fn write_human(view: &View<'_>, out: &mut dyn Write, palette: Palette) -> std::i
     }
     write_test_paths(view, out)?;
     write_missing(view, out, palette)
+}
+
+fn write_go_supplements(view: &View<'_>, out: &mut dyn Write) -> std::io::Result<()> {
+    let mut files = view
+        .upload_paths
+        .iter()
+        .filter_map(|path| {
+            if view.inventory.go_supplements.contains_key(path) {
+                Some(super::safe(path))
+            } else if Path::new(path)
+                .file_name()
+                .is_some_and(|name| name == catalog::GO_MAIN_EVIDENCE)
+            {
+                Some(format!(
+                    "{} (generated application evidence)",
+                    super::safe(path)
+                ))
+            } else {
+                None
+            }
+        })
+        .peekable();
+    if files.peek().is_none() {
+        return Ok(());
+    }
+    writeln!(out, "\nGo evidence included in the upload")?;
+    for file in files {
+        writeln!(out, "  {file}")?;
+    }
+    Ok(())
 }
 
 /// Informational annotations never change selection; configuration owns that policy.

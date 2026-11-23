@@ -8,8 +8,8 @@
 //!
 //! The lockfile names follow documented families or qualified live support. Each
 //! lockfile names the manifest that owns it, which the service combines with it to
-//! add project metadata and declared dependencies; Go modules, vcpkg, and Zig have
-//! manifests only, which the service resolves from registries. See
+//! add project metadata and declared dependencies. Go modules have supplemental
+//! checksum and workspace evidence; vcpkg and Zig have manifests only. See
 //! `docs/implementation/package-file-catalog.md` for provenance and the deliberate
 //! omissions.
 
@@ -56,7 +56,7 @@ pub enum Ecosystem {
     /// Go dep: `Gopkg.lock`. `go.mod` belongs to Go modules and is not paired.
     GoDep,
     /// Go modules: `go.mod`, a manifest without a lockfile. `go.sum` records
-    /// checksums rather than a selection and is not uploaded.
+    /// checksums, and a root `go.work` describes a workspace.
     Go,
     /// vcpkg manifest mode: `vcpkg.json`, a manifest without a lockfile.
     Vcpkg,
@@ -139,7 +139,7 @@ impl fmt::Display for Ecosystem {
     }
 }
 
-/// Whether a catalog entry is a lockfile or a manifest.
+/// The role a cataloged file plays in an upload.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Role {
     /// Records resolved versions; the primary evidence a scan looks for. The
@@ -148,6 +148,8 @@ pub enum Role {
     /// Declares dependencies; uploaded with the lockfile it owns, or as a
     /// manifest-only project unless the run is `--lockfiles-only`.
     Manifest,
+    /// Checksum or workspace evidence that requires a selected Go module.
+    GoSupplement,
 }
 
 /// The same-directory manifest a lockfile belongs to: the file its tool writes
@@ -174,7 +176,7 @@ pub enum Owner {
 pub struct Classification {
     /// Ecosystem the file belongs to.
     pub ecosystem: Ecosystem,
-    /// Lockfile or manifest.
+    /// Role in the upload.
     pub role: Role,
 }
 
@@ -183,6 +185,8 @@ pub struct Classification {
 enum Matcher {
     /// The final path component equals this name (case-sensitive).
     Name(&'static str),
+    /// An exact name at the scan root.
+    RootName(&'static str),
     /// The final path component ends with this suffix, including the leading dot.
     Suffix(&'static str),
     /// The final component ends with this suffix and the two parent components
@@ -211,6 +215,98 @@ const fn manifest(name: &'static str, ecosystem: Ecosystem) -> Rule {
         matcher: Matcher::Name(name),
         ecosystem,
         role: Role::Manifest,
+    }
+}
+
+pub(crate) const GO_MANIFEST: &str = "go.mod";
+pub(crate) const GO_SUM: &str = "go.sum";
+pub(crate) const GO_WORK: &str = "go.work";
+pub(crate) const GO_WORK_SUM: &str = "go.work.sum";
+pub(crate) const GO_MAIN_EVIDENCE: &str = ".githits-go.json";
+
+/// Whether the path's final component is the Go module manifest.
+pub(crate) fn is_go_manifest(path: &str) -> bool {
+    Path::new(path)
+        .file_name()
+        .is_some_and(|name| name == GO_MANIFEST)
+}
+
+/// Name a supplemental part in a selected module's directory with forward slashes.
+pub(crate) fn beside_go_manifest(manifest: &str, name: &str) -> String {
+    manifest
+        .rsplit_once('/')
+        .map_or_else(|| name.to_owned(), |(parent, _)| format!("{parent}/{name}"))
+}
+
+/// Whether a Go source name can provide an unconditional production package clause.
+pub(crate) fn is_go_source(file_name: &str) -> bool {
+    let Some(stem) = file_name.strip_suffix(".go") else {
+        return false;
+    };
+    if stem.is_empty() || stem.starts_with(['.', '_']) || stem.ends_with("_test") {
+        return false;
+    }
+    // Go's filename constraints use the final OS or architecture suffix.
+    // Source: Go's internal/syslist KnownOS and KnownArch tables.
+    !stem.rsplit_once('_').is_some_and(|(_, suffix)| {
+        matches!(
+            suffix,
+            "aix"
+                | "android"
+                | "darwin"
+                | "dragonfly"
+                | "freebsd"
+                | "hurd"
+                | "illumos"
+                | "ios"
+                | "js"
+                | "linux"
+                | "nacl"
+                | "netbsd"
+                | "openbsd"
+                | "plan9"
+                | "solaris"
+                | "wasip1"
+                | "windows"
+                | "zos"
+                | "386"
+                | "amd64"
+                | "amd64p32"
+                | "arm"
+                | "armbe"
+                | "arm64"
+                | "arm64be"
+                | "loong64"
+                | "mips"
+                | "mipsle"
+                | "mips64"
+                | "mips64le"
+                | "mips64p32"
+                | "mips64p32le"
+                | "ppc"
+                | "ppc64"
+                | "ppc64le"
+                | "riscv"
+                | "riscv64"
+                | "s390"
+                | "s390x"
+                | "sparc"
+                | "sparc64"
+                | "wasm"
+        )
+    })
+}
+
+/// Directories that cannot show a production package for their enclosing Go module.
+pub(crate) fn is_go_source_directory(name: &str) -> bool {
+    !name.starts_with(['.', '_']) && !matches!(name, "testdata" | "example" | "examples")
+}
+
+const fn go_supplement(matcher: Matcher) -> Rule {
+    Rule {
+        matcher,
+        ecosystem: Ecosystem::Go,
+        role: Role::GoSupplement,
     }
 }
 
@@ -312,7 +408,10 @@ const RULES: &[Rule] = &[
     manifest("rebar.config", Ecosystem::Erlang),
     lockfile("conan.lock", Ecosystem::Conan, Owner::Uncombinable),
     lockfile("Gopkg.lock", Ecosystem::GoDep, Owner::Uncombinable),
-    manifest("go.mod", Ecosystem::Go),
+    manifest(GO_MANIFEST, Ecosystem::Go),
+    go_supplement(Matcher::Name(GO_SUM)),
+    go_supplement(Matcher::RootName(GO_WORK)),
+    go_supplement(Matcher::RootName(GO_WORK_SUM)),
     manifest("vcpkg.json", Ecosystem::Vcpkg),
     manifest("build.zig.zon", Ecosystem::Zig),
 ];
@@ -427,6 +526,7 @@ pub fn owning_directory(relative_path: &Path) -> Option<&Path> {
 fn matches(matcher: Matcher, path: &Path, file_name: &str) -> bool {
     match matcher {
         Matcher::Name(expected) => file_name == expected,
+        Matcher::RootName(expected) => file_name == expected && path.components().count() == 1,
         Matcher::Suffix(expected) => has_stem_and_suffix(file_name, expected),
         Matcher::SuffixUnderDirectories(expected, directories) => {
             has_stem_and_suffix(file_name, expected) && parent_directories(path) == directories
@@ -485,7 +585,7 @@ mod tests {
     fn owner(path: &str) -> Option<Owner> {
         match classification(path)?.role {
             Role::Lockfile(owner) => Some(owner),
-            Role::Manifest => None,
+            Role::Manifest | Role::GoSupplement => None,
         }
     }
 
@@ -601,8 +701,9 @@ mod tests {
         for path in [
             "bun.lock.bak",
             "bun.lockb",
-            "go.sum",
-            "go.work",
+            "nested/go.work",
+            "nested/go.work.sum",
+            ".githits-go.json",
             "build.zig",
             "vcpkg-configuration.json",
             "conanfile.txt",
@@ -768,7 +869,7 @@ mod tests {
         let owned = RULES.iter().filter_map(|rule| match rule.role {
             Role::Lockfile(Owner::Named(name)) => Some((rule, name.to_owned())),
             Role::Lockfile(Owner::OnlyWithSuffix(suffix)) => Some((rule, format!("App{suffix}"))),
-            Role::Lockfile(Owner::Uncombinable) | Role::Manifest => None,
+            Role::Lockfile(Owner::Uncombinable) | Role::Manifest | Role::GoSupplement => None,
         });
         for (rule, owner) in owned {
             let manifest = classification(&owner);

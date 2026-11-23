@@ -37,6 +37,8 @@ mod license_report_v2;
 mod audit;
 #[path = "cli/bun.rs"]
 mod bun;
+#[path = "cli/go_modules.rs"]
+mod go_modules;
 #[path = "cli/manifest_defaults.rs"]
 mod manifest_defaults;
 #[path = "cli/manifest_ecosystems.rs"]

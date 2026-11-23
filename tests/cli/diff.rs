@@ -559,3 +559,50 @@ fn rate_limit_diff_json_quiet_keeps_warning_and_exact_report() {
     );
     assert_eq!(server.requests().len(), 4);
 }
+
+#[test]
+fn diff_go_modules_preserve_supplemental_paths_in_each_snapshot() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
+
+    let repo = super::support::repository(&[
+        ("go.mod", "module example.com/root\n"),
+        ("go.sum", "base checksum\n"),
+        ("go.work", "go 1.23.0\nuse (\n.\n./tools\n)\n"),
+        ("go.work.sum", "workspace checksum\n"),
+        ("tools/go.mod", "module example.com/root/tools\n"),
+        ("tools/go.sum", "tools checksum\n"),
+        ("main.go", "package main\n\nfunc main() {}\n"),
+        ("orphan/go.sum", "orphan checksum\n"),
+    ]);
+    committed(repo.path());
+    fs::write(repo.path().join("go.sum"), "head checksum\n").expect("head checksum");
+    git(
+        repo.path(),
+        &["commit", "--quiet", "-am", "update checksum"],
+    );
+    let report = serde_json::to_vec(&fixture::report()).expect("report");
+    let server = ScriptedServer::respond_with(fixture::exchanges(&report));
+
+    let output = online(repo.path(), &server.origin());
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    let requests = server.requests();
+    let body = String::from_utf8_lossy(&requests[0]);
+    let part = |side, path, contents| {
+        assert!(
+            body.contains(&format!(
+                "name=\"{side}_files[]\"; filename=\"{path}\"\r\nContent-Type: application/octet-stream\r\n\r\n{contents}\r\n"
+            )),
+            "{side} {path}"
+        );
+    };
+    part("base", "go.sum", "base checksum\n");
+    part("head", "go.sum", "head checksum\n");
+    for side in ["base", "head"] {
+        part(side, "go.work", "go 1.23.0\nuse (\n.\n./tools\n)\n");
+        part(side, "go.work.sum", "workspace checksum\n");
+        part(side, "tools/go.sum", "tools checksum\n");
+    }
+    for path in ["main.go", ".githits-go.json", "orphan/go.sum"] {
+        assert!(!body.contains(&format!("filename=\"{path}\"")), "{path}");
+    }
+}

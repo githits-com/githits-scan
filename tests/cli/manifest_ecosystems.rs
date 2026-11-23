@@ -139,12 +139,13 @@ fn generate_uploads_manifest_only_projects_unless_lockfiles_only() {
     let request = String::from_utf8_lossy(&requests[0]);
     assert_eq!(
         request.matches("filename=").count(),
-        3,
+        4,
         "selected files only"
     );
     for (path, contents) in [
         ("cpp/vcpkg.json", VCPKG),
         ("go/go.mod", GO),
+        ("go/go.sum", "github.com/google/uuid v1.6.0 h1:x\n"),
         ("zig/build.zig.zon", ZIG),
     ] {
         assert_eq!(

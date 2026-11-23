@@ -466,6 +466,9 @@ pub fn evaluate(
             evaluation.statuses.insert(path.to_owned(), status);
         }
     }
+    evaluation
+        .statuses
+        .extend(go_exclusions(inventory, config, invocation_excludes));
     for path in include
         .iter()
         .chain(&manifests)
@@ -482,6 +485,22 @@ pub fn evaluate(
         .map(|entry| (*entry).to_owned())
         .collect();
     evaluation
+}
+
+// Selected modules already passed the fixture policy. Explicit file exclusions
+// can still omit their automatically attached evidence.
+fn go_exclusions<'a>(
+    inventory: &'a Inventory,
+    config: Option<&'a Config>,
+    invocation: &'a GlobSet,
+) -> impl Iterator<Item = (String, Status)> + 'a {
+    inventory
+        .go_supplements
+        .keys()
+        .filter(move |path| {
+            invocation.is_match(path) || config.is_some_and(|c| c.is_excluded(path))
+        })
+        .map(|path| (path.clone(), Status::Excluded))
 }
 
 // A shared owner stays selected when any included sibling lock retains it.
@@ -551,7 +570,7 @@ pub(crate) fn directory_patterns(patterns: &[String]) -> Vec<String> {
 pub(crate) fn directory_filter(
     config: Option<&Config>,
     invocation: &[String],
-) -> Result<impl Fn(&Path) -> bool + Send + Sync + 'static, ConfigError> {
+) -> Result<impl Fn(&Path) -> bool + Clone + Send + Sync + 'static, ConfigError> {
     let compile = |patterns: &[String], origin: &Path| {
         let roots: Vec<_> = directory_patterns(patterns)
             .iter()

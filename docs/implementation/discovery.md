@@ -37,6 +37,39 @@ Files are grouped by project directory and ecosystem. Each lockfile attaches to 
 - `vcpkg.json` next to `conan.lock` and `go.mod` next to `Gopkg.lock` are manifest-only, as the service requires. Go modules, vcpkg, and Zig have no cataloged lockfile, so `go.mod`, `vcpkg.json`, and `build.zig.zon` are never nested either: a nested Go module is an independent project.
 - `crates/core/Cargo.toml` under a root `Cargo.lock` is nested. This is directory containment, not proof of membership. Upload preparation reads the selected lock's owning Cargo manifest and selects native member candidates as described below. Supported npm/Bun members can also be added from declarations; other nested inputs still require explicit configuration. An uncovered manifest may trigger independent registry resolution, so Scan does not upload every nested candidate automatically. The service owns final native association.
 
+## Go module evidence
+
+Each `go.mod` is selected independently as a manifest. Root and nested modules
+keep their repository-relative filenames. An admitted `go.sum` joins the upload
+only when the `go.mod` in its directory is selected. When at least one Go
+module is selected, Scan also includes an admitted `go.work` at the scan root
+and its `go.work.sum`, if present. Excluding `go.work` also omits its checksum
+file. The service interprets workspace declarations using the supplied inputs.
+A workspace file never selects additional modules or causes reads outside the
+scan root.
+
+Checksum and workspace files count toward the upload limits. Lockfile counts
+and saved configuration continue to reflect the primary evidence files. Existing
+file and directory exclusions apply. `--lockfiles-only` keeps only explicitly configured
+Go modules and their eligible companions. Large repositories can narrow the
+upload with `--exclude` on a module directory or an individual evidence file.
+
+For application typing, Scan checks up to 8 KiB from the start of eligible Go
+files in selected modules. It honors discovery ignores and exclusions, skips
+Go test files, fixture and example paths, build-constrained source, and
+nested module directories, including those whose `go.mod` is ignored or
+excluded. A directory with conflicting or unreadable package declarations
+provides no positive observation. An unambiguous `package main` yields a
+generated application hint for its module. The hint records only the
+observation. Build targets, package reachability, test dependencies and
+inventory completeness require separate evidence. Go source is never
+uploaded and no Go command runs.
+
+`detect` lists selected Go evidence and names generated hints in its upload
+preview. The [JSON upload paths](json-output.md#detect-schema-2) include generated
+paths. Git-based dependency diffs carry the same checksum and workspace evidence
+and omit local application hints.
+
 ## Cargo member evidence
 
 Shared upload preparation adds admitted Rust nested manifests covered by the same
