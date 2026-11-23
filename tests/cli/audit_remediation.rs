@@ -322,7 +322,7 @@ fn audit_remediation_material_warnings_remain_visible() {
         (
             "advisories",
             "unknown",
-            "target advisories: not determined from the supplied evidence",
+            "The report does not establish whether known advisories affect the proposed versions. The advisory check gives no reason for this gap.",
         ),
         (
             "advisories",
@@ -332,12 +332,12 @@ fn audit_remediation_material_warnings_remain_visible() {
         (
             "release_availability",
             "unverified",
-            "release availability: not verified",
+            "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation.",
         ),
         (
             "requirements",
             "unchecked",
-            "The audit did not check whether the project's dependency requirements",
+            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason.",
         ),
         (
             "requirements",
@@ -353,7 +353,7 @@ fn audit_remediation_material_warnings_remain_visible() {
         let mut input = remediation_report();
         input["remediation"]["recommendations"][0]["checks"][check] = value.into();
         let text = human_report(&input);
-        assert!(text.contains(warning), "{check}: {value}");
+        assert!(prose(&text).contains(warning), "{check}: {value}");
         if check != "parent_search" {
             let section = text.split_once("Fix guidance").expect("section").1;
             assert!(
@@ -510,7 +510,9 @@ fn audit_remediation_advisory_lists_avoid_repeating_covered_findings() {
             .expect("next section")
             .0;
         assert!(!section.contains("    advisories: "));
-        assert!(section.contains("target advisories: not determined from the supplied evidence"));
+        assert!(section.contains(
+            "The report does not establish whether known advisories affect the proposed versions"
+        ));
         assert!(section.contains("GHSA-demo") && section.contains("GHSA-other"));
     }
 }

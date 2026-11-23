@@ -189,7 +189,7 @@ fn audit_search_copy_keeps_single_candidate_partial_and_required_edit_clear() {
 }
 
 #[test]
-fn audit_search_unverified_target_takes_priority_over_project_edit() {
+fn audit_search_keeps_concrete_project_edit_ahead_of_unverified_target() {
     let mut value = input_with_project_edit();
     value["remediation"]["recommendations"][0]["checks"]["release_availability"] =
         "unverified".into();
@@ -197,7 +197,7 @@ fn audit_search_unverified_target_takes_priority_over_project_edit() {
     let r = &doc["remediation"]["recommendations"][0];
     assert_eq!(
         r["compact_summary"],
-        "npm:demo 1.0.0 -> 1.1.1. Target release availability unverified."
+        "npm:demo 1.0.0 -> 1.1.1. Applying the proposal requires updating the version constraint for demo in package.json (currently ^1.0)."
     );
     assert_eq!(r["details_recommended"], true);
     assert_eq!(
@@ -287,7 +287,7 @@ fn audit_added_dependencies_advisory_precedes_unchecked_requirements() {
     assert_eq!(
         r["checks"],
         json!([
-            "The audit did not check whether the project's dependency requirements allow this change."
+            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
         ])
     );
 }
@@ -331,7 +331,7 @@ fn audit_added_dependencies_failed_checks_precede_unchecked_requirements() {
         assert_eq!(
             r["checks"],
             json!([
-                "The audit did not check whether the project's dependency requirements allow this change."
+                "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
             ])
         );
     }
@@ -340,14 +340,16 @@ fn audit_added_dependencies_failed_checks_precede_unchecked_requirements() {
 #[test]
 fn audit_added_dependencies_keeps_confirmed_target_problems_inline() {
     let evidence = addition_evidence();
-    for (branch, added_problem) in [
+    for (branches, added_problem) in [
+        (Value::Null, None),
+        (evidence["added_dependencies"].clone(), None),
         (
-            &evidence["search_details"][0]["added_dependency"],
-            "affected by AUDIT-ADDED-affected-descendant.",
+            json!([evidence["search_details"][0]["added_dependency"]]),
+            Some("affected by AUDIT-ADDED-affected-descendant."),
         ),
         (
-            &evidence["search_details"][1]["added_dependency"],
-            "Dependency check for is-promise@4.0.0",
+            json!([evidence["search_details"][1]["added_dependency"]]),
+            Some("Dependency check for is-promise@4.0.0"),
         ),
     ] {
         let mut value = input();
@@ -355,21 +357,31 @@ fn audit_added_dependencies_keeps_confirmed_target_problems_inline() {
         r["checks"]["advisories"] = "affected".into();
         r["checks"]["requirements"] = "blocked".into();
         r["checks"]["release_availability"] = "unverified".into();
-        r["changes"][0]["added_dependencies"] = json!([branch]);
+        if !branches.is_null() {
+            r["changes"][0]["added_dependencies"] = branches;
+        }
         let doc = blocks(&value);
         let r = &doc["remediation"]["recommendations"][0];
         let summary = r["compact_summary"].as_str().expect("summary");
-        assert!(summary.contains(added_problem), "{summary}");
+        if let Some(added_problem) = added_problem {
+            assert!(summary.contains(added_problem), "{summary}");
+        }
         assert!(
             summary.ends_with(concat!(
-                "The proposed upgrade includes a version affected by known advisories. ",
+                "A proposed version is still affected by known advisories. ",
                 "Upgrade conflicts with dependency requirements."
             )),
             "{summary}"
         );
-        assert!(!summary.contains("unverified"), "{summary}");
+        assert!(
+            !summary.contains("confirm that the proposed versions are available"),
+            "{summary}"
+        );
         assert_eq!(r["details_recommended"], true);
-        assert_eq!(r["checks"][0], "release availability: not verified");
+        assert_eq!(
+            r["checks"][0],
+            "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation."
+        );
     }
 }
 

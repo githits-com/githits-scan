@@ -22,7 +22,9 @@ that section describe 0.2.0 only; use the README for current commands and the
   presentation schema 1. Use them to show the proposed versions and the main
   issue beside a finding and link to the full evidence when needed. Terminal
   audit and saved explanations state which project edits are required to apply
-  a candidate and keep changes that must be made together in one group.
+  a candidate and keep changes that must be made together in one group. The
+  summary keeps confirmed risks visible and Details explains what the audit
+  could not verify.
 - **Checked dependencies introduced by upgrades** - When the audit report
   supplies this evidence, Scan shows the new dependency requests, the versions
   selected by the registry checks, and the advisory results for each checked

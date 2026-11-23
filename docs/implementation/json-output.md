@@ -246,13 +246,14 @@ applying the change. The detailed impact block retains any reported potential
 benefit for a candidate. Target warnings stay with their respective versions.
 A record without a change explains the outcome and includes a reported obstacle
 when available.
-When a proposed change introduces a dependency with a reported problem, the
-summary names the affected version and supplied advisory IDs, or explains the
-specific failed or incomplete check. Confirmed target advisories and concrete
-requirement conflicts stay inline alongside that result. General check
-limitations remain with the full evidence. A candidate with no applicable
-change can also name a specific problem with a new dependency request. The
-`details_recommended` cue points to the full checks.
+The summary keeps confirmed target advisories and concrete requirement
+conflicts visible alongside any reported problem with a new dependency. For
+that dependency, it names the affected version and supplied advisory IDs or
+explains the specific failed or incomplete check. The full checks explain
+what remains unverified and say when the check supplies no reason. Related
+limitations and search explanations keep the scope reported by the service.
+A candidate with no applicable change can also name a specific problem with a
+new dependency request. The `details_recommended` cue points to the full checks.
 
 Use `details_recommended` to decide whether to show a link such as **Details**
 beside the summary. Scan sets it for unclear candidates, no-change outcomes

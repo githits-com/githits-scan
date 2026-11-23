@@ -286,7 +286,7 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
         compact_summary(&input),
         concat!(
             "npm:demo 1.0.0 -> 1.2.0-rc.1 (prerelease). Still open: GHSA-demo. ",
-            "Target release availability unverified."
+            "The report did not confirm that the proposed versions are available."
         )
     );
     let view = project(&input);
@@ -296,8 +296,8 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
     assert_eq!(
         recommendation["checks"],
         json!([
-            "release availability: not verified",
-            "The audit did not check whether the project's dependency requirements allow this change."
+            "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation.",
+            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
         ])
     );
     assert_eq!(
@@ -362,7 +362,7 @@ fn compact_summary_groups_joint_changes_with_attributable_warnings_and_coordinat
     let summary = compact_summary(&input);
     assert!(summary.ends_with("Do not combine conflicting recommendations."));
     assert!(
-        !summary.contains("Target release availability"),
+        !summary.contains("confirm that the proposed versions are available"),
         "{summary}"
     );
 }
@@ -561,22 +561,22 @@ fn advisory_check_explanations_distinguish_unsupported_missing_and_future_result
     for (status, explanation) in [
         (
             "unsupported",
-            "advisory checking is not supported for this target",
+            "target advisories: advisory checking is not supported for this target",
         ),
-        ("unknown", "not determined from the supplied evidence"),
+        (
+            "unknown",
+            "The report does not establish whether known advisories affect the proposed versions. The advisory check gives no reason for this gap.",
+        ),
         (
             "future_value",
-            "the service returned an unfamiliar check result; see JSON for the supplied value",
+            "target advisories: the service returned an unfamiliar check result; see JSON for the supplied value",
         ),
     ] {
         let mut input = input();
         input["remediation"]["recommendations"][0]["checks"]["advisories"] = status.into();
         let view = project(&input);
         let plan = plan(&view);
-        assert!(
-            plan.checks
-                .contains(&format!("target advisories: {explanation}"))
-        );
+        assert!(plan.checks.iter().any(|check| check == explanation));
         assert!(plan.heading.is_none());
         assert!(plan.changes[0].summary.starts_with("Candidate"));
         let facts = serde_json::to_value(&view).expect("facts");

@@ -168,7 +168,9 @@ impl Plan {
         let target_caveat = target_warnings.peek().is_some()
             || self.changes.iter().any(|change| change.target_caveat);
         let clear_edit = self.clear_project_edit && !target_caveat && !added_problem;
-        let mut issue = self.compact_issue(r, clear_edit, added_problem);
+        let mut target_problems = confirmed_target_problems(r).peekable();
+        let confirmed_problem = added_problem || target_problems.peek().is_some();
+        let mut issue = self.compact_issue(r, clear_edit, confirmed_problem);
         let has_changes = !self.changes.is_empty();
         let has_remaining_findings = !r.remaining_findings.is_empty();
         let details_recommended = !(self.supported || clear_edit)
@@ -184,7 +186,7 @@ impl Plan {
         }
         if self.supported
             || clear_edit
-            || (issue.is_none() && !added_problem)
+            || (issue.is_none() && !confirmed_problem)
             || (has_remaining_findings && has_changes)
         {
             sentences.extend(impact(
@@ -196,14 +198,14 @@ impl Plan {
         }
         match addition {
             Some(CompactAddition::Problem(problem)) => sentences.push(problem),
-            Some(CompactAddition::Description(description)) if issue.is_none() => {
+            Some(CompactAddition::Description(description))
+                if issue.is_none() && !confirmed_problem =>
+            {
                 sentences.push(description);
             }
             _ => {}
         }
-        if added_problem {
-            sentences.extend(confirmed_target_problems(r));
-        }
+        sentences.extend(target_problems);
         sentences.extend(issue);
         let summary = sentences
             .into_iter()
@@ -213,15 +215,27 @@ impl Plan {
         (summary, details_recommended)
     }
 
-    fn compact_issue(&self, r: &Record, clear_edit: bool, added_problem: bool) -> Option<String> {
+    fn compact_issue(
+        &self,
+        r: &Record,
+        clear_edit: bool,
+        confirmed_problem: bool,
+    ) -> Option<String> {
         let conflict = self
             .constraints
             .iter()
             .find(|constraint| constraint.excludes_target)
             .map(|constraint| constraint.compact_text(clear_edit))
-            .or_else(|| self.compact_limit(r, "incompatible_recommendations"));
-        if added_problem {
-            return conflict.or_else(|| self.compact_constraint(clear_edit));
+            .or_else(|| self.compact_limit(r, "incompatible_recommendations"))
+            .or_else(|| {
+                self.constraints
+                    .iter()
+                    .find(|constraint| constraint.compact_edit.is_some())
+                    .map(|constraint| constraint.compact_text(clear_edit))
+            });
+        let other_constraint = || self.constraints.first().map(|c| c.compact_text(clear_edit));
+        if confirmed_problem {
+            return conflict.or_else(other_constraint);
         }
         conflict
             .or_else(|| {
@@ -229,7 +243,7 @@ impl Plan {
                     .next()
                     .map(|(label, value)| check_line(label, value, true))
             })
-            .or_else(|| self.compact_constraint(clear_edit))
+            .or_else(other_constraint)
             .or_else(|| self.search_obstacle(r))
             .or_else(|| {
                 self.changes
@@ -249,14 +263,6 @@ impl Plan {
                     .then(|| super::search::retention(r))
                     .flatten()
             })
-    }
-
-    fn compact_constraint(&self, clear_edit: bool) -> Option<String> {
-        self.constraints
-            .iter()
-            .find(|constraint| constraint.compact_edit.is_some())
-            .or_else(|| self.constraints.first())
-            .map(|constraint| constraint.compact_text(clear_edit))
     }
 
     fn compact_check(&self, r: &Record) -> Option<String> {
@@ -693,17 +699,39 @@ fn search_only_limit(code: &str) -> bool {
 }
 
 fn check_line(label: &str, value: &str, compact: bool) -> String {
+    // Target check statuses carry no reason. Constraints and search details explain their own scope.
+    let gap = match (label, value) {
+        ("release availability", "unverified" | "unknown" | "not_assessed") => Some((
+            "The report did not confirm that the proposed versions are available",
+            "The release check gives no reason for the missing confirmation.",
+        )),
+        ("target advisories", "unknown" | "not_assessed") => Some((
+            "The report does not establish whether known advisories affect the proposed versions",
+            "The advisory check gives no reason for this gap.",
+        )),
+        ("requirements", "not_checked" | "unchecked" | "not_assessed") => Some((
+            "The audit did not check whether the project's dependency requirements allow this change",
+            "The requirement check gives no reason.",
+        )),
+        ("requirements", "unknown") => Some((
+            "The report does not establish whether the project's dependency requirements allow this change",
+            "The requirement check gives no reason for this gap.",
+        )),
+        _ => None,
+    };
+    if let Some((scope, reason)) = gap {
+        return if compact {
+            scope.into()
+        } else {
+            format!("{scope}. {reason}")
+        };
+    }
     match (compact, label, value) {
-        (true, "release availability", "unverified") => {
-            "Target release availability unverified".into()
-        }
-        (_, "requirements", "not_checked" | "unchecked" | "not_assessed") =>
-            "The audit did not check whether the project's dependency requirements allow this change.".into(),
         (true, "requirements", "blocked") => {
             "Upgrade conflicts with dependency requirements".into()
         }
         (true, "target advisories", "affected") => {
-            "The proposed upgrade includes a version affected by known advisories".into()
+            "A proposed version is still affected by known advisories".into()
         }
         (true, _, _) => capitalize(format!("{label}: {}", check_text(value))),
         (false, _, _) => format!("{label}: {}", check_text(value)),
