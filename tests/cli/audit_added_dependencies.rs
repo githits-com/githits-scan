@@ -1,5 +1,5 @@
 //! Registry branch facts travel through live and saved audit presentation.
-use super::audit_remediation::{execute_report, human_report};
+use super::audit_remediation::execute_report;
 use super::*;
 use serde_json::{Value, json};
 
@@ -31,7 +31,17 @@ fn audit_added_dependencies_compact_keeps_selected_peer_risk_without_search_hist
     r["changes"][0]["added_dependencies"] = json!([selected]);
     r["search_detail_status"] = "retained".into();
     r["search_details"] = evidence["search_details"].clone();
-    let output = execute_report(&value, &["--no-color", "--quiet"]);
+    let root = repo();
+    let archive = root.path().join("analysis.json");
+    let output = execute_report(
+        &value,
+        &[
+            "--no-color",
+            "--quiet",
+            "--save-analysis",
+            archive.to_str().expect("path"),
+        ],
+    );
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let compact = prose(&stdout(&output));
     assert!(
@@ -47,12 +57,19 @@ fn audit_added_dependencies_compact_keeps_selected_peer_risk_without_search_hist
     ] {
         assert!(!compact.contains(omitted), "{compact}");
     }
-    let detailed = prose(&human_report(&value));
-    assert!(
-        detailed.contains("requires added-child ^1 as a peer dependency"),
-        "{detailed}"
-    );
-    assert!(detailed.contains("Upgrade search:"), "{detailed}");
+    for flags in [&["--details"][..], &["--explain", "npm:demo@1.0.0"][..]] {
+        let replay = offline(&archive, flags);
+        assert_eq!(replay.status.code(), Some(1), "{}", stderr(&replay));
+        let text = prose(&stdout(&replay));
+        assert!(text.contains("Candidate upgrade: npm:demo"), "{text}");
+        assert!(!text.contains("Suggested fix"), "{text}");
+        assert!(
+            text.contains("requires added-child ^1 as a peer dependency"),
+            "{text}"
+        );
+        assert!(text.contains("AUDIT-ADDED-affected-descendant"), "{text}");
+        assert!(text.contains("Upgrade search:"), "{text}");
+    }
 }
 
 #[test]

@@ -19,7 +19,7 @@ const UNFAMILIAR_REASON: &str =
 #[derive(Clone, Copy)]
 pub(in crate::commands::audit) struct Qualification {
     checked_upgrade: bool,
-    supported: bool,
+    target_supported: bool,
     added_branch_problem: bool,
 }
 
@@ -29,7 +29,7 @@ impl Qualification {
         let checked_upgrade = upgrade_evidence(r, matches!(status, "completed" | "limited"));
         Self {
             checked_upgrade,
-            supported: checked_upgrade && r.checks.requirements == "matched",
+            target_supported: checked_upgrade && r.checks.requirements == "matched",
             added_branch_problem: r.limitations.iter().any(|reason| {
                 matches!(
                     reason.as_str(),
@@ -42,9 +42,9 @@ impl Qualification {
         }
     }
 
-    /// Whether the terminal can lead with this alternative as a suggested update.
+    /// Whether the evidence supports presenting this alternative as a suggested update.
     pub(in crate::commands::audit) const fn suggested(self) -> bool {
-        self.supported && !self.added_branch_problem
+        self.target_supported && !self.added_branch_problem
     }
 }
 
@@ -60,7 +60,7 @@ fn added_branches(change: &ChangeView) -> &[crate::api::audit::remediation::adde
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Plan {
     #[serde(skip)]
-    supported: bool,
+    qualification: Qualification,
     #[serde(skip)]
     clear_project_edit: bool,
     /// Shared title for joint changes; a single change carries its own qualification.
@@ -140,7 +140,7 @@ impl Plan {
         qualification: Qualification,
     ) -> Self {
         let planning_known = matches!(status, "completed" | "limited");
-        let supported = qualification.supported;
+        let supported = qualification.suggested();
         let common = common_paths(&r.changes);
         let files = common
             .clone()
@@ -186,7 +186,7 @@ impl Plan {
             || !limitations.is_empty()
             || !search_explanations.is_empty();
         Self {
-            supported,
+            qualification,
             clear_project_edit,
             heading: heading(r, supported),
             outcome: (!matches!(r.outcome.as_str(), "proposed" | "partial")
@@ -226,7 +226,7 @@ impl Plan {
         let mut issue = self.compact_issue(r, clear_edit, confirmed_problem);
         let has_changes = !self.changes.is_empty();
         let has_remaining_findings = !r.remaining_findings.is_empty();
-        let details_recommended = !(self.supported || clear_edit)
+        let details_recommended = !(self.qualification.suggested() || clear_edit)
             || self.outcome.is_some()
             || r.outcome == "partial"
             || has_remaining_findings
@@ -237,7 +237,7 @@ impl Plan {
         if clear_edit {
             sentences.extend(issue.take());
         }
-        if self.supported
+        if self.qualification.target_supported
             || clear_edit
             || (issue.is_none() && !confirmed_problem)
             || (has_remaining_findings && has_changes)
@@ -245,7 +245,7 @@ impl Plan {
             sentences.extend(impact(
                 r,
                 AddressedDisplay::Compact {
-                    supported: self.supported || clear_edit,
+                    supported: self.qualification.target_supported || clear_edit,
                 },
             ));
         }
@@ -290,6 +290,7 @@ impl Plan {
         if confirmed_problem || constraint.is_some() {
             return constraint;
         }
+        let target_supported = self.qualification.target_supported;
         target_checks(r)
             .next()
             .map(|(label, value)| check_line(label, value, true))
@@ -303,7 +304,7 @@ impl Plan {
             .or_else(|| self.compact_check(r))
             .or_else(|| {
                 limitations(r, &self.constraints)
-                    .find(|(code, _)| !self.supported || !search_only_limit(code))
+                    .find(|(code, _)| !target_supported || !search_only_limit(code))
                     .map(compact_limitation)
             })
             .or_else(|| {
@@ -315,7 +316,7 @@ impl Plan {
     }
 
     fn compact_check(&self, r: &Record) -> Option<String> {
-        if self.supported {
+        if self.qualification.target_supported {
             return None;
         }
         checks(r, true).into_iter().next()
@@ -365,7 +366,7 @@ impl Plan {
             .map(|change| change.compact.as_str())
             .collect::<Vec<_>>()
             .join(" and ");
-        let action = if self.supported && !addition.is_some_and(CompactAddition::is_problem) {
+        let action = if self.qualification.suggested() {
             "Bump "
         } else {
             ""
@@ -383,7 +384,10 @@ impl Plan {
     }
 
     fn compact_location(&self, r: &Record) -> String {
-        if !self.supported || !self.constraints.is_empty() || !self.files.is_empty() {
+        if !self.qualification.target_supported
+            || !self.constraints.is_empty()
+            || !self.files.is_empty()
+        {
             return location(&self.files);
         }
         common_paths(&r.changes)

@@ -209,6 +209,39 @@ fn audit_remediation_grouping_compact_mentions_shared_search_limit_once() {
 }
 
 #[test]
+fn audit_remediation_grouping_compact_keeps_search_limit_for_suggested_partial_fix() {
+    let mut input = grouping_report();
+    input["remediation"]["status"] = "limited".into();
+    input["remediation"]["limits"]["reasons"] = json!(["parent_candidate_limit"]);
+    let record = &mut input["remediation"]["recommendations"][0];
+    record["checks"]["parent_search"] = "limited".into();
+    record["limitations"] = json!(["parent_candidate_limit"]);
+    let limit = "reached its limit for checking upgrades";
+
+    let complete = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(complete.status.code(), Some(1), "{}", stderr(&complete));
+    assert!(!prose(&stdout(&complete)).contains(limit));
+
+    let record = &mut input["remediation"]["recommendations"][0];
+    record["outcome"] = "partial".into();
+    record["finding_refs"] = json!([0, 1]);
+    record["remaining_finding_refs"] = json!([1]);
+    let partial = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(partial.status.code(), Some(1), "{}", stderr(&partial));
+    let compact = prose(&stdout(&partial));
+    assert!(compact.contains("Suggested updates"), "{compact}");
+    assert!(
+        compact.contains("Upgrade (partial): npm:demo 1.0.0 -> 1.1.1"),
+        "{compact}"
+    );
+    assert!(
+        compact.contains("Still unresolved: GHSA-second."),
+        "{compact}"
+    );
+    assert_eq!(compact.matches(limit).count(), 1, "{compact}");
+}
+
+#[test]
 fn audit_remediation_grouping_compact_preserves_report_wide_planning_deadline() {
     let mut input = grouping_report();
     input["remediation"]["status"] = "limited".into();

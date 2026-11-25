@@ -57,7 +57,9 @@ impl Plan {
         r: &Record,
         qualification: Qualification,
     ) -> Option<String> {
-        if qualification.suggested() || r.checks.parent_search != "limited" || r.changes.is_empty()
+        if (qualification.suggested() && r.remaining_findings.is_empty())
+            || r.checks.parent_search != "limited"
+            || r.changes.is_empty()
         {
             return None;
         }

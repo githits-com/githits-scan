@@ -327,7 +327,8 @@ The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
 availability, non-affecting advisory checks, matched requirements, an addressed
 vulnerability and recognized planning/check evidence. Both use one predicate that
-also requires every change to be a recognized upgrade. A partial outcome or a
+also requires every change to be a recognized upgrade and no reported issue
+with a newly required dependency. A partial outcome or a
 nonempty remaining-finding list stays candidate-qualified when either the record
 checks or any change marks a prerelease target; an unresolved prerelease migration
 is never a confirmed fix. Complete proposed prereleases with no remaining findings
@@ -870,9 +871,10 @@ changes the selected fix verdict or exit status.
 
 Detailed and focused text group search explanations under one `Upgrade search`
 heading. Default text names a material obstacle when it leaves the decision
-unresolved. A recorded requirement with no linked locked copy uses its
-supplied dependency, range and file when available. The report attributes it
-to a requester only when the source names one.
+unresolved, including when a suggested partial fix leaves findings open and
+the search for further fixes was limited. If a recorded requirement could
+not be linked to a locked copy, the report names the supplied dependency,
+range and file. It names a requester only when the source supplies one.
 Report-wide limits such as a planning deadline or omitted recommendations
 appear once in the default report.
 Each shared explanation names the operation, affected package/version, request or
