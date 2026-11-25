@@ -407,8 +407,7 @@ fn sentence(mut text: String) -> String {
     text
 }
 
-/// Capitalize a composed line of audit evidence.
-pub(super) fn capitalize(mut text: String) -> String {
+fn capitalize(mut text: String) -> String {
     if let Some(initial) = text.get_mut(..1) {
         initial.make_ascii_uppercase();
     }

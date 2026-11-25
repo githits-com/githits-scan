@@ -1,6 +1,6 @@
 //! Explanations of whole-search obstacles, never selected-action verdicts.
 use super::{
-    remediation::{capitalize, owner, request_requirement},
+    remediation::{owner, request_requirement},
     safe,
 };
 use crate::api::audit::remediation::{
@@ -38,9 +38,8 @@ pub(super) fn unbound_request(record: &Record) -> Option<String> {
         &observation.requirement_status,
     );
     Some(format!(
-        "The report could not link the request in {} to a locked copy. {}.",
-        safe(&observation.path),
-        capitalize(request)
+        "A declaration in {} {request}. The report could not link it to a locked copy.",
+        safe(&observation.path)
     ))
 }
 

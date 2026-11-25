@@ -103,7 +103,7 @@ fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
     let compact = execute_report(&value, &["--quiet", "--no-color"]);
     assert_eq!(compact.status.code(), Some(1), "{}", stderr(&compact));
     let compact = prose(&stdout(&compact));
-    assert!(compact.contains("The report could not link the request in package-lock.json to a locked copy. Requires demo ^1.0."), "{compact}");
+    assert!(compact.contains("A declaration in package-lock.json requires demo ^1.0. The report could not link it to a locked copy."), "{compact}");
     assert_eq!(compact.matches("to a locked copy").count(), 1, "{compact}");
     assert!(
         !compact.contains("Upgrade search") && !compact.contains("unbound_request"),
