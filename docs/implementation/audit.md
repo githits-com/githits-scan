@@ -429,6 +429,15 @@ package-name join nor range evaluation, target inference, or a causal explanatio
 for a selected parent upgrade. The same context appears in ordinary and focused
 saved explanations; it does not add JSON or saved-report fields. Availability of the optional context depends on supplied retained evidence.
 
+The default terminal report can also show one recorded requester beside a
+suggested single upgrade that has no displayed constraint. It selects the first
+recorded third-party request for the exact changed occurrence in producer order.
+The relationship and both endpoints must share a recorded source, and the
+associated change must identify one occurrence with a matching coordinate and
+a source consistent with any supplied change paths. The requester line shows
+the supplied owner, requirement and authored path. It gives one example when
+several packages request that copy.
+
 ### Checked reasons beside changes
 
 Optional `changes[].reasons` carries service-owned checked effects. Human output
@@ -875,6 +884,11 @@ unresolved, including when a suggested partial fix leaves findings open and
 the search for further fixes was limited. If a recorded requirement could
 not be linked to a locked copy, the report names the supplied dependency,
 range and file. It names a requester only when the source supplies one.
+When missing dependency information also limited the search for updates to
+requesting packages, the default combines that qualification and the declaration
+in one explanation. The declaration is one example of the missing information.
+Distinct recorded search limits each appear once per group, including when the
+report omits the declaration evidence.
 Report-wide limits such as a planning deadline or omitted recommendations
 appear once in the default report.
 Each shared explanation names the operation, affected package/version, request or

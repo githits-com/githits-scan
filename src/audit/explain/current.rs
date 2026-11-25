@@ -1,5 +1,5 @@
-//! Source-local request context for a joint action, never causal planner reasoning.
-use std::collections::BTreeSet;
+//! Source-local request context for recorded changes.
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::api::audit::{
     remediation::{Change, Recommendation, Trace},
@@ -7,7 +7,7 @@ use crate::api::audit::{
     wire::Coordinate,
 };
 
-/// A supplied request attached to a validated relationship between changed occurrences.
+/// A supplied request attached to a validated relationship targeting a changed occurrence.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct RecordedRequest {
     /// Actual request owner, which need not equal the relationship's source occurrence.
@@ -23,10 +23,7 @@ pub(crate) struct RecordedRequest {
 }
 
 /// Select current requests for a joint action without guessing its causal reason.
-pub(crate) fn recorded_requests(
-    trace: &Trace,
-    recommendation: &Recommendation,
-) -> Vec<RecordedRequest> {
+fn recorded_requests(trace: &Trace, recommendation: &Recommendation) -> Vec<RecordedRequest> {
     if trace.status != "retained"
         || recommendation.detail_status != "retained"
         || recommendation.changes.len() < 2
@@ -50,12 +47,82 @@ pub(crate) fn recorded_requests(
                 && r.to_ref.is_some_and(|i| changed.contains(&i))
         })
         .flat_map(|r| {
+            let target = r
+                .to_ref
+                .and_then(|i| trace.occurrences.get(i))
+                .and_then(|occurrence| occurrence.coordinate.as_ref());
             r.requests
                 .iter()
-                .filter_map(|request| recorded_request(trace, r, request))
+                .filter_map(move |request| recorded_request(target?, request))
         })
         .filter(|r| seen.insert(r.clone()))
         .collect()
+}
+
+/// Recorded request lookup used while building the audit view.
+pub(crate) struct Requesters<'a> {
+    trace: &'a Trace,
+    by_target: BTreeMap<usize, &'a trace::Request>,
+}
+
+impl<'a> Requesters<'a> {
+    /// Index the first eligible incoming request for each exact target occurrence.
+    pub(crate) fn new(trace: &'a Trace) -> Self {
+        let mut by_target = BTreeMap::new();
+        if trace.status != "retained" {
+            return Self { trace, by_target };
+        }
+        for (target, request) in trace
+            .relations
+            .iter()
+            .filter_map(|relation| third_party_request(trace, relation))
+        {
+            by_target.entry(target).or_insert(request);
+        }
+        Self { trace, by_target }
+    }
+
+    /// Return a representative request for a retained single-occurrence change.
+    pub(crate) fn single(&self, recommendation: &Recommendation) -> Option<RecordedRequest> {
+        let [change] = recommendation.changes.as_slice() else {
+            return None;
+        };
+        if recommendation.detail_status != "retained" || change.occurrence_refs.as_ref()?.len() != 1
+        {
+            return None;
+        }
+        let index = matching_refs(self.trace, change).next()?;
+        let occurrence = self.trace.occurrences.get(index)?;
+        if occurrence.project_root
+            || (!change.paths.is_empty() && !change.paths.contains(&occurrence.path))
+        {
+            return None;
+        }
+        recorded_request(occurrence.coordinate.as_ref()?, self.by_target.get(&index)?)
+    }
+
+    /// Select current requests between changed occurrences in a joint action.
+    pub(crate) fn joint(&self, recommendation: &Recommendation) -> Vec<RecordedRequest> {
+        recorded_requests(self.trace, recommendation)
+    }
+}
+
+fn third_party_request<'a>(
+    trace: &Trace,
+    relation: &'a trace::Relation,
+) -> Option<(usize, &'a trace::Request)> {
+    let (from, to) = (relation.from_ref?, relation.to_ref?);
+    if relation.disposition != "standard_dependency"
+        || super::relation_issue(trace, relation).is_some()
+        || trace.occurrences.get(from)?.project_root
+    {
+        return None;
+    }
+    relation
+        .requests
+        .iter()
+        .find(|request| request.owner_role == "third_party" && recorded_range(request).is_some())
+        .map(|request| (to, request))
 }
 
 fn matching_refs<'a>(trace: &'a Trace, change: &'a Change) -> impl Iterator<Item = usize> + 'a {
@@ -77,24 +144,19 @@ fn matching_refs<'a>(trace: &'a Trace, change: &'a Change) -> impl Iterator<Item
         })
 }
 
-fn recorded_request(
-    trace: &Trace,
-    relation: &trace::Relation,
-    request: &trace::Request,
-) -> Option<RecordedRequest> {
+fn recorded_range(request: &trace::Request) -> Option<&str> {
     if request.requirement_status != "recorded" {
         return None;
     }
+    request.requested_requirement.as_deref()
+}
+
+fn recorded_request(target: &Coordinate, request: &trace::Request) -> Option<RecordedRequest> {
     Some(RecordedRequest {
         owner_name: request.owner.name.clone(),
         owner_version: request.owner.version.clone(),
-        target: trace
-            .occurrences
-            .get(relation.to_ref?)?
-            .coordinate
-            .as_ref()?
-            .clone(),
-        requirement: request.requested_requirement.clone()?,
+        target: target.clone(),
+        requirement: recorded_range(request)?.into(),
         path: request.path.clone(),
     })
 }
@@ -109,6 +171,87 @@ mod tests {
         let body = report(input).data;
         let remediation = body.remediation.expect("remediation");
         recorded_requests(&remediation.trace, &remediation.recommendations[0])
+    }
+
+    fn requester(input: &Value) -> Option<RecordedRequest> {
+        let remediation = report(input).data.remediation.expect("remediation");
+        Requesters::new(&remediation.trace).single(&remediation.recommendations[0])
+    }
+
+    #[test]
+    fn audit_current_requests_choose_the_first_verified_single_copy_request() {
+        let mut input = value();
+        input["remediation"]["recommendations"][0]["changes"]
+            .as_array_mut()
+            .expect("changes")
+            .truncate(1);
+        let mut another = input["remediation"]["trace"]["relations"][1].clone();
+        another["requests"][0]["owner"]["name"] = "another-parent".into();
+        input["remediation"]["trace"]["relations"]
+            .as_array_mut()
+            .expect("relations")
+            .push(another);
+        assert_eq!(
+            requester(&input).expect("recorded requester").owner_name,
+            "parent"
+        );
+
+        // Test each boundary with exactly one incoming relation.
+        input["remediation"]["trace"]["relations"]
+            .as_array_mut()
+            .expect("relations")
+            .pop();
+        for (path, invalid) in [
+            ("/remediation/trace/status", json!("not_retained")),
+            (
+                "/remediation/recommendations/0/detail_status",
+                json!("not_retained"),
+            ),
+            (
+                "/remediation/recommendations/0/changes/0/paths",
+                json!(["other/package-lock.json"]),
+            ),
+            (
+                "/remediation/recommendations/0/changes/0/occurrence_refs",
+                json!([0, 1]),
+            ),
+            (
+                "/remediation/recommendations/0/changes/0/from_version",
+                json!("9.0.0"),
+            ),
+            ("/remediation/trace/occurrences/0/project_root", json!(true)),
+            ("/remediation/trace/occurrences/1/project_root", json!(true)),
+            (
+                "/remediation/trace/relations/1/disposition",
+                json!("unverified_target"),
+            ),
+            (
+                "/remediation/trace/relations/1/path",
+                json!("other/package-lock.json"),
+            ),
+            (
+                "/remediation/trace/relations/1/requests/0/owner_role",
+                json!("project"),
+            ),
+            (
+                "/remediation/trace/relations/1/requests/0/requirement_status",
+                json!("provider_requirement"),
+            ),
+        ] {
+            let mut changed = input.clone();
+            *changed.pointer_mut(path).expect("fixture field") = invalid;
+            assert!(requester(&changed).is_none(), "{path}");
+        }
+
+        let project_request = input["remediation"]["trace"]["relations"][0]["requests"][0].clone();
+        input["remediation"]["trace"]["relations"][1]["requests"]
+            .as_array_mut()
+            .expect("requests")
+            .insert(0, project_request);
+        assert_eq!(
+            requester(&input).expect("recorded requester").owner_name,
+            "parent"
+        );
     }
 
     #[test]

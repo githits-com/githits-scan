@@ -158,23 +158,17 @@ fn compact_group(
     out: &mut dyn Write,
 ) -> io::Result<()> {
     writeln!(out, "  {}", safe(subject))?;
-    let mut search_limit = None;
+    let mut search_limits = Vec::new();
     for a in &group.alternatives {
-        super::lines(
-            &a.plan(&data.status, context).terminal(
-                a.record,
-                a.qualification,
-                &data.limits.reasons,
-            ),
-            "    ",
-            out,
-        )?;
-        if search_limit.is_none() {
-            search_limit = Plan::terminal_search_limit(a.record, a.qualification);
-        }
+        let (lines, limits) =
+            a.plan(&data.status, context)
+                .terminal(a.record, a.qualification, &data.limits.reasons);
+        super::lines(&lines, "    ", out)?;
+        search_limits.extend(limits);
     }
-    if let Some(limit) = search_limit {
-        super::line(&limit, "    ", out)?;
+    let mut seen = BTreeSet::new();
+    for limit in search_limits.iter().filter(|line| seen.insert(*line)) {
+        super::line(limit, "    ", out)?;
     }
     compact_advisories(subject, findings, out)
 }

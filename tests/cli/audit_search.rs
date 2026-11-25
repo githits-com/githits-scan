@@ -78,8 +78,7 @@ fn audit_search_binary_one_result_preserves_evidence_through_archive_and_outputs
     );
 }
 
-#[test]
-fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
+fn unbound_input() -> Value {
     let mut value = input();
     let record = &mut value["remediation"]["recommendations"][0];
     record["checks"]["requirements"] = "unchecked".into();
@@ -100,6 +99,12 @@ fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
             }
         }
     }]);
+    value
+}
+
+#[test]
+fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
+    let value = unbound_input();
     let compact = execute_report(&value, &["--quiet", "--no-color"]);
     assert_eq!(compact.status.code(), Some(1), "{}", stderr(&compact));
     let compact = prose(&stdout(&compact));
@@ -125,6 +130,82 @@ fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
         json!(["unbound_request"])
     );
 }
+
+#[test]
+fn audit_search_default_combines_metadata_with_the_declaration_and_keeps_a_distinct_cap() {
+    let mut value = unbound_input();
+    value["remediation"]["recommendations"][0]["checks"]["parent_search"] = "limited".into();
+    for cap in [false, true] {
+        if cap {
+            let record = &mut value["remediation"]["recommendations"][0];
+            record["limitations"]
+                .as_array_mut()
+                .expect("limitations")
+                .push("parent_candidate_limit".into());
+            let coordinate = record["subject"].clone();
+            record["search_details"]
+                .as_array_mut()
+                .expect("search details")
+                .push(json!({
+                    "kind": "stopped",
+                    "stage": "domain_sampling",
+                    "reason": "parent_candidate_limit",
+                    "witness": {"coordinate": coordinate, "budget_scope": "local"}
+                }));
+        }
+        let output = execute_report(&value, &["--quiet", "--no-color"]);
+        assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+        let report = prose(&stdout(&output));
+        assert!(
+            report.contains("Missing dependency information limited the upgrade search, including a declaration in package-lock.json that requires demo ^1.0 and could not be linked to a locked copy."),
+            "{report}"
+        );
+        assert_eq!(
+            report.matches("linked to a locked copy").count(),
+            1,
+            "{report}"
+        );
+        assert!(!report.contains("metadata needed to check"), "{report}");
+        assert!(!report.contains("could not finish checking"), "{report}");
+        assert_eq!(
+            report.contains("reached its limit for checking upgrades"),
+            cap,
+            "{report}"
+        );
+    }
+}
+
+#[test]
+fn audit_search_default_keeps_the_generic_metadata_limit_without_a_concrete_declaration() {
+    let mut value = unbound_input();
+    let record = &mut value["remediation"]["recommendations"][0];
+    record["checks"]["parent_search"] = "limited".into();
+    record["search_detail_status"] = "not_retained".into();
+    record["search_details"] = json!([]);
+    record["limitations"] = json!([
+        "unbound_request",
+        "parent_evidence_incomplete",
+        "parent_candidate_limit"
+    ]);
+    let other = record.clone();
+    value["remediation"]["recommendations"]
+        .as_array_mut()
+        .expect("recommendations")
+        .push(other);
+    let output = execute_report(&value, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let report = prose(&stdout(&output));
+    assert_eq!(report.matches("Metadata needed to check upgrades of packages that depend on this dependency was unavailable").count(), 1, "{report}");
+    assert_eq!(
+        report
+            .matches("reached its limit for checking upgrades")
+            .count(),
+        1,
+        "{report}"
+    );
+    assert!(!report.contains("including a declaration"), "{report}");
+}
+
 #[test]
 fn audit_search_binary_malformed_evidence_preserves_existing_output() {
     let root = repo();
