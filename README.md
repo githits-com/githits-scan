@@ -198,11 +198,17 @@ SBOM generation submits one job and writes the complete returned document.
 
 ```bash
 githits-scan audit
+githits-scan audit --details
 githits-scan audit --json -o audit.json
 githits-scan audit --presentation-json -o audit-presentation.json
 githits-scan audit . --json --save-analysis analysis.json > audit.json
 githits-scan audit --from-analysis analysis.json --details -o audit.txt
 ```
+
+The default report leads with suggested updates and explains what blocks or
+qualifies other fixes. Use `--details` for advisory evidence, upgrade search,
+the uploaded manifest inventory, and maintenance findings. Use `--json` when
+reading the report from a script.
 
 `--save-analysis` creates a new archive and writes the report to stdout. To keep
 both files, redirect stdout to a separate path. `--from-analysis` reads the saved

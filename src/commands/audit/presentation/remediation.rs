@@ -9,10 +9,52 @@ use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 mod reasons;
+mod terminal;
 pub(in crate::commands::audit) use reasons::ReasonDetail;
 
 const UNFAMILIAR_REASON: &str =
     "the service supplied an unfamiliar reason; see JSON for the supplied value";
+
+/// Shared evidence for qualifying an alternative before choosing its display order.
+#[derive(Clone, Copy)]
+pub(in crate::commands::audit) struct Qualification {
+    checked_upgrade: bool,
+    supported: bool,
+    added_branch_problem: bool,
+}
+
+impl Qualification {
+    /// Classify the supplied checks and the risks of selected branches.
+    pub(in crate::commands::audit) fn new(r: &Record, status: &str) -> Self {
+        let checked_upgrade = upgrade_evidence(r, matches!(status, "completed" | "limited"));
+        Self {
+            checked_upgrade,
+            supported: checked_upgrade && r.checks.requirements == "matched",
+            added_branch_problem: r.limitations.iter().any(|reason| {
+                matches!(
+                    reason.as_str(),
+                    "new_dependency_not_checked" | "added_dependencies_not_verified"
+                )
+            }) || r
+                .changes
+                .iter()
+                .any(|change| added_branches(change).iter().any(super::added::has_problem)),
+        }
+    }
+
+    /// Whether the terminal can lead with this alternative as a suggested update.
+    pub(in crate::commands::audit) const fn suggested(self) -> bool {
+        self.supported && !self.added_branch_problem
+    }
+}
+
+fn added_branches(change: &ChangeView) -> &[crate::api::audit::remediation::added::Branch] {
+    change
+        .data
+        .added_dependencies
+        .as_deref()
+        .unwrap_or_default()
+}
 
 /// Complete qualified guidance for one independent recommendation.
 #[derive(Serialize)]
@@ -86,16 +128,27 @@ impl Plan {
         context: &Context<'_>,
         detail: ReasonDetail,
     ) -> Self {
+        Self::with_qualification(r, status, context, detail, Qualification::new(r, status))
+    }
+
+    /// Build guidance using the same evidence that determined display order.
+    pub(in crate::commands::audit) fn with_qualification(
+        r: &Record,
+        status: &str,
+        context: &Context<'_>,
+        detail: ReasonDetail,
+        qualification: Qualification,
+    ) -> Self {
         let planning_known = matches!(status, "completed" | "limited");
-        let checked_upgrade = upgrade_evidence(r, planning_known);
-        let supported = checked_upgrade && r.checks.requirements == "matched";
+        let supported = qualification.supported;
         let common = common_paths(&r.changes);
         let files = common
             .clone()
             .filter(|files| files != &context.files() || files != &Context::record(r).files())
             .unwrap_or_default();
         let constraints = constraints(&r.blockers, detail);
-        let clear_project_edit = checked_upgrade && clear_project_edit(r, &constraints);
+        let clear_project_edit =
+            qualification.checked_upgrade && clear_project_edit(r, &constraints);
         let mut limitations: Vec<_> = limitations(r, &constraints)
             .map(|(_, message)| format!("limit: {message}"))
             .collect();
@@ -118,7 +171,7 @@ impl Plan {
                     common.is_none(),
                     detail,
                 );
-                let branches = c.data.added_dependencies.as_deref().unwrap_or_default();
+                let branches = added_branches(c);
                 change.details.extend(super::added::change_lines(branches));
                 change.details.extend(super::added::installer_note(
                     branches,
@@ -705,11 +758,7 @@ fn check_line(label: &str, value: &str, compact: bool) -> String {
             "The report does not establish whether known advisories affect the proposed versions",
             "The advisory check gives no reason for this gap.",
         )),
-        ("requirements", "not_checked" | "unchecked" | "not_assessed") => Some((
-            "The audit did not check whether the project's dependency requirements allow this change",
-            "The requirement check gives no reason.",
-        )),
-        ("requirements", "unknown") => Some((
+        ("requirements", "not_checked" | "unchecked" | "not_assessed" | "unknown") => Some((
             "The report does not establish whether the project's dependency requirements allow this change",
             "The requirement check gives no reason for this gap.",
         )),
@@ -770,10 +819,16 @@ fn confirmed_target_problems(r: &Record) -> impl Iterator<Item = String> + '_ {
 }
 
 fn checks(r: &Record, compact: bool) -> Vec<String> {
-    let c = &r.checks;
     let mut lines: Vec<_> = target_checks(r)
         .map(|(label, value)| check_line(label, value, compact))
         .collect();
+    lines.extend(other_checks(r, compact, true));
+    lines
+}
+
+fn other_checks(r: &Record, compact: bool, include_search: bool) -> Vec<String> {
+    let c = &r.checks;
+    let mut lines = Vec::new();
     for (label, value, ordinary) in [
         (
             "release withdrawal",
@@ -795,9 +850,9 @@ fn checks(r: &Record, compact: bool) -> Vec<String> {
             lines.push(check_line(label, value, compact));
         }
     }
-    match c.parent_search.as_str() {
-        "completed" | "not_assessed" => {}
-        "limited" => {
+    match (c.parent_search.as_str(), include_search) {
+        ("completed" | "not_assessed", _) | ("limited", false) => {}
+        ("limited", true) => {
             lines.push("Upgrades to packages using this dependency were not fully checked.".into());
         }
         _ => {
@@ -959,6 +1014,7 @@ pub(super) fn request_requirement(name: Option<&str>, range: Option<&str>, statu
 fn upgrade_evidence(r: &Record, planning_known: bool) -> bool {
     planning_known
         && matches!(r.outcome.as_str(), "proposed" | "partial")
+        && !r.changes.is_empty()
         && known_checks(&r.checks)
         && !r.addressed_findings.is_empty()
         && r.checks.release_availability == "observed"
@@ -1054,9 +1110,12 @@ fn explanation(value: &str) -> String {
             "the service reached its limit for looking up metadata for packages that depend on this dependency".into()
         }
         "introduction_not_recorded" => "how the dependency was introduced is not recorded".into(),
+        "unbound_request" => super::search::UNBOUND_REQUEST.into(),
         "unsupported_selector" => "dependency requirement could not be evaluated".into(),
         "release_existence_unverified" => "target release availability not verified".into(),
-        "new_dependency_not_checked" => "a new dependency was not checked".into(),
+        "new_dependency_not_checked" | "added_dependencies_not_verified" => {
+            "the service could not verify a dependency required by this candidate".into()
+        }
         "represented_routes_cut" => "this candidate removes dependency routes recorded in this report".into(),
         "native_applicability_not_checked" => "whether the dependency requirements apply to this project was not checked".into(),
         "no_checked_parent_upgrade" => {

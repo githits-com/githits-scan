@@ -659,7 +659,11 @@ fn audit_report_file_lists_wrap_after_one_hundred_rendered_characters() {
         let path = format!("{}/package.json", "a".repeat(length));
         let repo = repository(&[(&path, "{}")]);
         let s = server(&serde_json::to_vec(&clean()).expect("report"));
-        let output = run(repo.path(), Some(&s.origin()), &["--no-color", "-q"]);
+        let output = run(
+            repo.path(),
+            Some(&s.origin()),
+            &["--no-color", "-q", "--details"],
+        );
         assert_eq!(output.status.code(), Some(0));
         assert!(output.stderr.is_empty(), "{:?}", output.stderr);
         let expected = if length == 76 {

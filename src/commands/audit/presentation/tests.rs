@@ -103,7 +103,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
         "checked benefit replaces redundant request context"
     );
     let mut text = Vec::new();
-    audit::render::write(&view, false, &mut text, crate::style::Palette::PLAIN).expect("text");
+    audit::render::write(&view, true, &mut text, crate::style::Palette::PLAIN).expect("text");
     let text = String::from_utf8(text).expect("utf8");
     let document = serde_json::to_value(Document::new(&view)).expect("presentation");
     assert_eq!(
@@ -297,7 +297,7 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
         recommendation["checks"],
         json!([
             "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation.",
-            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
+            "The report does not establish whether the project's dependency requirements allow this change. The requirement check gives no reason for this gap."
         ])
     );
     assert_eq!(

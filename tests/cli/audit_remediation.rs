@@ -23,7 +23,7 @@ fn remediation_report() -> Value {
     value
 }
 
-fn execute_report(value: &Value, extra: &[&str]) -> Output {
+pub(super) fn execute_report(value: &Value, extra: &[&str]) -> Output {
     let root = repo();
     let mock = server(&serde_json::to_vec(value).expect("report"));
     let output = run(root.path(), Some(&mock.origin()), extra);
@@ -31,14 +31,14 @@ fn execute_report(value: &Value, extra: &[&str]) -> Output {
     output
 }
 
-fn json_report(value: &Value) -> Value {
+pub(super) fn json_report(value: &Value) -> Value {
     let output = execute_report(value, &["--json", "--quiet"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     assert!(stderr(&output).is_empty(), "{:?}", stderr(&output));
     serde_json::from_slice(&output.stdout).expect("compact JSON")
 }
 
-fn human_report(value: &Value) -> String {
+pub(super) fn human_report(value: &Value) -> String {
     let output = execute_report(value, &["--no-color", "--quiet", "--details"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     stdout(&output)
@@ -337,7 +337,7 @@ fn audit_remediation_material_warnings_remain_visible() {
         (
             "requirements",
             "unchecked",
-            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason.",
+            "The report does not establish whether the project's dependency requirements allow this change. The requirement check gives no reason for this gap.",
         ),
         (
             "requirements",
@@ -399,8 +399,8 @@ fn audit_remediation_file_output_is_plain_quiet_and_complete() {
     assert_eq!(output.status.code(), Some(1));
     assert!(output.stdout.is_empty() && output.stderr.is_empty());
     let text = fs::read_to_string(path).expect("file");
-    assert!(text.contains("Fix guidance"));
-    assert!(text.contains("Upgrade npm:demo 1.0.0 -> 1.1.1"));
+    assert!(text.contains("Suggested updates"));
+    assert!(text.contains("Upgrade: npm:demo 1.0.0 -> 1.1.1"));
     assert!(!text.contains('\u{1b}'));
 }
 
@@ -862,7 +862,9 @@ fn audit_remediation_native_disagreement_keeps_the_candidate_qualified() {
         "{text}"
     );
     assert!(
-        text.contains("The audit did not check whether the project's dependency requirements"),
+        text.contains(
+            "The report does not establish whether the project's dependency requirements"
+        ),
         "{text}"
     );
     assert!(

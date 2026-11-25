@@ -57,6 +57,7 @@ pub(super) fn write_diff(event: &ProgressEvent, out: &mut dyn Write) -> std::io:
         ProgressEvent::Snapshot(progress) if progress.phase == Phase::Rendering => {
             message("rendering dependency comparison...", out)
         }
+        ProgressEvent::Snapshot(progress) => snapshot(progress, false, out),
         _ => write_audit(event, out),
     }
 }
@@ -131,8 +132,10 @@ fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::R
             )?;
         }
         Phase::Enriching => {
-            write!(out, "enriching package metadata")?;
-            measured(
+            phase_progress(
+                audit,
+                "enriching package metadata",
+                "enriching metadata for",
                 counts.coordinates_done,
                 counts.coordinates_total,
                 "packages",
@@ -143,8 +146,10 @@ fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::R
             }
         }
         Phase::Assessing => {
-            write!(out, "assessing audit evidence")?;
-            measured(
+            phase_progress(
+                audit,
+                "assessing audit evidence",
+                "assessing advisories for",
                 counts.assessments_done,
                 counts.assessments_total,
                 "assessments",
@@ -170,6 +175,27 @@ fn snapshot(progress: &Progress, audit: bool, out: &mut dyn Write) -> std::io::R
     }
     writeln!(out)?;
     out.flush()
+}
+
+fn phase_progress(
+    audit: bool,
+    phase: &str,
+    audit_start: &str,
+    done: Option<u64>,
+    total: Option<u64>,
+    unit: &str,
+    out: &mut dyn Write,
+) -> std::io::Result<()> {
+    if !audit || done != Some(0) {
+        write!(out, "{phase}")?;
+        return measured(done, total, unit, out);
+    }
+
+    let Some(total) = total.filter(|total| *total > 0) else {
+        return write!(out, "{phase}");
+    };
+    let noun = if total == 1 { "package" } else { "packages" };
+    write!(out, "{audit_start} {total} {noun}")
 }
 
 fn measured(
@@ -317,32 +343,102 @@ mod tests {
 mod audit_tests {
     use super::*;
     use crate::api::jobs::Counts;
-    #[test]
-    fn audit_assessing_distinguishes_zero_and_unknown_without_overall_percentage() {
-        for (done, total, expected) in [
-            (
-                Some(0),
-                Some(4),
-                "assessing audit evidence: 0 / 4 assessments\n",
-            ),
-            (None, None, "assessing audit evidence\n"),
-        ] {
+
+    type Case = (Option<u64>, Option<u64>, &'static str);
+
+    fn assert_audit_phase(phase: Phase, cases: &[Case]) {
+        for &(done, total, expected) in cases {
+            let counts = match phase {
+                Phase::Enriching => Counts {
+                    coordinates_done: done,
+                    coordinates_total: total,
+                    ..Counts::default()
+                },
+                Phase::Assessing => Counts {
+                    assessments_done: done,
+                    assessments_total: total,
+                    ..Counts::default()
+                },
+                _ => unreachable!("test phases are audit progress phases"),
+            };
             let mut out = Vec::new();
             write_audit(
                 &ProgressEvent::Snapshot(Progress {
-                    phase: Phase::Assessing,
+                    phase,
                     attempt: 1,
-                    counts: Counts {
-                        assessments_done: done,
-                        assessments_total: total,
-                        ..Counts::default()
-                    },
+                    counts,
                 }),
                 &mut out,
             )
             .expect("write");
             assert_eq!(String::from_utf8(out).expect("utf8"), expected);
         }
+    }
+
+    fn assert_diff_assessing_zero_is_unchanged() {
+        let mut out = Vec::new();
+        write_diff(
+            &ProgressEvent::Snapshot(Progress {
+                phase: Phase::Assessing,
+                attempt: 1,
+                counts: Counts {
+                    assessments_done: Some(0),
+                    assessments_total: Some(2),
+                    ..Counts::default()
+                },
+            }),
+            &mut out,
+        )
+        .expect("write");
+        assert_eq!(
+            String::from_utf8(out).expect("utf8"),
+            "assessing audit evidence: 0 / 2 assessments\n"
+        );
+    }
+
+    #[test]
+    fn audit_assessing_distinguishes_zero_and_unknown_without_overall_percentage() {
+        assert_audit_phase(
+            Phase::Enriching,
+            &[
+                (Some(0), Some(4), "enriching metadata for 4 packages\n"),
+                (Some(0), Some(1), "enriching metadata for 1 package\n"),
+                (Some(0), Some(0), "enriching package metadata\n"),
+                (Some(0), None, "enriching package metadata\n"),
+                (None, None, "enriching package metadata\n"),
+                (
+                    None,
+                    Some(4),
+                    "enriching package metadata: 4 packages known\n",
+                ),
+                (
+                    Some(2),
+                    Some(4),
+                    "enriching package metadata: 2 / 4 packages\n",
+                ),
+            ],
+        );
+        assert_audit_phase(
+            Phase::Assessing,
+            &[
+                (Some(0), Some(4), "assessing advisories for 4 packages\n"),
+                (Some(0), Some(1), "assessing advisories for 1 package\n"),
+                (Some(0), Some(0), "assessing audit evidence\n"),
+                (Some(0), None, "assessing audit evidence\n"),
+                (None, None, "assessing audit evidence\n"),
+                (
+                    None,
+                    Some(4),
+                    "assessing audit evidence: 4 assessments known\n",
+                ),
+                (
+                    Some(2),
+                    Some(4),
+                    "assessing audit evidence: 2 / 4 assessments\n",
+                ),
+            ],
+        );
+        assert_diff_assessing_zero_is_unchanged();
     }
 }
 

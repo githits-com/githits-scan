@@ -10,8 +10,20 @@ use crate::api::audit::remediation::{
 pub(super) fn change_lines(branches: &[Branch]) -> impl Iterator<Item = String> + '_ {
     branches.iter().flat_map(|branch| {
         let request = request(branch);
-        std::iter::once(format!("This release {request} as a new dependency.")).chain(lines(branch))
+        std::iter::once(format!("This release {request} {}.", role(branch))).chain(lines(branch))
     })
+}
+
+fn role(branch: &Branch) -> &'static str {
+    peer_role(branch).unwrap_or("as a new dependency")
+}
+
+fn peer_role(branch: &Branch) -> Option<&'static str> {
+    match branch.scope.as_str() {
+        "peer" => Some("as a peer dependency"),
+        "optional_peer" => Some("as an optional peer dependency"),
+        _ => None,
+    }
 }
 
 pub(super) enum CompactAddition {
@@ -38,6 +50,15 @@ pub(super) fn compact_changes<'a>(
             Some(_) => 1,
             None => 2,
         })?;
+    if let Some(role) = peer_role(branch) {
+        let summary = format!("The release {} {role}", request(branch));
+        return Some(match problem {
+            Some(problem) => {
+                CompactAddition::Problem(format!("{summary}. {}", problem.explain(branch)))
+            }
+            None => CompactAddition::Description(summary),
+        });
+    }
     if let Some(SearchProblem::Affected(checked)) = &problem
         && registry_resolution(branch)
     {
@@ -88,7 +109,10 @@ pub(super) fn search(detail: &AddedDependency) -> (String, Vec<String>) {
         Some(_) => " The service could not complete the checks for this request.",
         None => "",
     };
-    let summary = format!("{candidate} [{path}] {request} as a new dependency.{result}");
+    let summary = format!(
+        "{candidate} [{path}] {request} {}.{result}",
+        role(&detail.branch)
+    );
     (summary, lines(&detail.branch).collect())
 }
 
@@ -96,9 +120,10 @@ pub(super) fn compact_search(detail: &AddedDependency) -> Option<String> {
     let branch = &detail.branch;
     let obstacle = search_problem(branch)?.explain(branch);
     Some(format!(
-        "{} {} as a new dependency. {obstacle}",
+        "{} {} {}. {obstacle}",
         candidate(detail),
-        request(branch)
+        request(branch),
+        role(branch),
     ))
 }
 
@@ -147,6 +172,10 @@ fn search_problem(branch: &Branch) -> Option<SearchProblem<'_>> {
         })
 }
 
+pub(super) fn has_problem(branch: &Branch) -> bool {
+    search_problem(branch).is_some()
+}
+
 fn request(branch: &Branch) -> String {
     request_requirement(
         Some(&branch.authored_name),
@@ -187,13 +216,15 @@ fn selection(branch: &Branch) -> String {
 fn lines(branch: &Branch) -> impl Iterator<Item = String> + '_ {
     std::iter::once(selection(branch))
         .chain(non_affecting(&branch.coordinates))
-        .chain(
-            branch
-                .coordinates
-                .iter()
-                .filter(move |checked| needs_advisory_line(checked, &branch.issues))
-                .map(advisory_check),
-        )
+        .chain(problem_lines(branch))
+}
+
+pub(super) fn problem_lines(branch: &Branch) -> impl Iterator<Item = String> + '_ {
+    branch
+        .coordinates
+        .iter()
+        .filter(move |checked| needs_advisory_line(checked, &branch.issues))
+        .map(advisory_check)
         .chain(
             branch
                 .issues

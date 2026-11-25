@@ -2,7 +2,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Write};
 
-use super::view::{Duplicate, DuplicateVersion, Finding, Issue, Origin, View};
+use super::view::{Duplicate, DuplicateVersion, Finding, Issue, Origin, View, remediation::State};
 use crate::coverage::Attention;
 use crate::style::Palette;
 
@@ -50,8 +50,15 @@ pub(super) fn write(
     palette: Palette,
 ) -> io::Result<()> {
     header(view, out, palette)?;
-    file_list("Manifests", &view.manifests, "", out)?;
-    vulnerability_section(view, out, palette)?;
+    if details {
+        file_list("Manifests", &view.manifests, "", out)?;
+    }
+    let lead_with_guidance = !details
+        && matches!(&view.remediation, State::Present(data) if !data.recommendations.is_empty());
+    if lead_with_guidance {
+        remediation::write(view, details, out, palette)?;
+    }
+    vulnerability_section(view, details, out, palette)?;
     let ignored: Vec<_> = view
         .vulnerabilities
         .iter()
@@ -60,17 +67,21 @@ pub(super) fn write(
     if !ignored.is_empty() {
         heading("Ignored vulnerabilities", ignored.len(), out, palette)?;
         for item in ignored {
-            finding(item, out)?;
+            vulnerability(item, details, out)?;
         }
         writeln!(
             out,
             "  Ignored advisories do not cause failure. Any mitigation guidance retains producer evidence, including ignored advisories."
         )?;
     }
-    remediation::write(view, out, palette)?;
+    if !lead_with_guidance {
+        remediation::write(view, details, out, palette)?;
+    }
     native::mismatches(view, out, palette)?;
     lifecycle::write(&view.lifecycle, details, out, palette)?;
-    maintenance(view, details, out, palette)?;
+    if details {
+        maintenance(view, out, palette)?;
+    }
     for (excluded, title) in [(false, "Incomplete checks"), (true, "Packages not checked")] {
         let issues: Vec<_> = view
             .issues
@@ -96,8 +107,21 @@ pub(super) fn write(
         for note in &view.limitations {
             writeln!(out, "\n{}", safe(note))?;
         }
+    } else if has_details(view) {
+        writeln!(out, "\nUse --details for the full audit report.")?;
     }
     Ok(())
+}
+
+fn has_details(view: &View) -> bool {
+    !view.manifests.is_empty()
+        || !view.vulnerabilities.is_empty()
+        || !view.outdated.is_empty()
+        || !view.duplicates.is_empty()
+        || !view.lifecycle.findings.is_empty()
+        || !view.lifecycle.retained_warnings.is_empty()
+        || !view.limitations.is_empty()
+        || matches!(&view.remediation, State::Present(data) if !data.recommendations.is_empty())
 }
 pub(super) fn coverage_notes(view: &View, out: &mut dyn Write) -> io::Result<()> {
     let mut notes = BTreeMap::<_, BTreeSet<_>>::new();
@@ -204,25 +228,7 @@ fn header(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> 
     Ok(())
 }
 
-fn maintenance(
-    view: &View,
-    details: bool,
-    out: &mut dyn Write,
-    palette: Palette,
-) -> io::Result<()> {
-    if !details {
-        if !view.outdated.is_empty()
-            || !view.duplicates.is_empty()
-            || !view.lifecycle.findings.is_empty()
-            || !view.lifecycle.retained_warnings.is_empty()
-        {
-            writeln!(
-                out,
-                "\nUse --details for sources, affected files and version details."
-            )?;
-        }
-        return Ok(());
-    }
+fn maintenance(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
     finding_section("Outdated versions", &view.outdated, out, palette)?;
     if !view.duplicates.is_empty() {
         heading("Duplicate versions", view.duplicates.len(), out, palette)?;
@@ -237,7 +243,12 @@ const fn noun(count: u64, one: &'static str, many: &'static str) -> &'static str
     if count == 1 { one } else { many }
 }
 
-fn vulnerability_section(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
+fn vulnerability_section(
+    view: &View,
+    details: bool,
+    out: &mut dyn Write,
+    palette: Palette,
+) -> io::Result<()> {
     let uncovered: Vec<_> = view
         .vulnerabilities
         .iter()
@@ -250,7 +261,25 @@ fn vulnerability_section(view: &View, out: &mut dyn Write, palette: Palette) -> 
     }
     heading("Vulnerabilities", uncovered.len(), out, palette)?;
     for item in uncovered {
-        finding(item, out)?;
+        vulnerability(item, details, out)?;
+    }
+    Ok(())
+}
+
+fn vulnerability(f: &Finding, details: bool, out: &mut dyn Write) -> io::Result<()> {
+    if details {
+        return finding(f, out);
+    }
+    finding_line(f, out)?;
+    if !f.proposed_fixes.is_empty() {
+        remediation::line(
+            &format!(
+                "Advisory-reported fix versions: {}",
+                list(&f.proposed_fixes)
+            ),
+            "    ",
+            out,
+        )?;
     }
     Ok(())
 }
@@ -271,6 +300,23 @@ fn finding_section(
     Ok(())
 }
 fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
+    finding_line(f, out)?;
+    if let Some(title) = f.title.as_ref().filter(|s| !s.is_empty()) {
+        writeln!(out, "    {}", safe(title))?;
+    }
+    for (label, values) in [
+        ("aliases", &f.aliases),
+        ("advisory-reported fix versions", &f.proposed_fixes),
+        ("verified advisory fixes", &f.verified_advisory_fixes),
+    ] {
+        if !values.is_empty() {
+            writeln!(out, "    {label}: {}", list(values))?;
+        }
+    }
+    Ok(())
+}
+
+fn finding_line(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     write!(out, "  {}", safe(&f.package))?;
     if let Some(latest) = &f.latest {
         write!(out, " -> {}", safe(latest))?;
@@ -295,20 +341,7 @@ fn finding(f: &Finding, out: &mut dyn Write) -> io::Result<()> {
     if f.malicious {
         write!(out, " MALICIOUS")?;
     }
-    writeln!(out, "{}", paths(&f.files))?;
-    if let Some(title) = f.title.as_ref().filter(|s| !s.is_empty()) {
-        writeln!(out, "    {}", safe(title))?;
-    }
-    for (label, values) in [
-        ("aliases", &f.aliases),
-        ("advisory-reported fix versions", &f.proposed_fixes),
-        ("verified advisory fixes", &f.verified_advisory_fixes),
-    ] {
-        if !values.is_empty() {
-            writeln!(out, "    {label}: {}", list(values))?;
-        }
-    }
-    Ok(())
+    writeln!(out, "{}", paths(&f.files))
 }
 
 fn shared_file(d: &Duplicate) -> Option<&str> {

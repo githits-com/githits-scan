@@ -14,7 +14,12 @@ pub(in crate::commands::audit) use presentation::{
     ReasonDetail, context::Context as ProblemContext,
 };
 
-pub(super) fn write(view: &View, out: &mut dyn Write, palette: Palette) -> io::Result<()> {
+pub(super) fn write(
+    view: &View,
+    details: bool,
+    out: &mut dyn Write,
+    palette: Palette,
+) -> io::Result<()> {
     let data = match &view.remediation {
         State::Unavailable if !view.vulnerabilities.is_empty() => {
             for message in presentation::messages(view) {
@@ -31,12 +36,33 @@ pub(super) fn write(view: &View, out: &mut dyn Write, palette: Palette) -> io::R
     {
         return Ok(());
     }
-    writeln!(out, "\n{}", palette.bold("Fix guidance"))?;
-    for message in presentation::messages(view) {
-        writeln!(out, "  {message}")?;
+    if details || data.recommendations.is_empty() {
+        writeln!(out, "\n{}", palette.bold("Fix guidance"))?;
+        for message in presentation::messages(view) {
+            writeln!(out, "  {message}")?;
+        }
+        problems::write(data, details, out, palette)?;
+        return shared_limits(data, out);
     }
-    problems::write(data, &data.status, out)?;
-    shared_limits(data, out)
+    problems::write(data, details, out, palette)?;
+    if !matches!(data.status.as_str(), "completed" | "limited") {
+        for message in presentation::messages(view) {
+            writeln!(out, "\n{message}")?;
+        }
+    }
+    if data.limits.omitted_recommendations != 0
+        || data
+            .limits
+            .reasons
+            .iter()
+            .any(|reason| reason == "output_limit")
+    {
+        writeln!(
+            out,
+            "\nSome fix guidance was omitted because the report reached its size limit."
+        )?;
+    }
+    Ok(())
 }
 
 pub(in crate::commands::audit) fn guidance(
@@ -47,6 +73,10 @@ pub(in crate::commands::audit) fn guidance(
     out: &mut dyn Write,
 ) -> io::Result<()> {
     let plan = Plan::new(r, status, context, detail);
+    detailed_plan(&plan, out)
+}
+
+fn detailed_plan(plan: &Plan, out: &mut dyn Write) -> io::Result<()> {
     if let Some(outcome) = &plan.outcome {
         writeln!(out)?;
         line(outcome, "    ", out)?;
@@ -105,7 +135,7 @@ fn lines(lines: &[String], indent: &str, out: &mut dyn Write) -> io::Result<()> 
 
 // Match audit file-list width, preserving indivisible coordinates and identifiers.
 // Four-space continuations stay distinct from the immediate child indentation.
-fn line(text: &str, indent: &str, out: &mut dyn Write) -> io::Result<()> {
+pub(super) fn line(text: &str, indent: &str, out: &mut dyn Write) -> io::Result<()> {
     write!(out, "{indent}")?;
     let mut width = indent.chars().count();
     for (index, word) in text.split(' ').enumerate() {

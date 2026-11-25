@@ -205,10 +205,8 @@ fn audit_binary_human_report_preserves_all_categories_attribution_and_progress()
         );
     }
     let err = stderr(&output);
-    assert!(
-        err.contains("assessing audit evidence: 0 / 2 assessments"),
-        "{err}"
-    );
+    assert!(err.contains("assessing advisories for 2 packages"), "{err}");
+    assert!(!err.contains("assessing audit evidence: 0 / 2 assessments"));
     assert!(err.contains("audit report ready; downloading..."));
     assert!(!err.contains("SBOM ready"));
     assert!(!output.stdout.contains(&0x1b));
@@ -524,7 +522,7 @@ fn audit_binary_used_manifests_replace_excluded_file_and_stdout_completion_lists
             if json {
                 &["--exclude", "fixtures/**", "--json"]
             } else {
-                &["--exclude", "fixtures/**"]
+                &["--exclude", "fixtures/**", "--details"]
             },
         );
         assert_eq!(output.status.code(), Some(1));

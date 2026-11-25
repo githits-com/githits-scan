@@ -136,7 +136,7 @@ struct AuditArgs {
     /// Write versioned facts and shared remediation explanations as plain-text JSON blocks
     #[arg(long, conflicts_with_all = ["json", "explain"], display_order = 61)]
     presentation_json: bool,
-    /// Include lifecycle source observations, affected files, collection limits and outdated/duplicate lists
+    /// Show full fix guidance, advisory and search evidence, manifests, outdated versions, and duplicates
     #[arg(long, display_order = 65)]
     details: bool,
     /// Write the report to FILE ('-' means stdout). Incompatible with --save-analysis
