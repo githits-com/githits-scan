@@ -215,7 +215,20 @@ mod tests {
                 "/remediation/recommendations/0/changes/0/occurrence_refs",
                 json!([0, 1]),
             ),
+            (
+                "/remediation/recommendations/0/changes/0/from_version",
+                json!("9.0.0"),
+            ),
+            ("/remediation/trace/occurrences/0/project_root", json!(true)),
             ("/remediation/trace/occurrences/1/project_root", json!(true)),
+            (
+                "/remediation/trace/relations/1/disposition",
+                json!("unverified_target"),
+            ),
+            (
+                "/remediation/trace/relations/1/path",
+                json!("other/package-lock.json"),
+            ),
             (
                 "/remediation/trace/relations/1/requests/0/owner_role",
                 json!("project"),
@@ -229,6 +242,16 @@ mod tests {
             *changed.pointer_mut(path).expect("fixture field") = invalid;
             assert!(requester(&changed).is_none(), "{path}");
         }
+
+        let project_request = input["remediation"]["trace"]["relations"][0]["requests"][0].clone();
+        input["remediation"]["trace"]["relations"][1]["requests"]
+            .as_array_mut()
+            .expect("requests")
+            .insert(0, project_request);
+        assert_eq!(
+            requester(&input).expect("recorded requester").owner_name,
+            "parent"
+        );
     }
 
     #[test]
