@@ -173,6 +173,64 @@ mod tests {
         recorded_requests(&remediation.trace, &remediation.recommendations[0])
     }
 
+    fn requester(input: &Value) -> Option<RecordedRequest> {
+        let remediation = report(input).data.remediation.expect("remediation");
+        Requesters::new(&remediation.trace).single(&remediation.recommendations[0])
+    }
+
+    #[test]
+    fn audit_current_requests_choose_the_first_verified_single_copy_request() {
+        let mut input = value();
+        input["remediation"]["recommendations"][0]["changes"]
+            .as_array_mut()
+            .expect("changes")
+            .truncate(1);
+        let mut another = input["remediation"]["trace"]["relations"][1].clone();
+        another["requests"][0]["owner"]["name"] = "another-parent".into();
+        input["remediation"]["trace"]["relations"]
+            .as_array_mut()
+            .expect("relations")
+            .push(another);
+        assert_eq!(
+            requester(&input).expect("recorded requester").owner_name,
+            "parent"
+        );
+
+        // Test each boundary with exactly one incoming relation.
+        input["remediation"]["trace"]["relations"]
+            .as_array_mut()
+            .expect("relations")
+            .pop();
+        for (path, invalid) in [
+            ("/remediation/trace/status", json!("not_retained")),
+            (
+                "/remediation/recommendations/0/detail_status",
+                json!("not_retained"),
+            ),
+            (
+                "/remediation/recommendations/0/changes/0/paths",
+                json!(["other/package-lock.json"]),
+            ),
+            (
+                "/remediation/recommendations/0/changes/0/occurrence_refs",
+                json!([0, 1]),
+            ),
+            ("/remediation/trace/occurrences/1/project_root", json!(true)),
+            (
+                "/remediation/trace/relations/1/requests/0/owner_role",
+                json!("project"),
+            ),
+            (
+                "/remediation/trace/relations/1/requests/0/requirement_status",
+                json!("provider_requirement"),
+            ),
+        ] {
+            let mut changed = input.clone();
+            *changed.pointer_mut(path).expect("fixture field") = invalid;
+            assert!(requester(&changed).is_none(), "{path}");
+        }
+    }
+
     #[test]
     fn audit_current_requests_preserve_the_explicit_owner_and_distinct_paths() {
         let mut input = value();

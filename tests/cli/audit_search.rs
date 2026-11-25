@@ -182,10 +182,27 @@ fn audit_search_default_keeps_the_generic_metadata_limit_without_a_concrete_decl
     record["checks"]["parent_search"] = "limited".into();
     record["search_detail_status"] = "not_retained".into();
     record["search_details"] = json!([]);
+    record["limitations"] = json!([
+        "unbound_request",
+        "parent_evidence_incomplete",
+        "parent_candidate_limit"
+    ]);
+    let other = record.clone();
+    value["remediation"]["recommendations"]
+        .as_array_mut()
+        .expect("recommendations")
+        .push(other);
     let output = execute_report(&value, &["--quiet", "--no-color"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let report = prose(&stdout(&output));
-    assert!(report.contains("Metadata needed to check upgrades of packages that depend on this dependency was unavailable"), "{report}");
+    assert_eq!(report.matches("Metadata needed to check upgrades of packages that depend on this dependency was unavailable").count(), 1, "{report}");
+    assert_eq!(
+        report
+            .matches("reached its limit for checking upgrades")
+            .count(),
+        1,
+        "{report}"
+    );
     assert!(!report.contains("including a declaration"), "{report}");
 }
 

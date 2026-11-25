@@ -175,6 +175,23 @@ fn audit_ux_default_single_upgrade_names_the_exact_requester() {
     let requester_at = report.find(requester).expect("requester");
     assert!(requester_at > upgrade_at, "{report}");
 
+    let mut constrained = value.clone();
+    let mut blocker = named_constraint();
+    blocker["reason"] = "checked_occurrence_changed_by_other_recommendation".into();
+    blocker["dependency_name"] = "demo".into();
+    blocker["requested_requirement"] = "^1.0.0".into();
+    constrained["remediation"]["recommendations"][0]["blockers"] = json!([blocker]);
+    let output = execute_report(&constrained, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let report = prose(&stdout(&output));
+    assert!(
+        report.contains(
+            "Another recommendation changes a checked dependency; recheck combined changes."
+        ),
+        "{report}"
+    );
+    assert!(!report.contains(requester), "{report}");
+
     let mut unlinked = value;
     let occurrence = unlinked["remediation"]["trace"]["occurrences"][0].clone();
     unlinked["remediation"]["trace"]["occurrences"]

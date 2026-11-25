@@ -887,7 +887,8 @@ range and file. It names a requester only when the source supplies one.
 When missing dependency information also limited the search for updates to
 requesting packages, the default combines that qualification and the declaration
 in one explanation. The declaration is one example of the missing information.
-A separate recorded search limit can still appear for the group.
+Distinct recorded search limits each appear once per group, including when the
+report omits the declaration evidence.
 Report-wide limits such as a planning deadline or omitted recommendations
 appear once in the default report.
 Each shared explanation names the operation, affected package/version, request or
