@@ -8,6 +8,7 @@ use reasons::Reason;
 
 use super::coordinate;
 use crate::api::audit::{Report, remediation as wire, report::Vulnerability};
+use crate::audit::explain::{RecordedRequest, Requesters};
 use crate::audit::{Assessment, remediation::UNVERIFIED};
 
 #[derive(Serialize)]
@@ -35,6 +36,7 @@ impl State {
         let Some(data) = &r.remediation else {
             return Self::Unavailable;
         };
+        let requesters = Requesters::new(&data.trace);
         Self::Present(Box::new(Remediation {
             problem_indices: data
                 .recommendations
@@ -51,7 +53,7 @@ impl State {
             recommendations: data
                 .recommendations
                 .iter()
-                .map(|record| Record::new(record, &r.findings.vulnerabilities, &data.trace))
+                .map(|record| Record::new(record, &r.findings.vulnerabilities, &requesters))
                 .collect(),
             trace_status: data.trace.status.clone(),
             limits: data.limits.clone(),
@@ -76,7 +78,9 @@ pub(in crate::commands::audit) struct Record {
     pub occurrence_scope: Option<crate::audit::explain::OccurrenceScope>,
     pub subject: String,
     #[serde(skip)]
-    pub recorded_requests: Vec<crate::audit::explain::RecordedRequest>,
+    pub recorded_requests: Vec<RecordedRequest>,
+    #[serde(skip)]
+    pub requester: Option<RecordedRequest>,
     pub findings: Vec<Finding>,
     pub outcome: String,
     #[serde(serialize_with = "compact_changes")]
@@ -124,11 +128,16 @@ pub(in crate::commands::audit) struct Change {
 }
 
 impl Record {
-    fn new(r: &wire::Recommendation, findings: &[Vulnerability], trace: &wire::Trace) -> Self {
+    fn new(
+        r: &wire::Recommendation,
+        findings: &[Vulnerability],
+        requesters: &Requesters<'_>,
+    ) -> Self {
         Self {
             occurrence_scope: None,
             subject: coordinate(&r.subject),
-            recorded_requests: crate::audit::explain::recorded_requests(trace, r),
+            recorded_requests: requesters.joint(r),
+            requester: requesters.single(r),
             findings: resolve(&r.finding_refs, findings),
             outcome: r.outcome.clone(),
             changes: r

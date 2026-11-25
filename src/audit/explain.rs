@@ -6,7 +6,7 @@ use serde::Serialize;
 use crate::api::audit::{Report, remediation::Trace, trace};
 
 mod current;
-pub(crate) use current::{RecordedRequest, recorded_requests};
+pub(crate) use current::{RecordedRequest, Requesters};
 
 pub(crate) struct Explanation<'a> {
     pub finding_indices: BTreeSet<usize>,

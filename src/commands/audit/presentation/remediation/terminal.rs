@@ -1,7 +1,7 @@
 //! Select the material evidence for the default audit report.
 use super::{
     AdvisoryIdentities, Finding, Plan, Qualification, Record, Remediation, added_branches,
-    advisory_identities, capitalize, check_line, compact_limitation, limitations, location,
+    advisory_identities, capitalize, check_line, compact_limitation, limitations, location, owner,
     qualified_advisory, safe, search_only_limit, sentence, target_checks,
 };
 use crate::commands::audit::presentation::{added, search};
@@ -35,42 +35,42 @@ pub(in crate::commands::audit) fn report_limit(data: &Remediation) -> Option<Str
 }
 
 impl Plan {
-    /// Show the complete action and its decision-relevant qualifications.
+    /// Show the action and return any additional search limit for its group.
     pub(in crate::commands::audit) fn terminal(
         &self,
         record: &Record,
         qualification: Qualification,
         report_limits: &[String],
-    ) -> Vec<String> {
+    ) -> (Vec<String>, Option<String>) {
+        let show_search_limit = (!qualification.suggested()
+            || !record.remaining_findings.is_empty())
+            && record.checks.parent_search == "limited"
+            && !record.changes.is_empty();
+        let unbound = record
+            .limitations
+            .iter()
+            .any(|reason| reason == "unbound_request");
+        let combine_metadata = show_search_limit
+            && unbound
+            && record
+                .limitations
+                .iter()
+                .any(|reason| reason == "parent_evidence_incomplete");
+        let declaration = (unbound || record.changes.is_empty())
+            .then(|| search::unbound_request(record, combine_metadata))
+            .flatten();
+        let search_limit = show_search_limit
+            .then(|| terminal_search_limit(record, combine_metadata && declaration.is_some()))
+            .flatten();
+
         let mut lines = self.terminal_action(record, qualification);
         lines.extend(self.terminal_impact(record));
         for constraint in &self.constraints {
             lines.push(sentence(capitalize(constraint.summary.clone())));
             lines.extend(constraint.details.iter().cloned());
         }
-        lines.extend(self.terminal_checks(record, report_limits));
-        lines
-    }
-
-    /// One wider-search qualification for a group with unevaluated alternatives.
-    pub(in crate::commands::audit) fn terminal_search_limit(
-        r: &Record,
-        qualification: Qualification,
-    ) -> Option<String> {
-        if (qualification.suggested() && r.remaining_findings.is_empty())
-            || r.checks.parent_search != "limited"
-            || r.changes.is_empty()
-        {
-            return None;
-        }
-        let reason = r
-            .limitations
-            .iter()
-            .find(|reason| search_only_limit(reason));
-        Some(reason.map_or_else(
-            || "The service could not finish checking updates to requesting packages.".into(),
-            |reason| sentence(compact_limitation((reason, super::explanation(reason)))),
-        ))
+        lines.extend(self.terminal_checks(record, report_limits, unbound, declaration));
+        (lines, search_limit)
     }
 
     fn terminal_impact(&self, r: &Record) -> Vec<String> {
@@ -151,20 +151,32 @@ impl Plan {
                 );
             lines.extend(evidence.map(|line| format!("{evidence_indent}{line}")));
         }
-        if qualification.suggested() && self.constraints.is_empty() && self.files.is_empty() {
-            lines.extend(self.context.first().cloned().map(capitalize).map(sentence));
+        if !qualification.suggested() || !self.constraints.is_empty() {
+            return lines;
+        }
+        match (&r.requester, self.files.is_empty()) {
+            (Some(request), _) => lines.push(format!(
+                "One recorded requester is {} ({}) [{}].",
+                owner(&request.owner_name, request.owner_version.as_deref()),
+                safe(&request.requirement),
+                safe(&request.path),
+            )),
+            (None, true) => {
+                lines.extend(self.context.first().cloned().map(capitalize).map(sentence));
+            }
+            (None, false) => {}
         }
         lines
     }
 
-    fn terminal_checks(&self, r: &Record, report_limits: &[String]) -> Vec<String> {
-        let unbound = r
-            .limitations
-            .iter()
-            .any(|reason| reason == "unbound_request");
-        let bound_explanation = (unbound || r.changes.is_empty())
-            .then(|| search::unbound_request(r))
-            .flatten();
+    fn terminal_checks(
+        &self,
+        r: &Record,
+        report_limits: &[String],
+        unbound: bool,
+        declaration: Option<String>,
+    ) -> Vec<String> {
+        let explains_unbound = declaration.is_some();
         let mut lines: Vec<_> = target_checks(r)
             .filter(|(label, value)| {
                 !(*label == "requirements"
@@ -176,23 +188,38 @@ impl Plan {
             })
             .map(|(label, value)| sentence(check_line(label, value, true)))
             .collect();
-        lines.extend(bound_explanation.iter().cloned());
+        lines.extend(declaration);
         lines.extend(super::other_checks(r, false, false));
         let route_removal = has_route_removal(r);
         for limit in limitations(r, &self.constraints).filter(|(code, _)| {
             !(report_limits.iter().any(|reason| reason == code)
                 || search_only_limit(code)
                 || matches!(*code, "no_checked_parent_upgrade" | "no_checked_leaf")
-                || (bound_explanation.is_some() && *code == "unbound_request")
+                || (explains_unbound && *code == "unbound_request")
                 || (route_removal && *code == "represented_routes_cut"))
         }) {
             lines.push(sentence(compact_limitation(limit)));
         }
-        if r.changes.is_empty() && !unbound && bound_explanation.is_none() {
+        if r.changes.is_empty() && !unbound && !explains_unbound {
             lines.extend(search::compact_obstacle(r, &self.search_explanations));
         }
         lines
     }
+}
+
+fn terminal_search_limit(r: &Record, metadata_explained: bool) -> Option<String> {
+    r.limitations
+        .iter()
+        .find(|reason| {
+            search_only_limit(reason)
+                && !(metadata_explained && *reason == "parent_evidence_incomplete")
+        })
+        .map(|reason| sentence(compact_limitation((reason, super::explanation(reason)))))
+        .or_else(|| {
+            (!metadata_explained).then(|| {
+                "The service could not finish checking updates to requesting packages.".into()
+            })
+        })
 }
 
 fn scoped_finding(label: &str, f: &Finding, other: &AdvisoryIdentities<'_>) -> String {

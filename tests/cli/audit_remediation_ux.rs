@@ -155,6 +155,41 @@ fn audit_ux_joint_request_context_is_shared_by_online_and_saved_explanation() {
 }
 
 #[test]
+fn audit_ux_default_single_upgrade_names_the_exact_requester() {
+    let mut value = graph_report();
+    let record = &mut value["remediation"]["recommendations"][0];
+    record["changes"]
+        .as_array_mut()
+        .expect("changes")
+        .truncate(1);
+    value["remediation"]["trace"]["relations"][1]["requests"][0]["requested_requirement"] =
+        "^1.0.0".into();
+    let output = execute_report(&value, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let report = prose(&stdout(&output));
+    let requester = "One recorded requester is parent@2.0.0 (^1.0.0) [package-lock.json].";
+    assert_eq!(report.matches(requester).count(), 1, "{report}");
+    let upgrade = "Upgrade: npm:demo 1.0.0 -> 1.1.1";
+    assert!(report.contains(upgrade), "{report}");
+    let upgrade_at = report.find(upgrade).expect("single upgrade");
+    let requester_at = report.find(requester).expect("requester");
+    assert!(requester_at > upgrade_at, "{report}");
+
+    let mut unlinked = value;
+    let occurrence = unlinked["remediation"]["trace"]["occurrences"][0].clone();
+    unlinked["remediation"]["trace"]["occurrences"]
+        .as_array_mut()
+        .expect("occurrences")
+        .push(occurrence);
+    unlinked["remediation"]["recommendations"][0]["changes"][0]["occurrence_refs"] = json!([3]);
+    let output = execute_report(&unlinked, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let report = prose(&stdout(&output));
+    assert!(report.contains(upgrade), "{report}");
+    assert!(!report.contains(requester), "{report}");
+}
+
+#[test]
 fn audit_ux_joint_request_preserves_distinct_owner_and_escapes_evidence() {
     let mut value = graph_report();
     let request = &mut value["remediation"]["trace"]["relations"][1]["requests"][0];

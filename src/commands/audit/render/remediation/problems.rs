@@ -160,18 +160,11 @@ fn compact_group(
     writeln!(out, "  {}", safe(subject))?;
     let mut search_limit = None;
     for a in &group.alternatives {
-        super::lines(
-            &a.plan(&data.status, context).terminal(
-                a.record,
-                a.qualification,
-                &data.limits.reasons,
-            ),
-            "    ",
-            out,
-        )?;
-        if search_limit.is_none() {
-            search_limit = Plan::terminal_search_limit(a.record, a.qualification);
-        }
+        let (lines, limit) =
+            a.plan(&data.status, context)
+                .terminal(a.record, a.qualification, &data.limits.reasons);
+        super::lines(&lines, "    ", out)?;
+        search_limit = search_limit.or(limit);
     }
     if let Some(limit) = search_limit {
         super::line(&limit, "    ", out)?;

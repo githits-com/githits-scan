@@ -18,7 +18,9 @@ pub(super) const UNBOUND_REQUEST: &str =
     "a recorded requirement could not be linked to a locked copy";
 
 /// Use a source observation to name the requirement without attributing it to an owner.
-pub(super) fn unbound_request(record: &Record) -> Option<String> {
+/// When `combine_metadata` is true, present the missing link as an example of the broader
+/// metadata gap that limited the upgrade search.
+pub(super) fn unbound_request(record: &Record, combine_metadata: bool) -> Option<String> {
     let observation = record.search_details.iter().flatten().find_map(|detail| {
         let Detail::Unavailable(detail) = detail else {
             return None;
@@ -37,10 +39,14 @@ pub(super) fn unbound_request(record: &Record) -> Option<String> {
         observation.requested_requirement.as_deref(),
         &observation.requirement_status,
     );
-    Some(format!(
-        "A declaration in {} {request}. The report could not link it to a locked copy.",
-        safe(&observation.path)
-    ))
+    let path = safe(&observation.path);
+    Some(if combine_metadata {
+        format!(
+            "Missing dependency information limited the upgrade search, including a declaration in {path} that {request} and could not be linked to a locked copy."
+        )
+    } else {
+        format!("A declaration in {path} {request}. The report could not link it to a locked copy.")
+    })
 }
 
 /// An explanation associated with one detail in the matching fact record.

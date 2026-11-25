@@ -1,5 +1,5 @@
-//! Source-local request context for a joint action, never causal planner reasoning.
-use std::collections::BTreeSet;
+//! Source-local request context for recorded changes.
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::api::audit::{
     remediation::{Change, Recommendation, Trace},
@@ -7,7 +7,7 @@ use crate::api::audit::{
     wire::Coordinate,
 };
 
-/// A supplied request attached to a validated relationship between changed occurrences.
+/// A supplied request attached to a validated relationship targeting a changed occurrence.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct RecordedRequest {
     /// Actual request owner, which need not equal the relationship's source occurrence.
@@ -23,10 +23,7 @@ pub(crate) struct RecordedRequest {
 }
 
 /// Select current requests for a joint action without guessing its causal reason.
-pub(crate) fn recorded_requests(
-    trace: &Trace,
-    recommendation: &Recommendation,
-) -> Vec<RecordedRequest> {
+fn recorded_requests(trace: &Trace, recommendation: &Recommendation) -> Vec<RecordedRequest> {
     if trace.status != "retained"
         || recommendation.detail_status != "retained"
         || recommendation.changes.len() < 2
@@ -50,12 +47,82 @@ pub(crate) fn recorded_requests(
                 && r.to_ref.is_some_and(|i| changed.contains(&i))
         })
         .flat_map(|r| {
+            let target = r
+                .to_ref
+                .and_then(|i| trace.occurrences.get(i))
+                .and_then(|occurrence| occurrence.coordinate.as_ref());
             r.requests
                 .iter()
-                .filter_map(|request| recorded_request(trace, r, request))
+                .filter_map(move |request| recorded_request(target?, request))
         })
         .filter(|r| seen.insert(r.clone()))
         .collect()
+}
+
+/// Recorded request lookup used while building the audit view.
+pub(crate) struct Requesters<'a> {
+    trace: &'a Trace,
+    by_target: BTreeMap<usize, &'a trace::Request>,
+}
+
+impl<'a> Requesters<'a> {
+    /// Index the first eligible incoming request for each exact target occurrence.
+    pub(crate) fn new(trace: &'a Trace) -> Self {
+        let mut by_target = BTreeMap::new();
+        if trace.status != "retained" {
+            return Self { trace, by_target };
+        }
+        for (target, request) in trace
+            .relations
+            .iter()
+            .filter_map(|relation| third_party_request(trace, relation))
+        {
+            by_target.entry(target).or_insert(request);
+        }
+        Self { trace, by_target }
+    }
+
+    /// Return a representative request for a retained single-occurrence change.
+    pub(crate) fn single(&self, recommendation: &Recommendation) -> Option<RecordedRequest> {
+        let [change] = recommendation.changes.as_slice() else {
+            return None;
+        };
+        if recommendation.detail_status != "retained" || change.occurrence_refs.as_ref()?.len() != 1
+        {
+            return None;
+        }
+        let index = matching_refs(self.trace, change).next()?;
+        let occurrence = self.trace.occurrences.get(index)?;
+        if occurrence.project_root
+            || (!change.paths.is_empty() && !change.paths.contains(&occurrence.path))
+        {
+            return None;
+        }
+        recorded_request(occurrence.coordinate.as_ref()?, self.by_target.get(&index)?)
+    }
+
+    /// Select current requests between changed occurrences in a joint action.
+    pub(crate) fn joint(&self, recommendation: &Recommendation) -> Vec<RecordedRequest> {
+        recorded_requests(self.trace, recommendation)
+    }
+}
+
+fn third_party_request<'a>(
+    trace: &Trace,
+    relation: &'a trace::Relation,
+) -> Option<(usize, &'a trace::Request)> {
+    let (from, to) = (relation.from_ref?, relation.to_ref?);
+    if relation.disposition != "standard_dependency"
+        || super::relation_issue(trace, relation).is_some()
+        || trace.occurrences.get(from)?.project_root
+    {
+        return None;
+    }
+    relation
+        .requests
+        .iter()
+        .find(|request| request.owner_role == "third_party" && recorded_range(request).is_some())
+        .map(|request| (to, request))
 }
 
 fn matching_refs<'a>(trace: &'a Trace, change: &'a Change) -> impl Iterator<Item = usize> + 'a {
@@ -77,24 +144,19 @@ fn matching_refs<'a>(trace: &'a Trace, change: &'a Change) -> impl Iterator<Item
         })
 }
 
-fn recorded_request(
-    trace: &Trace,
-    relation: &trace::Relation,
-    request: &trace::Request,
-) -> Option<RecordedRequest> {
+fn recorded_range(request: &trace::Request) -> Option<&str> {
     if request.requirement_status != "recorded" {
         return None;
     }
+    request.requested_requirement.as_deref()
+}
+
+fn recorded_request(target: &Coordinate, request: &trace::Request) -> Option<RecordedRequest> {
     Some(RecordedRequest {
         owner_name: request.owner.name.clone(),
         owner_version: request.owner.version.clone(),
-        target: trace
-            .occurrences
-            .get(relation.to_ref?)?
-            .coordinate
-            .as_ref()?
-            .clone(),
-        requirement: request.requested_requirement.clone()?,
+        target: target.clone(),
+        requirement: recorded_range(request)?.into(),
         path: request.path.clone(),
     })
 }
