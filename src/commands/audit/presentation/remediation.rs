@@ -924,19 +924,33 @@ pub(in crate::commands::audit) fn limits(data: &Remediation) -> Vec<String> {
     );
     lines
 }
+type AdvisoryIdentities<'a> = BTreeSet<(&'a str, &'a str)>;
+
+fn advisory_identities(findings: &[Finding]) -> AdvisoryIdentities<'_> {
+    findings.iter().map(advisory_identity).collect()
+}
+
+fn advisory_identity(f: &Finding) -> (&str, &str) {
+    (&f.package, &f.advisory)
+}
+
+fn qualified_advisory(f: &Finding, other: &AdvisoryIdentities<'_>) -> String {
+    let qualifier = if other.contains(&advisory_identity(f)) {
+        " (partly)"
+    } else {
+        ""
+    };
+    format!("{}{qualifier}", safe(&f.advisory))
+}
+
 fn finding_names(findings: &[Finding], other: &[Finding], subject: &str) -> String {
-    let overlapping: BTreeSet<_> = other.iter().map(|f| (&f.package, &f.advisory)).collect();
+    let overlapping = advisory_identities(other);
     let mut groups: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
     for f in findings {
-        let qualifier = if overlapping.contains(&(&f.package, &f.advisory)) {
-            " (partly)"
-        } else {
-            ""
-        };
         groups
             .entry(&f.package)
             .or_default()
-            .insert(format!("{}{qualifier}", safe(&f.advisory)));
+            .insert(qualified_advisory(f, &overlapping));
     }
     let mut labels = Vec::new();
     if let Some(advisories) = groups.remove(subject) {

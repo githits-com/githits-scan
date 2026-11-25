@@ -262,8 +262,8 @@ Optional native `remediation` is consumed as proposals about the existing findin
 not a change to installed dependencies. The service owns release/advisory/request
 checks and joint action reasoning; Scan never matches ranges or solves a graph.
 One record's changes stay together. JSON and archives preserve producer order.
-Human output groups records by exact subject coordinate in first-appearance order,
-keeping the original relative order of alternatives within each group. Records
+Human output groups records by exact subject coordinate. Detailed text keeps
+first-appearance group order and producer order within each group. Records
 remain independent without inferred exclusivity or compatibility. Conflict
 and coordination warnings remain attached to their records and exact targets.
 

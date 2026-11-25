@@ -1,7 +1,8 @@
 //! Select the material evidence for the default audit report.
 use super::{
-    Finding, Plan, Qualification, Record, added_branches, capitalize, check_line,
-    compact_limitation, limitations, location, safe, search_only_limit, sentence, target_checks,
+    AdvisoryIdentities, Finding, Plan, Qualification, Record, added_branches, advisory_identities,
+    capitalize, check_line, compact_limitation, limitations, location, qualified_advisory, safe,
+    search_only_limit, sentence, target_checks,
 };
 use crate::commands::audit::presentation::{added, search};
 use crate::commands::audit::view::remediation::reasons::Reason;
@@ -59,12 +60,18 @@ impl Plan {
                 .map(sentence)
                 .collect();
         }
+        let addressed = advisory_identities(&r.addressed_findings);
+        let remaining = advisory_identities(&r.remaining_findings);
         [
-            ("Would address", &r.addressed_findings),
-            ("Still unresolved", &r.remaining_findings),
+            ("Would address", &r.addressed_findings, &remaining),
+            ("Still unresolved", &r.remaining_findings, &addressed),
         ]
         .into_iter()
-        .flat_map(|(label, findings)| findings.iter().map(move |f| scoped_finding(label, f)))
+        .flat_map(|(label, findings, other)| {
+            findings
+                .iter()
+                .map(move |f| scoped_finding(label, f, other))
+        })
         .collect()
     }
 
@@ -158,11 +165,11 @@ impl Plan {
     }
 }
 
-fn scoped_finding(label: &str, f: &Finding) -> String {
+fn scoped_finding(label: &str, f: &Finding, other: &AdvisoryIdentities<'_>) -> String {
     format!(
         "{label}: {} — {}{}.",
         safe(&f.package),
-        safe(&f.advisory),
+        qualified_advisory(f, other),
         location(&f.files)
     )
 }

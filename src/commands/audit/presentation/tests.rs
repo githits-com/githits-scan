@@ -706,6 +706,16 @@ fn external_advisory_groups_keep_local_first_and_item_scoped_partial_impact() {
     assert_eq!(plan.impact[0].matches("npm:omega").count(), 1);
     assert!(!plan.impact[0].contains("GHSA-z (partly)"));
     assert!(!plan.impact.iter().any(|s| s.contains('\n')));
+    let mut output = Vec::new();
+    audit::render::write(&view, false, &mut output, crate::style::Palette::PLAIN).expect("text");
+    let output = String::from_utf8(output).expect("utf8");
+    for outcome in [
+        "Would address: npm:omega@1.0.0 — GHSA-a (partly) in other/package-lock.json.",
+        "Still unresolved: npm:omega@1.0.0 — GHSA-a (partly) in package-lock.json.",
+        "Would address: npm:omega@1.0.0 — GHSA-z in package-lock.json.",
+    ] {
+        assert!(output.contains(outcome), "{output}");
+    }
     let facts = serde_json::to_value(&view).expect("facts");
     assert_eq!(
         facts["remediation"]["recommendations"][0]["addressed_findings"]
