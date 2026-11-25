@@ -103,7 +103,7 @@ fn partial_parent_keeps_candidate_identity_checked_benefit_and_unresolved_impact
         "checked benefit replaces redundant request context"
     );
     let mut text = Vec::new();
-    audit::render::write(&view, false, &mut text, crate::style::Palette::PLAIN).expect("text");
+    audit::render::write(&view, true, &mut text, crate::style::Palette::PLAIN).expect("text");
     let text = String::from_utf8(text).expect("utf8");
     let document = serde_json::to_value(Document::new(&view)).expect("presentation");
     assert_eq!(
@@ -297,7 +297,7 @@ fn compact_summary_preserves_partial_benefit_and_unverified_application() {
         recommendation["checks"],
         json!([
             "The report did not confirm that the proposed versions are available. The release check gives no reason for the missing confirmation.",
-            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
+            "The report does not establish whether the project's dependency requirements allow this change. The requirement check gives no reason for this gap."
         ])
     );
     assert_eq!(
@@ -706,6 +706,16 @@ fn external_advisory_groups_keep_local_first_and_item_scoped_partial_impact() {
     assert_eq!(plan.impact[0].matches("npm:omega").count(), 1);
     assert!(!plan.impact[0].contains("GHSA-z (partly)"));
     assert!(!plan.impact.iter().any(|s| s.contains('\n')));
+    let mut output = Vec::new();
+    audit::render::write(&view, false, &mut output, crate::style::Palette::PLAIN).expect("text");
+    let output = String::from_utf8(output).expect("utf8");
+    for outcome in [
+        "Would address: npm:omega@1.0.0 — GHSA-a (partly) in other/package-lock.json.",
+        "Still unresolved: npm:omega@1.0.0 — GHSA-a (partly) in package-lock.json.",
+        "Would address: npm:omega@1.0.0 — GHSA-z in package-lock.json.",
+    ] {
+        assert!(output.contains(outcome), "{output}");
+    }
     let facts = serde_json::to_value(&view).expect("facts");
     assert_eq!(
         facts["remediation"]["recommendations"][0]["addressed_findings"]

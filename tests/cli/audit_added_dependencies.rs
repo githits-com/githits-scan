@@ -1,4 +1,5 @@
 //! Registry branch facts travel through live and saved audit presentation.
+use super::audit_remediation::execute_report;
 use super::*;
 use serde_json::{Value, json};
 
@@ -18,6 +19,57 @@ fn document(output: &Output) -> Value {
 fn branches() -> Value {
     serde_json::from_slice(include_bytes!("../fixtures/audit/added-dependencies.json"))
         .expect("branches")
+}
+
+#[test]
+fn audit_added_dependencies_compact_keeps_selected_peer_risk_without_search_history() {
+    let mut value = report();
+    let evidence = branches();
+    let mut selected = evidence["search_details"][0]["added_dependency"].clone();
+    selected["scope"] = "peer".into();
+    let r = &mut value["remediation"]["recommendations"][0];
+    r["changes"][0]["added_dependencies"] = json!([selected]);
+    r["search_detail_status"] = "retained".into();
+    r["search_details"] = evidence["search_details"].clone();
+    let root = repo();
+    let archive = root.path().join("analysis.json");
+    let output = execute_report(
+        &value,
+        &[
+            "--no-color",
+            "--quiet",
+            "--save-analysis",
+            archive.to_str().expect("path"),
+        ],
+    );
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = prose(&stdout(&output));
+    assert!(
+        compact.contains("Needs a decision") && !compact.contains("Suggested updates"),
+        "{compact}"
+    );
+    assert!(compact.contains("npm:affected-descendant@1.0.0 found applicable advisories (AUDIT-ADDED-affected-descendant)"), "{compact}");
+    for omitted in [
+        "Upgrade search",
+        "may select different",
+        "No affecting advisories",
+        "as a new dependency",
+    ] {
+        assert!(!compact.contains(omitted), "{compact}");
+    }
+    for flags in [&["--details"][..], &["--explain", "npm:demo@1.0.0"][..]] {
+        let replay = offline(&archive, flags);
+        assert_eq!(replay.status.code(), Some(1), "{}", stderr(&replay));
+        let text = prose(&stdout(&replay));
+        assert!(text.contains("Candidate upgrade: npm:demo"), "{text}");
+        assert!(!text.contains("Suggested fix"), "{text}");
+        assert!(
+            text.contains("requires added-child ^1 as a peer dependency"),
+            "{text}"
+        );
+        assert!(text.contains("AUDIT-ADDED-affected-descendant"), "{text}");
+        assert!(text.contains("Upgrade search:"), "{text}");
+    }
 }
 
 #[test]
@@ -115,7 +167,7 @@ fn audit_added_dependencies_keeps_checked_branch_and_losing_candidates() {
     );
 
     for flags in [
-        vec!["--no-color"],
+        vec!["--details", "--no-color"],
         vec!["--explain", "npm:demo@1.0.0", "--no-color"],
     ] {
         let output = offline(&archive, &flags);

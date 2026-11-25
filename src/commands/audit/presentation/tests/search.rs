@@ -336,7 +336,7 @@ fn audit_added_dependencies_advisory_precedes_unchecked_requirements() {
     assert_eq!(
         r["checks"],
         json!([
-            "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
+            "The report does not establish whether the project's dependency requirements allow this change. The requirement check gives no reason for this gap."
         ])
     );
 }
@@ -380,7 +380,7 @@ fn audit_added_dependencies_failed_checks_precede_unchecked_requirements() {
         assert_eq!(
             r["checks"],
             json!([
-                "The audit did not check whether the project's dependency requirements allow this change. The requirement check gives no reason."
+                "The report does not establish whether the project's dependency requirements allow this change. The requirement check gives no reason for this gap."
             ])
         );
     }

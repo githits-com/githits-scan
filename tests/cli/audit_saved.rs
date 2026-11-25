@@ -179,6 +179,55 @@ fn audit_saved_binary_save_replay_preserve_facts_without_network() {
 }
 
 #[test]
+fn audit_saved_text_modes_match_online_and_file_output() {
+    let root = repo();
+    let bytes = serde_json::to_vec(&graph()).expect("report");
+    for details in [false, true] {
+        let archive = root.path().join(if details {
+            "details.json"
+        } else {
+            "compact.json"
+        });
+        let mock = server(&bytes);
+        let mut mode = vec!["--quiet", "--no-color"];
+        if details {
+            mode.push("--details");
+        }
+        let online = run(
+            root.path(),
+            Some(&mock.origin()),
+            &[
+                mode.as_slice(),
+                &["--save-analysis", archive.to_str().expect("path")],
+            ]
+            .concat(),
+        );
+        let replay = offline(&archive, &mode);
+        assert_eq!(online.status.code(), Some(1), "{}", stderr(&online));
+        assert_eq!(replay.status.code(), online.status.code());
+        let replay_text = stdout(&replay);
+        assert_eq!(
+            replay_text.split_once('\n').expect("saved header").1,
+            stdout(&online)
+        );
+        assert_eq!(
+            replay_text.contains("Manifests: package.json"),
+            details,
+            "{replay_text}"
+        );
+        let target = root.path().join("audit.txt");
+        mode.extend(["--output", target.to_str().expect("path")]);
+        let file = offline(&archive, &mode);
+        assert_eq!(file.status.code(), online.status.code());
+        assert_eq!(file.stdout, [] as [u8; 0]);
+        assert_eq!(
+            fs::read_to_string(target).expect("file output"),
+            replay_text
+        );
+        assert_eq!(mock.requests().len(), 3);
+    }
+}
+#[test]
 fn audit_explain_binary_preserves_joint_actions_and_problem_order() {
     let root = repo();
     let path = root.path().join("analysis.json");

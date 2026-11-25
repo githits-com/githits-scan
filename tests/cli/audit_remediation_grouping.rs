@@ -57,7 +57,7 @@ fn ordinary_and_focused(value: &Value) -> (String, String) {
 #[test]
 fn audit_remediation_groups_alternatives_by_exact_subject() {
     let input = grouping_report();
-    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    let output = execute_report(&input, &["--quiet", "--no-color", "--details"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let text = stdout(&output);
     for heading in ["npm:demo@1.0.0 — vulnerable", "npm:demo@2.0.0 — vulnerable"] {
@@ -90,6 +90,186 @@ fn audit_remediation_groups_alternatives_by_exact_subject() {
     assert_eq!(
         structured["remediation"]["recommendations"][1]["subject"],
         "npm:demo@2.0.0"
+    );
+}
+
+#[test]
+fn audit_remediation_grouping_compact_prioritizes_supported_alternatives() {
+    let mut input = grouping_report();
+    let advisory = &mut input["findings"]["vulnerabilities"][1];
+    advisory["severity_score"] = json!(7.5);
+    advisory["severity_type"] = "CVSS".into();
+    advisory["malicious"] = true.into();
+    let alternatives = input["remediation"]["recommendations"]
+        .as_array_mut()
+        .expect("records");
+    alternatives[0]["checks"]["requirements"] = "blocked".into();
+    alternatives[0]["blockers"] =
+        json!([
+            serde_json::from_slice::<Value>(include_bytes!("../fixtures/audit/blocker.json"))
+                .expect("constraint")
+        ]);
+    alternatives[1]["checks"]["requirements"] = "unchecked".into();
+    alternatives.swap(0, 1);
+    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = stdout(&output);
+    let supported = compact
+        .find("Upgrade: npm:demo 1.0.0 -> 1.1.2")
+        .expect(&compact);
+    let blocked = compact
+        .find("Candidate: npm:demo 1.0.0 -> 1.1.1")
+        .expect(&compact);
+    let unresolved = compact.find("Needs a decision").expect(&compact);
+    assert!(supported < blocked && blocked < unresolved, "{compact}");
+    assert!(
+        compact.contains("GHSA-second (CVSS 7.5) MALICIOUS"),
+        "{compact}"
+    );
+    assert!(
+        compact.contains("Dependency requirements conflict with this candidate."),
+        "{compact}"
+    );
+    assert!(
+        !compact.contains("Alternative 1") && !compact.contains("Manifests"),
+        "{compact}"
+    );
+    assert!(
+        !compact.contains("verified advisory fixes") && !compact.contains("Upgrade search"),
+        "{compact}"
+    );
+    assert_eq!(compact.matches("Use --details").count(), 1, "{compact}");
+    let detailed = human_report(&input);
+    assert!(
+        detailed.contains("Alternative 1") && detailed.contains("Manifests"),
+        "{detailed}"
+    );
+    assert!(
+        detailed.contains("verified advisory fixes:") && detailed.contains("MALICIOUS"),
+        "{detailed}"
+    );
+}
+
+#[test]
+fn audit_remediation_grouping_compact_assigns_shared_findings_in_display_order() {
+    let mut input = grouping_report();
+    let mut related = input["findings"]["vulnerabilities"][2].clone();
+    related["coordinate"]["name"] = "related".into();
+    related["advisory_id"] = "GHSA-related".into();
+    related["paths"] = json!(["related/package-lock.json"]);
+    input["findings"]["vulnerabilities"]
+        .as_array_mut()
+        .expect("findings")
+        .push(related);
+    input["summary"]["vulnerabilities"] = 4.into();
+    let alternatives = input["remediation"]["recommendations"]
+        .as_array_mut()
+        .expect("records");
+    alternatives[0]["finding_refs"] = json!([0, 3]);
+    alternatives[0]["remaining_finding_refs"] = json!([3]);
+    alternatives[0]["outcome"] = "partial".into();
+    alternatives[1]["finding_refs"] = json!([2, 3]);
+    alternatives[1]["checks"]["requirements"] = "unchecked".into();
+    alternatives.swap(0, 1);
+    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = prose(&stdout(&output));
+    let associated = "Advisories npm:related@2.0.0 [related/package-lock.json]: GHSA-related";
+    let (suggestions, decisions) = compact.split_once("Needs a decision").expect(&compact);
+    assert!(
+        suggestions.contains(associated) && !decisions.contains(associated),
+        "{compact}"
+    );
+    assert_eq!(suggestions.matches(associated).count(), 1, "{compact}");
+    assert!(
+        suggestions.contains(
+            "Still unresolved: npm:related@2.0.0 — GHSA-related in related/package-lock.json."
+        ),
+        "{compact}"
+    );
+}
+
+#[test]
+fn audit_remediation_grouping_compact_mentions_shared_search_limit_once() {
+    let mut input = grouping_report();
+    input["remediation"]["status"] = "limited".into();
+    input["remediation"]["limits"]["reasons"] = json!(["parent_candidate_limit"]);
+    for index in [0, 2] {
+        let candidate = &mut input["remediation"]["recommendations"][index];
+        candidate["checks"]["requirements"] = "blocked".into();
+        candidate["checks"]["parent_search"] = "limited".into();
+        candidate["limitations"] = json!(["parent_candidate_limit"]);
+    }
+    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = prose(&stdout(&output));
+    let limit = "reached its limit for checking upgrades";
+    assert_eq!(compact.matches(limit).count(), 1, "{compact}");
+    assert_eq!(prose(&human_report(&input)).matches(limit).count(), 3);
+}
+
+#[test]
+fn audit_remediation_grouping_compact_keeps_search_limit_for_suggested_partial_fix() {
+    let mut input = grouping_report();
+    input["remediation"]["status"] = "limited".into();
+    input["remediation"]["limits"]["reasons"] = json!(["parent_candidate_limit"]);
+    let record = &mut input["remediation"]["recommendations"][0];
+    record["checks"]["parent_search"] = "limited".into();
+    record["limitations"] = json!(["parent_candidate_limit"]);
+    let limit = "reached its limit for checking upgrades";
+
+    let complete = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(complete.status.code(), Some(1), "{}", stderr(&complete));
+    assert!(!prose(&stdout(&complete)).contains(limit));
+
+    let record = &mut input["remediation"]["recommendations"][0];
+    record["outcome"] = "partial".into();
+    record["finding_refs"] = json!([0, 1]);
+    record["remaining_finding_refs"] = json!([1]);
+    let partial = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(partial.status.code(), Some(1), "{}", stderr(&partial));
+    let compact = prose(&stdout(&partial));
+    assert!(compact.contains("Suggested updates"), "{compact}");
+    assert!(
+        compact.contains("Upgrade (partial): npm:demo 1.0.0 -> 1.1.1"),
+        "{compact}"
+    );
+    assert!(
+        compact.contains("Still unresolved: GHSA-second."),
+        "{compact}"
+    );
+    assert_eq!(compact.matches(limit).count(), 1, "{compact}");
+}
+
+#[test]
+fn audit_remediation_grouping_compact_preserves_report_wide_planning_deadline() {
+    let mut input = grouping_report();
+    input["remediation"]["status"] = "limited".into();
+    input["remediation"]["limits"]["reasons"] =
+        json!(["planning_deadline", "parent_candidate_limit"]);
+    let candidate = &mut input["remediation"]["recommendations"][0];
+    candidate["checks"]["requirements"] = "blocked".into();
+    candidate["limitations"] = json!(["planning_deadline"]);
+    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = prose(&stdout(&output));
+    assert!(compact.contains("Suggested updates"), "{compact}");
+    assert!(
+        compact.contains("The upgrade conflicts with dependency requirements."),
+        "{compact}"
+    );
+    assert!(
+        compact.contains("Fix guidance is incomplete. Mitigation planning time limit reached."),
+        "{compact}"
+    );
+    assert_eq!(
+        compact.matches("planning time limit").count(),
+        1,
+        "{compact}"
+    );
+    assert!(
+        !compact.contains("limit for checking upgrades"),
+        "{compact}"
     );
 }
 
@@ -214,7 +394,9 @@ fn audit_remediation_grouping_keeps_unowned_problems_and_independent_checks() {
     let second = text.split_once("Alternative 2").expect("second").1;
     assert!(second.contains("Candidate change:"), "{text}");
     assert!(
-        second.contains("The audit did not check whether the project's dependency requirements"),
+        second.contains(
+            "The report does not establish whether the project's dependency requirements"
+        ),
         "{text}"
     );
     assert!(!second.contains("project resolver/build not run"), "{text}");

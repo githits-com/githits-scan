@@ -193,8 +193,11 @@ fn audit_presentation_new_dependency_limit_keeps_raw_codes_in_facts_and_coverage
     for args in [vec!["--no-color"], vec!["--explain", "npm:demo@1.0.0"]] {
         let output = offline(&path, &args);
         assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
-        let text = stdout(&output);
-        assert!(text.contains("a new dependency was not checked"), "{text}");
+        let text = prose(&stdout(&output)).to_ascii_lowercase();
+        assert!(
+            text.contains("the service could not verify a dependency required by this candidate"),
+            "{text}"
+        );
         assert!(!text.contains("new_dependency_not_checked"), "{text}");
         assert!(
             text.contains("the service supplied an unfamiliar reason"),

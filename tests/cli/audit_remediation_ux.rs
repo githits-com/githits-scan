@@ -123,7 +123,10 @@ fn audit_ux_joint_request_context_is_shared_by_online_and_saved_explanation() {
     let expected =
         "recorded request for npm:demo@1.0.0: <1.1.0; owner parent@2.0.0 [package-lock.json]";
     assert_eq!(
-        stdout(&output).matches(expected).count(),
+        stdout(&output)
+            .to_ascii_lowercase()
+            .matches(expected)
+            .count(),
         1,
         "{}",
         stdout(&output)

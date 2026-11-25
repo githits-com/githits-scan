@@ -14,6 +14,35 @@ use crate::commands::audit::view::remediation::Record;
 use serde::Serialize;
 use std::collections::BTreeSet;
 
+pub(super) const UNBOUND_REQUEST: &str =
+    "a recorded requirement could not be linked to a locked copy";
+
+/// Use a source observation to name the requirement without attributing it to an owner.
+pub(super) fn unbound_request(record: &Record) -> Option<String> {
+    let observation = record.search_details.iter().flatten().find_map(|detail| {
+        let Detail::Unavailable(detail) = detail else {
+            return None;
+        };
+        let observation = detail.witness.observation.as_ref()?;
+        (detail.operation == "source"
+            && observation.status == "unbound_request"
+            && detail
+                .reasons
+                .iter()
+                .any(|reason| reason == "unbound_request"))
+        .then_some(observation)
+    })?;
+    let request = request_requirement(
+        Some(&observation.name),
+        observation.requested_requirement.as_deref(),
+        &observation.requirement_status,
+    );
+    Some(format!(
+        "A declaration in {} {request}. The report could not link it to a locked copy.",
+        safe(&observation.path)
+    ))
+}
+
 /// An explanation associated with one detail in the matching fact record.
 #[derive(Serialize)]
 pub(in crate::commands::audit) struct Explanation {
@@ -229,6 +258,7 @@ pub(super) fn known_cause(value: &str) -> Option<&'static str> {
         return Some(reason);
     }
     Some(match value {
+        "unbound_request" => UNBOUND_REQUEST,
         "lookup_failed" => "lookup failed",
         "release_row_unavailable" => "no release metadata was available",
         "release_row_unsuitable" => "the available release metadata could not be used",

@@ -10,13 +10,14 @@ reachability from manifest associations or execute one job per file pair.
 
 The inventory/configuration/exclusion rules match `sbom generate`, including
 manifest-only resolution by default. `--lockfiles-only` skips it. Reports name the
-unique manifest paths selected for upload in `manifests` (`Manifests:` in human
-output). Deliberately omitted files are not listed: results describe the selected
+unique manifest paths selected for upload in `manifests` (`Manifests:` in
+`--details` text). Deliberately omitted files are not listed: results describe the selected
 scope, not every file discovered in the repository.
 
-Human output omits empty finding totals and uses plain package-warning and fix-guidance
-headings. Default human output shows vulnerability problems, qualified fix alternatives,
-manifest/lock disagreements, native lifecycle warnings and genuine evidence gaps.
+Human output omits empty finding totals and keeps package warnings distinct.
+Default text uses Suggested updates and Needs a decision for qualified fixes.
+Detailed text groups them under Fix guidance. Both modes show manifest/lock
+disagreements, native lifecycle warnings and genuine evidence gaps.
 Each lifecycle event has a compact package/native-kind/scope line and its distinct
 publisher reasons. `--details` expands every source observation, source version,
 metadata observation time, replacement advice and affected coordinate/file list;
@@ -60,6 +61,9 @@ plain text. Progress goes to stderr; JSON suppresses live progress. Writing to s
 has no completion message. Saving a file confirms its path after a successful write.
 `-q/--quiet` suppresses progress and file-save messages; report content, failures,
 actionable warnings and blocked-scan diagnostics are unchanged.
+When audit progress reports zero completed packages, the phase line describes
+what is starting and includes any positive known total. Later counts describe
+the current phase.
 Admission/transport/structural decoding failures leave an existing output file
 untouched; output I/O failures can leave partial writes. Strings are escaped for
 terminal output; color never carries meaning.
@@ -258,12 +262,26 @@ Optional native `remediation` is consumed as proposals about the existing findin
 not a change to installed dependencies. The service owns release/advisory/request
 checks and joint action reasoning; Scan never matches ranges or solves a graph.
 One record's changes stay together. JSON and archives preserve producer order.
-Human output groups records by exact subject coordinate in first-appearance order,
-keeping the original relative order of alternatives within each group. Records
+Human output groups records by exact subject coordinate. Detailed text keeps
+first-appearance group order and producer order within each group. Records
 remain independent without inferred exclusivity or compatibility. Conflict
 and coordination warnings remain attached to their records and exact targets.
 
-Human output inserts a problem-then-guidance section between vulnerabilities and
+Default text leads with suggested updates after the summary. A subject with a
+supported action appears in that section, with supported actions first and
+qualified alternatives below them. Other subjects with proposals appear under
+Needs a decision. Alternatives are unnumbered. Producer order is retained among
+groups and alternatives of the same class. A grouped action keeps all of its
+changes together. The terminal presents meaningful constraints and risk beside
+the candidate, including named requesters, required edits with recorded ranges,
+remaining findings, target warnings, and coordination between recommendations.
+It shows primary advisory IDs, supplied severity, and malicious-package
+warnings by affected package and path. Uncovered findings and actionable input
+or checking gaps stay visible.
+
+`--details` restores the uploaded manifest inventory, full fix guidance,
+advisory fix hints, search explanations, and maintenance findings. Detailed
+guidance inserts a problem-then-guidance section between vulnerabilities and
 maintenance findings. Each exact vulnerable component's problem appears once,
 with advisory IDs and aliases, supplied severity/summary and source files,
 followed by all of its independent alternatives numbered within the group.
@@ -292,8 +310,12 @@ consumer a signal to link to the full blocks for qualified or unclear guidance.
 Detailed guidance retains any potential benefit reported for a candidate.
 The same model qualifies concise upgrades and detailed guidance. Checked
 effects, supporting requests and search evidence remain in the full blocks.
-Ordinary audit and focused saved-analysis explanation keep their grouped,
-line-wrapped layout and exact displayed context.
+The default layout assigns related finding context to the first displayed
+group that refers to it when the related component has no group of its own.
+Detailed audit and focused saved-analysis explanation retain producer order
+and exact displayed context. Both text modes use the same facts through online
+and saved replay. Existing presentation JSON keeps its independent compact
+summary and full explanation blocks.
 Project requirement/preference edits are described as necessary when applying the
 change, distinct from actual third-party requirement exclusions. A supplied
 project-owned edit names the recorded dependency requirement, current range and
@@ -305,7 +327,8 @@ The guidance names exact from/target versions, requesting blockers and material
 warnings. `Suggested fix` and imperative upgrade wording require observed target
 availability, non-affecting advisory checks, matched requirements, an addressed
 vulnerability and recognized planning/check evidence. Both use one predicate that
-also requires every change to be a recognized upgrade. A partial outcome or a
+also requires every change to be a recognized upgrade and no reported issue
+with a newly required dependency. A partial outcome or a
 nonempty remaining-finding list stays candidate-qualified when either the record
 checks or any change marks a prerelease target; an unresolved prerelease migration
 is never a confirmed fix. Complete proposed prereleases with no remaining findings
@@ -512,7 +535,9 @@ One accepted job is never resubmitted for an events/result failure. Current full
 snapshots replace progress even when revisions are equal; reconnect starts with
 latest state, not replay history. Known terminal states close consumption.
 
-`assessing` displays measured assessment counters; zero is distinct from unavailable.
+`assessing` displays measured assessment counters after work completes for any
+package. A zero-completed snapshot uses the audit phase-start wording described
+in the command contract.
 Unfamiliar phases display a generic stage, and unfamiliar failure codes use a static
 safe diagnostic. Unfamiliar job states stop with a protocol error because their
 terminal semantics are unknown. Each read has the established timeout; there is no
@@ -844,7 +869,14 @@ include losing alternatives and stay separate from selected-action checks.
 Neither a failed lookup for another candidate nor an empty retained collection
 changes the selected fix verdict or exit status.
 
-Native output groups search explanations under one `Upgrade search` heading.
+Detailed and focused text group search explanations under one `Upgrade search`
+heading. Default text names a material obstacle when it leaves the decision
+unresolved, including when a suggested partial fix leaves findings open and
+the search for further fixes was limited. If a recorded requirement could
+not be linked to a locked copy, the report names the supplied dependency,
+range and file. It names a requester only when the source supplies one.
+Report-wide limits such as a planning deadline or omitted recommendations
+appear once in the default report.
 Each shared explanation names the operation, affected package/version, request or
 source, and supplied cause in a short statement. Do not repeat a search prefix or
 add a generic reassurance about the selected fix. Known local/shared budget scope
@@ -873,7 +905,9 @@ blocks without additional analysis or token use.
 When a recommended change introduces a dependency request, Scan shows the
 authored name and requirement beside that change. It names the canonical
 selection and gives the advisory result for each supplied exact root or
-transitive version. The first registry-resolved branch in a recommendation
+transitive version in detailed or focused output. The default shows material
+issues on branches checked for the selected candidate. A recorded peer scope
+is described as a peer requirement. The first registry-resolved branch in a recommendation
 explains that the project installer may select different copies or apply
 different policy. The explanation applies to all such branches in that
 recommendation, including upgrade search results.

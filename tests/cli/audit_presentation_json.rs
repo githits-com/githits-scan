@@ -282,13 +282,18 @@ fn audit_presentation_json_required_edit_keeps_shared_qualification_in_native_re
         .as_str()
         .expect("compact text");
     let edit = "Applying the candidate requires updating the demo requirement in package.json.";
-    let change = "Candidate upgrade: npm:demo 1.0.0 -> 1.1.1";
-    for output in [online, focused] {
+    for (output, change) in [(online, "Candidate:"), (focused, "Candidate upgrade:")] {
         assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
         let native = prose(&stdout(&output));
-        assert!(native.contains(change) && native.contains(edit), "{native}");
         assert!(
-            native.contains("would address the listed advisory"),
+            native.contains(&format!("{change} npm:demo 1.0.0 -> 1.1.1")) && native.contains(edit),
+            "{native}"
+        );
+        assert!(native.contains("Current requirement: ~1.0"), "{native}");
+        assert!(
+            native
+                .to_ascii_lowercase()
+                .contains("would address the listed advisory"),
             "{native}"
         );
     }

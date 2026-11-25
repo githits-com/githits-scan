@@ -1,4 +1,5 @@
 //! New evidence travels with the same completed audit through every output path.
+use super::audit_remediation::{execute_report, human_report, json_report};
 use super::*;
 use serde_json::{Value, json};
 
@@ -50,7 +51,7 @@ fn audit_search_binary_one_result_preserves_evidence_through_archive_and_outputs
     assert_eq!(explanation["search_detail_index"], 0);
     let summary = explanation["summary"].as_str().expect("summary");
     for flags in [
-        vec!["--no-color"],
+        vec!["--details", "--no-color"],
         vec!["--explain", "npm:demo@1.0.0", "--no-color"],
     ] {
         let output = offline(&archive, &flags);
@@ -74,6 +75,54 @@ fn audit_search_binary_one_result_preserves_evidence_through_archive_and_outputs
         mock.requests().len(),
         3,
         "offline paths do not submit another job"
+    );
+}
+
+#[test]
+fn audit_search_links_no_copy_to_the_recorded_requirement_in_both_text_modes() {
+    let mut value = input();
+    let record = &mut value["remediation"]["recommendations"][0];
+    record["checks"]["requirements"] = "unchecked".into();
+    record["changes"][0]["strategy"] = "unknown".into();
+    record["limitations"] = json!(["unbound_request", "parent_evidence_incomplete"]);
+    record["search_details"] = json!([{
+        "kind": "unavailable",
+        "operation": "source",
+        "reasons": ["unbound_request"],
+        "witness": {
+            "coordinate": record["subject"].clone(),
+            "observation": {
+                "name": "demo",
+                "path": "package-lock.json",
+                "status": "unbound_request",
+                "requested_requirement": "^1.0",
+                "requirement_status": "recorded"
+            }
+        }
+    }]);
+    let compact = execute_report(&value, &["--quiet", "--no-color"]);
+    assert_eq!(compact.status.code(), Some(1), "{}", stderr(&compact));
+    let compact = prose(&stdout(&compact));
+    assert!(compact.contains("A declaration in package-lock.json requires demo ^1.0. The report could not link it to a locked copy."), "{compact}");
+    assert_eq!(compact.matches("to a locked copy").count(), 1, "{compact}");
+    assert!(
+        !compact.contains("Upgrade search") && !compact.contains("unbound_request"),
+        "{compact}"
+    );
+    let detailed = human_report(&value);
+    assert!(
+        detailed.contains("Upgrade search:")
+            && detailed.contains("demo requires ^1.0 [package-lock.json]"),
+        "{detailed}"
+    );
+    assert!(
+        !detailed.contains("unbound_request") && !detailed.contains("unfamiliar reason"),
+        "{detailed}"
+    );
+    let facts = json_report(&value);
+    assert_eq!(
+        facts["remediation"]["recommendations"][0]["search_details"][0]["reasons"],
+        json!(["unbound_request"])
     );
 }
 #[test]
