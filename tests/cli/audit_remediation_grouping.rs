@@ -214,10 +214,17 @@ fn audit_remediation_grouping_compact_preserves_report_wide_planning_deadline() 
     input["remediation"]["status"] = "limited".into();
     input["remediation"]["limits"]["reasons"] =
         json!(["planning_deadline", "parent_candidate_limit"]);
+    let candidate = &mut input["remediation"]["recommendations"][0];
+    candidate["checks"]["requirements"] = "blocked".into();
+    candidate["limitations"] = json!(["planning_deadline"]);
     let output = execute_report(&input, &["--quiet", "--no-color"]);
     assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
     let compact = prose(&stdout(&output));
     assert!(compact.contains("Suggested updates"), "{compact}");
+    assert!(
+        compact.contains("The upgrade conflicts with dependency requirements."),
+        "{compact}"
+    );
     assert!(
         compact.contains("Fix guidance is incomplete. Mitigation planning time limit reached."),
         "{compact}"

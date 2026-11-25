@@ -70,7 +70,7 @@ pub(super) fn write(
         group
             .alternatives
             .sort_by_key(|a| !a.qualification.suggested());
-        compact_group(subject, &group, &data.status, &context, &displayed, out)?;
+        compact_group(subject, &group, data, &context, &displayed, out)?;
     }
     Ok(())
 }
@@ -152,7 +152,7 @@ fn detailed_alternatives(
 fn compact_group(
     subject: &str,
     group: &Group<'_>,
-    status: &str,
+    data: &Remediation,
     context: &Context<'_>,
     findings: &[&Finding],
     out: &mut dyn Write,
@@ -161,7 +161,11 @@ fn compact_group(
     let mut search_limit = None;
     for a in &group.alternatives {
         super::lines(
-            &a.plan(status, context).terminal(a.record, a.qualification),
+            &a.plan(&data.status, context).terminal(
+                a.record,
+                a.qualification,
+                &data.limits.reasons,
+            ),
             "    ",
             out,
         )?;

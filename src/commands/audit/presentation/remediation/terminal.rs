@@ -40,6 +40,7 @@ impl Plan {
         &self,
         record: &Record,
         qualification: Qualification,
+        report_limits: &[String],
     ) -> Vec<String> {
         let mut lines = self.terminal_action(record, qualification);
         lines.extend(self.terminal_impact(record));
@@ -47,7 +48,7 @@ impl Plan {
             lines.push(sentence(capitalize(constraint.summary.clone())));
             lines.extend(constraint.details.iter().cloned());
         }
-        lines.extend(self.terminal_checks(record));
+        lines.extend(self.terminal_checks(record, report_limits));
         lines
     }
 
@@ -154,7 +155,7 @@ impl Plan {
         lines
     }
 
-    fn terminal_checks(&self, r: &Record) -> Vec<String> {
+    fn terminal_checks(&self, r: &Record, report_limits: &[String]) -> Vec<String> {
         let unbound = r
             .limitations
             .iter()
@@ -177,7 +178,8 @@ impl Plan {
         lines.extend(super::other_checks(r, false, false));
         let route_removal = has_route_removal(r);
         for limit in limitations(r, &self.constraints).filter(|(code, _)| {
-            !(search_only_limit(code)
+            !(report_limits.iter().any(|reason| reason == code)
+                || search_only_limit(code)
                 || matches!(*code, "no_checked_parent_upgrade" | "no_checked_leaf")
                 || (bound_explanation.is_some() && *code == "unbound_request")
                 || (route_removal && *code == "represented_routes_cut"))
