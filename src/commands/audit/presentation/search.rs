@@ -1,6 +1,6 @@
 //! Explanations of whole-search obstacles, never selected-action verdicts.
 use super::{
-    remediation::{owner, request_requirement},
+    remediation::{capitalize, owner, request_requirement},
     safe,
 };
 use crate::api::audit::remediation::{
@@ -32,14 +32,15 @@ pub(super) fn unbound_request(record: &Record) -> Option<String> {
                 .any(|reason| reason == "unbound_request"))
         .then_some(observation)
     })?;
+    let request = request_requirement(
+        Some(&observation.name),
+        observation.requested_requirement.as_deref(),
+        &observation.requirement_status,
+    );
     Some(format!(
-        "A recorded requirement {}. The report could not link it to a locked copy [{}].",
-        request_requirement(
-            Some(&observation.name),
-            observation.requested_requirement.as_deref(),
-            &observation.requirement_status,
-        ),
-        safe(&observation.path)
+        "The report could not link the request in {} to a locked copy. {}.",
+        safe(&observation.path),
+        capitalize(request)
     ))
 }
 

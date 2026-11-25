@@ -209,6 +209,31 @@ fn audit_remediation_grouping_compact_mentions_shared_search_limit_once() {
 }
 
 #[test]
+fn audit_remediation_grouping_compact_preserves_report_wide_planning_deadline() {
+    let mut input = grouping_report();
+    input["remediation"]["status"] = "limited".into();
+    input["remediation"]["limits"]["reasons"] =
+        json!(["planning_deadline", "parent_candidate_limit"]);
+    let output = execute_report(&input, &["--quiet", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let compact = prose(&stdout(&output));
+    assert!(compact.contains("Suggested updates"), "{compact}");
+    assert!(
+        compact.contains("Fix guidance is incomplete. Mitigation planning time limit reached."),
+        "{compact}"
+    );
+    assert_eq!(
+        compact.matches("planning time limit").count(),
+        1,
+        "{compact}"
+    );
+    assert!(
+        !compact.contains("limit for checking upgrades"),
+        "{compact}"
+    );
+}
+
+#[test]
 fn audit_remediation_grouping_preserves_joint_and_partial_alternatives() {
     for (problem, other_problem, changed) in [
         (

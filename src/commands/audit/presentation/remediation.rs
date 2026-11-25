@@ -9,7 +9,7 @@ use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 mod reasons;
-mod terminal;
+pub(in crate::commands::audit) mod terminal;
 pub(in crate::commands::audit) use reasons::ReasonDetail;
 
 const UNFAMILIAR_REASON: &str =
@@ -407,7 +407,8 @@ fn sentence(mut text: String) -> String {
     text
 }
 
-fn capitalize(mut text: String) -> String {
+/// Capitalize a composed line of audit evidence.
+pub(super) fn capitalize(mut text: String) -> String {
     if let Some(initial) = text.get_mut(..1) {
         initial.make_ascii_uppercase();
     }

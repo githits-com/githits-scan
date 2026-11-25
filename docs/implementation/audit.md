@@ -534,7 +534,9 @@ One accepted job is never resubmitted for an events/result failure. Current full
 snapshots replace progress even when revisions are equal; reconnect starts with
 latest state, not replay history. Known terminal states close consumption.
 
-`assessing` displays measured assessment counters; zero is distinct from unavailable.
+`assessing` displays measured assessment counters after work completes for any
+package. A zero-completed snapshot uses the audit phase-start wording described
+in the command contract.
 Unfamiliar phases display a generic stage, and unfamiliar failure codes use a static
 safe diagnostic. Unfamiliar job states stop with a protocol error because their
 terminal semantics are unknown. Each read has the established timeout; there is no
@@ -871,6 +873,8 @@ heading. Default text names a material obstacle when it leaves the decision
 unresolved. A recorded requirement with no linked locked copy uses its
 supplied dependency, range and file when available. The report attributes it
 to a requester only when the source names one.
+Report-wide limits such as a planning deadline or omitted recommendations
+appear once in the default report.
 Each shared explanation names the operation, affected package/version, request or
 source, and supplied cause in a short statement. Do not repeat a search prefix or
 add a generic reassurance about the selected fix. Known local/shared budget scope

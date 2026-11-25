@@ -1,12 +1,38 @@
 //! Select the material evidence for the default audit report.
 use super::{
-    AdvisoryIdentities, Finding, Plan, Qualification, Record, added_branches, advisory_identities,
-    capitalize, check_line, compact_limitation, limitations, location, qualified_advisory, safe,
-    search_only_limit, sentence, target_checks,
+    AdvisoryIdentities, Finding, Plan, Qualification, Record, Remediation, added_branches,
+    advisory_identities, capitalize, check_line, compact_limitation, limitations, location,
+    qualified_advisory, safe, search_only_limit, sentence, target_checks,
 };
 use crate::commands::audit::presentation::{added, search};
 use crate::commands::audit::view::remediation::reasons::Reason;
 use std::collections::BTreeSet;
+
+/// Report-wide limits that qualify the completeness of the displayed guidance.
+pub(in crate::commands::audit) fn report_limit(data: &Remediation) -> Option<String> {
+    let mut seen = BTreeSet::new();
+    let reasons = &data.limits.reasons;
+    let omitted = data.limits.omitted_recommendations != 0
+        || reasons.iter().any(|reason| reason == "output_limit");
+    let mut lines: Vec<_> = reasons
+        .iter()
+        .filter(|reason| reason.as_str() != "output_limit" && !search_only_limit(reason))
+        .map(|reason| sentence(capitalize(super::explanation(reason))))
+        .filter(|message| seen.insert(message.clone()))
+        .collect();
+    if omitted {
+        lines.push(
+            "Some fix guidance was omitted because the report reached its size limit.".into(),
+        );
+    }
+    if lines.is_empty() {
+        return None;
+    }
+    if data.status == "limited" {
+        lines.insert(0, "Fix guidance is incomplete.".into());
+    }
+    Some(lines.join(" "))
+}
 
 impl Plan {
     /// Show the complete action and its decision-relevant qualifications.

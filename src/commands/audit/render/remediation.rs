@@ -50,17 +50,9 @@ pub(super) fn write(
             writeln!(out, "\n{message}")?;
         }
     }
-    if data.limits.omitted_recommendations != 0
-        || data
-            .limits
-            .reasons
-            .iter()
-            .any(|reason| reason == "output_limit")
-    {
-        writeln!(
-            out,
-            "\nSome fix guidance was omitted because the report reached its size limit."
-        )?;
+    if let Some(limit) = presentation::remediation::terminal::report_limit(data) {
+        writeln!(out)?;
+        line(&limit, "", out)?;
     }
     Ok(())
 }
