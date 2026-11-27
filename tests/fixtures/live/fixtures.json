@@ -1,0 +1,88 @@
+[
+  {
+    "id": "cargo-fd",
+    "ecosystem": "rust",
+    "project": {
+      "repository": "sharkdp/fd",
+      "release": "v10.2.0",
+      "commit": "b19136871310b01500b4f09eadd7387b8476be47"
+    },
+    "files": {
+      "Cargo.lock": "dbe6158dbf001a489a53617a531d11dbee22daed2529f87790547ee65d1018d4",
+      "Cargo.toml": "de934f7081bbf86223d6cdea7c0b9456ae48f5c6ce4545854293d4ff3d47f66c"
+    },
+    "upload_paths": ["Cargo.lock", "Cargo.toml"],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {"name": "clap", "version": "4.5.16", "paths": ["Cargo.lock"]},
+          {"name": "regex", "version": "1.10.6", "paths": ["Cargo.lock"]}
+        ]
+      },
+      "audit": {"manifests": ["Cargo.toml"], "locked": true},
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {"name": "fd-find", "version": "10.2.0", "paths": ["Cargo.toml"], "expression": "MIT OR Apache-2.0"},
+          {"name": "regex", "version": "1.10.6", "paths": ["Cargo.lock"]}
+        ]
+      },
+      "license_policy": {"name": "regex", "version": "1.10.6"}
+    }
+  },
+  {
+    "id": "go-cobra",
+    "ecosystem": "go",
+    "project": {
+      "repository": "spf13/cobra",
+      "release": "v1.10.1",
+      "commit": "7da941c3547e93b8c9f70bbd3befca79c6335388"
+    },
+    "files": {
+      "go.mod": "a501ef186772adafdaabb7aa78623b691890e87accd0715674e69949da6b586e",
+      "go.sum": "47ddb5ec5a98cda2ef8dbebd40eea3af7bc7cc17894a886e149fdfff71592358"
+    },
+    "upload_paths": ["go.mod", "go.sum"],
+    "checks": {
+      "sbom": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [{"name": "github.com/spf13/pflag", "versioned": true, "paths": ["go.mod"]}]
+      },
+      "audit": {"manifests": ["go.mod"]},
+      "license_report": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [{"name": "github.com/spf13/pflag", "versioned": true, "paths": ["go.mod"]}]
+      }
+    }
+  },
+  {
+    "id": "npm-minimist-remediation",
+    "ecosystem": "javascript",
+    "local": "tests/fixtures/audit/live-minimist",
+    "files": {
+      "package-lock.json": "0d202b9af213d4f69028a56080248c4d443ac88bdcee31330df519b123609eab",
+      "package.json": "c6ae90f0ab210f5f0221010b2baac6dd2e8de6c67afbcf60f77172149b6ea5b1"
+    },
+    "upload_paths": ["package-lock.json", "package.json"],
+    "checks": {
+      "audit": {
+        "manifests": ["package.json"],
+        "locked": true,
+        "remediation": {
+          "registry": "npm",
+          "name": "minimist",
+          "installed": "0.0.8",
+          "path": "package-lock.json",
+          "minimum": "0.2.4",
+          "exclusive_maximum": "0.3.0",
+          "native_resolution": "not_checked",
+          "advisories": [
+            "GHSA-vh95-rmgr-6w4m",
+            "GHSA-xvch-5gv4-984h"
+          ]
+        }
+      }
+    }
+  }
+]

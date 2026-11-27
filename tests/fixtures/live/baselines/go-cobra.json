@@ -1,0 +1,810 @@
+{
+  "audit": {
+    "observations": {
+      "dependencies": 6,
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "go.mod"
+          ],
+          "latest": "v1.0.0-20201130134442-10cb98267c6c",
+          "package": "go:gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405"
+        },
+        {
+          "files": [
+            "go.mod"
+          ],
+          "latest": "v1.1.0",
+          "package": "go:github.com/spf13/pflag@v1.0.9"
+        },
+        {
+          "files": [
+            "go.mod"
+          ],
+          "latest": "v2.0.7",
+          "package": "go:github.com/cpuguy83/go-md2man/v2@v2.0.6"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "go"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "go"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "gaps": [],
+      "incomplete": false,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "type": "vcs",
+          "url": "https://github.com/cpuguy83/go-md2man"
+        },
+        {
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/cpuguy83/go-md2man/v2"
+        },
+        {
+          "name": "github.com/inconshreveable/mousetrap",
+          "type": "vcs",
+          "url": "https://github.com/inconshreveable/mousetrap"
+        },
+        {
+          "name": "github.com/inconshreveable/mousetrap",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/inconshreveable/mousetrap"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "type": "vcs",
+          "url": "https://github.com/russross/blackfriday"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/russross/blackfriday/v2"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "type": "vcs",
+          "url": "https://github.com/spf13/pflag"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/spf13/pflag"
+        },
+        {
+          "name": "gopkg.in/check.v1",
+          "type": "license",
+          "url": "https://github.com/go-check/check/blob/20d25e2804050c1cd24a7eea1e7a6447dd0e74ec/LICENSE"
+        },
+        {
+          "name": "gopkg.in/check.v1",
+          "type": "website",
+          "url": "https://pkg.go.dev/gopkg.in/check.v1"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "type": "website",
+          "url": "https://pkg.go.dev/gopkg.in/yaml.v3"
+        }
+      ],
+      "resolved": [
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/inconshreveable/mousetrap",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/inconshreveable/mousetrap@v1.1.0",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v1.1.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-2-Clause"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/russross/blackfriday/v2",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-2-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/russross/blackfriday/v2@v2.1.0",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v2.1.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/spf13/pflag",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v1.0.9"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.6",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v2.0.6"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_scoped_license_statement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0 AND MIT"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "gopkg.in/yaml.v3",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            },
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v3.0.1"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-2-Clause"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "gopkg.in/check.v1",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-2-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v0.0.0-20161208181325-20d25e280405"
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "components": [
+        {
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "go.mod"
+          ],
+          "name": "github.com/spf13/cobra",
+          "observed_licenses": [],
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/spf13/cobra",
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "github.com/cpuguy83/go-md2man/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/inconshreveable/mousetrap",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/russross/blackfriday/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gopkg.in/check.v1",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gopkg.in/yaml.v3",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "github.com/cpuguy83/go-md2man/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/inconshreveable/mousetrap",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/russross/blackfriday/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gopkg.in/check.v1",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gopkg.in/yaml.v3",
+              "paths": [
+                "go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "v1.0.9",
+          "manifest_path": "go.mod",
+          "name": "github.com/spf13/pflag"
+        },
+        {
+          "declared_requirement": "v1.1.0",
+          "manifest_path": "go.mod",
+          "name": "github.com/inconshreveable/mousetrap"
+        },
+        {
+          "declared_requirement": "v2.0.6",
+          "manifest_path": "go.mod",
+          "name": "github.com/cpuguy83/go-md2man/v2"
+        },
+        {
+          "declared_requirement": "v3.0.1",
+          "manifest_path": "go.mod",
+          "name": "gopkg.in/yaml.v3"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "go.mod",
+          "status": "complete"
+        }
+      ]
+    }
+  },
+  "sbom": {
+    "observations": {
+      "components": [
+        {
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.6",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v2.0.6"
+        },
+        {
+          "name": "github.com/inconshreveable/mousetrap",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/inconshreveable/mousetrap@v1.1.0",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v1.1.0"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/russross/blackfriday/v2@v2.1.0",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v2.1.0"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v1.0.9"
+        },
+        {
+          "name": "gopkg.in/check.v1",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v0.0.0-20161208181325-20d25e280405"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "paths": [
+            "go.mod"
+          ],
+          "purl": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v3.0.1"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "github.com/cpuguy83/go-md2man/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.6",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v2.0.6"
+            },
+            {
+              "name": "github.com/russross/blackfriday/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/russross/blackfriday/v2@v2.1.0",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v2.1.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "github.com/cpuguy83/go-md2man/v2",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.6",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v2.0.6"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "github.com/inconshreveable/mousetrap",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/inconshreveable/mousetrap@v1.1.0",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v1.1.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v1.0.9"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "github.com/spf13/cobra",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/cobra",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "gopkg.in/yaml.v3",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v3.0.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gopkg.in/yaml.v3",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v3.0.1"
+            },
+            {
+              "name": "gopkg.in/check.v1",
+              "paths": [
+                "go.mod"
+              ],
+              "purl": "pkg:golang/gopkg.in/check.v1@v0.0.0-20161208181325-20d25e280405",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v0.0.0-20161208181325-20d25e280405"
+            }
+          ]
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "occurrences": [
+        {
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/inconshreveable/mousetrap",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "gopkg.in/check.v1",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        }
+      ],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "go.mod",
+          "status": "complete"
+        }
+      ]
+    }
+  }
+}

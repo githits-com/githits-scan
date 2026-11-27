@@ -17,6 +17,7 @@ they do not document the service's implementation. Start with the
 | [Dependency diff](dependency-diff.md) | Experimental Git comparison, direct upgrades and evidence gaps |
 | [Audit](audit.md) | Findings, coverage, fix evidence, and saved analyses |
 | [Audit qualification](audit-qualification.md) | Reproducible live verification procedures |
+| [Live integration fixtures](live-integration-fixtures.md) | Pinned project checks and baseline maintenance |
 | [License reports](license-report.md) | Evidence interpretation and offline replay |
 | [License checks](license-check.md) | Policy evaluation and applicability |
 | [Repository foundation](repository-foundation.md) | Rust tooling, lint policy, and CI |
