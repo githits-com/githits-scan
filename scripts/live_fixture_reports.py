@@ -228,10 +228,23 @@ def sbom(document, _code, expected):
     if locked:
         stable.update(inventory)
         return result(stable)
+    locked_paths = {typed(row, "path", str) for row in stable.get("lockfiles", []) if "path" in row}
+
+    def locked_occurrence(identity):
+        return identity.get("record_kind") == "locked_package" or bool(locked_paths.intersection(identity["paths"]))
+
+    def stable_subject(identity):
+        return occurrence_subject(identity, locked_occurrence(identity) or identity.get("record_kind") == "manifest")
+
     stable["occurrences"] = sorted_rows(
-        occurrence_subject(identity, identity.get("record_kind") == "manifest")
-        for identity in entries
+        stable_subject(identity) for identity in entries
     )
+    if completeness == "mixed_dependency_inventory":
+        stable["locked_relationships"] = sorted_rows(
+            {relation: [stable_subject(identity) for identity in endpoints]}
+            for edge in relationships for relation, endpoints in edge.items()
+            if any(locked_occurrence(identity) for identity in endpoints)
+        )
     return result(stable, inventory)
 
 
@@ -365,6 +378,32 @@ def audit_findings(document, field):
     )
 
 
+def audit_duplicates(duplicates):
+    projected = []
+    for duplicate in duplicates:
+        versions = []
+        for row in rows(duplicate, "versions"):
+            version_row = dict(row)
+            if "origins" in row:
+                version_row["origins"] = sorted_rows(rows(row, "origins"))
+            if "files" in row:
+                version_row["files"] = strings(row, "files")
+            versions.append(version_row)
+        value = {**duplicate, "versions": sorted_rows(versions)}
+        if "unattributed_requirements" in duplicate:
+            value["unattributed_requirements"] = sorted_rows(rows(duplicate, "unattributed_requirements"))
+        projected.append(value)
+    return sorted_rows(projected)
+
+
+def audit_mismatches(mismatches):
+    return sorted_rows({
+        **row,
+        **{key: strings(row, key) for key in ("locked_versions", "recorded_requirements", "recorded_scopes")
+           if key in row},
+    } for row in mismatches)
+
+
 def check_remediation(document, findings, code, expected):
     package = f"{expected['registry']}:{expected['name']}@{expected['installed']}"
     path = expected["path"]
@@ -463,8 +502,8 @@ def audit(document, code, expected):
         "dependencies": dependencies,
         "vulnerabilities": findings,
         "outdated": outdated,
-        "duplicates": sorted_rows(duplicates),
-        "manifest_lock_mismatches": sorted_rows(mismatches),
+        "duplicates": audit_duplicates(duplicates),
+        "manifest_lock_mismatches": audit_mismatches(mismatches),
         "lifecycle": sorted_rows(
             {**fields(row, "registry", "name", "version", "category", "kind", "scope", "source"),
              "observations": sorted_rows(fields(observation, "reason", "replacement", "source_version", "affected")

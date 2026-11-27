@@ -127,12 +127,26 @@ class ProjectionTests(unittest.TestCase):
         document["outdated"] = [{"package": "cargo:example@1.0.0", "files": ["Cargo.lock"]}]
         expected = {"manifests": ["Cargo.toml"]}
         first = reports.audit(document, 1, expected)
-        document["duplicates"] = [{"package": "cargo:example", "versions": [{"version": "1.0.0"}]}]
-        document["manifest_lock_mismatches"] = [{"name": "example", "path": "Cargo.lock"}]
+        document["duplicates"] = [{
+            "package": "cargo:example",
+            "versions": [{"version": "1.0.0", "origins": [{"file": "a.lock"}, {"file": "b.lock"}]},
+                         {"version": "2.0.0", "files": ["a.lock", "b.lock"]}],
+        }]
+        document["manifest_lock_mismatches"] = [{
+            "name": "example", "path": "Cargo.lock", "locked_versions": ["1.0.0", "2.0.0"],
+        }]
         second = reports.audit(document, 1, expected)
         self.assertEqual(first["stable"], second["stable"])
-        self.assertEqual(second["observations"]["duplicates"], document["duplicates"])
+        duplicate = second["observations"]["duplicates"][0]
+        self.assertEqual(duplicate["package"], document["duplicates"][0]["package"])
+        self.assertCountEqual(duplicate["versions"], document["duplicates"][0]["versions"])
         self.assertEqual(second["observations"]["manifest_lock_mismatches"], document["manifest_lock_mismatches"])
+        versions = document["duplicates"][0]["versions"]
+        versions[0]["origins"].reverse()
+        versions[1]["files"].reverse()
+        versions.reverse()
+        document["manifest_lock_mismatches"][0]["locked_versions"].reverse()
+        self.assertEqual(second, reports.audit(document, 1, expected))
 
     def test_manifest_resolved_sbom_gates_occurrence_loss_but_allows_version_changes(self):
         completeness = "resolved_manifest_inventory"
@@ -154,6 +168,34 @@ class ProjectionTests(unittest.TestCase):
         document["components"].pop()
         missing = reports.sbom(document, 0, expected)
         self.assertNotEqual(after["stable"]["occurrences"], missing["stable"]["occurrences"])
+
+    def test_mixed_sbom_gates_locked_versions_and_relationships(self):
+        completeness = "mixed_dependency_inventory"
+        document = {
+            "bomFormat": "CycloneDX", "specVersion": "1.7",
+            "properties": [
+                {"name": "githits:completeness", "value": completeness},
+                {"name": "githits:lockfiles", "value": '[{"path":"Cargo.lock"}]'},
+            ],
+            "components": [
+                {"name": name, "version": "1.0.0", "type": "library", "bom-ref": name,
+                 "properties": [{"name": f"githits:{role}_path", "value": path}]}
+                for name, role, path in (("locked", "lockfile", "Cargo.lock"), ("resolved", "manifest", "go.mod"))
+            ],
+            "dependencies": [{"ref": "locked", "dependsOn": ["resolved"]}],
+        }
+        expected = {"completeness": completeness, "witnesses": [{"name": "resolved", "paths": ["go.mod"]}]}
+        before = reports.sbom(document, 0, expected)
+        document["components"][1]["version"] = "1.1.0"
+        changed_resolved = reports.sbom(document, 0, expected)
+        self.assertEqual(before["stable"], changed_resolved["stable"])
+        self.assertNotEqual(before["observations"], changed_resolved["observations"])
+        document["components"][0]["version"] = "1.1.0"
+        changed_locked = reports.sbom(document, 0, expected)
+        self.assertNotEqual(before["stable"]["occurrences"], changed_locked["stable"]["occurrences"])
+        document["dependencies"].clear()
+        changed_edge = reports.sbom(document, 0, expected)
+        self.assertNotEqual(changed_locked["stable"]["locked_relationships"], changed_edge["stable"]["locked_relationships"])
 
     def test_sbom_preserves_repeated_occurrences_and_resolves_ephemeral_references(self):
         def component(ref):

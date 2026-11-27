@@ -12,14 +12,14 @@
               "origins": [
                 {
                   "file": "Cargo.lock",
-                  "requested_requirement": "^1.2.1",
-                  "requester": "faccess@0.2.4",
+                  "requested_requirement": "^1.1",
+                  "requester": "nix@0.24.3",
                   "status": "parent_release_declared"
                 },
                 {
                   "file": "Cargo.lock",
-                  "requested_requirement": "^1.1",
-                  "requester": "nix@0.24.3",
+                  "requested_requirement": "^1.2.1",
+                  "requester": "faccess@0.2.4",
                   "status": "parent_release_declared"
                 }
               ],
@@ -68,20 +68,6 @@
               ],
               "origins": [
                 {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.24.2",
-                  "requester": "argmax@0.3.1",
-                  "status": "parent_release_declared"
-                }
-              ],
-              "version": "0.24.3"
-            },
-            {
-              "files": [
-                "Cargo.lock"
-              ],
-              "origins": [
-                {
                   "attribution_basis": "lockfile_recorded",
                   "file": "Cargo.lock",
                   "requested_requirement": "^0.29",
@@ -97,12 +83,64 @@
                 }
               ],
               "version": "0.29.0"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.24.2",
+                  "requester": "argmax@0.3.1",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.24.3"
             }
           ]
         },
         {
           "package": "crates:windows-sys",
           "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": ">=0.48.0, <=0.59",
+                  "requester": "winapi-util@0.1.9",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "ctrlc@3.4.5",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "normpath@1.3.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "tempfile@3.12.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59.0",
+                  "requester": "filetime@0.2.24",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.59.0"
+            },
             {
               "files": [
                 "Cargo.lock"
@@ -130,18 +168,6 @@
               "origins": [
                 {
                   "file": "Cargo.lock",
-                  "requested_requirement": "^0.52.0",
-                  "requester": "anstyle-query@1.1.1",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.52.0",
-                  "requester": "anstyle-wincon@3.0.4",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
                   "requested_requirement": "^0.52",
                   "requester": "errno@0.3.9",
                   "status": "parent_release_declared"
@@ -150,6 +176,18 @@
                   "file": "Cargo.lock",
                   "requested_requirement": "^0.52",
                   "requester": "home@0.5.9",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "anstyle-query@1.1.1",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "anstyle-wincon@3.0.4",
                   "status": "parent_release_declared"
                 },
                 {
@@ -166,44 +204,6 @@
                 }
               ],
               "version": "0.52.0"
-            },
-            {
-              "files": [
-                "Cargo.lock"
-              ],
-              "origins": [
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.59",
-                  "requester": "ctrlc@3.4.5",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.59.0",
-                  "requester": "filetime@0.2.24",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.59",
-                  "requester": "normpath@1.3.0",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": "^0.59",
-                  "requester": "tempfile@3.12.0",
-                  "status": "parent_release_declared"
-                },
-                {
-                  "file": "Cargo.lock",
-                  "requested_requirement": ">=0.48.0, <=0.59",
-                  "requester": "winapi-util@0.1.9",
-                  "status": "parent_release_declared"
-                }
-              ],
-              "version": "0.59.0"
             }
           ]
         },

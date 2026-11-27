@@ -33,6 +33,7 @@ locked package versions, supplied license declarations, and the affected copy
 and advisories for minimist. The baselines retain locked inventory, input
 attribution, relationships, and coverage. Manifest-resolved SBOMs check the
 resolved occurrence names and scopes. Their selected versions are observations.
+Mixed SBOMs preserve stable versions and relationships for their locked inputs.
 The audit baseline retains required coverage and the accounted dependency count for
 locked inputs. A stable difference exits 1 and prints the changed evidence.
 
