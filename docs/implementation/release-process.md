@@ -218,17 +218,20 @@ security entries, rather than PR labels. The publication job requires every gate
 and uploads five archives plus `SHA256SUMS`.
 
 The five live cases make five analysis submissions: audit/remediation, combined
-npm/Cargo SBOM, Bun SBOM, manifest resolution, and the license report. Shared
-assertions and multi-project fixtures retain coverage within the documented
-organisation/project default of five submissions per 60-second window. Use an
-organisation/project credential with enough admission and daily budget; a
-personal credential's default two-submission window cannot run the full gate.
-Other traffic sharing the principal can still exhaust its budget. The gate uses
-the ordinary binary: short HTTP 429 refusals recover within five retries and
-300 seconds of total waiting per live case. Missing, invalid, over-budget or
-exhausted Retry-After recovery fails the gate. Recovery never resubmits an accepted
-job or bypasses admission. See the
+npm/Cargo SBOM, Bun SBOM, manifest resolution, and the license report. The
+[public OpenAPI contract](https://api.githits.dev/v1/openapi.json) lists defaults
+of 10 submissions per personal principal or 120 per organisation per 60-second
+window. Project credentials share their organisation's limit. Runtime policy
+can override these defaults. Use a credential with enough admission headroom
+and monthly analysis allowance for the gate and any traffic sharing its
+principal. The ordinary binary handles short HTTP 429 refusals within five
+retries and 300 seconds of total waiting per live case. Missing, invalid,
+over-budget or exhausted Retry-After recovery fails the gate. Recovery never
+resubmits an accepted job or bypasses admission. See the
 [service admission policy](https://docs.githits.com/api-reference/v1/experimental/generate-an-sbom-from-uploaded-files).
+
+The [live fixture runner](live-integration-fixtures.md) provides a separate
+maintainer check for pinned projects and their baselines.
 
 The live job reads `GITHITS_API_TOKEN` from the repository secret only in its test
 step and fails closed when absent. Configure it in GitHub settings; never send it

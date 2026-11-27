@@ -6,9 +6,9 @@
 //! cargo nextest run --run-ignored ignored-only -E 'test(=generates_recorded_npm_and_cargo_workspace_inventory)'
 //! ```
 //!
-//! Token-requiring tests fail closed when it is absent. The license-report and
-//! combined SBOM cases support private signed-in CLI acquisition for their Scan
-//! child; see docs/implementation/license-report.md for environment selection.
+//! Token-requiring tests fail closed when it is absent. The license-report,
+//! audit-remediation and combined SBOM cases also support private signed-in CLI
+//! acquisition for their Scan child. See the README for environment selection.
 
 mod support;
 
@@ -209,15 +209,15 @@ fn live_token() -> String {
 }
 
 #[test]
-#[ignore = "requires GITHITS_API_TOKEN and network access"]
+#[ignore = "requires a supplied API token or explicitly selected signed-in CLI environment, and network access"]
 fn audit_remediation_live_cli_consumes_final_contract() {
-    let token = std::env::var("GITHITS_API_TOKEN").expect("live credential required");
-    assert!(!token.is_empty(), "live credential required");
+    let token = live_token();
     let repo = live_minimist_fixture();
     let output = Command::new(env!("CARGO_BIN_EXE_githits-scan"))
         .arg("audit")
         .arg(repo.path())
         .arg("--json")
+        .env("GITHITS_API_TOKEN", &token)
         .output()
         .expect("run audit");
     assert!(
@@ -267,29 +267,70 @@ fn assert_live_minimist_recommendation(result: &serde_json::Value) {
         Some(!native_unknowns.is_empty())
     );
     assert_eq!(result["remediation"]["status"], "completed");
+    assert!(has_minimist_advisories(&result["vulnerabilities"]));
     let records = result["remediation"]["recommendations"]
         .as_array()
         .expect("recommendations required");
-    let record = records
+    assert!(
+        records.iter().any(is_qualified_minimist_upgrade),
+        "expected a qualified minimist upgrade within the fixture's manifest range"
+    );
+}
+
+fn has_minimist_advisories(findings: &serde_json::Value) -> bool {
+    let Some(findings) = findings.as_array() else {
+        return false;
+    };
+    let advisories: Vec<_> = findings
         .iter()
-        .find(|r| r["subject"] == "npm:minimist@0.0.8")
-        .expect("minimist recommendation required");
-    assert_eq!(record["outcome"], "proposed");
-    assert_eq!(record["changes"][0]["target_version"], "0.2.4");
-    assert_eq!(record["changes"][0]["strategy"], "upgrade");
-    assert_eq!(record["checks"]["release_availability"], "observed");
-    assert_eq!(record["checks"]["advisories"], "non_affecting");
-    assert_eq!(record["checks"]["requirements"], "matched");
-    assert_eq!(record["checks"]["native_resolution"], "not_checked");
-    let addressed = record["addressed_findings"]
+        .filter(|finding| {
+            finding["package"] == "npm:minimist@0.0.8"
+                && finding["ignored"] != true
+                && cites_minimist_lockfile(&finding["files"])
+        })
+        .filter_map(|finding| finding["advisory"].as_str())
+        .collect();
+    advisories.contains(&"GHSA-vh95-rmgr-6w4m") && advisories.contains(&"GHSA-xvch-5gv4-984h")
+}
+
+fn is_qualified_minimist_upgrade(record: &serde_json::Value) -> bool {
+    let Some(changes) = record["changes"].as_array() else {
+        return false;
+    };
+    let checks = &record["checks"];
+    record["subject"] == "npm:minimist@0.0.8"
+        && record["outcome"] == "proposed"
+        && checks["release_availability"] == "observed"
+        && checks["advisories"] == "non_affecting"
+        && checks["requirements"] == "matched"
+        && checks["native_resolution"] == "not_checked"
+        && has_minimist_advisories(&record["addressed_findings"])
+        && changes.iter().any(|change| {
+            change["registry"] == "npm"
+                && change["name"] == "minimist"
+                && change["from_version"] == "0.0.8"
+                && change["strategy"] == "upgrade"
+                && cites_minimist_lockfile(&change["paths"])
+                && change["target_version"]
+                    .as_str()
+                    .is_some_and(minimist_patched_version)
+        })
+}
+
+fn cites_minimist_lockfile(paths: &serde_json::Value) -> bool {
+    paths
         .as_array()
-        .expect("addressed findings");
-    for id in ["GHSA-vh95-rmgr-6w4m", "GHSA-xvch-5gv4-984h"] {
-        assert!(
-            addressed.iter().any(|f| f["advisory"] == id),
-            "missing addressed advisory {id}"
-        );
-    }
+        .is_some_and(|paths| paths.iter().any(|value| value == "package-lock.json"))
+}
+
+fn minimist_patched_version(version: &str) -> bool {
+    // Both advisories are fixed within the fixture's manifest range from 0.2.4.
+    let Some(patch) = version.strip_prefix("0.2.") else {
+        return false;
+    };
+    !patch.starts_with('0')
+        && patch.bytes().all(|byte| byte.is_ascii_digit())
+        && patch.parse::<u64>().is_ok_and(|patch| patch >= 4)
 }
 
 /// One analysis qualifies both registry npm evidence and native Cargo project joins.

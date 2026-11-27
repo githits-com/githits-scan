@@ -254,8 +254,9 @@ credential acquisition; do not chunk, silently prune or increase bounds. Success
 responses are capped at 16,777,216 bytes. Path/security/transport rules remain owned
 by [the shared API boundary](sbom-api-contract.md).
 
-One admission is weighted as two audits (currently 200 daily units at policy
-defaults). Runtime quotas can vary. Reads and stream reconnects do not resubmit.
+A successful comparison consumes two monthly analysis units under the
+[public API contract](https://api.githits.dev/v1/openapi.json). Runtime quotas
+can vary. Reads and stream reconnects retrieve the existing analysis.
 A completed partial result remains a report; admission or required core failure
 produces an error and no document. Service HTTP 429 refusals share the [bounded Retry-After recovery](sbom-api-contract.md#rate-limit-recovery) across paired submission, progress and result requests; final problem errors preserve Retry-After.
 

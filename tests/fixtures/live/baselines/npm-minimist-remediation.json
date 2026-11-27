@@ -1,0 +1,119 @@
+{
+  "audit": {
+    "observations": {
+      "exit": 1,
+      "lifecycle": [],
+      "outdated": [
+        {
+          "files": [
+            "package-lock.json"
+          ],
+          "latest": "1.2.8",
+          "package": "npm:minimist@0.0.8"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-vh95-rmgr-6w4m",
+              "files": [
+                "package-lock.json"
+              ],
+              "package": "npm:minimist@0.0.8"
+            },
+            {
+              "advisory": "GHSA-xvch-5gv4-984h",
+              "files": [
+                "package-lock.json"
+              ],
+              "package": "npm:minimist@0.0.8"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "0.0.8",
+              "name": "minimist",
+              "paths": [
+                "package-lock.json"
+              ],
+              "registry": "npm",
+              "strategy": "upgrade",
+              "target_version": "0.2.4"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "npm:minimist@0.0.8"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-vh95-rmgr-6w4m",
+          "files": [
+            "package-lock.json"
+          ],
+          "package": "npm:minimist@0.0.8",
+          "severity": "CVSS_V3 5.6"
+        },
+        {
+          "advisory": "GHSA-xvch-5gv4-984h",
+          "files": [
+            "package-lock.json"
+          ],
+          "package": "npm:minimist@0.0.8",
+          "severity": "CVSS_V3 9.8"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 1,
+      "gaps": [],
+      "incomplete": false,
+      "native_gaps": []
+    }
+  }
+}

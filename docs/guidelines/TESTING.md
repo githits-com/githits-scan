@@ -162,6 +162,10 @@ After using a filter, confirm the runner executed the expected number of tests. 
 
 Tests that need a real token are marked `#[ignore = "requires GITHITS_API_TOKEN and network access"]` and run with `--run-ignored ignored-only` and an exact filter. Ordinary PR CI excludes them; the exact-commit release rehearsal runs all ignored live tests as a separate gate (see [Release process](../implementation/release-process.md#rehearsal-and-release-gates)).
 
+Use the [live fixture runner](../implementation/live-integration-fixtures.md)
+to compare pinned projects against reviewed baselines. Run its network-free
+tests with `python3 -m unittest discover -s scripts -p test_live_fixtures.py -v`.
+
 ## Local Validation Policy
 
 Use targeted local checks during development. CI runs the full workspace and
