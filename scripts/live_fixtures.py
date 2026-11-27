@@ -91,9 +91,11 @@ def validate_fixture(fixture):
             or not re.fullmatch(r"[\w.-]+/[\w.-]+", project.get("repository", ""), re.ASCII)
             or any(part in (".", "..") for part in project["repository"].split("/"))
             or not re.fullmatch(r"[0-9a-f]{40}", project.get("commit", ""))
-            or not project.get("release")
+            or ("release" in project and (not isinstance(project["release"], str) or not project["release"]))
         ):
             raise UsageError(f"{context}. Expected a GitHub repository and full commit")
+        if "subdirectory" in project:
+            relative_path(project["subdirectory"])
     elif local is not None and project is None:
         relative_path(local)
     else:
@@ -156,6 +158,8 @@ def stage_inputs(fixture, root, workspace):
         source = local_path(workspace, fixture["local"])
     else:
         url = f"https://raw.githubusercontent.com/{project['repository']}/{project['commit']}/"
+        if "subdirectory" in project:
+            url += urllib.parse.quote(project["subdirectory"], safe="/") + "/"
         opener = urllib.request.build_opener(NoRedirect())
     for path, digest in fixture["files"].items():
         try:
@@ -281,7 +285,7 @@ def detect(binary, fixture, root, environment):
         )
 
 
-def observe_fixture(binary, fixture, root, environment, token):
+def observe_fixture(binary, fixture, root, environment, workspace):
     checks = fixture["checks"]
     snapshot = {}
     sbom = None
@@ -302,7 +306,7 @@ def observe_fixture(binary, fixture, root, environment, token):
         code, document, raw = scan_json(
             binary, arguments, root, environment, context,
             (0, 1) if name in ("audit", "license_policy") else (0,),
-            token if name in ONLINE else None,
+            acquire_token(environment, workspace) if name in ONLINE else None,
         )
         try:
             snapshot[name] = reports.project(name, document, code, checks[name])
@@ -371,9 +375,11 @@ def execute(options, workspace=ROOT, fixtures_path=FIXTURES, environment=None):
     if environment is None:
         environment = os.environ
     selected = select_fixtures(fixtures_path / "fixtures.json", getattr(options, "fixture", None))
+    jobs = sum(len(fixture["checks"].keys() & set(ONLINE)) for fixture in selected)
     if options.command == "list":
         for fixture in selected:
             print(f"{fixture['id']}  {', '.join(fixture['checks'])}")
+        print(f"{len(selected)} fixtures, {jobs} planned API jobs.")
         return 0
 
     creating = options.command == "refresh"
@@ -383,7 +389,6 @@ def execute(options, workspace=ROOT, fixtures_path=FIXTURES, environment=None):
         for fixture in selected
     }
     check_count = sum(len(fixture["checks"]) for fixture in selected)
-    jobs = sum(len(fixture["checks"].keys() & set(ONLINE)) for fixture in selected)
     print(f"{options.command}: {', '.join(baselines)}. {check_count} checks, {jobs} planned API jobs.",
           flush=True)
     binary = scan_binary(options.binary, workspace, environment)
@@ -393,13 +398,11 @@ def execute(options, workspace=ROOT, fixtures_path=FIXTURES, environment=None):
             root = Path(temp) / fixture["id"]
             stage_inputs(fixture, root, workspace)
             detect(binary, fixture, root, environment)
-        token = acquire_token(environment, workspace)
-        # A credential resembling fixture output must never enter a snapshot.
         for fixture in selected:
             fixture_id = fixture["id"]
             print(f"Running {fixture_id}", flush=True)
             snapshots[fixture_id] = observe_fixture(
-                binary, fixture, Path(temp) / fixture_id, environment, token
+                binary, fixture, Path(temp) / fixture_id, environment, workspace
             )
 
     changed = False

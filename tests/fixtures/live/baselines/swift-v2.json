@@ -1,0 +1,601 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "Package.resolved"
+          ],
+          "latest": "1.46.1",
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+        },
+        {
+          "files": [
+            "Package.resolved"
+          ],
+          "latest": "1.6.0",
+          "package": "swift:github.com/pytorch/executorch@0.6.0"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [],
+          "changes": [
+            {
+              "from_version": "1.19.1",
+              "name": "github.com/apple/swift-nio-http2",
+              "paths": [
+                "Package.resolved"
+              ],
+              "registry": "swift",
+              "strategy": "unknown",
+              "target_version": "1.45.0"
+            }
+          ],
+          "checks": {
+            "advisories": "unknown",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "indeterminate",
+          "remaining_findings": [
+            {
+              "advisory": "GHSA-4px2-pw77-vc85",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-ccw9-q5h2-8c2w",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-pgfx-g6rc-8cjv",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-q3g2-m552-3r9c",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-qppj-fm5r-hxr3",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-w3f6-pc54-gfw7",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            },
+            {
+              "advisory": "GHSA-xvr7-p2c6-j83w",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/apple/swift-nio-http2@1.19.1"
+            }
+          ],
+          "subject": "swift:github.com/apple/swift-nio-http2@1.19.1"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-84m3-f99p-cqx5",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            },
+            {
+              "advisory": "GHSA-9m39-3mf3-xwch",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            },
+            {
+              "advisory": "GHSA-f9hx-c6jf-3qxm",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            },
+            {
+              "advisory": "GHSA-h952-963h-rv99",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            },
+            {
+              "advisory": "GHSA-hj95-mhgf-jxc4",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            },
+            {
+              "advisory": "GHSA-xc7w-r669-48pf",
+              "files": [
+                "Package.resolved"
+              ],
+              "package": "swift:github.com/pytorch/executorch@0.6.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "0.6.0",
+              "name": "github.com/pytorch/executorch",
+              "paths": [
+                "Package.resolved"
+              ],
+              "registry": "swift",
+              "strategy": "unknown",
+              "target_version": "0.7.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "swift:github.com/pytorch/executorch@0.6.0"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-4px2-pw77-vc85",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-84m3-f99p-cqx5",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-9m39-3mf3-xwch",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-ccw9-q5h2-8c2w",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-f9hx-c6jf-3qxm",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-h952-963h-rv99",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 8.1"
+        },
+        {
+          "advisory": "GHSA-hj95-mhgf-jxc4",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-pgfx-g6rc-8cjv",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-q3g2-m552-3r9c",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-qppj-fm5r-hxr3",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-w3f6-pc54-gfw7",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-xc7w-r669-48pf",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/pytorch/executorch@0.6.0",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-xvr7-p2c6-j83w",
+          "files": [
+            "Package.resolved"
+          ],
+          "package": "swift:github.com/apple/swift-nio-http2@1.19.1",
+          "severity": "SEVERITY_LABEL 6"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 2,
+      "gaps": [
+        {
+          "actionable": false,
+          "check": "dependency information",
+          "files": [
+            "Package.resolved"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [
+            "Package.resolved"
+          ],
+          "required_files": [],
+          "status": "affected"
+        },
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "executorch",
+          "type": "vcs",
+          "url": "https://github.com/pytorch/executorch"
+        },
+        {
+          "name": "executorch",
+          "type": "website",
+          "url": "https://executorch.ai"
+        },
+        {
+          "name": "swift-nio-http2",
+          "type": "vcs",
+          "url": "https://github.com/apple/swift-nio-http2"
+        },
+        {
+          "name": "swift-nio-http2",
+          "type": "website",
+          "url": "https://swiftpackageindex.com/apple/swift-nio-http2/main/documentation/niohttp2"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "source_substitution",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Package.resolved"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "executorch",
+          "observed_licenses": [],
+          "paths": [
+            "Package.resolved"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "d3f67f4c528c942f121c8b860b9410b2bf57825e",
+          "type": "library",
+          "version": "0.6.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "source_substitution",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Package.resolved"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "swift-nio-http2",
+          "observed_licenses": [],
+          "paths": [
+            "Package.resolved"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
+          "type": "library",
+          "version": "1.19.1"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "executorch",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "d3f67f4c528c942f121c8b860b9410b2bf57825e",
+              "type": "library",
+              "version": "0.6.0"
+            },
+            {
+              "name": "swift-nio-http2",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
+              "type": "library",
+              "version": "1.19.1"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "executorch",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "d3f67f4c528c942f121c8b860b9410b2bf57825e",
+              "type": "library",
+              "version": "0.6.0"
+            },
+            {
+              "name": "swift-nio-http2",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
+              "type": "library",
+              "version": "1.19.1"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "executorch",
+            "paths": [
+              "Package.resolved"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "d3f67f4c528c942f121c8b860b9410b2bf57825e",
+            "type": "library",
+            "version": "0.6.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "swift-nio-http2",
+            "paths": [
+              "Package.resolved"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
+            "type": "library",
+            "version": "1.19.1"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_SWIFT_PACKAGE_RESOLVED",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Package.resolved"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "executorch",
+          "paths": [
+            "Package.resolved"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "d3f67f4c528c942f121c8b860b9410b2bf57825e",
+          "type": "library",
+          "version": "0.6.0"
+        },
+        {
+          "name": "swift-nio-http2",
+          "paths": [
+            "Package.resolved"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "9cfed92b026c524674ed869a4ff2dcfdeedf8a2a",
+          "type": "library",
+          "version": "1.19.1"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_SWIFT_PACKAGE_RESOLVED",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Package.resolved"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

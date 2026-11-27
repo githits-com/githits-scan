@@ -1,0 +1,1344 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "uv.lock"
+          ],
+          "latest": "2.34.2",
+          "package": "pypi:requests@2.32.3"
+        },
+        {
+          "files": [
+            "uv.lock"
+          ],
+          "latest": "2.8.0",
+          "package": "pypi:urllib3@2.3.0"
+        },
+        {
+          "files": [
+            "uv.lock"
+          ],
+          "latest": "2026.11.20",
+          "package": "pypi:certifi@2025.1.31"
+        },
+        {
+          "files": [
+            "uv.lock"
+          ],
+          "latest": "3.20",
+          "package": "pypi:idna@3.10"
+        },
+        {
+          "files": [
+            "uv.lock"
+          ],
+          "latest": "3.5.3",
+          "package": "pypi:charset-normalizer@3.4.1"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-2xpw-w6gg-jr37",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-38jv-5279-wg99",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-48p4-8xcf-vxj5",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-8988-9cw3-xx77",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-gm62-xv2j-4w53",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-pq67-6m6q-mj2v",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-qccp-gfcp-xxvc",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            },
+            {
+              "advisory": "GHSA-vxq7-64xx-v4gw",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:urllib3@2.3.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.3.0",
+              "name": "urllib3",
+              "paths": [
+                "uv.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "upgrade",
+              "target_version": "2.8.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:urllib3@2.3.0"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-65pc-fj4g-8rjx",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:idna@3.10"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.10",
+              "name": "idna",
+              "paths": [
+                "uv.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "upgrade",
+              "target_version": "3.15"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:idna@3.10"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-6q48-6c7w-9gw2",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:certifi@2025.1.31"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2025.1.31",
+              "name": "certifi",
+              "paths": [
+                "uv.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "upgrade",
+              "target_version": "2026.10.18"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:certifi@2025.1.31"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-9hjg-9r4m-mvj7",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:requests@2.32.3"
+            },
+            {
+              "advisory": "GHSA-gc5v-m9x4-r6x2",
+              "files": [
+                "uv.lock"
+              ],
+              "package": "pypi:requests@2.32.3"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.32.3",
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2.33.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:requests@2.32.3"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-2xpw-w6gg-jr37",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-38jv-5279-wg99",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-48p4-8xcf-vxj5",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-65pc-fj4g-8rjx",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:idna@3.10",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-6q48-6c7w-9gw2",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:certifi@2025.1.31",
+          "severity": "SEVERITY_LABEL 9.5"
+        },
+        {
+          "advisory": "GHSA-8988-9cw3-xx77",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-9hjg-9r4m-mvj7",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:requests@2.32.3",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-gc5v-m9x4-r6x2",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:requests@2.32.3",
+          "severity": "CVSS_V3 4.4"
+        },
+        {
+          "advisory": "GHSA-gm62-xv2j-4w53",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-pq67-6m6q-mj2v",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-qccp-gfcp-xxvc",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-vxq7-64xx-v4gw",
+          "files": [
+            "uv.lock"
+          ],
+          "package": "pypi:urllib3@2.3.0",
+          "severity": "SEVERITY_LABEL 8"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [
+            "pypi"
+          ],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 5,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "resolution",
+          "files": [
+            "uv.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "certifi",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/38/fc/bce832fd4fd99766c04d1ee0eead6b0ec6486fb100ae5e74c1d91292b982/certifi-2025.1.31-py3-none-any.whl"
+        },
+        {
+          "name": "certifi",
+          "type": "other",
+          "url": "https://pypi.org/simple"
+        },
+        {
+          "name": "certifi",
+          "type": "source-distribution",
+          "url": "https://files.pythonhosted.org/packages/1c/ab/c9f1e32b7b1bf505bf26f0ef697775960db7932abeb7b516de930ba2705f/certifi-2025.1.31.tar.gz"
+        },
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "website",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/0a/9a/dd1e1cdceb841925b7798369a09279bd1cf183cef0f9ddf15a3a6502ee45/charset_normalizer-3.4.1-cp312-cp312-macosx_10_13_universal2.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/0e/f6/65ecc6878a89bb1c23a086ea335ad4bf21a588990c3f535a227b9eea9108/charset_normalizer-3.4.1-py3-none-any.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/13/0e/9c8d4cb99c98c1007cc11eda969ebfe837bbbd0acdb4736d228ccaabcd22/charset_normalizer-3.4.1-cp312-cp312-musllinux_1_2_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/1e/ab/45b180e175de4402dcf7547e4fb617283bae54ce35c27930a6f35b6bef15/charset_normalizer-3.4.1-cp311-cp311-win_amd64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/21/5b/1b390b03b1d16c7e382b561c5329f83cc06623916aab983e8ab9239c7d5c/charset_normalizer-3.4.1-cp312-cp312-win_amd64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/24/2e/dfdd9770664aae179a96561cc6952ff08f9a8cd09a908f259a9dfa063568/charset_normalizer-3.4.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/24/4e/f646b9093cff8fc86f2d60af2de4dc17c759de9d554f130b140ea4738ca6/charset_normalizer-3.4.1-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/27/f2/4f9a69cc7712b9b5ad8fdb87039fd89abba997ad5cbe690d1835d40405b0/charset_normalizer-3.4.1-cp313-cp313-win_amd64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/28/a3/a42e70d03cbdabc18997baf4f0227c73591a08041c149e710045c281f97b/charset_normalizer-3.4.1-cp311-cp311-musllinux_1_2_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/37/ed/be39e5258e198655240db5e19e0b11379163ad7070962d6b0c87ed2c4d39/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/38/94/ce8e6f63d18049672c76d07d119304e1e2d7c6098f0841b51c666e9f44a0/charset_normalizer-3.4.1-cp313-cp313-macosx_10_13_universal2.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/3d/7b/82865ba54c765560c8433f65e8acb9217cb839a9e32b42af4aa8e945870f/charset_normalizer-3.4.1-cp311-cp311-musllinux_1_2_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/3e/a2/513f6cbe752421f16d969e32f3583762bfd583848b763913ddab8d9bfd4f/charset_normalizer-3.4.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/4c/ff/a9a504662452e2d2878512115638966e75633519ec11f25fca3d2049a94a/charset_normalizer-3.4.1-cp313-cp313-musllinux_1_2_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/52/ed/b7f4f07de100bdb95c1756d3a4d17b90c1a3c53715c1a476f8738058e0fa/charset_normalizer-3.4.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/5e/67/2937f8d548c3ef6e2f9aab0f6e21001056f692d43282b165e7c56023e6dd/charset_normalizer-3.4.1-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/68/85/f4288e96039abdd5aeb5c546fa20a37b50da71b5cf01e75e87f16cd43304/charset_normalizer-3.4.1-cp311-cp311-musllinux_1_2_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/6c/71/189996b6d9a4b932564701628af5cee6716733e9165af1d5e1b285c530ed/charset_normalizer-3.4.1-cp313-cp313-musllinux_1_2_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/71/64/d24ab1a997efb06402e3fc07317e94da358e2585165930d9d59ad45fcae2/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/72/80/41ef5d5a7935d2d3a773e3eaebf0a9350542f2cab4eac59a7a4741fbbbbe/charset_normalizer-3.4.1-cp311-cp311-macosx_10_9_universal2.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/74/94/8a5277664f27c3c438546f3eb53b33f5b19568eb7424736bdc440a88a31f/charset_normalizer-3.4.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/78/d4/f5704cb629ba5ab16d1d3d741396aec6dc3ca2b67757c45b0599bb010478/charset_normalizer-3.4.1-cp312-cp312-musllinux_1_2_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/7a/28/0b9fefa7b8b080ec492110af6d88aa3dea91c464b17d53474b6e9ba5d2c5/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/7c/5f/6d352c51ee763623a98e31194823518e09bfa48be2a7e8383cf691bbb3d0/charset_normalizer-3.4.1-cp312-cp312-musllinux_1_2_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/84/c9/98e3732278a99f47d487fd3468bc60b882920cef29d1fa6ca460a1fdf4e6/charset_normalizer-3.4.1-cp312-cp312-musllinux_1_2_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/85/e4/65699e8ab3014ecbe6f5c71d1a55d810fb716bbfd74f6283d5c2aa87febf/charset_normalizer-3.4.1-cp311-cp311-musllinux_1_2_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/88/83/489e9504711fa05d8dde1574996408026bdbdbd938f23be67deebb5eca92/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/96/2c/d49710a6dbcd3776265f4c923bb73ebe83933dfbaa841c5da850fe0fd20b/charset_normalizer-3.4.1-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/ad/8f/e410d57c721945ea3b4f1a04b74f70ce8fa800d393d72899f0a40526401f/charset_normalizer-3.4.1-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/b1/82/8e9fe624cc5374193de6860aba3ea8070f584c8565ee77c168ec13274bd2/charset_normalizer-3.4.1-cp311-cp311-musllinux_1_2_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/b2/21/2b6b5b860781a0b49427309cb8670785aa543fb2178de875b87b9cc97746/charset_normalizer-3.4.1-cp312-cp312-win32.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/b4/41/35ff1f9a6bd380303dea55e44c4933b4cc3c4850988927d4082ada230273/charset_normalizer-3.4.1-cp313-cp313-musllinux_1_2_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/b5/b6/9674a4b7d4d99a0d2df9b215da766ee682718f88055751e1e5e753c82db0/charset_normalizer-3.4.1-cp311-cp311-win32.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/c5/96/64120b1d02b81785f222b976c0fb79a35875457fa9bb40827678e54d1bc8/charset_normalizer-3.4.1-cp312-cp312-musllinux_1_2_ppc64le.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/c6/c7/32da20821cf387b759ad24627a9aca289d2822de929b8a41b6241767b461/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/cd/e5/131d2fb1b0dddafc37be4f3a2fa79aa4c037368be9423061dccadfd90091/charset_normalizer-3.4.1-cp313-cp313-win32.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/d3/8c/90bfabf8c4809ecb648f39794cf2a84ff2e7d2a6cf159fe68d9a26160467/charset_normalizer-3.4.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/e4/93/946a86ce20790e11312c87c75ba68d5f6ad2208cfb52b2d6a2c32840d922/charset_normalizer-3.4.1-cp313-cp313-musllinux_1_2_x86_64.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/f0/b8/e6825e25deb691ff98cf5c9072ee0605dc2acfca98af70c2d1b1bc75190d/charset_normalizer-3.4.1-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/fb/43/c6a0b685fe6910d08ba971f62cd9c3e862a85770395ba5d9cad4fede33ab/charset_normalizer-3.4.1-cp313-cp313-musllinux_1_2_i686.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "other",
+          "url": "https://pypi.org/simple"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "source-distribution",
+          "url": "https://files.pythonhosted.org/packages/16/b0/572805e227f01586461c80e0fd25d65a2115599cc9dad142fee4b747c357/charset_normalizer-3.4.1.tar.gz"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "vcs",
+          "url": "https://github.com/jawah/charset_normalizer"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "vcs",
+          "url": "https://github.com/jawah/charset_normalizer"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "website",
+          "url": "https://pypi.org/project/charset-normalizer/"
+        },
+        {
+          "name": "idna",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl"
+        },
+        {
+          "name": "idna",
+          "type": "license",
+          "url": "https://github.com/kjd/idna/blob/729225d8b0c58bc66bb38d1d0faf281a757ece59/LICENSE.md"
+        },
+        {
+          "name": "idna",
+          "type": "other",
+          "url": "https://pypi.org/simple"
+        },
+        {
+          "name": "idna",
+          "type": "source-distribution",
+          "url": "https://files.pythonhosted.org/packages/f1/70/7703c29685631f5a7590aa73f1f1d3fa9a380e654b86af429e0934a32f7d/idna-3.10.tar.gz"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/kjd/idna"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/kjd/idna"
+        },
+        {
+          "name": "idna",
+          "type": "website",
+          "url": "https://pypi.org/project/idna/"
+        },
+        {
+          "name": "requests",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl"
+        },
+        {
+          "name": "requests",
+          "type": "other",
+          "url": "https://pypi.org/simple"
+        },
+        {
+          "name": "requests",
+          "type": "source-distribution",
+          "url": "https://files.pythonhosted.org/packages/63/70/2bf7780ad2d390a8d301ad0b550f1581eadbd9a20f896afe06353c2a2913/requests-2.32.3.tar.gz"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "website",
+          "url": "https://pypi.org/project/requests/"
+        },
+        {
+          "name": "urllib3",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/c8/19/4ec628951a74043532ca2cf5d97b7b14863931476d117c471e8e2b1eb39f/urllib3-2.3.0-py3-none-any.whl"
+        },
+        {
+          "name": "urllib3",
+          "type": "other",
+          "url": "https://pypi.org/simple"
+        },
+        {
+          "name": "urllib3",
+          "type": "source-distribution",
+          "url": "https://files.pythonhosted.org/packages/aa/63/e53da845320b757bf29ef6a9062f5c669fe997973f966045cb019c3f4b66/urllib3-2.3.0.tar.gz"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "website",
+          "url": "https://pypi.org/project/urllib3/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "publisher_release_classifier",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "urllib3",
+          "observed_licenses": [],
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@2.3.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.3.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "idna",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/idna@3.10",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.10"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "requests",
+          "observed_licenses": [],
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.32.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.32.3"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "charset-normalizer",
+          "observed_licenses": [],
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@3.4.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.4.1"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MPL-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MPL-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "certifi",
+          "observed_licenses": [],
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2025.1.31",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2025.1.31"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "uv.lock"
+          ],
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "name": "testpkg",
+          "observed_licenses": [],
+          "paths": [
+            "pyproject.toml",
+            "uv.lock"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "certifi",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            },
+            {
+              "name": "charset-normalizer",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.4.1"
+            },
+            {
+              "name": "idna",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.10",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.10"
+            },
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "testpkg",
+              "paths": [
+                "pyproject.toml",
+                "uv.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "urllib3",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.3.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "certifi",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            },
+            {
+              "name": "charset-normalizer",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.4.1"
+            },
+            {
+              "name": "idna",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.10",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.10"
+            },
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "testpkg",
+              "paths": [
+                "pyproject.toml",
+                "uv.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "urllib3",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.3.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "requests"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_UV",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "",
+          "path": "uv.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "certifi",
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2025.1.31",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2025.1.31"
+        },
+        {
+          "name": "charset-normalizer",
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@3.4.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.4.1"
+        },
+        {
+          "name": "idna",
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/idna@3.10",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.10"
+        },
+        {
+          "name": "requests",
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.32.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.32.3"
+        },
+        {
+          "name": "urllib3",
+          "paths": [
+            "uv.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@2.3.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.3.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_UV",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "",
+          "path": "uv.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "certifi",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "charset-normalizer",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.4.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.4.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "idna",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.10",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.10"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            },
+            {
+              "name": "urllib3",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.3.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.3.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "testpkg",
+              "paths": [
+                "pyproject.toml",
+                "uv.lock"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "requests",
+              "paths": [
+                "uv.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.3"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

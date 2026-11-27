@@ -230,12 +230,18 @@ over-budget or exhausted Retry-After recovery fails the gate. Recovery never
 resubmits an accepted job or bypasses admission. See the
 [service admission policy](https://docs.githits.com/api-reference/v1/experimental/generate-an-sbom-from-uploaded-files).
 
-The [live fixture runner](live-integration-fixtures.md) provides a separate
-maintainer check for pinned projects and their baselines.
+On a manual release-candidate rehearsal, the live job also runs the full
+[fixture corpus](live-integration-fixtures.md) with the release-profile binary
+from the verified checkout. Run `python3 scripts/live_fixtures.py list` to
+see the corpus budget, then add the five smoke submissions. Confirm the
+release credential has capacity for the run and other traffic sharing the
+principal before rehearsing. A fixture
+failure blocks the rehearsal. Investigate the diff, review any baseline change
+in a PR and rehearse the resulting merged SHA before tagging.
 
-The live job reads `GITHITS_API_TOKEN` from the repository secret only in its test
-step and fails closed when absent. Configure it in GitHub settings; never send it
-through chat or put it in command arguments. Repository secrets are available to
+The test steps read `GITHITS_API_TOKEN` from the repository secret and fail
+when it is absent. Configure the secret in GitHub settings and keep the value
+out of chat and command arguments. Repository secrets are available to
 trusted repository writers in other workflows too; they are not scoped to one
 workflow. Fork PR checks receive no secrets. Main protection and administrator-only
 release-tag creation constrain release authority.

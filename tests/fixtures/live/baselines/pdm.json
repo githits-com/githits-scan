@@ -1,0 +1,2714 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "0.4.6",
+          "package": "pypi:colorama@0.3.9"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "1.11.0",
+          "package": "pypi:py@1.4.34"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "2.34.2",
+          "package": "pypi:requests@2.27.1"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "2.8.0",
+          "package": "pypi:urllib3@1.26.20"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "2026.11.20",
+          "package": "pypi:certifi@2025.1.31"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "3.20",
+          "package": "pypi:idna@2.7"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "3.5.3",
+          "package": "pypi:charset-normalizer@2.0.12"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "7.7.0",
+          "package": "pypi:chardet@3.0.4"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "84.2.1",
+          "package": "pypi:setuptools@39.2.0"
+        },
+        {
+          "files": [
+            "pdm.lock"
+          ],
+          "latest": "9.2.0",
+          "package": "pypi:pytest@3.2.5"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-2xpw-w6gg-jr37",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-38jv-5279-wg99",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-8988-9cw3-xx77",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-gm62-xv2j-4w53",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-pq67-6m6q-mj2v",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-qccp-gfcp-xxvc",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            },
+            {
+              "advisory": "GHSA-vxq7-64xx-v4gw",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:urllib3@1.26.20"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "1.26.20",
+              "name": "urllib3",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2.8.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:urllib3@1.26.20"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-5rjg-fvgr-3xxf",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:setuptools@39.2.0"
+            },
+            {
+              "advisory": "GHSA-cx63-2mw6-8hw5",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:setuptools@39.2.0"
+            },
+            {
+              "advisory": "GHSA-h35f-9h28-mq5c",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:setuptools@39.2.0"
+            },
+            {
+              "advisory": "GHSA-r9hx-vwmv-q579",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:setuptools@39.2.0"
+            },
+            {
+              "advisory": "GHSA-xmj3-9gf7-h52w",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:setuptools@39.2.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "39.2.0",
+              "name": "setuptools",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "84.1.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:setuptools@39.2.0"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-65pc-fj4g-8rjx",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:idna@2.7"
+            },
+            {
+              "advisory": "GHSA-jjg7-2v4v-x38h",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:idna@2.7"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.7",
+              "name": "idna",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.15"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:idna@2.7"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-6q48-6c7w-9gw2",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:certifi@2025.1.31"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2025.1.31",
+              "name": "certifi",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2026.10.18"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:certifi@2025.1.31"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-6w46-j5rx-g56g",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:pytest@3.2.5"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.2.5",
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "9.0.3"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:pytest@3.2.5"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-9hjg-9r4m-mvj7",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:requests@2.27.1"
+            },
+            {
+              "advisory": "GHSA-9wx4-h78v-vm56",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:requests@2.27.1"
+            },
+            {
+              "advisory": "GHSA-gc5v-m9x4-r6x2",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:requests@2.27.1"
+            },
+            {
+              "advisory": "GHSA-j8r2-6x86-q33q",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:requests@2.27.1"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.27.1",
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2.33.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:requests@2.27.1"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-hj5v-574p-mj7c",
+              "files": [
+                "pdm.lock"
+              ],
+              "package": "pypi:py@1.4.34"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "1.4.34",
+              "name": "py",
+              "paths": [
+                "pdm.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "1.10.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:py@1.4.34"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-2xpw-w6gg-jr37",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-38jv-5279-wg99",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-5rjg-fvgr-3xxf",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:setuptools@39.2.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-65pc-fj4g-8rjx",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:idna@2.7",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-6q48-6c7w-9gw2",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:certifi@2025.1.31",
+          "severity": "SEVERITY_LABEL 9.5"
+        },
+        {
+          "advisory": "GHSA-6w46-j5rx-g56g",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:pytest@3.2.5",
+          "severity": "CVSS_V3 6.8"
+        },
+        {
+          "advisory": "GHSA-8988-9cw3-xx77",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-9hjg-9r4m-mvj7",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:requests@2.27.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-9wx4-h78v-vm56",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:requests@2.27.1",
+          "severity": "CVSS_V3 5.6"
+        },
+        {
+          "advisory": "GHSA-cx63-2mw6-8hw5",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:setuptools@39.2.0",
+          "severity": "CVSS_V3 8.8"
+        },
+        {
+          "advisory": "GHSA-gc5v-m9x4-r6x2",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:requests@2.27.1",
+          "severity": "CVSS_V3 4.4"
+        },
+        {
+          "advisory": "GHSA-gm62-xv2j-4w53",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-h35f-9h28-mq5c",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:setuptools@39.2.0",
+          "severity": "CVSS_V3 6.1"
+        },
+        {
+          "advisory": "GHSA-hj5v-574p-mj7c",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:py@1.4.34",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-j8r2-6x86-q33q",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:requests@2.27.1",
+          "severity": "CVSS_V3 6.1"
+        },
+        {
+          "advisory": "GHSA-jjg7-2v4v-x38h",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:idna@2.7",
+          "severity": "CVSS_V3 6.2"
+        },
+        {
+          "advisory": "GHSA-pq67-6m6q-mj2v",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-qccp-gfcp-xxvc",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-r9hx-vwmv-q579",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:setuptools@39.2.0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-vxq7-64xx-v4gw",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:urllib3@1.26.20",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-xmj3-9gf7-h52w",
+          "files": [
+            "pdm.lock"
+          ],
+          "package": "pypi:setuptools@39.2.0",
+          "severity": "SEVERITY_LABEL 3"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [
+            "pypi"
+          ],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 10,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "pdm.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "certifi",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/1c/ab/c9f1e32b7b1bf505bf26f0ef697775960db7932abeb7b516de930ba2705f/certifi-2025.1.31.tar.gz"
+        },
+        {
+          "name": "certifi",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/38/fc/bce832fd4fd99766c04d1ee0eead6b0ec6486fb100ae5e74c1d91292b982/certifi-2025.1.31-py3-none-any.whl"
+        },
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "website",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "chardet",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl"
+        },
+        {
+          "name": "chardet",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/fc/bb/a5768c230f9ddb03acc9ef3f0d4a3cf93462473795d18e9535498c8f929d/chardet-3.0.4.tar.gz"
+        },
+        {
+          "name": "chardet",
+          "type": "vcs",
+          "url": "https://github.com/chardet/chardet"
+        },
+        {
+          "name": "chardet",
+          "type": "website",
+          "url": "https://pypi.org/project/chardet/"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/06/b3/24afc8868eba069a7f03650ac750a778862dc34941a4bebeb58706715726/charset_normalizer-2.0.12-py3-none-any.whl"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/56/31/7bcaf657fafb3c6db8c787a865434290b726653c912085fbd371e9b92e1c/charset-normalizer-2.0.12.tar.gz"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "vcs",
+          "url": "https://github.com/jawah/charset_normalizer"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "website",
+          "url": "https://pypi.org/project/charset-normalizer/"
+        },
+        {
+          "name": "colorama",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/db/c8/7dcf9dbcb22429512708fe3a547f8b6101c0d02137acbd892505aee57adf/colorama-0.3.9-py2.py3-none-any.whl"
+        },
+        {
+          "name": "colorama",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/e6/76/257b53926889e2835355d74fec73d82662100135293e17d382e2b74d1669/colorama-0.3.9.tar.gz"
+        },
+        {
+          "name": "colorama",
+          "type": "vcs",
+          "url": "https://github.com/tartley/colorama"
+        },
+        {
+          "name": "colorama",
+          "type": "website",
+          "url": "https://github.com/tartley/colorama"
+        },
+        {
+          "name": "idna",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/4b/2a/0276479a4b3caeb8a8c1af2f8e4355746a97fab05a372e4a2c6a6b876165/idna-2.7-py2.py3-none-any.whl"
+        },
+        {
+          "name": "idna",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/65/c4/80f97e9c9628f3cac9b98bfca0402ede54e0563b56482e3e6e45c43c4935/idna-2.7.tar.gz"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/kjd/idna"
+        },
+        {
+          "name": "idna",
+          "type": "website",
+          "url": "https://pypi.org/project/idna/"
+        },
+        {
+          "name": "py",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/53/67/9620edf7803ab867b175e4fd23c7b8bd8eba11cb761514dcd2e726ef07da/py-1.4.34-py2.py3-none-any.whl"
+        },
+        {
+          "name": "py",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/68/35/58572278f1c097b403879c1e9369069633d1cbad5239b9057944bb764782/py-1.4.34.tar.gz"
+        },
+        {
+          "name": "py",
+          "type": "website",
+          "url": "https://py.readthedocs.io/"
+        },
+        {
+          "name": "pytest",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/1f/f8/8cd74c16952163ce0db0bd95fdd8810cbf093c08be00e6e665ebf0dc3138/pytest-3.2.5.tar.gz"
+        },
+        {
+          "name": "pytest",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/ef/41/d8a61f1b2ba308e96b36106e95024977e30129355fd12087f23e4b9852a1/pytest-3.2.5-py2.py3-none-any.whl"
+        },
+        {
+          "name": "pytest",
+          "type": "vcs",
+          "url": "https://github.com/pytest-dev/pytest"
+        },
+        {
+          "name": "pytest",
+          "type": "website",
+          "url": "https://pypi.org/project/pytest/"
+        },
+        {
+          "name": "requests",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/2d/61/08076519c80041bc0ffa1a8af0cbd3bf3e2b62af10435d269a9d0f40564d/requests-2.27.1-py2.py3-none-any.whl"
+        },
+        {
+          "name": "requests",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/60/f3/26ff3767f099b73e0efa138a9998da67890793bfa475d8278f84a30fec77/requests-2.27.1.tar.gz"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "website",
+          "url": "https://pypi.org/project/requests/"
+        },
+        {
+          "name": "setuptools",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/1a/04/d6f1159feaccdfc508517dba1929eb93a2854de729fa68da9d5c6b48fa00/setuptools-39.2.0.zip"
+        },
+        {
+          "name": "setuptools",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/7f/e1/820d941153923aac1d49d7fc37e17b6e73bfbd2904959fffbad77900cf92/setuptools-39.2.0-py2.py3-none-any.whl"
+        },
+        {
+          "name": "setuptools",
+          "type": "vcs",
+          "url": "https://github.com/pypa/setuptools"
+        },
+        {
+          "name": "setuptools",
+          "type": "website",
+          "url": "https://pypi.org/project/setuptools/"
+        },
+        {
+          "name": "urllib3",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/33/cf/8435d5a7159e2a9c83a95896ed596f68cf798005fe107cc655b5c5c14704/urllib3-1.26.20-py2.py3-none-any.whl"
+        },
+        {
+          "name": "urllib3",
+          "type": "distribution",
+          "url": "https://files.pythonhosted.org/packages/e4/e8/6ff5e6bc22095cfc59b6ea711b687e2b7ed4bdb373f7eeec370a97d7392f/urllib3-1.26.20.tar.gz"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "website",
+          "url": "https://pypi.org/project/urllib3/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              },
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD-like"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "idna",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/idna@2.7",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.7"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ],
+            "resolution_markers": [
+              "os_name == \"nt\""
+            ]
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "LGPL"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "chardet",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/chardet@3.0.4",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.4"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "urllib3",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@1.26.20",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.26.20"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "requests",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.27.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.27.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.5.0",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "charset-normalizer",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@2.0.12",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.12"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.6",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MPL-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MPL-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "certifi",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2025.1.31",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2025.1.31"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+          },
+          "license_evidence": {
+            "applicability_reason": "publisher_release_classifier",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "setuptools",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/setuptools@39.2.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "39.2.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ],
+            "resolution_markers": [
+              "sys_platform == \"win32\""
+            ]
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "colorama",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/colorama@0.3.9",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.3.9"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "py",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/py@1.4.34",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.34"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pdm.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "pytest",
+          "observed_licenses": [],
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/pytest@3.2.5",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.2.5"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  },
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "idna",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/idna@2.7",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.7"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "os_name == \"nt\""
+                ]
+              },
+              "name": "chardet",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/chardet@3.0.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.4"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "urllib3",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@1.26.20",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.26.20"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.5.0",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@2.0.12",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.12"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.6",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "certifi",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+              },
+              "name": "setuptools",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/setuptools@39.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "39.2.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "sys_platform == \"win32\""
+                ]
+              },
+              "name": "colorama",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.3.9",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.3.9"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "py",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/py@1.4.34",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.34"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/pytest@3.2.5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.2.5"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  },
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "idna",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/idna@2.7",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.7"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "os_name == \"nt\""
+                ]
+              },
+              "name": "chardet",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/chardet@3.0.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.4"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "urllib3",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@1.26.20",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.26.20"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.5.0",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@2.0.12",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.12"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.6",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "certifi",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+              },
+              "name": "setuptools",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/setuptools@39.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "39.2.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "sys_platform == \"win32\""
+                ]
+              },
+              "name": "colorama",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.3.9",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.3.9"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "py",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/py@1.4.34",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.34"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/pytest@3.2.5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.2.5"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only",
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "tests",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "pytest",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/pytest@3.2.5",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.2.5"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                },
+                {
+                  "group": "security",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "idna",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/idna@2.7",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.7"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                }
+              ],
+              "resolution_markers": [
+                "os_name == \"nt\""
+              ]
+            },
+            "name": "chardet",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/chardet@3.0.4",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.0.4"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "security",
+                  "marker": ""
+                }
+              ],
+              "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+              "resolution_markers": [
+                "python_version >= \"3.6\""
+              ]
+            },
+            "name": "urllib3",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/urllib3@1.26.20",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.26.20"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "security",
+                  "marker": ""
+                }
+              ],
+              "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+              "resolution_markers": [
+                "python_version >= \"3.6\""
+              ]
+            },
+            "name": "requests",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/requests@2.27.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.27.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "security",
+                  "marker": ""
+                }
+              ],
+              "requires_python": ">=3.5.0",
+              "resolution_markers": [
+                "python_version >= \"3.6\""
+              ]
+            },
+            "name": "charset-normalizer",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/charset-normalizer@2.0.12",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.0.12"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "security",
+                  "marker": ""
+                }
+              ],
+              "requires_python": ">=3.6",
+              "resolution_markers": [
+                "python_version >= \"3.6\""
+              ]
+            },
+            "name": "certifi",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/certifi@2025.1.31",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2025.1.31"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "tests",
+                  "marker": ""
+                }
+              ],
+              "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+            },
+            "name": "setuptools",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/setuptools@39.2.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "39.2.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "tests",
+                  "marker": ""
+                }
+              ],
+              "resolution_markers": [
+                "sys_platform == \"win32\""
+              ]
+            },
+            "name": "colorama",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/colorama@0.3.9",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "0.3.9"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "tests",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "py",
+            "paths": [
+              "pdm.lock"
+            ],
+            "purl": "pkg:pypi/py@1.4.34",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.4.34"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_PDM",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "4.5.0",
+          "path": "pdm.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              },
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "idna",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/idna@2.7",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.7"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ],
+            "resolution_markers": [
+              "os_name == \"nt\""
+            ]
+          },
+          "name": "chardet",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/chardet@3.0.4",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.4"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "name": "urllib3",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@1.26.20",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.26.20"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "name": "requests",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.27.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.27.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.5.0",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "name": "charset-normalizer",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@2.0.12",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.12"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "security",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.6",
+            "resolution_markers": [
+              "python_version >= \"3.6\""
+            ]
+          },
+          "name": "certifi",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2025.1.31",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2025.1.31"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+          },
+          "name": "setuptools",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/setuptools@39.2.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "39.2.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ],
+            "resolution_markers": [
+              "sys_platform == \"win32\""
+            ]
+          },
+          "name": "colorama",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/colorama@0.3.9",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.3.9"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "py",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/py@1.4.34",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.34"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "tests",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "pytest",
+          "paths": [
+            "pdm.lock"
+          ],
+          "purl": "pkg:pypi/pytest@3.2.5",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.2.5"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_PDM",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "4.5.0",
+          "path": "pdm.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  },
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "idna",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/idna@2.7",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.7"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "os_name == \"nt\""
+                ]
+              },
+              "name": "chardet",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/chardet@3.0.4",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.4"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "urllib3",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@1.26.20",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.26.20"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.5.0",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@2.0.12",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.12"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "requests",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.27.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.27.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "security",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.6",
+                "resolution_markers": [
+                  "python_version >= \"3.6\""
+                ]
+              },
+              "name": "certifi",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2025.1.31",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2025.1.31"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/pytest@3.2.5",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.2.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
+              },
+              "name": "setuptools",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/setuptools@39.2.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "39.2.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/pytest@3.2.5",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.2.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ],
+                "resolution_markers": [
+                  "sys_platform == \"win32\""
+                ]
+              },
+              "name": "colorama",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.3.9",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.3.9"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "pytest",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/pytest@3.2.5",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.2.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "tests",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "py",
+              "paths": [
+                "pdm.lock"
+              ],
+              "purl": "pkg:pypi/py@1.4.34",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.34"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

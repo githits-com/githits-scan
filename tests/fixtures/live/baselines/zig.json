@@ -1,0 +1,392 @@
+{
+  "audit": {
+    "observations": {
+      "dependencies": 2,
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "zig"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "zig"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "zig"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "zig"
+          ],
+          "unknown": false
+        }
+      },
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "outdated",
+          "files": [
+            "build.zig.zon"
+          ],
+          "required_files": [],
+          "status": "unknown"
+        },
+        {
+          "actionable": true,
+          "check": "outdated",
+          "files": [
+            "build.zig.zon"
+          ],
+          "required_files": [],
+          "status": "unknown"
+        },
+        {
+          "actionable": true,
+          "check": "outdated",
+          "files": [],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [
+            "build.zig.zon"
+          ],
+          "required_files": [],
+          "status": "unsupported"
+        },
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "gh/ziglibs/diffz",
+          "type": "vcs",
+          "url": "https://github.com/ziglibs/diffz"
+        },
+        {
+          "name": "gh/ziglibs/diffz",
+          "type": "website",
+          "url": "https://github.com/ziglibs/diffz"
+        },
+        {
+          "name": "gh/ziglibs/known-folders",
+          "type": "vcs",
+          "url": "https://github.com/ziglibs/known-folders"
+        },
+        {
+          "name": "gh/ziglibs/known-folders",
+          "type": "website",
+          "url": "https://github.com/ziglibs/known-folders"
+        }
+      ],
+      "resolved": [
+        {
+          "license_evidence": {
+            "applicability_reason": "unknown_origin",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "build.zig.zon"
+          ],
+          "metadata_status": "available",
+          "name": "gh/ziglibs/diffz",
+          "observed_licenses": [],
+          "paths": [
+            "build.zig.zon"
+          ],
+          "purl": "pkg:github/ziglibs/diffz@d080c1eb782fff15068cabb3b82da85ce6054b74",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "d080c1eb782fff15068cabb3b82da85ce6054b74"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "unknown_origin",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "build.zig.zon"
+          ],
+          "metadata_status": "available",
+          "name": "gh/ziglibs/known-folders",
+          "observed_licenses": [],
+          "paths": [
+            "build.zig.zon"
+          ],
+          "purl": "pkg:github/ziglibs/known-folders@207c34a16e4365edc20d92c7892f962b3bed46e8",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "207c34a16e4365edc20d92c7892f962b3bed46e8"
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "components": [
+        {
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "build.zig.zon"
+          ],
+          "name": "githits_scan_fixture",
+          "observed_licenses": [],
+          "paths": [
+            "build.zig.zon"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "gh/ziglibs/diffz",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gh/ziglibs/known-folders",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "githits_scan_fixture",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "gh/ziglibs/diffz",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "gh/ziglibs/known-folders",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "githits_scan_fixture",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "manifest_path": "build.zig.zon",
+          "name": "diffz"
+        },
+        {
+          "manifest_path": "build.zig.zon",
+          "name": "known_folders"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "build.zig.zon",
+          "status": "complete"
+        }
+      ]
+    }
+  },
+  "sbom": {
+    "observations": {
+      "components": [
+        {
+          "name": "gh/ziglibs/diffz",
+          "paths": [
+            "build.zig.zon"
+          ],
+          "purl": "pkg:github/ziglibs/diffz@d080c1eb782fff15068cabb3b82da85ce6054b74",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "d080c1eb782fff15068cabb3b82da85ce6054b74"
+        },
+        {
+          "name": "gh/ziglibs/known-folders",
+          "paths": [
+            "build.zig.zon"
+          ],
+          "purl": "pkg:github/ziglibs/known-folders@207c34a16e4365edc20d92c7892f962b3bed46e8",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "207c34a16e4365edc20d92c7892f962b3bed46e8"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "githits_scan_fixture",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "gh/ziglibs/diffz",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "purl": "pkg:github/ziglibs/diffz@d080c1eb782fff15068cabb3b82da85ce6054b74",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "d080c1eb782fff15068cabb3b82da85ce6054b74"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "githits_scan_fixture",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "gh/ziglibs/known-folders",
+              "paths": [
+                "build.zig.zon"
+              ],
+              "purl": "pkg:github/ziglibs/known-folders@207c34a16e4365edc20d92c7892f962b3bed46e8",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "207c34a16e4365edc20d92c7892f962b3bed46e8"
+            }
+          ]
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "declarations": [
+        {
+          "manifest_path": "build.zig.zon",
+          "name": "diffz"
+        },
+        {
+          "manifest_path": "build.zig.zon",
+          "name": "known_folders"
+        }
+      ],
+      "occurrences": [
+        {
+          "name": "gh/ziglibs/diffz",
+          "paths": [
+            "build.zig.zon"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "gh/ziglibs/known-folders",
+          "paths": [
+            "build.zig.zon"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        }
+      ],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "build.zig.zon",
+          "status": "complete"
+        }
+      ]
+    }
+  }
+}

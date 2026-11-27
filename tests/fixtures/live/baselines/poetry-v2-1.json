@@ -1,0 +1,3849 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "0.17.6",
+          "package": "pypi:ruff@0.8.3"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "0.9.5",
+          "package": "pypi:wcwidth@0.2.13"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "1.7.0",
+          "package": "pypi:pluggy@0.13.1"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "11.2.1",
+          "package": "pypi:more-itertools@10.6.0"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "26.1.0",
+          "package": "pypi:attrs@25.1.0"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "26.4",
+          "package": "pypi:packaging@24.2"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.0.4",
+          "package": "pypi:markupsafe@3.0.2"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.1.3",
+          "package": "pypi:flask@1.0.3"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.1.6",
+          "package": "pypi:jinja2@3.1.5"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.1.9",
+          "package": "pypi:werkzeug@3.1.3"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "8.5.1",
+          "package": "pypi:click@8.1.8"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "9.2.0",
+          "package": "pypi:pytest@5.4.3"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-29vq-49wr-vm6x",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:werkzeug@3.1.3"
+            },
+            {
+              "advisory": "GHSA-87hc-h4r5-73f7",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:werkzeug@3.1.3"
+            },
+            {
+              "advisory": "GHSA-g6x2-hccm-hh4m",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:werkzeug@3.1.3"
+            },
+            {
+              "advisory": "GHSA-hgf8-39gv-g3f2",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:werkzeug@3.1.3"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.1.3",
+              "name": "werkzeug",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.1.9"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:werkzeug@3.1.3"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-68rp-wp8r-4726",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:flask@1.0.3"
+            },
+            {
+              "advisory": "GHSA-m2qf-hxjv-5gpq",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:flask@1.0.3"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "1.0.3",
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.1.3"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "blocked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:flask@1.0.3"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-6w46-j5rx-g56g",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:pytest@5.4.3"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "5.4.3",
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "9.0.3"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "blocked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:pytest@5.4.3"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-cpwx-vrp4-4pq7",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:jinja2@3.1.5"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.1.5",
+              "name": "jinja2",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.1.6"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:jinja2@3.1.5"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-29vq-49wr-vm6x",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:werkzeug@3.1.3",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-68rp-wp8r-4726",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:flask@1.0.3",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-6w46-j5rx-g56g",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:pytest@5.4.3",
+          "severity": "CVSS_V3 6.8"
+        },
+        {
+          "advisory": "GHSA-87hc-h4r5-73f7",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:werkzeug@3.1.3",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-cpwx-vrp4-4pq7",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:jinja2@3.1.5",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-g6x2-hccm-hh4m",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:werkzeug@3.1.3",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-hgf8-39gv-g3f2",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:werkzeug@3.1.3",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-m2qf-hxjv-5gpq",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:flask@1.0.3",
+          "severity": "CVSS_V3 7.5"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [
+            "pypi"
+          ],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 16,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "poetry.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "pyproject.toml"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "resolution",
+          "files": [
+            "poetry.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "atomicwrites",
+          "type": "vcs",
+          "url": "https://github.com/untitaker/python-atomicwrites"
+        },
+        {
+          "name": "atomicwrites",
+          "type": "website",
+          "url": "https://github.com/untitaker/python-atomicwrites"
+        },
+        {
+          "name": "attrs",
+          "type": "vcs",
+          "url": "https://github.com/python-attrs/attrs"
+        },
+        {
+          "name": "attrs",
+          "type": "website",
+          "url": "https://pypi.org/project/attrs/"
+        },
+        {
+          "name": "click",
+          "type": "license",
+          "url": "https://github.com/pallets/click/blob/934813e4d421071a1b3db3973c02fe2721359a6e/LICENSE.txt"
+        },
+        {
+          "name": "click",
+          "type": "vcs",
+          "url": "https://github.com/pallets/click"
+        },
+        {
+          "name": "click",
+          "type": "vcs",
+          "url": "https://github.com/pallets/click"
+        },
+        {
+          "name": "click",
+          "type": "website",
+          "url": "https://pypi.org/project/click/"
+        },
+        {
+          "name": "colorama",
+          "type": "license",
+          "url": "https://github.com/tartley/colorama/blob/3de9f013df4b470069d03d250224062e8cf15c49/LICENSE.txt"
+        },
+        {
+          "name": "colorama",
+          "type": "vcs",
+          "url": "https://github.com/tartley/colorama"
+        },
+        {
+          "name": "colorama",
+          "type": "website",
+          "url": "https://github.com/tartley/colorama"
+        },
+        {
+          "name": "flask",
+          "type": "vcs",
+          "url": "https://github.com/pallets/flask"
+        },
+        {
+          "name": "flask",
+          "type": "vcs",
+          "url": "https://github.com/pallets/flask"
+        },
+        {
+          "name": "flask",
+          "type": "website",
+          "url": "https://pypi.org/project/Flask/"
+        },
+        {
+          "name": "itsdangerous",
+          "type": "license",
+          "url": "https://github.com/pallets/itsdangerous/blob/096c8d42545d3b68ea21a4f890fb2b2d8979c0bd/LICENSE.txt"
+        },
+        {
+          "name": "itsdangerous",
+          "type": "vcs",
+          "url": "https://github.com/pallets/itsdangerous"
+        },
+        {
+          "name": "itsdangerous",
+          "type": "vcs",
+          "url": "https://github.com/pallets/itsdangerous"
+        },
+        {
+          "name": "itsdangerous",
+          "type": "website",
+          "url": "https://pypi.org/project/itsdangerous/"
+        },
+        {
+          "name": "jinja2",
+          "type": "license",
+          "url": "https://github.com/pallets/jinja/blob/877f6e51be8e1765b06d911cfaa9033775f051d1/LICENSE.txt"
+        },
+        {
+          "name": "jinja2",
+          "type": "vcs",
+          "url": "https://github.com/pallets/jinja"
+        },
+        {
+          "name": "jinja2",
+          "type": "vcs",
+          "url": "https://github.com/pallets/jinja"
+        },
+        {
+          "name": "jinja2",
+          "type": "website",
+          "url": "https://pypi.org/project/Jinja2/"
+        },
+        {
+          "name": "markupsafe",
+          "type": "vcs",
+          "url": "https://github.com/pallets/markupsafe"
+        },
+        {
+          "name": "markupsafe",
+          "type": "vcs",
+          "url": "https://github.com/pallets/markupsafe"
+        },
+        {
+          "name": "markupsafe",
+          "type": "website",
+          "url": "https://pypi.org/project/MarkupSafe/"
+        },
+        {
+          "name": "more-itertools",
+          "type": "vcs",
+          "url": "https://github.com/more-itertools/more-itertools"
+        },
+        {
+          "name": "more-itertools",
+          "type": "website",
+          "url": "https://pypi.org/project/more-itertools/"
+        },
+        {
+          "name": "packaging",
+          "type": "license",
+          "url": "https://github.com/pypa/packaging/blob/d8e3b31b734926ebbcaff654279f6855a73e052f/LICENSE"
+        },
+        {
+          "name": "packaging",
+          "type": "license",
+          "url": "https://github.com/pypa/packaging/blob/d8e3b31b734926ebbcaff654279f6855a73e052f/LICENSE.APACHE"
+        },
+        {
+          "name": "packaging",
+          "type": "license",
+          "url": "https://github.com/pypa/packaging/blob/d8e3b31b734926ebbcaff654279f6855a73e052f/LICENSE.BSD"
+        },
+        {
+          "name": "packaging",
+          "type": "vcs",
+          "url": "https://github.com/pypa/packaging"
+        },
+        {
+          "name": "packaging",
+          "type": "vcs",
+          "url": "https://github.com/pypa/packaging"
+        },
+        {
+          "name": "packaging",
+          "type": "website",
+          "url": "https://pypi.org/project/packaging/"
+        },
+        {
+          "name": "pluggy",
+          "type": "vcs",
+          "url": "https://github.com/pytest-dev/pluggy"
+        },
+        {
+          "name": "pluggy",
+          "type": "website",
+          "url": "https://pypi.org/project/pluggy/"
+        },
+        {
+          "name": "py",
+          "type": "website",
+          "url": "https://py.readthedocs.io/"
+        },
+        {
+          "name": "pytest",
+          "type": "vcs",
+          "url": "https://github.com/pytest-dev/pytest"
+        },
+        {
+          "name": "pytest",
+          "type": "vcs",
+          "url": "https://github.com/pytest-dev/pytest"
+        },
+        {
+          "name": "pytest",
+          "type": "website",
+          "url": "https://pypi.org/project/pytest/"
+        },
+        {
+          "name": "ruff",
+          "type": "vcs",
+          "url": "https://github.com/astral-sh/ruff"
+        },
+        {
+          "name": "ruff",
+          "type": "vcs",
+          "url": "https://github.com/astral-sh/ruff"
+        },
+        {
+          "name": "ruff",
+          "type": "website",
+          "url": "https://docs.astral.sh/ruff"
+        },
+        {
+          "name": "wcwidth",
+          "type": "vcs",
+          "url": "https://github.com/jquast/wcwidth"
+        },
+        {
+          "name": "wcwidth",
+          "type": "website",
+          "url": "https://pypi.org/project/wcwidth/"
+        },
+        {
+          "name": "werkzeug",
+          "type": "license",
+          "url": "https://github.com/pallets/werkzeug/blob/6389612fd1ee1bd93579eed5026e8fd471d04abd/LICENSE.txt"
+        },
+        {
+          "name": "werkzeug",
+          "type": "vcs",
+          "url": "https://github.com/pallets/werkzeug"
+        },
+        {
+          "name": "werkzeug",
+          "type": "vcs",
+          "url": "https://github.com/pallets/werkzeug"
+        },
+        {
+          "name": "werkzeug",
+          "type": "website",
+          "url": "https://pypi.org/project/Werkzeug/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              },
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "dev"
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "pluggy",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/pluggy@0.13.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.13.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "benchmark",
+              "cov",
+              "dev",
+              "docs",
+              "tests",
+              "tests-mypy"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "attrs",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/attrs@25.1.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "25.1.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "checkqa-mypy",
+              "testing"
+            ],
+            "requires_python": ">=3.5"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "pytest",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/pytest@5.4.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.4.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": "*"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "wcwidth",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/wcwidth@0.2.13",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.2.13"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "py",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/py@1.11.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.11.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.8"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0 OR BSD-2-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "packaging",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            },
+            {
+              "license": {
+                "name": "BSD-2-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/packaging@24.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "24.2"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.9"
+          },
+          "license_evidence": {
+            "applicability_reason": "publisher_release_classifier",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "more-itertools",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/more-itertools@10.6.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "10.6.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": "sys_platform == \"win32\""
+              },
+              {
+                "group": "main",
+                "marker": "platform_system == \"Windows\""
+              }
+            ],
+            "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "colorama",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/colorama@0.4.6",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.4.6"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": "sys_platform == \"win32\""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "atomicwrites",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/atomicwrites@1.4.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "lint",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.7"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ruff",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/ruff@0.8.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.8.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "dev",
+              "docs",
+              "dotenv"
+            ],
+            "requires_python": "*"
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "flask",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/flask@1.0.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "i18n"
+            ],
+            "requires_python": ">=3.7"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "jinja2",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/jinja2@3.1.5",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.1.5"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "watchdog"
+            ],
+            "requires_python": ">=3.9"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "werkzeug",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/werkzeug@3.1.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.1.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.7"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "click",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/click@8.1.8",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "8.1.8"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.8"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "itsdangerous",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/itsdangerous@2.2.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.9"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "markupsafe",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/markupsafe@3.0.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.2"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "name": "web",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock",
+            "pyproject.toml"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "*"
+              },
+              "name": "wcwidth",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/wcwidth@0.2.13",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.13"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+              },
+              "name": "py",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/py@1.11.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "packaging",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/packaging@24.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "24.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "more-itertools",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/more-itertools@10.6.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "10.6.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  },
+                  {
+                    "group": "main",
+                    "marker": "platform_system == \"Windows\""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+              },
+              "name": "colorama",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.4.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.6"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "atomicwrites",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/atomicwrites@1.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "lint",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "ruff",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/ruff@0.8.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.8.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "click",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/click@8.1.8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.1.8"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "itsdangerous",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/itsdangerous@2.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "markupsafe",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/markupsafe@3.0.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.2"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  },
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev"
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "pluggy",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pluggy@0.13.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.13.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "benchmark",
+                  "cov",
+                  "dev",
+                  "docs",
+                  "tests",
+                  "tests-mypy"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "attrs",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/attrs@25.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "25.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "*"
+              },
+              "name": "wcwidth",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/wcwidth@0.2.13",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.13"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+              },
+              "name": "py",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/py@1.11.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "packaging",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/packaging@24.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "24.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "more-itertools",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/more-itertools@10.6.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "10.6.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  },
+                  {
+                    "group": "main",
+                    "marker": "platform_system == \"Windows\""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+              },
+              "name": "colorama",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.4.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.6"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "atomicwrites",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/atomicwrites@1.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "lint",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "ruff",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/ruff@0.8.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.8.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "i18n"
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "jinja2",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/jinja2@3.1.5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "watchdog"
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "werkzeug",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/werkzeug@3.1.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "click",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/click@8.1.8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.1.8"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "itsdangerous",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/itsdangerous@2.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "markupsafe",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/markupsafe@3.0.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.2"
+            },
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  },
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev"
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "pluggy",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pluggy@0.13.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.13.1"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "benchmark",
+                  "cov",
+                  "dev",
+                  "docs",
+                  "tests",
+                  "tests-mypy"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "attrs",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/attrs@25.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "25.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "i18n"
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "jinja2",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/jinja2@3.1.5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "watchdog"
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "werkzeug",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/werkzeug@3.1.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.3"
+            },
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "0.8.3",
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "ruff"
+        },
+        {
+          "declared_requirement": "5.4.3",
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "pytest"
+        },
+        {
+          "declared_requirement": "==0.13.1",
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "pluggy"
+        },
+        {
+          "declared_requirement": "==1.0.3",
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "Flask"
+        },
+        {
+          "declared_requirement": ">=2.0.0,<3.0.0",
+          "declared_scope": "build",
+          "manifest_path": "pyproject.toml",
+          "name": "poetry-core"
+        }
+      ],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "not_expanded"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "web",
+            "paths": [
+              "poetry.lock",
+              "pyproject.toml"
+            ],
+            "purl": null,
+            "record_kind": "manifest",
+            "scope": null,
+            "type": "library",
+            "version": "0.1.0"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "dev",
+                  "marker": ""
+                },
+                {
+                  "group": "main",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "dev"
+              ],
+              "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+            },
+            "name": "pluggy",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/pluggy@0.13.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "0.13.1"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "dev",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "benchmark",
+                "cov",
+                "dev",
+                "docs",
+                "tests",
+                "tests-mypy"
+              ],
+              "requires_python": ">=3.8"
+            },
+            "name": "attrs",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/attrs@25.1.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "25.1.0"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "dev",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "checkqa-mypy",
+                "testing"
+              ],
+              "requires_python": ">=3.5"
+            },
+            "name": "pytest",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/pytest@5.4.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "5.4.3"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "main",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "dev",
+                "docs",
+                "dotenv"
+              ],
+              "requires_python": "*"
+            },
+            "name": "flask",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/flask@1.0.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.0.3"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "main",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "i18n"
+              ],
+              "requires_python": ">=3.7"
+            },
+            "name": "jinja2",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/jinja2@3.1.5",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.1.5"
+          }
+        },
+        {
+          "reasons": [
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "main",
+                  "marker": ""
+                }
+              ],
+              "provided_extras": [
+                "watchdog"
+              ],
+              "requires_python": ">=3.9"
+            },
+            "name": "werkzeug",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/werkzeug@3.1.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.1.3"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_POETRY",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "2.1",
+          "path": "poetry.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              },
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "dev"
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+          },
+          "name": "pluggy",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/pluggy@0.13.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.13.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "benchmark",
+              "cov",
+              "dev",
+              "docs",
+              "tests",
+              "tests-mypy"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "name": "attrs",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/attrs@25.1.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "25.1.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "checkqa-mypy",
+              "testing"
+            ],
+            "requires_python": ">=3.5"
+          },
+          "name": "pytest",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/pytest@5.4.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.4.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": "*"
+          },
+          "name": "wcwidth",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/wcwidth@0.2.13",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.2.13"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+          },
+          "name": "py",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/py@1.11.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.11.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.8"
+          },
+          "name": "packaging",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/packaging@24.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "24.2"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.9"
+          },
+          "name": "more-itertools",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/more-itertools@10.6.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "10.6.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": "sys_platform == \"win32\""
+              },
+              {
+                "group": "main",
+                "marker": "platform_system == \"Windows\""
+              }
+            ],
+            "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+          },
+          "name": "colorama",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/colorama@0.4.6",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.4.6"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "dev",
+                "marker": "sys_platform == \"win32\""
+              }
+            ],
+            "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+          },
+          "name": "atomicwrites",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/atomicwrites@1.4.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.1"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "lint",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.7"
+          },
+          "name": "ruff",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/ruff@0.8.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.8.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "dev",
+              "docs",
+              "dotenv"
+            ],
+            "requires_python": "*"
+          },
+          "name": "flask",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/flask@1.0.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "i18n"
+            ],
+            "requires_python": ">=3.7"
+          },
+          "name": "jinja2",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/jinja2@3.1.5",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.1.5"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "provided_extras": [
+              "watchdog"
+            ],
+            "requires_python": ">=3.9"
+          },
+          "name": "werkzeug",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/werkzeug@3.1.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.1.3"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.7"
+          },
+          "name": "click",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/click@8.1.8",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "8.1.8"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.8"
+          },
+          "name": "itsdangerous",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/itsdangerous@2.2.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "main",
+                "marker": ""
+              }
+            ],
+            "requires_python": ">=3.9"
+          },
+          "name": "markupsafe",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/markupsafe@3.0.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.2"
+        },
+        {
+          "name": "web",
+          "paths": [
+            "poetry.lock",
+            "pyproject.toml"
+          ],
+          "record_kind": "manifest",
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_POETRY",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "2.1",
+          "path": "poetry.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "benchmark",
+                  "cov",
+                  "dev",
+                  "docs",
+                  "tests",
+                  "tests-mypy"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "attrs",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/attrs@25.1.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "25.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  },
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev"
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "pluggy",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pluggy@0.13.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.13.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "benchmark",
+                  "cov",
+                  "dev",
+                  "docs",
+                  "tests",
+                  "tests-mypy"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "attrs",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/attrs@25.1.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "25.1.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": "*"
+              },
+              "name": "wcwidth",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/wcwidth@0.2.13",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.13"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+              },
+              "name": "py",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/py@1.11.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "packaging",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/packaging@24.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "24.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "more-itertools",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/more-itertools@10.6.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "10.6.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  },
+                  {
+                    "group": "main",
+                    "marker": "platform_system == \"Windows\""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+              },
+              "name": "colorama",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.4.6",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.6"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  }
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "atomicwrites",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/atomicwrites@1.4.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "i18n"
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "jinja2",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/jinja2@3.1.5",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.5"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "watchdog"
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "werkzeug",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/werkzeug@3.1.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "click",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/click@8.1.8",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.1.8"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "itsdangerous",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/itsdangerous@2.2.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "i18n"
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "jinja2",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/jinja2@3.1.5",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.5"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "markupsafe",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/markupsafe@3.0.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "watchdog"
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "werkzeug",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/werkzeug@3.1.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.1.3"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.9"
+              },
+              "name": "markupsafe",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/markupsafe@3.0.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "click",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/click@8.1.8",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.1.8"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": "sys_platform == \"win32\""
+                  },
+                  {
+                    "group": "main",
+                    "marker": "platform_system == \"Windows\""
+                  }
+                ],
+                "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
+              },
+              "name": "colorama",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/colorama@0.4.6",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.6"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  },
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev"
+                ],
+                "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+              },
+              "name": "pluggy",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pluggy@0.13.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.13.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "dev",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "checkqa-mypy",
+                  "testing"
+                ],
+                "requires_python": ">=3.5"
+              },
+              "name": "pytest",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/pytest@5.4.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.4.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "lint",
+                    "marker": ""
+                  }
+                ],
+                "requires_python": ">=3.7"
+              },
+              "name": "ruff",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/ruff@0.8.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.8.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "web",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "main",
+                    "marker": ""
+                  }
+                ],
+                "provided_extras": [
+                  "dev",
+                  "docs",
+                  "dotenv"
+                ],
+                "requires_python": "*"
+              },
+              "name": "flask",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/flask@1.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.3"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

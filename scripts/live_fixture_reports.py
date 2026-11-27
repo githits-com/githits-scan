@@ -88,12 +88,31 @@ def validate_expectations(checks):
                 )
             ):
                 raise ValueError(f"{name} needs completeness and named, attributed witnesses")
+            if "declarations" in expected:
+                declarations = expected["declarations"]
+                if (
+                    not isinstance(declarations, list)
+                    or not declarations
+                    or any(not isinstance(row, dict) or not all(
+                        isinstance(row.get(key), str) and row[key] for key in ("name", "manifest_path")
+                    ) for row in declarations)
+                ):
+                    raise ValueError(f"{name} declaration witnesses need a name and manifest path")
         elif name == "license_policy":
             if any(not isinstance(expected.get(key), str) for key in ("name", "version")):
                 raise ValueError("license policy needs a named, versioned denial witness")
         else:
-            if not fixture_strings(expected.get("manifests")):
-                raise ValueError("audit needs expected manifest paths")
+            manifests = expected.get("manifests")
+            if not isinstance(manifests, list) or (manifests and not fixture_strings(manifests)):
+                raise ValueError("audit needs an explicit manifest path list")
+            if "unassessed_gap" in expected:
+                gap = expected["unassessed_gap"]
+                if (
+                    not isinstance(gap, dict)
+                    or not all(isinstance(gap.get(key), str) and gap[key] for key in ("check", "status"))
+                    or ("files" in gap and not fixture_strings(gap["files"]))
+                ):
+                    raise ValueError("an unassessed audit needs a named coverage check and status")
             if "remediation" in expected:
                 fixed = expected["remediation"]
                 if (
@@ -227,7 +246,10 @@ def sbom(document, _code, expected):
     inventory = {"components": sorted_rows(entries), "relationships": sorted_rows(relationships)}
     if locked:
         stable.update(inventory)
+        if "declarations" in expected:
+            stable["declarations"] = cdx_declarations(props, expected)
         return result(stable)
+    stable["declarations"] = cdx_declarations(props, expected)
     locked_paths = {typed(row, "path", str) for row in stable.get("lockfiles", []) if "path" in row}
 
     def locked_occurrence(identity):
@@ -246,6 +268,24 @@ def sbom(document, _code, expected):
             if any(locked_occurrence(identity) for identity in endpoints)
         )
     return result(stable, inventory)
+
+
+def cdx_declarations(properties, expected):
+    rows = cdx_json(properties, "githits:declarations", list, [])
+    return dependency_declarations({"declarations": rows}, expected)
+
+
+def dependency_declarations(inventory, expected):
+    declared = sorted_rows(
+        fields(row, "manifest_path", "name", "declared_requirement", "declared_scope")
+        for row in rows(inventory, "declarations", optional=True)
+    )
+    for witness in expected.get("declarations", ()):
+        expect(
+            any(all(row.get(key) == value for key, value in witness.items()) for row in declared),
+            f"Missing declaration for {witness['name']} in {witness['manifest_path']}",
+        )
+    return declared
 
 
 def resolution_rows(document, key):
@@ -351,8 +391,7 @@ def license_report(document, _code, expected):
         "completeness": completeness,
         "resolutions": resolution_rows(inventory, "resolutions"),
         "lockfiles": resolution_rows(inventory, "lockfiles"),
-        "declarations": sorted_rows(fields(row, "manifest_path", "name", "declared_requirement", "declared_scope")
-                                    for row in rows(inventory, "declarations", optional=True)),
+        "declarations": dependency_declarations(inventory, expected),
         "components": sorted_rows(identity for identity in identities
                                   if identity["lockfile_paths"] or identity.get("record_kind") == "manifest"),
         "coverage": coverage,
@@ -454,7 +493,6 @@ def audit(document, code, expected):
            "Audit manifest attribution changed")
     summary = typed(document, "summary", dict)
     dependencies = count(summary, "dependencies")
-    expect(dependencies > 0, "Audit did not account for any dependencies")
     issues = rows(document, "issues", optional=True)
     expect(all(issue.get("check") != "report" for issue in issues),
            "Audit could not verify service report accounting")
@@ -468,6 +506,19 @@ def audit(document, code, expected):
     coverage = typed(lifecycle, "coverage", dict)
     incomplete = typed(document, "incomplete", bool)
     actionable = typed(document, "actionable_incomplete", bool)
+    if "unassessed_gap" in expected:
+        gap = expected["unassessed_gap"]
+        expect(
+            dependencies == 0 and code == 1 and actionable and any(
+                row.get("actionable") is True
+                and row.get("check") == gap["check"] and row.get("status") == gap["status"]
+                and ("files" not in gap or strings(row, "files", optional=True) == sorted(gap["files"]))
+                for row in issues
+            ),
+            f"Expected an unassessed audit with an actionable {gap['check']} gap",
+        )
+    else:
+        expect(dependencies > 0, "Audit did not account for any dependencies")
     has_findings = (
         any(not row.get("ignored") for row in findings) or outdated or native_findings or warnings
         or duplicates or mismatches

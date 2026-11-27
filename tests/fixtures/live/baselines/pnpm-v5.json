@@ -1,0 +1,630 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "pnpm-lock.yaml"
+          ],
+          "latest": "7.3.1",
+          "package": "npm:webpack-cli@4.10.0"
+        },
+        {
+          "files": [
+            "pnpm-lock.yaml"
+          ],
+          "latest": "8.19.0",
+          "package": "npm:acorn@8.8.0"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 3,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "pnpm-lock.yaml"
+          ],
+          "required_files": [
+            "package.json"
+          ],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "acorn",
+          "type": "vcs",
+          "url": "git+https://github.com/acornjs/acorn.git"
+        },
+        {
+          "name": "acorn",
+          "type": "vcs",
+          "url": "https://github.com/acornjs/acorn"
+        },
+        {
+          "name": "acorn",
+          "type": "website",
+          "url": "https://github.com/acornjs/acorn"
+        },
+        {
+          "name": "acorn-jsx",
+          "type": "vcs",
+          "url": "git+https://github.com/acornjs/acorn-jsx.git"
+        },
+        {
+          "name": "acorn-jsx",
+          "type": "vcs",
+          "url": "https://github.com/acornjs/acorn-jsx"
+        },
+        {
+          "name": "acorn-jsx",
+          "type": "website",
+          "url": "https://github.com/acornjs/acorn-jsx"
+        },
+        {
+          "name": "webpack-cli",
+          "type": "vcs",
+          "url": "git+https://github.com/webpack/webpack-cli.git"
+        },
+        {
+          "name": "webpack-cli",
+          "type": "vcs",
+          "url": "https://github.com/webpack/webpack-cli"
+        },
+        {
+          "name": "webpack-cli",
+          "type": "website",
+          "url": "https://github.com/webpack/webpack-cli/tree/main/packages/webpack-cli"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "conditions": {
+              "berry_expression": "",
+              "cpu": [],
+              "engines": [
+                {
+                  "name": "node",
+                  "version_req": ">=0.4.0"
+                }
+              ],
+              "libc": [],
+              "os": []
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pnpm-lock.yaml"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "acorn",
+          "observed_licenses": [],
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/acorn@8.8.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "8.8.0"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pnpm-lock.yaml"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "acorn-jsx",
+          "observed_licenses": [],
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/acorn-jsx@5.3.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.3.2"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "pnpm-lock.yaml"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "webpack-cli",
+          "observed_licenses": [],
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/webpack-cli@4.10.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "4.10.0"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "pnpm-lock.yaml"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "pnpm-lock.yaml \u2014 importer 1",
+          "observed_licenses": [],
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "context": {
+                "conditions": {
+                  "berry_expression": "",
+                  "cpu": [],
+                  "engines": [
+                    {
+                      "name": "node",
+                      "version_req": ">=0.4.0"
+                    }
+                  ],
+                  "libc": [],
+                  "os": []
+                }
+              },
+              "name": "acorn",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn@8.8.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.8.0"
+            },
+            {
+              "name": "pnpm-lock.yaml \u2014 importer 1",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "webpack-cli",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/webpack-cli@4.10.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "4.10.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "conditions": {
+                  "berry_expression": "",
+                  "cpu": [],
+                  "engines": [
+                    {
+                      "name": "node",
+                      "version_req": ">=0.4.0"
+                    }
+                  ],
+                  "libc": [],
+                  "os": []
+                }
+              },
+              "name": "acorn",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn@8.8.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.8.0"
+            },
+            {
+              "name": "acorn-jsx",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn-jsx@5.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.3.2"
+            },
+            {
+              "name": "pnpm-lock.yaml \u2014 importer 1",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "webpack-cli",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/webpack-cli@4.10.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "4.10.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "dependencies": [
+            {
+              "name": "acorn-jsx",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn-jsx@5.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.3.2"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "name": "acorn-jsx",
+            "paths": [
+              "pnpm-lock.yaml"
+            ],
+            "purl": "pkg:npm/acorn-jsx@5.3.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "5.3.2"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_PNPM",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "5.4",
+          "path": "pnpm-lock.yaml"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "conditions": {
+              "berry_expression": "",
+              "cpu": [],
+              "engines": [
+                {
+                  "name": "node",
+                  "version_req": ">=0.4.0"
+                }
+              ],
+              "libc": [],
+              "os": []
+            }
+          },
+          "name": "acorn",
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/acorn@8.8.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "8.8.0"
+        },
+        {
+          "name": "acorn-jsx",
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/acorn-jsx@5.3.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.3.2"
+        },
+        {
+          "name": "webpack-cli",
+          "paths": [
+            "pnpm-lock.yaml"
+          ],
+          "purl": "pkg:npm/webpack-cli@4.10.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "4.10.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_PNPM",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "5.4",
+          "path": "pnpm-lock.yaml"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "acorn-jsx",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn-jsx@5.3.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.3.2"
+            },
+            {
+              "context": {
+                "conditions": {
+                  "berry_expression": "",
+                  "cpu": [],
+                  "engines": [
+                    {
+                      "name": "node",
+                      "version_req": ">=0.4.0"
+                    }
+                  ],
+                  "libc": [],
+                  "os": []
+                }
+              },
+              "name": "acorn",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn@8.8.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.8.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "pnpm-lock.yaml \u2014 importer 1",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "conditions": {
+                  "berry_expression": "",
+                  "cpu": [],
+                  "engines": [
+                    {
+                      "name": "node",
+                      "version_req": ">=0.4.0"
+                    }
+                  ],
+                  "libc": [],
+                  "os": []
+                }
+              },
+              "name": "acorn",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn@8.8.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "8.8.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "pnpm-lock.yaml \u2014 importer 1",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "name": "acorn-jsx",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/acorn-jsx@5.3.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.3.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "pnpm-lock.yaml \u2014 importer 1",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "name": "webpack-cli",
+              "paths": [
+                "pnpm-lock.yaml"
+              ],
+              "purl": "pkg:npm/webpack-cli@4.10.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "4.10.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

@@ -1,0 +1,419 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "Package.resolved"
+          ],
+          "latest": "14.0.0",
+          "package": "swift:github.com/quick/nimble@9.2.1"
+        },
+        {
+          "files": [
+            "Package.resolved"
+          ],
+          "latest": "7.2.1",
+          "package": "swift:github.com/reactivecocoa/reactiveswift@7.1.1"
+        },
+        {
+          "files": [
+            "Package.resolved"
+          ],
+          "latest": "7.6.2",
+          "package": "swift:github.com/quick/quick@7.0.0"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "swift"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 3,
+      "gaps": [
+        {
+          "actionable": false,
+          "check": "dependency information",
+          "files": [
+            "Package.resolved"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "Nimble",
+          "type": "vcs",
+          "url": "https://github.com/quick/nimble"
+        },
+        {
+          "name": "Nimble",
+          "type": "website",
+          "url": "https://quick.github.io/Nimble/documentation/nimble/"
+        },
+        {
+          "name": "Quick",
+          "type": "vcs",
+          "url": "https://github.com/quick/quick"
+        },
+        {
+          "name": "Quick",
+          "type": "website",
+          "url": "http://quick.github.io/Quick/"
+        },
+        {
+          "name": "ReactiveSwift",
+          "type": "vcs",
+          "url": "https://github.com/reactivecocoa/reactiveswift"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "source_substitution",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Package.resolved"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "Nimble",
+          "observed_licenses": [],
+          "paths": [
+            "Package.resolved"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+          "type": "library",
+          "version": "9.2.1"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "source_substitution",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Package.resolved"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "Quick",
+          "observed_licenses": [],
+          "paths": [
+            "Package.resolved"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "e206b8deba0d01fce70388a6d9dc66cba5603958",
+          "type": "library",
+          "version": "7.0.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "source_substitution",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Package.resolved"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ReactiveSwift",
+          "observed_licenses": [],
+          "paths": [
+            "Package.resolved"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+          "type": "library",
+          "version": "7.1.1"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "Nimble",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+              "type": "library",
+              "version": "9.2.1"
+            },
+            {
+              "name": "Quick",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "e206b8deba0d01fce70388a6d9dc66cba5603958",
+              "type": "library",
+              "version": "7.0.0"
+            },
+            {
+              "name": "ReactiveSwift",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+              "type": "library",
+              "version": "7.1.1"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "Nimble",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+              "type": "library",
+              "version": "9.2.1"
+            },
+            {
+              "name": "Quick",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "e206b8deba0d01fce70388a6d9dc66cba5603958",
+              "type": "library",
+              "version": "7.0.0"
+            },
+            {
+              "name": "ReactiveSwift",
+              "paths": [
+                "Package.resolved"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+              "type": "library",
+              "version": "7.1.1"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "Nimble",
+            "paths": [
+              "Package.resolved"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+            "type": "library",
+            "version": "9.2.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "Quick",
+            "paths": [
+              "Package.resolved"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "e206b8deba0d01fce70388a6d9dc66cba5603958",
+            "type": "library",
+            "version": "7.0.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "ReactiveSwift",
+            "paths": [
+              "Package.resolved"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+            "type": "library",
+            "version": "7.1.1"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_SWIFT_PACKAGE_RESOLVED",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Package.resolved"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "Nimble",
+          "paths": [
+            "Package.resolved"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+          "type": "library",
+          "version": "9.2.1"
+        },
+        {
+          "name": "Quick",
+          "paths": [
+            "Package.resolved"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "e206b8deba0d01fce70388a6d9dc66cba5603958",
+          "type": "library",
+          "version": "7.0.0"
+        },
+        {
+          "name": "ReactiveSwift",
+          "paths": [
+            "Package.resolved"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+          "type": "library",
+          "version": "7.1.1"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_SWIFT_PACKAGE_RESOLVED",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Package.resolved"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

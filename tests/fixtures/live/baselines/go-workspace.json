@@ -1,0 +1,480 @@
+{
+  "audit": {
+    "observations": {
+      "dependencies": 2,
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "latest": "v1.1.0",
+          "package": "go:github.com/spf13/pflag@v1.0.9"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "go"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "go"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "gaps": [],
+      "incomplete": false,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "github.com/google/uuid",
+          "type": "vcs",
+          "url": "https://github.com/google/uuid"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/google/uuid"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "type": "vcs",
+          "url": "https://github.com/spf13/pflag"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/spf13/pflag"
+        }
+      ],
+      "resolved": [
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/google/uuid",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/github.com/google/uuid@v1.6.0",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v1.6.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "metadata_status": "available",
+          "name": "github.com/spf13/pflag",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "v1.0.9"
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "components": [
+        {
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "one/go.mod"
+          ],
+          "name": "example.com/fixture/one",
+          "observed_licenses": [],
+          "paths": [
+            "one/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/one",
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "two/go.mod"
+          ],
+          "name": "example.com/fixture/two",
+          "observed_licenses": [],
+          "paths": [
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/two",
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "example.com/fixture/one",
+              "paths": [
+                "one/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/one",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "example.com/fixture/two",
+              "paths": [
+                "two/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/two",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "github.com/google/uuid",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "example.com/fixture/one",
+              "paths": [
+                "one/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/one",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "example.com/fixture/two",
+              "paths": [
+                "two/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/two",
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "github.com/google/uuid",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "v1.0.9",
+          "manifest_path": "two/go.mod",
+          "name": "github.com/spf13/pflag"
+        },
+        {
+          "declared_requirement": "v1.6.0",
+          "manifest_path": "one/go.mod",
+          "name": "github.com/google/uuid"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "one/go.mod",
+          "status": "complete"
+        },
+        {
+          "diagnostics": [],
+          "path": "two/go.mod",
+          "status": "complete"
+        }
+      ]
+    }
+  },
+  "sbom": {
+    "observations": {
+      "components": [
+        {
+          "name": "example.com/fixture/one",
+          "paths": [
+            "one/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/one",
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "example.com/fixture/two",
+          "paths": [
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/two",
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/github.com/google/uuid@v1.6.0",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v1.6.0"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "v1.0.9"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "example.com/fixture/one",
+              "paths": [
+                "one/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/one",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "github.com/google/uuid",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "purl": "pkg:golang/github.com/google/uuid@v1.6.0",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v1.6.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "example.com/fixture/two",
+              "paths": [
+                "two/go.mod"
+              ],
+              "purl": "pkg:golang/example.com/fixture/two",
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "github.com/spf13/pflag",
+              "paths": [
+                "one/go.mod",
+                "two/go.mod"
+              ],
+              "purl": "pkg:golang/github.com/spf13/pflag@v1.0.9",
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "v1.0.9"
+            }
+          ]
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "declarations": [
+        {
+          "declared_requirement": "v1.0.9",
+          "manifest_path": "two/go.mod",
+          "name": "github.com/spf13/pflag"
+        },
+        {
+          "declared_requirement": "v1.6.0",
+          "manifest_path": "one/go.mod",
+          "name": "github.com/google/uuid"
+        }
+      ],
+      "occurrences": [
+        {
+          "name": "example.com/fixture/one",
+          "paths": [
+            "one/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/one",
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "example.com/fixture/two",
+          "paths": [
+            "two/go.mod"
+          ],
+          "purl": "pkg:golang/example.com/fixture/two",
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "github.com/google/uuid",
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "paths": [
+            "one/go.mod",
+            "two/go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        }
+      ],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "one/go.mod",
+          "status": "complete"
+        },
+        {
+          "diagnostics": [],
+          "path": "two/go.mod",
+          "status": "complete"
+        }
+      ]
+    }
+  }
+}

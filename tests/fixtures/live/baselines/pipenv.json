@@ -1,0 +1,1880 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "Pipfile.lock"
+          ],
+          "latest": "1.6",
+          "package": "pypi:aiohttp-jinja2@1.4.2"
+        },
+        {
+          "files": [
+            "Pipfile.lock"
+          ],
+          "latest": "10.2.3",
+          "package": "pypi:aio-pika@6.8.0"
+        },
+        {
+          "files": [
+            "Pipfile.lock"
+          ],
+          "latest": "2.3.2",
+          "package": "pypi:autopep8@1.5.6"
+        },
+        {
+          "files": [
+            "Pipfile.lock"
+          ],
+          "latest": "3.14.5",
+          "package": "pypi:aiohttp@3.7.4.post0"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-24c4-3p7v-29cm",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-28qf-cpwq-vmc2",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-2fqr-mr3j-6wp8",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-2g87-pp6c-29x5",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-2vrm-gr82-f7m5",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-3rp8-rxj8-mvjw",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-3wq7-rqq7-wx6j",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-45c4-8wx5-qw6w",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-494j-54xm-rwp3",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-4fvr-rgm6-gqmc",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-4m7w-qmgq-4wj5",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-54jq-c3m8-4m76",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-5h86-8mv2-jq9f",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-5m98-qgg9-wh84",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-5pv8-vvhc-h7jv",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-5rmc-48h2-hvcm",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-5wr8-gcqf-gqf3",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-63hf-3vf5-4wqf",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-63hw-fmq6-xxg2",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-69f9-5gxw-wvc2",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-6cjc-53gc-5rqm",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-6jhg-hg63-jvvf",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-6mq8-rvhq-8wgg",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-7gpw-8wmc-pm8g",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-8495-4g3g-x7pr",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-8qpw-xqxj-h4r2",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-9548-qrrj-x5pj",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-966j-vmvw-g2g9",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-9x8q-7h8h-wcw9",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-9xw5-w5jj-pvcg",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-c427-h43c-vf67",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-cq5v-8q36-5273",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-f9xw-jh8m-3mwq",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-fh55-r93g-j68g",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-g3cq-j2xw-wf74",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-g84x-mcqj-x9qq",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-gfw2-4jvh-wgfg",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-gx76-c99x-2c96",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-h4cc-hm5h-fmm9",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-hcc4-c3v8-rx92",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-hg6j-4rv6-33pg",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-hpj7-wq8m-9hgp",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-jg22-mg44-37j8",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-jj3x-wxrx-4x23",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-jm3w-gw2p-xjfj",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-m5qp-6w8w-w647",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-m6qw-4cw2-hm4m",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-mfx4-hv73-q22v",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-mq44-7p77-q5h7",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-mqqc-3gqh-h2x8",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-mwh4-6h8g-pg8w",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-p998-jp59-783m",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-pjjw-qhg8-p2p9",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-pqxq-w44r-73xw",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-pw86-h8fm-j323",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-q3qx-c6g2-7pw2",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-qvrw-v9rv-5rjx",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-w2fm-2cpv-w7v5",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-xcgm-r5h9-7989",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-xgw8-8ccx-rmqh",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            },
+            {
+              "advisory": "GHSA-xx9p-xxvh-7g8j",
+              "files": [
+                "Pipfile.lock"
+              ],
+              "package": "pypi:aiohttp@3.7.4.post0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.7.4.post0",
+              "name": "aiohttp",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.14.4"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:aiohttp@3.7.4.post0"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-24c4-3p7v-29cm",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-28qf-cpwq-vmc2",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 8.2"
+        },
+        {
+          "advisory": "GHSA-2fqr-mr3j-6wp8",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-2g87-pp6c-29x5",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-2vrm-gr82-f7m5",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-3rp8-rxj8-mvjw",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-3wq7-rqq7-wx6j",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-45c4-8wx5-qw6w",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-494j-54xm-rwp3",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-4fvr-rgm6-gqmc",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-4m7w-qmgq-4wj5",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-54jq-c3m8-4m76",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-5h86-8mv2-jq9f",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 5.9"
+        },
+        {
+          "advisory": "GHSA-5m98-qgg9-wh84",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-5pv8-vvhc-h7jv",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-5rmc-48h2-hvcm",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-5wr8-gcqf-gqf3",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-63hf-3vf5-4wqf",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 9.1"
+        },
+        {
+          "advisory": "GHSA-63hw-fmq6-xxg2",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-69f9-5gxw-wvc2",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-6cjc-53gc-5rqm",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-6jhg-hg63-jvvf",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-6mq8-rvhq-8wgg",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-7gpw-8wmc-pm8g",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 6.1"
+        },
+        {
+          "advisory": "GHSA-8495-4g3g-x7pr",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-8qpw-xqxj-h4r2",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 6.5"
+        },
+        {
+          "advisory": "GHSA-9548-qrrj-x5pj",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-966j-vmvw-g2g9",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-9x8q-7h8h-wcw9",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-9xw5-w5jj-pvcg",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-c427-h43c-vf67",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-cq5v-8q36-5273",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-f9xw-jh8m-3mwq",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-fh55-r93g-j68g",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-g3cq-j2xw-wf74",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-g84x-mcqj-x9qq",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-gfw2-4jvh-wgfg",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-gx76-c99x-2c96",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-h4cc-hm5h-fmm9",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-hcc4-c3v8-rx92",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-hg6j-4rv6-33pg",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-hpj7-wq8m-9hgp",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-jg22-mg44-37j8",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 6.4"
+        },
+        {
+          "advisory": "GHSA-jj3x-wxrx-4x23",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-jm3w-gw2p-xjfj",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-m5qp-6w8w-w647",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-m6qw-4cw2-hm4m",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-mfx4-hv73-q22v",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-mq44-7p77-q5h7",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-mqqc-3gqh-h2x8",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-mwh4-6h8g-pg8w",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-p998-jp59-783m",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-pjjw-qhg8-p2p9",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-pqxq-w44r-73xw",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-pw86-h8fm-j323",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-q3qx-c6g2-7pw2",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 7.2"
+        },
+        {
+          "advisory": "GHSA-qvrw-v9rv-5rjx",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-w2fm-2cpv-w7v5",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-xcgm-r5h9-7989",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-xgw8-8ccx-rmqh",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-xx9p-xxvh-7g8j",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "package": "pypi:aiohttp@3.7.4.post0",
+          "severity": "CVSS_V3 3.4"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [
+            "pypi"
+          ],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 4,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "package checks",
+          "files": [
+            "Pipfile.lock"
+          ],
+          "required_files": [],
+          "status": "excluded"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "aio-pika",
+          "type": "vcs",
+          "url": "https://github.com/mosquito/aio-pika"
+        },
+        {
+          "name": "aio-pika",
+          "type": "vcs",
+          "url": "https://github.com/mosquito/aio-pika"
+        },
+        {
+          "name": "aio-pika",
+          "type": "website",
+          "url": "https://pypi.org/project/aio-pika/"
+        },
+        {
+          "name": "aiohttp",
+          "type": "vcs",
+          "url": "https://github.com/aio-libs/aiohttp"
+        },
+        {
+          "name": "aiohttp",
+          "type": "website",
+          "url": "https://pypi.org/project/aiohttp/"
+        },
+        {
+          "name": "aiohttp-jinja2",
+          "type": "vcs",
+          "url": "https://github.com/aio-libs/aiohttp_jinja2"
+        },
+        {
+          "name": "aiohttp-jinja2",
+          "type": "website",
+          "url": "https://github.com/aio-libs/aiohttp_jinja2/"
+        },
+        {
+          "name": "autopep8",
+          "type": "vcs",
+          "url": "https://github.com/hhatto/autopep8"
+        },
+        {
+          "name": "autopep8",
+          "type": "website",
+          "url": "https://pypi.org/project/autopep8/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "Apache Software License"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "aio-pika",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aio-pika@6.8.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "6.8.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "aiohttp",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiohttp@3.7.4.post0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.7.4.post0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "aiohttp-jinja2",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiohttp-jinja2@1.4.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.2"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_public_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "aiodns",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiodns@2.0.0?repository_url=https:%2F%2Ftest.pypi.org%2Fsimple",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "develop",
+                "marker": ""
+              }
+            ]
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "Expat License"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "autopep8",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/autopep8@1.5.6",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.5.6"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "develop",
+                "marker": ""
+              }
+            ]
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Pipfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_public_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "astroid",
+          "observed_licenses": [],
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.5.2"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aio-pika",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aio-pika@6.8.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "6.8.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiodns",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiodns@2.0.0?repository_url=https:%2F%2Ftest.pypi.org%2Fsimple",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiohttp",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiohttp@3.7.4.post0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.7.4.post0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiohttp-jinja2",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiohttp-jinja2@1.4.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "develop",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "astroid",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.5.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "develop",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "autopep8",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/autopep8@1.5.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.5.6"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aio-pika",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aio-pika@6.8.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "6.8.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiodns",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiodns@2.0.0?repository_url=https:%2F%2Ftest.pypi.org%2Fsimple",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiohttp",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiohttp@3.7.4.post0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.7.4.post0"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "default",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "aiohttp-jinja2",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/aiohttp-jinja2@1.4.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "develop",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "astroid",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.5.2"
+            },
+            {
+              "context": {
+                "group_conditions": [
+                  {
+                    "group": "develop",
+                    "marker": ""
+                  }
+                ]
+              },
+              "name": "autopep8",
+              "paths": [
+                "Pipfile.lock"
+              ],
+              "purl": "pkg:pypi/autopep8@1.5.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.5.6"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "aio-pika",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": "pkg:pypi/aio-pika@6.8.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "6.8.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "aiodns",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": "pkg:pypi/aiodns@2.0.0?repository_url=https:%2F%2Ftest.pypi.org%2Fsimple",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.0.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "aiohttp",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": "pkg:pypi/aiohttp@3.7.4.post0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.7.4.post0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "default",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "aiohttp-jinja2",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": "pkg:pypi/aiohttp-jinja2@1.4.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.4.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "develop",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "astroid",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.5.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "group_conditions": [
+                {
+                  "group": "develop",
+                  "marker": ""
+                }
+              ]
+            },
+            "name": "autopep8",
+            "paths": [
+              "Pipfile.lock"
+            ],
+            "purl": "pkg:pypi/autopep8@1.5.6",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.5.6"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_PIPENV",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Pipfile.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "aio-pika",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aio-pika@6.8.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "6.8.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "aiodns",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiodns@2.0.0?repository_url=https:%2F%2Ftest.pypi.org%2Fsimple",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "aiohttp",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiohttp@3.7.4.post0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.7.4.post0"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "default",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "aiohttp-jinja2",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/aiohttp-jinja2@1.4.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.2"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "develop",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "astroid",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.5.2"
+        },
+        {
+          "context": {
+            "group_conditions": [
+              {
+                "group": "develop",
+                "marker": ""
+              }
+            ]
+          },
+          "name": "autopep8",
+          "paths": [
+            "Pipfile.lock"
+          ],
+          "purl": "pkg:pypi/autopep8@1.5.6",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.5.6"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_PIPENV",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Pipfile.lock"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

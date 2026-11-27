@@ -173,9 +173,11 @@ fresh rehearsal of the resulting release SHA.
   fail without an automatic retry. Scan's existing same-origin HTTP and
   bounded 429 policy owns API recovery. The runner never resubmits a job.
 - The two fd inputs total 29,230 bytes and the two Cobra inputs total 1,278
-  bytes. The pilot runs seven analysis jobs. The full lower bound is
-  28 fixture cases and 84 jobs before additional
-  format/workspace variants and up to five existing release smoke submissions.
+  bytes. The pilot runs seven analysis jobs. The planned matrix is about
+  36 cases and 108 submissions, plus five existing release smoke submissions.
+  The public personal rate of ten submissions per minute can stretch a full
+  run to about eleven minutes. Use measured timing and the actual allowance
+  for the credential that runs the release gate.
   Size and budget the actual corpus from its inventory and job count before
   enabling the full gate. Preflight verifies all selected inputs before any
   API call. Stage only selected files on disk and handle one capped Scan
@@ -208,16 +210,84 @@ owns the commands, baseline semantics and credential handling.
 variation has a discoverable fixture, a checked baseline and explicit evidence
 for each online command.
 
-**Dependencies.** Pilot runner, baseline contract and production qualification.
-**Assumptions.** A suitable pinned public source or reproducible small lockfile
-can be found for each format. Existing authored workspace and manifest-only
-cases can seed coverage where their assertions remain unique.
-**Unknowns.** Exact upstream pins and native parser revisions, actual API
-coverage for every combination, total fixture size and the full job count.
-Resolve them while selecting and qualifying the corpus. Before closing this
-phase, reconcile any catalog/service mismatch with the service contract and
-bring material support gaps to the maintainer. Add implementation detail once
-the pilot evidence fixes the runner contract.
+**Dependencies.** The pilot runner and baseline contract are available on
+`main`. The corpus needs public HTTPS downloads and an authorized production
+credential for the qualification run.
+
+**Verified inputs and assumptions.** Prefer small real artifacts from public
+projects or upstream test suites. Commit snapshots reproduce the parser input
+even when the source checkout has no release tag. The project fixture root may
+be a nested directory within its pinned checkout, with input paths relative to
+that root. Locked witnesses and source provenance come from inspecting the exact
+input bytes. Local authored files cover format filenames or workspace layouts
+that are unavailable in a practical upstream fixture.
+
+| Coverage | Origin and cases |
+| --- | --- |
+| Cargo and npm | Keep fd and the minimist control. Run all three online commands on both and add representative native workspace membership cases |
+| JavaScript lock dialects | Pin npm shrinkwrap from OSV-Scalibr and text Bun, two Yarn formats and pnpm lockfile revisions from small qualified fixtures |
+| Python lock dialects | Pin uv, Poetry, PDM and Pipenv files from Syft and Trivy, including a supplied owning manifest where the source has one |
+| Swift and legacy Go | Pin Swift `Package.resolved` v1 and v2 from Trivy and OSV-Scanner. Pin `Gopkg.lock` from the archived Go dep project's own repository |
+| Gradle | Pin the unified and legacy layouts from Syft and the Gradle samples. Use small purpose-built buildscript and settings locks if upstream fixtures are impractical |
+| Other recorded formats | Pin NuGet, Dart, Composer, Mix, both Bundler names, Rebar and Conan from public samples. The Conan 2 lock must identify real ConanCenter packages, so audit and license results exercise actual package evidence |
+| Manifest resolution and workspaces | Keep Cobra. Add a Go workspace carrying module checksum evidence, plus existing local vcpkg and Zig manifest examples |
+
+The Swift v1, archived Go dep and legacy Gradle candidates were admitted in
+production as recorded inventories. Their known dependencies included
+`Quick 7.0.0`, `github.com/pkg/errors v0.8.0` and
+`org.springframework:spring-core 5.0.5.RELEASE` respectively. Swift and
+Gradle produced audit reports with positive dependency counts and explicit
+coverage gaps. The Go dep audit returned exit 1, zero assessed dependencies
+and actionable dependency-information and exclusion issues. The fixture must
+preserve that limitation and require the independently pinned SBOM and license
+inventory witnesses. An empty audit without the qualifying gap would fail.
+
+1. Extend fixture definition loading in `scripts/live_fixtures.py` to allow
+   optional pinned project subdirectories, retaining the default root for the
+   pilot inputs. Validate the source directory as a safe POSIX relative path.
+   A verified release label is optional for a commit-only fixture. Extend the
+   audit expectations in `scripts/live_fixture_reports.py` to accept a
+   declared empty manifest list for lock-only cases, and an explicit zero
+   dependency expectation only with a named actionable coverage issue. Verify
+   its check, status and affected files when the producer supplies them. An
+   empty audit without the required issue fails. Add offline cases for both
+  outcomes and for the source-directory preflight. Acquire the current CLI
+  token before each online command to cover long runs across expiration.
+2. Register cases in `tests/fixtures/live/fixtures.json` and document input
+   provenance in the fixture guide. Keep lock-only cases independent, with
+   an exact empty audit manifest list when the CLI emits no manifest paths.
+   Each case runs SBOM, audit and license report. Every locked case has a
+   versioned witness tied to its input path. Manifest-only cases require
+   declared dependencies and scoped resolution evidence. Record independently
+   qualified audit coverage gaps using the expected status and exit. A fixture
+   opting into zero assessed dependencies must name a required actionable gap.
+3. Add the offline coverage check beside the catalog tests. Derive named
+   families and ecosystem IDs from the catalog. Classify declared fixture
+   paths to validate their ecosystem and presence of all three online checks.
+   Require the legacy Gradle shape and distinct classic/Berry witness cases.
+   Each distinct syntax revision enrolled in the matrix carries a fixture
+   and explicit witness for that revision.
+4. Validate all staged input paths before making submissions. Run a production
+   refresh for the complete matrix and review the generated baselines. Verify
+   a complete check plus a representative single-fixture run with exact counts.
+   Record list, check, byte size, elapsed time and jobs on the PR. Measure the
+   candidate rehearsal's cost and runtime from the resulting matrix.
+   The pilot fd baseline is already approximately 0.5 MB. Keep individual
+   fixtures and the source crate size within repository limits.
+
+**Unknowns.** Remaining fixture-specific service output shapes and qualified
+limitations, final pinned byte count and runtime. Resolve while enrolling
+each case. A material producer support gap goes to the maintainer with the
+exact fixture, outcome and impact. No product decision is needed to start
+with the already qualified input families.
+
+| Scenario | Acceptance |
+| --- | --- |
+| Catalog matrix | An offline assertion has a qualifying fixture for each named lockfile and ecosystem, legacy Gradle, both Yarn variants and the required workspace cases. A missing family or missing check fails CI |
+| Source and selection | Each selected case stages hash-verified files, checks exact upload paths and sends only the selected files. An invalid nested source path is rejected before download |
+| Commands and baseline | All and single-fixture modes run SBOM, audit and license report as declared. Locked version and attribution differences fail check. Stable public source pins and all reviewed baselines are committed |
+| Coverage limits | Qualified audit gaps retain exit, affected inputs where supplied, and coverage status. An empty or structurally invalid result cannot pass as a qualified limitation |
+| Release readiness | The maintainer can see exact production job count, runtime and fixture size. PR CI runs catalog and tooling evidence offline |
 
 ### 3. Gate the exact release rehearsal
 
@@ -227,11 +297,23 @@ and mutable data differences. PR workflows remain network-free for these cases.
 
 **Dependencies.** Qualified complete corpus, working release credential and
 verified analysis allowance for the measured corpus and existing smoke checks.
-**Assumptions.** The existing workflow and secret suffice.
-**Unknowns.** Actual available rate, monthly allocation and end-to-end runtime
-on the release runner. Verify them before enabling the gate and bring any
-required allowance change to the maintainer. Add the workflow and operational
-details once the corpus size and cost are measured.
+**Verified workflow.** The live job checks out the SHA from release
+verification and builds a release-profile Scan binary for the existing
+ignored tests. The repository has a configured release secret. Reuse that
+job and binary. Run the fixture check only on a manual dispatch with
+`release_candidate=true`. Its ordinary nonzero exit blocks the rehearsal.
+
+**Unknowns.** The rate, monthly allocation and timing for the actual release
+credential are verified at rehearsal. Use the offline job count from
+`scripts/live_fixtures.py list` plus the existing smoke submissions to size
+the run before dispatch. A check on an unmerged worktree with a local token
+does not validate that credential or the workflow's exact-SHA checkout.
+
+**Acceptance.** Validate workflow syntax and gate selection in the code PR.
+Before tagging, a manual release-candidate run on the exact merged SHA
+finishes the live smoke and full corpus checks successfully. Attach the
+workflow result to the release PR and transfer the finished gate's contract
+to the release procedure.
 
 ## Completion
 

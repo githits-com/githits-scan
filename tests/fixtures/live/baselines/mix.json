@@ -1,0 +1,2954 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "0.10.1",
+          "package": "hex:esbuild@0.5.0"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "0.40.5",
+          "package": "hex:ex_doc@0.28.4"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "1.0.2",
+          "package": "hex:gettext@0.19.1"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "1.0.22",
+          "package": "hex:castore@0.1.17"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "1.1.0",
+          "package": "hex:hpax@0.1.1"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "1.4.46",
+          "package": "hex:earmark_parser@1.4.25"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "1.4.5",
+          "package": "hex:jason@1.3.0"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "2.10.3",
+          "package": "hex:db_connection@2.4.2"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "2.21.0",
+          "package": "hex:cowboy@2.9.0"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "2.22.0",
+          "package": "hex:cowlib@2.11.0"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "3.14.0",
+          "package": "hex:ecto_sql@3.8.1"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "3.14.3",
+          "package": "hex:ecto@3.8.1"
+        },
+        {
+          "files": [
+            "mix.lock"
+          ],
+          "latest": "3.2.0",
+          "package": "hex:decimal@2.0.0"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [],
+          "changes": [],
+          "checks": {
+            "advisories": "not_assessed",
+            "availability_source": "not_assessed",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "unverified",
+            "requirements": "not_assessed",
+            "withdrawal": "unknown"
+          },
+          "outcome": "indeterminate",
+          "remaining_findings": [
+            {
+              "advisory": "EEF-CVE-2026-118391",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:ecto@3.8.1"
+            }
+          ],
+          "subject": "hex:ecto@3.8.1"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-113431",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "EEF-CVE-2026-43966",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "EEF-CVE-2026-43971",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "EEF-CVE-2026-59248",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "GHSA-32p9-57cr-4x65",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "GHSA-84f2-rp86-235p",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "GHSA-g2wm-735q-3f56",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            },
+            {
+              "advisory": "GHSA-hv23-4qp7-8c8r",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowlib@2.11.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.11.0",
+              "name": "cowlib",
+              "paths": [
+                "mix.lock"
+              ],
+              "registry": "hex",
+              "strategy": "override",
+              "target_version": "2.22.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "blocked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:cowlib@2.11.0"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-133555",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:db_connection@2.4.2"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.4.2",
+              "name": "db_connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "registry": "hex",
+              "strategy": "unknown",
+              "target_version": "2.10.3"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:db_connection@2.4.2"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-58226",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:hpax@0.1.1"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "0.1.1",
+              "name": "hpax",
+              "paths": [
+                "mix.lock"
+              ],
+              "registry": "hex",
+              "strategy": "unknown",
+              "target_version": "1.0.4"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:hpax@0.1.1"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-65624",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowboy@2.9.0"
+            },
+            {
+              "advisory": "GHSA-jfc2-q6qh-g5x8",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowboy@2.9.0"
+            },
+            {
+              "advisory": "GHSA-w4f7-4cxr-rv3c",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:cowboy@2.9.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.9.0",
+              "name": "cowboy",
+              "paths": [
+                "mix.lock"
+              ],
+              "registry": "hex",
+              "strategy": "unknown",
+              "target_version": "2.21.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:cowboy@2.9.0"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-97853",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:decimal@2.0.0"
+            },
+            {
+              "advisory": "GHSA-rhv4-8758-jx7v",
+              "files": [
+                "mix.lock"
+              ],
+              "package": "hex:decimal@2.0.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.0.0",
+              "name": "decimal",
+              "paths": [
+                "mix.lock"
+              ],
+              "registry": "hex",
+              "strategy": "override",
+              "target_version": "3.1.2"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "blocked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:decimal@2.0.0"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "EEF-CVE-2026-113431",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0"
+        },
+        {
+          "advisory": "EEF-CVE-2026-118391",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:ecto@3.8.1"
+        },
+        {
+          "advisory": "EEF-CVE-2026-133555",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:db_connection@2.4.2"
+        },
+        {
+          "advisory": "EEF-CVE-2026-43966",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0"
+        },
+        {
+          "advisory": "EEF-CVE-2026-43971",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0"
+        },
+        {
+          "advisory": "EEF-CVE-2026-58226",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:hpax@0.1.1"
+        },
+        {
+          "advisory": "EEF-CVE-2026-59248",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0"
+        },
+        {
+          "advisory": "EEF-CVE-2026-65624",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowboy@2.9.0"
+        },
+        {
+          "advisory": "EEF-CVE-2026-97853",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:decimal@2.0.0"
+        },
+        {
+          "advisory": "GHSA-32p9-57cr-4x65",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-84f2-rp86-235p",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-g2wm-735q-3f56",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0",
+          "severity": "CVSS_V3 3.2"
+        },
+        {
+          "advisory": "GHSA-hv23-4qp7-8c8r",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowlib@2.11.0",
+          "severity": "CVSS_V3 4"
+        },
+        {
+          "advisory": "GHSA-jfc2-q6qh-g5x8",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowboy@2.9.0",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-rhv4-8758-jx7v",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:decimal@2.0.0",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-w4f7-4cxr-rv3c",
+          "files": [
+            "mix.lock"
+          ],
+          "package": "hex:cowboy@2.9.0",
+          "severity": "SEVERITY_LABEL 6"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": true
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 15,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "mix.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "deprecation",
+          "files": [
+            "mix.lock"
+          ],
+          "required_files": [],
+          "status": "unknown"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": [
+        {
+          "check": "deprecation",
+          "paths": [
+            "mix.lock"
+          ],
+          "reason": "native_evidence_unavailable",
+          "status": "unknown"
+        },
+        {
+          "check": "deprecation",
+          "paths": [
+            "mix.lock"
+          ],
+          "reason": "native_evidence_unavailable",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "castore",
+          "type": "vcs",
+          "url": "https://github.com/elixir-mint/castore"
+        },
+        {
+          "name": "connection",
+          "type": "license",
+          "url": "https://github.com/elixir-ecto/connection/blob/c30982039fb671530b873e3361ebfd9447f91fdc/LICENSE"
+        },
+        {
+          "name": "connection",
+          "type": "vcs",
+          "url": "https://github.com/elixir-ecto/connection"
+        },
+        {
+          "name": "cowboy",
+          "type": "vcs",
+          "url": "https://github.com/ninenines/cowboy"
+        },
+        {
+          "name": "cowboy_telemetry",
+          "type": "license",
+          "url": "https://github.com/beam-telemetry/cowboy_telemetry/blob/496fcc5bf021a3135928138eb61826771d739a39/LICENSE"
+        },
+        {
+          "name": "cowboy_telemetry",
+          "type": "vcs",
+          "url": "https://github.com/beam-telemetry/cowboy_telemetry"
+        },
+        {
+          "name": "cowlib",
+          "type": "vcs",
+          "url": "https://github.com/ninenines/cowlib"
+        },
+        {
+          "name": "db_connection",
+          "type": "vcs",
+          "url": "https://github.com/elixir-ecto/db_connection"
+        },
+        {
+          "name": "decimal",
+          "type": "license",
+          "url": "https://github.com/ericmj/decimal/blob/68633fc6651456b80cfee349ef96be0000449468/LICENSE.txt"
+        },
+        {
+          "name": "decimal",
+          "type": "vcs",
+          "url": "https://github.com/ericmj/decimal"
+        },
+        {
+          "name": "earmark_parser",
+          "type": "vcs",
+          "url": "https://github.com/RobertDober/earmark_parser"
+        },
+        {
+          "name": "ecto",
+          "type": "license",
+          "url": "https://github.com/elixir-ecto/ecto/blob/e72c91fc99938cd15a818775aaa842adb408c3b6/LICENSE.md"
+        },
+        {
+          "name": "ecto",
+          "type": "vcs",
+          "url": "https://github.com/elixir-ecto/ecto"
+        },
+        {
+          "name": "ecto_sql",
+          "type": "vcs",
+          "url": "https://github.com/elixir-ecto/ecto_sql"
+        },
+        {
+          "name": "esbuild",
+          "type": "license",
+          "url": "https://github.com/phoenixframework/esbuild/blob/93124bc6bda7129105817e0e93cd8e9444d315fe/LICENSE.md"
+        },
+        {
+          "name": "esbuild",
+          "type": "vcs",
+          "url": "https://github.com/phoenixframework/esbuild"
+        },
+        {
+          "name": "ex_doc",
+          "type": "license",
+          "url": "https://github.com/elixir-lang/ex_doc/blob/d152fe92739dbc5372eef936f4a24fbacdf7cc1e/LICENSE"
+        },
+        {
+          "name": "ex_doc",
+          "type": "vcs",
+          "url": "https://github.com/elixir-lang/ex_doc"
+        },
+        {
+          "name": "gettext",
+          "type": "vcs",
+          "url": "https://github.com/elixir-gettext/gettext"
+        },
+        {
+          "name": "hpax",
+          "type": "license",
+          "url": "https://github.com/elixir-mint/hpax/blob/9df2bf5d76e210d7da2402bce29498c5bf620ebf/LICENSE.txt"
+        },
+        {
+          "name": "hpax",
+          "type": "vcs",
+          "url": "https://github.com/elixir-mint/hpax"
+        },
+        {
+          "name": "jason",
+          "type": "license",
+          "url": "https://github.com/michalmuskala/jason/blob/84c2dbd3940ea210ccc16718df0198b85afe2105/LICENSE"
+        },
+        {
+          "name": "jason",
+          "type": "vcs",
+          "url": "https://github.com/michalmuskala/jason"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "castore",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "castore",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/castore@0.1.17",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.1.17"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "connection",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "connection",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/connection@1.1.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowboy",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "ISC"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "ISC"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "cowboy",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowboy@2.9.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.9.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowboy_telemetry",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "cowboy_telemetry",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.4.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowlib",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "ISC"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "ISC"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "cowlib",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowlib@2.11.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.11.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "db_connection",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "db_connection",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/db_connection@2.4.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.4.2"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "decimal",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "decimal",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/decimal@2.0.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "earmark_parser",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "earmark_parser",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/earmark_parser@1.4.25",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.25"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ecto",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ecto",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ecto@3.8.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.8.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ecto_sql",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ecto_sql",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ecto_sql@3.8.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.8.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "esbuild",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "esbuild",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/esbuild@0.5.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.5.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ex_doc",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ex_doc",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ex_doc@0.28.4",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.28.4"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "gettext",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "gettext",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/gettext@0.19.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.19.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "hpax",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "hpax",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/hpax@0.1.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.1.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "jason",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "mix.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "jason",
+          "observed_licenses": [],
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/jason@1.3.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "castore",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "castore",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/castore@0.1.17",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.1.17"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/connection@1.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowlib",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowlib",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowlib@2.11.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.11.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "decimal",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "decimal",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/decimal@2.0.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "earmark_parser",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "earmark_parser",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/earmark_parser@1.4.25",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.25"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "esbuild",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "esbuild",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/esbuild@0.5.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.5.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "gettext",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "gettext",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/gettext@0.19.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.19.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "hpax",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "hpax",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/hpax@0.1.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.1.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "jason",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "jason",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/jason@1.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "castore",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "castore",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/castore@0.1.17",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.1.17"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/connection@1.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy@2.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy_telemetry",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy_telemetry",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowlib",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowlib",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowlib@2.11.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.11.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "db_connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "db_connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/db_connection@2.4.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.4.2"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "decimal",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "decimal",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/decimal@2.0.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "earmark_parser",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "earmark_parser",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/earmark_parser@1.4.25",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.25"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto@3.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto_sql",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto_sql",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto_sql@3.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "esbuild",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "esbuild",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/esbuild@0.5.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.5.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ex_doc",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ex_doc",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ex_doc@0.28.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.28.4"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "gettext",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "gettext",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/gettext@0.19.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.19.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "hpax",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "hpax",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/hpax@0.1.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.1.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "jason",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "jason",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/jason@1.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "dependencies": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy@2.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy_telemetry",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy_telemetry",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "db_connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "db_connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/db_connection@2.4.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.4.2"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto@3.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto_sql",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto_sql",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto_sql@3.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ex_doc",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ex_doc",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ex_doc@0.28.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.28.4"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "cowboy",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "cowboy",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/cowboy@2.9.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.9.0"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "cowboy_telemetry",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "cowboy_telemetry",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "0.4.0"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "db_connection",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "db_connection",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/db_connection@2.4.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.4.2"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "ecto",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "ecto",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/ecto@3.8.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.8.1"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "ecto_sql",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "ecto_sql",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/ecto_sql@3.8.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.8.1"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "context": {
+              "hex_has_dependency_inventory": true,
+              "otp_application_name": "ex_doc",
+              "source": {
+                "hex_repository": {
+                  "name": "hexpm"
+                }
+              }
+            },
+            "name": "ex_doc",
+            "paths": [
+              "mix.lock"
+            ],
+            "purl": "pkg:hex/ex_doc@0.28.4",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "0.28.4"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_MIX",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "mix.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "castore",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "castore",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/castore@0.1.17",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.1.17"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "connection",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "connection",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/connection@1.1.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowboy",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "cowboy",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowboy@2.9.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.9.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowboy_telemetry",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "cowboy_telemetry",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.4.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "cowlib",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "cowlib",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/cowlib@2.11.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.11.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "db_connection",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "db_connection",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/db_connection@2.4.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.4.2"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "decimal",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "decimal",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/decimal@2.0.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.0.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "earmark_parser",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "earmark_parser",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/earmark_parser@1.4.25",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.25"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ecto",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "ecto",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ecto@3.8.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.8.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ecto_sql",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "ecto_sql",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ecto_sql@3.8.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.8.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "esbuild",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "esbuild",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/esbuild@0.5.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.5.0"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "ex_doc",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "ex_doc",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/ex_doc@0.28.4",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.28.4"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "gettext",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "gettext",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/gettext@0.19.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.19.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "hpax",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "hpax",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/hpax@0.1.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.1.1"
+        },
+        {
+          "context": {
+            "hex_has_dependency_inventory": true,
+            "otp_application_name": "jason",
+            "source": {
+              "hex_repository": {
+                "name": "hexpm"
+              }
+            }
+          },
+          "name": "jason",
+          "paths": [
+            "mix.lock"
+          ],
+          "purl": "pkg:hex/jason@1.3.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_MIX",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "mix.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy@2.9.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowlib",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowlib",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowlib@2.11.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.11.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy_telemetry",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy_telemetry",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy_telemetry@0.4.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.4.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "cowboy",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "cowboy",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/cowboy@2.9.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "db_connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "db_connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/db_connection@2.4.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.4.2"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/connection@1.1.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto@3.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "decimal",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "decimal",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/decimal@2.0.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto@3.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "jason",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "jason",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/jason@1.3.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto_sql",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto_sql",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto_sql@3.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "db_connection",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "db_connection",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/db_connection@2.4.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.4.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto_sql",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto_sql",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto_sql@3.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ecto",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ecto",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ecto@3.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.8.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "esbuild",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "esbuild",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/esbuild@0.5.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.5.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "castore",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "castore",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/castore@0.1.17",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.1.17"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "ex_doc",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "ex_doc",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/ex_doc@0.28.4",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.28.4"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "earmark_parser",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "earmark_parser",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/earmark_parser@1.4.25",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.25"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "jason",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "jason",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/jason@1.3.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            },
+            {
+              "context": {
+                "hex_has_dependency_inventory": true,
+                "otp_application_name": "decimal",
+                "source": {
+                  "hex_repository": {
+                    "name": "hexpm"
+                  }
+                }
+              },
+              "name": "decimal",
+              "paths": [
+                "mix.lock"
+              ],
+              "purl": "pkg:hex/decimal@2.0.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.0.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

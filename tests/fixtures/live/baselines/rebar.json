@@ -1,0 +1,1327 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "0.7.1",
+          "package": "hex:unicode_util_compat@0.7.0"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "1.1.9",
+          "package": "hex:ssl_verify_fun@1.1.6"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "1.5.0",
+          "package": "hex:mimerl@1.2.0"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "2.19.0",
+          "package": "hex:certifi@2.9.0"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "2.5.0",
+          "package": "hex:metrics@1.0.1"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "3.4.2",
+          "package": "hex:parse_trans@3.3.1"
+        },
+        {
+          "files": [
+            "rebar.lock"
+          ],
+          "latest": "8.0.0",
+          "package": "hex:idna@6.1.1"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-117666",
+              "files": [
+                "rebar.lock"
+              ],
+              "package": "hex:ssl_verify_fun@1.1.6"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "1.1.6",
+              "name": "ssl_verify_fun",
+              "paths": [
+                "rebar.lock"
+              ],
+              "registry": "hex",
+              "strategy": "unknown",
+              "target_version": "1.1.8"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:ssl_verify_fun@1.1.6"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "EEF-CVE-2026-117678",
+              "files": [
+                "rebar.lock"
+              ],
+              "package": "hex:idna@6.1.1"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "6.1.1",
+              "name": "idna",
+              "paths": [
+                "rebar.lock"
+              ],
+              "registry": "hex",
+              "strategy": "unknown",
+              "target_version": "8.0.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "hex:idna@6.1.1"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "EEF-CVE-2026-117666",
+          "files": [
+            "rebar.lock"
+          ],
+          "package": "hex:ssl_verify_fun@1.1.6"
+        },
+        {
+          "advisory": "EEF-CVE-2026-117678",
+          "files": [
+            "rebar.lock"
+          ],
+          "package": "hex:idna@6.1.1"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": true
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "hex"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 7,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "rebar.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "deprecation",
+          "files": [
+            "rebar.lock"
+          ],
+          "required_files": [],
+          "status": "unknown"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": [
+        {
+          "check": "deprecation",
+          "paths": [
+            "rebar.lock"
+          ],
+          "reason": "native_evidence_unavailable",
+          "status": "unknown"
+        },
+        {
+          "check": "deprecation",
+          "paths": [
+            "rebar.lock"
+          ],
+          "reason": "native_evidence_unavailable",
+          "status": "unknown"
+        },
+        {
+          "check": "deprecation",
+          "paths": [
+            "rebar.lock"
+          ],
+          "reason": "native_evidence_unavailable",
+          "status": "unknown"
+        }
+      ]
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/erlang-certifi"
+        },
+        {
+          "name": "idna",
+          "type": "license",
+          "url": "https://github.com/benoitc/erlang-idna/blob/792832450c7017c3b91f3f2ddd267533492146eb/LICENSE"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/benoitc/erlang-idna"
+        },
+        {
+          "name": "metrics",
+          "type": "vcs",
+          "url": "https://github.com/benoitc/erlang-metrics"
+        },
+        {
+          "name": "mimerl",
+          "type": "vcs",
+          "url": "https://github.com/benoitc/mimerl"
+        },
+        {
+          "name": "parse_trans",
+          "type": "vcs",
+          "url": "https://github.com/uwiger/parse_trans"
+        },
+        {
+          "name": "ssl_verify_fun",
+          "type": "vcs",
+          "url": "https://github.com/deadtrickster/ssl_verify_fun.erl"
+        },
+        {
+          "name": "unicode_util_compat",
+          "type": "vcs",
+          "url": "https://github.com/benoitc/unicode_util_compat"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "otp_application_name": "certifi",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "certifi",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/certifi@2.9.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.9.0"
+        },
+        {
+          "context": {
+            "otp_application_name": "idna",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "idna",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/idna@6.1.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "6.1.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "metrics",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "metrics",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/metrics@1.0.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "mimerl",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "mimerl",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/mimerl@1.2.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.2.0"
+        },
+        {
+          "context": {
+            "otp_application_name": "parse_trans",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "parse_trans",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/parse_trans@3.3.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.3.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "ssl_verify_fun",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "ssl_verify_fun",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.6"
+        },
+        {
+          "context": {
+            "otp_application_name": "unicode_util_compat",
+            "rebar_dependency_depth": 0
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "unicode_util_compat",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/unicode_util_compat@0.7.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.7.0"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "rebar.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "rebar.lock",
+          "observed_licenses": [],
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "otp_application_name": "certifi",
+                "rebar_dependency_depth": 0
+              },
+              "name": "certifi",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/certifi@2.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            },
+            {
+              "context": {
+                "otp_application_name": "idna",
+                "rebar_dependency_depth": 0
+              },
+              "name": "idna",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/idna@6.1.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "6.1.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "metrics",
+                "rebar_dependency_depth": 0
+              },
+              "name": "metrics",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/metrics@1.0.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "mimerl",
+                "rebar_dependency_depth": 0
+              },
+              "name": "mimerl",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/mimerl@1.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.2.0"
+            },
+            {
+              "context": {
+                "otp_application_name": "parse_trans",
+                "rebar_dependency_depth": 0
+              },
+              "name": "parse_trans",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/parse_trans@3.3.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "ssl_verify_fun",
+                "rebar_dependency_depth": 0
+              },
+              "name": "ssl_verify_fun",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.6"
+            },
+            {
+              "context": {
+                "otp_application_name": "unicode_util_compat",
+                "rebar_dependency_depth": 0
+              },
+              "name": "unicode_util_compat",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/unicode_util_compat@0.7.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.7.0"
+            },
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "otp_application_name": "certifi",
+                "rebar_dependency_depth": 0
+              },
+              "name": "certifi",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/certifi@2.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            },
+            {
+              "context": {
+                "otp_application_name": "idna",
+                "rebar_dependency_depth": 0
+              },
+              "name": "idna",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/idna@6.1.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "6.1.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "metrics",
+                "rebar_dependency_depth": 0
+              },
+              "name": "metrics",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/metrics@1.0.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "mimerl",
+                "rebar_dependency_depth": 0
+              },
+              "name": "mimerl",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/mimerl@1.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.2.0"
+            },
+            {
+              "context": {
+                "otp_application_name": "parse_trans",
+                "rebar_dependency_depth": 0
+              },
+              "name": "parse_trans",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/parse_trans@3.3.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.1"
+            },
+            {
+              "context": {
+                "otp_application_name": "ssl_verify_fun",
+                "rebar_dependency_depth": 0
+              },
+              "name": "ssl_verify_fun",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.6"
+            },
+            {
+              "context": {
+                "otp_application_name": "unicode_util_compat",
+                "rebar_dependency_depth": 0
+              },
+              "name": "unicode_util_compat",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/unicode_util_compat@0.7.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.7.0"
+            },
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "certifi",
+              "rebar_dependency_depth": 0
+            },
+            "name": "certifi",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/certifi@2.9.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.9.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "idna",
+              "rebar_dependency_depth": 0
+            },
+            "name": "idna",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/idna@6.1.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "6.1.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "metrics",
+              "rebar_dependency_depth": 0
+            },
+            "name": "metrics",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/metrics@1.0.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.0.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "mimerl",
+              "rebar_dependency_depth": 0
+            },
+            "name": "mimerl",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/mimerl@1.2.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.2.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "parse_trans",
+              "rebar_dependency_depth": 0
+            },
+            "name": "parse_trans",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/parse_trans@3.3.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.3.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "ssl_verify_fun",
+              "rebar_dependency_depth": 0
+            },
+            "name": "ssl_verify_fun",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.1.6"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "otp_application_name": "unicode_util_compat",
+              "rebar_dependency_depth": 0
+            },
+            "name": "unicode_util_compat",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": "pkg:hex/unicode_util_compat@0.7.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "0.7.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "rebar.lock",
+            "paths": [
+              "rebar.lock"
+            ],
+            "purl": null,
+            "record_kind": "lock_subject",
+            "scope": null,
+            "type": "library",
+            "version": null
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_REBAR",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "1.2.0",
+          "path": "rebar.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "otp_application_name": "certifi",
+            "rebar_dependency_depth": 0
+          },
+          "name": "certifi",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/certifi@2.9.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.9.0"
+        },
+        {
+          "context": {
+            "otp_application_name": "idna",
+            "rebar_dependency_depth": 0
+          },
+          "name": "idna",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/idna@6.1.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "6.1.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "metrics",
+            "rebar_dependency_depth": 0
+          },
+          "name": "metrics",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/metrics@1.0.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "mimerl",
+            "rebar_dependency_depth": 0
+          },
+          "name": "mimerl",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/mimerl@1.2.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.2.0"
+        },
+        {
+          "context": {
+            "otp_application_name": "parse_trans",
+            "rebar_dependency_depth": 0
+          },
+          "name": "parse_trans",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/parse_trans@3.3.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.3.1"
+        },
+        {
+          "context": {
+            "otp_application_name": "ssl_verify_fun",
+            "rebar_dependency_depth": 0
+          },
+          "name": "ssl_verify_fun",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.6"
+        },
+        {
+          "context": {
+            "otp_application_name": "unicode_util_compat",
+            "rebar_dependency_depth": 0
+          },
+          "name": "unicode_util_compat",
+          "paths": [
+            "rebar.lock"
+          ],
+          "purl": "pkg:hex/unicode_util_compat@0.7.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.7.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_REBAR",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "1.2.0",
+          "path": "rebar.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "certifi",
+                "rebar_dependency_depth": 0
+              },
+              "name": "certifi",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/certifi@2.9.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.9.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "idna",
+                "rebar_dependency_depth": 0
+              },
+              "name": "idna",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/idna@6.1.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "6.1.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "metrics",
+                "rebar_dependency_depth": 0
+              },
+              "name": "metrics",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/metrics@1.0.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "mimerl",
+                "rebar_dependency_depth": 0
+              },
+              "name": "mimerl",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/mimerl@1.2.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.2.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "parse_trans",
+                "rebar_dependency_depth": 0
+              },
+              "name": "parse_trans",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/parse_trans@3.3.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "ssl_verify_fun",
+                "rebar_dependency_depth": 0
+              },
+              "name": "ssl_verify_fun",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/ssl_verify_fun@1.1.6",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.6"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "rebar.lock",
+              "paths": [
+                "rebar.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "otp_application_name": "unicode_util_compat",
+                "rebar_dependency_depth": 0
+              },
+              "name": "unicode_util_compat",
+              "paths": [
+                "rebar.lock"
+              ],
+              "purl": "pkg:hex/unicode_util_compat@0.7.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.7.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

@@ -11,24 +11,60 @@
       "Cargo.lock": "dbe6158dbf001a489a53617a531d11dbee22daed2529f87790547ee65d1018d4",
       "Cargo.toml": "de934f7081bbf86223d6cdea7c0b9456ae48f5c6ce4545854293d4ff3d47f66c"
     },
-    "upload_paths": ["Cargo.lock", "Cargo.toml"],
+    "upload_paths": [
+      "Cargo.lock",
+      "Cargo.toml"
+    ],
     "checks": {
       "sbom": {
         "completeness": "recorded_lockfile_inventory",
         "witnesses": [
-          {"name": "clap", "version": "4.5.16", "paths": ["Cargo.lock"]},
-          {"name": "regex", "version": "1.10.6", "paths": ["Cargo.lock"]}
+          {
+            "name": "clap",
+            "version": "4.5.16",
+            "paths": [
+              "Cargo.lock"
+            ]
+          },
+          {
+            "name": "regex",
+            "version": "1.10.6",
+            "paths": [
+              "Cargo.lock"
+            ]
+          }
         ]
       },
-      "audit": {"manifests": ["Cargo.toml"], "locked": true},
+      "audit": {
+        "manifests": [
+          "Cargo.toml"
+        ],
+        "locked": true
+      },
       "license_report": {
         "completeness": "recorded_lockfile_inventory",
         "witnesses": [
-          {"name": "fd-find", "version": "10.2.0", "paths": ["Cargo.toml"], "expression": "MIT OR Apache-2.0"},
-          {"name": "regex", "version": "1.10.6", "paths": ["Cargo.lock"]}
+          {
+            "name": "fd-find",
+            "version": "10.2.0",
+            "paths": [
+              "Cargo.toml"
+            ],
+            "expression": "MIT OR Apache-2.0"
+          },
+          {
+            "name": "regex",
+            "version": "1.10.6",
+            "paths": [
+              "Cargo.lock"
+            ]
+          }
         ]
       },
-      "license_policy": {"name": "regex", "version": "1.10.6"}
+      "license_policy": {
+        "name": "regex",
+        "version": "1.10.6"
+      }
     }
   },
   {
@@ -43,16 +79,53 @@
       "go.mod": "a501ef186772adafdaabb7aa78623b691890e87accd0715674e69949da6b586e",
       "go.sum": "47ddb5ec5a98cda2ef8dbebd40eea3af7bc7cc17894a886e149fdfff71592358"
     },
-    "upload_paths": ["go.mod", "go.sum"],
+    "upload_paths": [
+      "go.mod",
+      "go.sum"
+    ],
     "checks": {
       "sbom": {
         "completeness": "resolved_manifest_inventory",
-        "witnesses": [{"name": "github.com/spf13/pflag", "versioned": true, "paths": ["go.mod"]}]
+        "witnesses": [
+          {
+            "name": "github.com/spf13/pflag",
+            "versioned": true,
+            "paths": [
+              "go.mod"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "github.com/spf13/pflag",
+            "manifest_path": "go.mod",
+            "declared_requirement": "v1.0.9"
+          }
+        ]
       },
-      "audit": {"manifests": ["go.mod"]},
+      "audit": {
+        "manifests": [
+          "go.mod"
+        ]
+      },
       "license_report": {
         "completeness": "resolved_manifest_inventory",
-        "witnesses": [{"name": "github.com/spf13/pflag", "versioned": true, "paths": ["go.mod"]}]
+        "witnesses": [
+          {
+            "name": "github.com/spf13/pflag",
+            "versioned": true,
+            "paths": [
+              "go.mod"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "github.com/spf13/pflag",
+            "manifest_path": "go.mod",
+            "declared_requirement": "v1.0.9"
+          }
+        ]
       }
     }
   },
@@ -64,10 +137,27 @@
       "package-lock.json": "0d202b9af213d4f69028a56080248c4d443ac88bdcee31330df519b123609eab",
       "package.json": "c6ae90f0ab210f5f0221010b2baac6dd2e8de6c67afbcf60f77172149b6ea5b1"
     },
-    "upload_paths": ["package-lock.json", "package.json"],
+    "upload_paths": [
+      "package-lock.json",
+      "package.json"
+    ],
     "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "minimist",
+            "version": "0.0.8",
+            "paths": [
+              "package-lock.json"
+            ]
+          }
+        ]
+      },
       "audit": {
-        "manifests": ["package.json"],
+        "manifests": [
+          "package.json"
+        ],
         "locked": true,
         "remediation": {
           "registry": "npm",
@@ -82,6 +172,1592 @@
             "GHSA-xvch-5gv4-984h"
           ]
         }
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "minimist",
+            "version": "0.0.8",
+            "paths": [
+              "package-lock.json"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "npm-shrinkwrap",
+    "ecosystem": "javascript",
+    "files": {
+      "npm-shrinkwrap.json": "9cdbe76c4d2d598b831fd09f1022117678704ca9d7a3f7450f04c499ed7d074b",
+      "package.json": "b2a022db1667e8b2dd2eed708db652d71faeb61941b2a22b53d04824a6f30b8b"
+    },
+    "upload_paths": [
+      "npm-shrinkwrap.json",
+      "package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "npm-shrinkwrap.json"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "npm-shrinkwrap.json"
+            ]
+          }
+        ]
+      }
+    },
+    "local": "tests/fixtures/live/inputs/npm-shrinkwrap"
+  },
+  {
+    "id": "pnpm-v5",
+    "ecosystem": "javascript",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/javascript/testdata/pnpm-v5-peer-suffix"
+    },
+    "files": {
+      "pnpm-lock.yaml": "bb3fb88db64882852839de908cdcbdd4618c4944f08ae1ce087888cd41d0d2ec"
+    },
+    "upload_paths": [
+      "pnpm-lock.yaml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "acorn",
+            "version": "8.8.0",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "acorn",
+            "version": "8.8.0",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "pnpm-v6",
+    "ecosystem": "javascript",
+    "files": {
+      "pnpm-lock.yaml": "f38387f04201ce7d8b920ecb7cb658261a790edc0f133d5a46659c8eaa1c7676",
+      "package.json": "e66551ce4068a6f870c296b5faa4d1d398acf08fe48afa44c678953e6f5728fa"
+    },
+    "upload_paths": [
+      "pnpm-lock.yaml",
+      "package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      }
+    },
+    "local": "tests/fixtures/live/inputs/pnpm-v6"
+  },
+  {
+    "id": "pnpm-v9",
+    "ecosystem": "javascript",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/javascript/testdata/pnpm-v9-snapshots"
+    },
+    "files": {
+      "pnpm-lock.yaml": "8dd5ec2af726a8019f542e00e426d8ec2f363bb71035b7f98aa4ff54555fee27"
+    },
+    "upload_paths": [
+      "pnpm-lock.yaml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "which",
+            "version": "2.0.2",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "which",
+            "version": "2.0.2",
+            "paths": [
+              "pnpm-lock.yaml"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "yarn-classic",
+    "ecosystem": "javascript",
+    "files": {
+      "yarn.lock": "af147fc95dc48c3f96505ad1c8fe411916ac845dc7ce0c372ff306b1b2ce2249",
+      "package.json": "d6ce45034c73b57ba8ec0f36f647fad8eb3c7e3afb15fe57cee7b88a6abcffb3"
+    },
+    "upload_paths": [
+      "yarn.lock",
+      "package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "yarn.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "yarn.lock"
+            ]
+          }
+        ]
+      }
+    },
+    "local": "tests/fixtures/live/inputs/yarn-classic"
+  },
+  {
+    "id": "yarn-berry",
+    "ecosystem": "javascript",
+    "files": {
+      "yarn.lock": "aa46915f4d5035c6791feb65c25aed72eccaee8c1b6feb297e364bad242b2109",
+      "package.json": "2d4a2924a2840f025aefea36287056c2741454a09df65d05cecf033a8902e524"
+    },
+    "upload_paths": [
+      "yarn.lock",
+      "package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "yarn.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "yarn.lock"
+            ]
+          }
+        ]
+      }
+    },
+    "local": "tests/fixtures/live/inputs/yarn-berry"
+  },
+  {
+    "id": "uv",
+    "ecosystem": "python",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/python/testdata/uv/simple-deps"
+    },
+    "files": {
+      "uv.lock": "1ca5bd862c2c46ac2e73bcb8f72673c2392a04619a8f1e6c69b617d8ad6230ec",
+      "pyproject.toml": "73b4741058fa092b9c8e5610eb8000787025f72d385d2312abc0df696cc34361"
+    },
+    "upload_paths": [
+      "uv.lock",
+      "pyproject.toml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "requests",
+            "version": "2.32.3",
+            "paths": [
+              "uv.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "pyproject.toml"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "requests",
+            "version": "2.32.3",
+            "paths": [
+              "uv.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "poetry-v2",
+    "ecosystem": "python",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/python/testdata/poetry/simple-deps"
+    },
+    "files": {
+      "poetry.lock": "2074163186e4925e7d0e53c8c72ac1f08b4acd24f2b987a490c68d595f8f15ce",
+      "pyproject.toml": "18e338286fe4f272722641d5568c26b095c254888d815e20c153b4e070879a35"
+    },
+    "upload_paths": [
+      "poetry.lock",
+      "pyproject.toml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "requests",
+            "version": "2.32.2",
+            "paths": [
+              "poetry.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "pyproject.toml"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "requests",
+            "version": "2.32.2",
+            "paths": [
+              "poetry.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "poetry-v2-1",
+    "ecosystem": "python",
+    "project": {
+      "repository": "aquasecurity/trivy",
+      "commit": "f94c2ef22036ec1d3f2a85d34ce686b75a82ea41",
+      "subdirectory": "pkg/fanal/analyzer/language/python/poetry/testdata/happy-v2"
+    },
+    "files": {
+      "poetry.lock": "2d223c8e05262dfef0fd601ee6511c3dbb25aa252d24f0c53cf354ac26f802e7",
+      "pyproject.toml": "517b2cd0a701177d3b38233b84c5c98ec1646b515df9b7f89cff10c3507c9903"
+    },
+    "upload_paths": [
+      "poetry.lock",
+      "pyproject.toml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "attrs",
+            "version": "25.1.0",
+            "paths": [
+              "poetry.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "pyproject.toml"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "attrs",
+            "version": "25.1.0",
+            "paths": [
+              "poetry.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "pdm",
+    "ecosystem": "python",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/python/testdata/pdm-lock"
+    },
+    "files": {
+      "pdm.lock": "efc1a00fc069a6e180ea94fd3d9bd38cbae9100861fe15a8db867d11314b30ca"
+    },
+    "upload_paths": [
+      "pdm.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "idna",
+            "version": "2.7",
+            "paths": [
+              "pdm.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "idna",
+            "version": "2.7",
+            "paths": [
+              "pdm.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "pipenv",
+    "ecosystem": "python",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/python/testdata/pipfile-lock"
+    },
+    "files": {
+      "Pipfile.lock": "353cd7c369681c1a6d4cf707bf7e7ab4937b7bb470e908dc8aa8728d275654e5"
+    },
+    "upload_paths": [
+      "Pipfile.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "aio-pika",
+            "version": "6.8.0",
+            "paths": [
+              "Pipfile.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "aio-pika",
+            "version": "6.8.0",
+            "paths": [
+              "Pipfile.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "swift-v1",
+    "ecosystem": "swift",
+    "project": {
+      "repository": "aquasecurity/trivy",
+      "commit": "f94c2ef22036ec1d3f2a85d34ce686b75a82ea41",
+      "subdirectory": "pkg/fanal/analyzer/language/swift/swift/testdata/happy"
+    },
+    "files": {
+      "Package.resolved": "5efbf1603763beb7bdea535bedbdf340dfc01bd349c5e870c26abeb0f36077cf"
+    },
+    "upload_paths": [
+      "Package.resolved"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "Quick",
+            "version": "7.0.0",
+            "paths": [
+              "Package.resolved"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "Quick",
+            "version": "7.0.0",
+            "paths": [
+              "Package.resolved"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "swift-v2",
+    "ecosystem": "swift",
+    "project": {
+      "repository": "google/osv-scanner",
+      "commit": "925d1b4cf77c4dd26540672f6fa045a3a8327754",
+      "subdirectory": "cmd/osv-scanner/scan/source/testdata/locks-scalibr"
+    },
+    "files": {
+      "Package.resolved": "be0a1b417224c907ca7ed084be5e212338b41a1d390370e9d058d6c3dc3f2423"
+    },
+    "upload_paths": [
+      "Package.resolved"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "swift-nio-http2",
+            "version": "1.19.1",
+            "paths": [
+              "Package.resolved"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "swift-nio-http2",
+            "version": "1.19.1",
+            "paths": [
+              "Package.resolved"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "gradle",
+    "ecosystem": "gradle",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/java/testdata/java-builds/example-java-app"
+    },
+    "files": {
+      "gradle.lockfile": "385759bf433ba6e7dbdc9f87e9cb81246384d7fc28203296cfc14814dbd54997"
+    },
+    "upload_paths": [
+      "gradle.lockfile"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "junit:junit",
+            "version": "4.12",
+            "paths": [
+              "gradle.lockfile"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "junit:junit",
+            "version": "4.12",
+            "paths": [
+              "gradle.lockfile"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "gradle-legacy",
+    "ecosystem": "gradle",
+    "project": {
+      "repository": "gradle/gradle",
+      "commit": "e5ee1df3d88b8ca3a8074787a94f373e3090e1db",
+      "subdirectory": "platforms/documentation/docs/src/snippets/dependencyManagement/dependencyLocking-lockModeSelection/groovy"
+    },
+    "files": {
+      "gradle/dependency-locks/compileClasspath.lockfile": "dbb041e5084554c3d44726915e8d2f3b49d0dc7e944811b539bffe26502f0ca6"
+    },
+    "upload_paths": [
+      "gradle/dependency-locks/compileClasspath.lockfile"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.springframework:spring-core",
+            "version": "5.0.5.RELEASE",
+            "paths": [
+              "gradle/dependency-locks/compileClasspath.lockfile"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.springframework:spring-core",
+            "version": "5.0.5.RELEASE",
+            "paths": [
+              "gradle/dependency-locks/compileClasspath.lockfile"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "nuget",
+    "ecosystem": "dotnet",
+    "project": {
+      "repository": "aquasecurity/trivy",
+      "commit": "f94c2ef22036ec1d3f2a85d34ce686b75a82ea41",
+      "subdirectory": "pkg/fanal/analyzer/language/dotnet/nuget/testdata/lock"
+    },
+    "files": {
+      "packages.lock.json": "e5109b7a9d57eddf8a99a8b370b60c562cff92907c088a90a4b0f731807b3718"
+    },
+    "upload_paths": [
+      "packages.lock.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "Newtonsoft.Json",
+            "version": "12.0.3",
+            "paths": [
+              "packages.lock.json"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "Newtonsoft.Json",
+            "version": "12.0.3",
+            "paths": [
+              "packages.lock.json"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "dart",
+    "ecosystem": "dart",
+    "project": {
+      "repository": "aquasecurity/trivy",
+      "commit": "f94c2ef22036ec1d3f2a85d34ce686b75a82ea41",
+      "subdirectory": "pkg/fanal/analyzer/language/dart/pub/testdata/happy"
+    },
+    "files": {
+      "pubspec.lock": "85440e3beaecc04e3818f8ed8481f49099fe24fe05beed5c9f0f6cf7ad4c8e0f"
+    },
+    "upload_paths": [
+      "pubspec.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "crypto",
+            "version": "3.0.3",
+            "paths": [
+              "pubspec.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "crypto",
+            "version": "3.0.3",
+            "paths": [
+              "pubspec.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "composer",
+    "ecosystem": "php",
+    "project": {
+      "repository": "aquasecurity/trivy",
+      "commit": "f94c2ef22036ec1d3f2a85d34ce686b75a82ea41",
+      "subdirectory": "pkg/fanal/analyzer/language/php/composer/testdata/composer/happy"
+    },
+    "files": {
+      "composer.lock": "bd35a8eba27484ddc7b8f76adc212b8c7bbefbc15acd6ee05c969330c478719e",
+      "composer.json": "2e559f1bd4be9738eecf3d3f4f3567e83d27ddf889843ef405e3cfe5dc85250d"
+    },
+    "upload_paths": [
+      "composer.lock",
+      "composer.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "pear/log",
+            "version": "1.13.3",
+            "paths": [
+              "composer.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "composer.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "pear/log",
+            "version": "1.13.3",
+            "paths": [
+              "composer.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "mix",
+    "ecosystem": "elixir",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "cmd/syft/internal/test/integration/testdata/image-pkg-coverage/pkgs/elixir"
+    },
+    "files": {
+      "mix.lock": "8e2840a55b0d29ae2b081227e7b0491dcac38637552ae4063b667cfe23c346d2"
+    },
+    "upload_paths": [
+      "mix.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "cowboy",
+            "version": "2.9.0",
+            "paths": [
+              "mix.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "cowboy",
+            "version": "2.9.0",
+            "paths": [
+              "mix.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "rebar",
+    "ecosystem": "erlang",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "cmd/syft/internal/test/integration/testdata/image-pkg-coverage/pkgs/erlang"
+    },
+    "files": {
+      "rebar.lock": "d461e77039b36f179caddbe526fdcd32c3066146266a417c4ffe75f09f34c8a4"
+    },
+    "upload_paths": [
+      "rebar.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "certifi",
+            "version": "2.9.0",
+            "paths": [
+              "rebar.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "certifi",
+            "version": "2.9.0",
+            "paths": [
+              "rebar.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "bundler",
+    "ecosystem": "ruby",
+    "files": {
+      "Gemfile.lock": "307dff9c037f02c423140ef1d0167ffd7e66c9f1e3c06a0c263b97ef6cda73fd",
+      "Gemfile": "d4a18fab61a525984647b1ab1a879c4f5262228f0e5f1069438a8804917c627e"
+    },
+    "upload_paths": [
+      "Gemfile.lock",
+      "Gemfile"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "rake",
+            "version": "13.2.1",
+            "paths": [
+              "Gemfile.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "Gemfile"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "rake",
+            "version": "13.2.1",
+            "paths": [
+              "Gemfile.lock"
+            ]
+          }
+        ]
+      }
+    },
+    "local": "tests/fixtures/live/inputs/bundler"
+  },
+  {
+    "id": "bundler-alternate",
+    "ecosystem": "ruby",
+    "project": {
+      "repository": "google/osv-scanner",
+      "commit": "925d1b4cf77c4dd26540672f6fa045a3a8327754",
+      "subdirectory": "cmd/osv-scanner/scan/source/testdata/locks-scalibr"
+    },
+    "files": {
+      "gems.locked": "b513c19b9c2a8fed9adad28ece5114e08c7cd3df90ffdf37b6e4bfb7764cbbda"
+    },
+    "upload_paths": [
+      "gems.locked"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "async",
+            "version": "2.23.0",
+            "paths": [
+              "gems.locked"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "async",
+            "version": "2.23.0",
+            "paths": [
+              "gems.locked"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "conan-v1",
+    "ecosystem": "conan",
+    "project": {
+      "repository": "anchore/syft",
+      "commit": "bbb56b7d5a55fd1cdca9a02e254b24feb92c061d",
+      "subdirectory": "syft/pkg/cataloger/cpp/testdata"
+    },
+    "files": {
+      "conan.lock": "421e3aca902b6310bc89875e13c135843d574a0d01bc399c895fde46ecc16068"
+    },
+    "upload_paths": [
+      "conan.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "zlib",
+            "version": "1.2.12",
+            "paths": [
+              "conan.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true,
+        "unassessed_gap": {
+          "check": "dependency information",
+          "status": "incomplete",
+          "files": [
+            "conan.lock"
+          ]
+        }
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "zlib",
+            "version": "1.2.12",
+            "paths": [
+              "conan.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "go-dep",
+    "ecosystem": "go_dep",
+    "project": {
+      "repository": "golang/dep",
+      "commit": "f13583b555deaa6742f141a9c1185af947720d60"
+    },
+    "files": {
+      "Gopkg.lock": "6dddf5316bac686c6118a0c3de211148a02050f4be984ad8cdfe05ed6e4bf3da"
+    },
+    "upload_paths": [
+      "Gopkg.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "github.com/pkg/errors",
+            "version": "v0.8.0",
+            "paths": [
+              "Gopkg.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true,
+        "unassessed_gap": {
+          "check": "dependency information",
+          "status": "incomplete",
+          "files": [
+            "Gopkg.lock"
+          ]
+        }
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "github.com/pkg/errors",
+            "version": "v0.8.0",
+            "paths": [
+              "Gopkg.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "gradle-buildscript",
+    "ecosystem": "gradle",
+    "local": "tests/fixtures/live/inputs/gradle-buildscript",
+    "files": {
+      "buildscript-gradle.lockfile": "1e075fe86cb214bcd1d7595e96416d7dc5e1db3b3bbc6fa4e6f2e45e11cab22e"
+    },
+    "upload_paths": [
+      "buildscript-gradle.lockfile"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.apache.commons:commons-lang3",
+            "version": "3.12.0",
+            "paths": [
+              "buildscript-gradle.lockfile"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.apache.commons:commons-lang3",
+            "version": "3.12.0",
+            "paths": [
+              "buildscript-gradle.lockfile"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "gradle-settings",
+    "ecosystem": "gradle",
+    "local": "tests/fixtures/live/inputs/gradle-settings",
+    "files": {
+      "settings-gradle.lockfile": "1e075fe86cb214bcd1d7595e96416d7dc5e1db3b3bbc6fa4e6f2e45e11cab22e"
+    },
+    "upload_paths": [
+      "settings-gradle.lockfile"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.apache.commons:commons-lang3",
+            "version": "3.12.0",
+            "paths": [
+              "settings-gradle.lockfile"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "org.apache.commons:commons-lang3",
+            "version": "3.12.0",
+            "paths": [
+              "settings-gradle.lockfile"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "conan-v2",
+    "ecosystem": "conan",
+    "local": "tests/fixtures/live/inputs/conan-v2",
+    "files": {
+      "conan.lock": "abed985c7c3fad79ec8fa6a1f7ee09b34dce32532ad34bc3e0b05b92e9e64610"
+    },
+    "upload_paths": [
+      "conan.lock"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "zlib",
+            "version": "1.2.12",
+            "paths": [
+              "conan.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [],
+        "locked": true,
+        "unassessed_gap": {
+          "check": "dependency information",
+          "status": "incomplete",
+          "files": [
+            "conan.lock"
+          ]
+        }
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "zlib",
+            "version": "1.2.12",
+            "paths": [
+              "conan.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "cargo-workspace",
+    "ecosystem": "rust",
+    "local": "tests/fixtures/live/inputs/cargo-workspace",
+    "files": {
+      "Cargo.lock": "6228ac67243b8a4ff2a2e1efb452ad8b6bd5d1a28c2489a218c3400987f77294",
+      "Cargo.toml": "3b50f524cf6c114fa929724060a062d984f99554272876d3ac1dd29f66f119dc",
+      "member/Cargo.toml": "80a4d58aa1671692f79831221e2b698c4ed7e76d2cad332869db2d3befd385cc"
+    },
+    "upload_paths": [
+      "Cargo.lock",
+      "Cargo.toml",
+      "member/Cargo.toml"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "itoa",
+            "version": "1.0.18",
+            "paths": [
+              "Cargo.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "Cargo.toml",
+          "member/Cargo.toml"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "itoa",
+            "version": "1.0.18",
+            "paths": [
+              "Cargo.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "npm-workspace",
+    "ecosystem": "javascript",
+    "local": "tests/fixtures/live/inputs/npm-workspace",
+    "files": {
+      "package-lock.json": "61dec7f433ce736efb4d3d0329cd5baa9e325d18c1883437f4e38c7a6baa11cc",
+      "package.json": "d5383dbd042ac230db2fc56e34c290cd80f61a92af4f40b64ffcf8255642e960",
+      "packages/member/package.json": "e0a3c86b766506cc5baa25e364e56919766ecd942bc7eb981d6aa39e2dcde5cc"
+    },
+    "upload_paths": [
+      "package-lock.json",
+      "package.json",
+      "packages/member/package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "package-lock.json"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json",
+          "packages/member/package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "package-lock.json"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "bun-workspace",
+    "ecosystem": "javascript",
+    "local": "tests/fixtures/live/inputs/bun-workspace",
+    "files": {
+      "bun.lock": "a1a2ace582eca2a93a45820d8bfbcf70f2831cfca2240a1fff2b469da13dba76",
+      "package.json": "eba3559416a0b95956b11271c31ec6deb5c78d69ce113549ccd3128eb2fd18ad",
+      "packages/member/package.json": "e0a3c86b766506cc5baa25e364e56919766ecd942bc7eb981d6aa39e2dcde5cc"
+    },
+    "upload_paths": [
+      "bun.lock",
+      "package.json",
+      "packages/member/package.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "bun.lock"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "package.json",
+          "packages/member/package.json"
+        ],
+        "locked": true
+      },
+      "license_report": {
+        "completeness": "recorded_lockfile_inventory",
+        "witnesses": [
+          {
+            "name": "left-pad",
+            "version": "1.3.0",
+            "paths": [
+              "bun.lock"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "go-workspace",
+    "ecosystem": "go",
+    "local": "tests/fixtures/live/inputs/go-workspace",
+    "files": {
+      "go.work": "6fb91c70ba68f67c7e866728099b8c18906e225500ff51ed0efa2851707d5346",
+      "go.work.sum": "970159b074d5f00986d8df70f8dff6fff9be7a9364d73ed5910bf914fe22ec39",
+      "one/go.mod": "e3834c4e0f15a01005bab05b5465889a6c58c3f1941146db7b13c04e6f257e22",
+      "two/go.mod": "96aa9f6b1d118e868e9068d9c48a8dce56b90a1078973c43351ae3ebe3b111d6"
+    },
+    "upload_paths": [
+      "go.work",
+      "go.work.sum",
+      "one/go.mod",
+      "two/go.mod"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "github.com/google/uuid",
+            "versioned": true,
+            "paths": [
+              "one/go.mod"
+            ]
+          },
+          {
+            "name": "github.com/spf13/pflag",
+            "versioned": true,
+            "paths": [
+              "two/go.mod"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "github.com/google/uuid",
+            "manifest_path": "one/go.mod",
+            "declared_requirement": "v1.6.0"
+          },
+          {
+            "name": "github.com/spf13/pflag",
+            "manifest_path": "two/go.mod",
+            "declared_requirement": "v1.0.9"
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "one/go.mod",
+          "two/go.mod"
+        ]
+      },
+      "license_report": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "github.com/google/uuid",
+            "versioned": true,
+            "paths": [
+              "one/go.mod"
+            ]
+          },
+          {
+            "name": "github.com/spf13/pflag",
+            "versioned": true,
+            "paths": [
+              "two/go.mod"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "github.com/google/uuid",
+            "manifest_path": "one/go.mod",
+            "declared_requirement": "v1.6.0"
+          },
+          {
+            "name": "github.com/spf13/pflag",
+            "manifest_path": "two/go.mod",
+            "declared_requirement": "v1.0.9"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "vcpkg",
+    "ecosystem": "vcpkg",
+    "local": "tests/fixtures/sbom/manifests",
+    "files": {
+      "vcpkg.json": "4aa195a190d8e71923a577cfebf521522f456322ec5dad82a554f41a51458157"
+    },
+    "upload_paths": [
+      "vcpkg.json"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "fmt",
+            "versioned": true,
+            "paths": [
+              "vcpkg.json"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "fmt",
+            "manifest_path": "vcpkg.json"
+          },
+          {
+            "name": "zlib",
+            "manifest_path": "vcpkg.json"
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "vcpkg.json"
+        ]
+      },
+      "license_report": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "fmt",
+            "versioned": true,
+            "paths": [
+              "vcpkg.json"
+            ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "fmt",
+            "manifest_path": "vcpkg.json"
+          },
+          {
+            "name": "zlib",
+            "manifest_path": "vcpkg.json"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "zig",
+    "ecosystem": "zig",
+    "local": "tests/fixtures/sbom/manifests",
+    "files": {
+      "build.zig.zon": "34221865ef9575944734a4aee74293984c65529640f6b7f7147ec649a8875352"
+    },
+    "upload_paths": [
+      "build.zig.zon"
+    ],
+    "checks": {
+      "sbom": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "gh/ziglibs/diffz",
+            "versioned": true,
+            "paths": [
+              "build.zig.zon"
+            ]
+          }
+        ]
+      },
+      "audit": {
+        "manifests": [
+          "build.zig.zon"
+        ]
+      },
+      "license_report": {
+        "completeness": "resolved_manifest_inventory",
+        "witnesses": [
+          {
+            "name": "gh/ziglibs/diffz",
+            "versioned": true,
+            "paths": [
+              "build.zig.zon"
+            ]
+          }
+        ]
       }
     }
   }

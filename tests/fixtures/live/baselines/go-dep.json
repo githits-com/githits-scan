@@ -1,0 +1,1674 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 0,
+      "gaps": [
+        {
+          "actionable": false,
+          "check": "package checks",
+          "files": [
+            "Gopkg.lock"
+          ],
+          "required_files": [],
+          "status": "excluded"
+        },
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "Gopkg.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "package checks",
+          "files": [
+            "Gopkg.lock"
+          ],
+          "required_files": [],
+          "status": "excluded"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "github.com/Masterminds/semver",
+          "type": "license",
+          "url": "https://github.com/masterminds/semver/blob/24642bd0573145a5ee04f9be773641695289be46/LICENSE.txt"
+        },
+        {
+          "name": "github.com/Masterminds/semver",
+          "type": "vcs",
+          "url": "https://github.com/Masterminds/semver"
+        },
+        {
+          "name": "github.com/Masterminds/semver",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/Masterminds/semver"
+        },
+        {
+          "name": "github.com/Masterminds/vcs",
+          "type": "vcs",
+          "url": "https://github.com/Masterminds/vcs"
+        },
+        {
+          "name": "github.com/Masterminds/vcs",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/Masterminds/vcs"
+        },
+        {
+          "name": "github.com/armon/go-radix",
+          "type": "license",
+          "url": "https://github.com/armon/go-radix/blob/4239b77079c7b5d1243b7b4736304ce8ddb6f0f2/LICENSE"
+        },
+        {
+          "name": "github.com/armon/go-radix",
+          "type": "vcs",
+          "url": "https://github.com/armon/go-radix"
+        },
+        {
+          "name": "github.com/armon/go-radix",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/armon/go-radix"
+        },
+        {
+          "name": "github.com/boltdb/bolt",
+          "type": "vcs",
+          "url": "https://github.com/boltdb/bolt"
+        },
+        {
+          "name": "github.com/boltdb/bolt",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/boltdb/bolt"
+        },
+        {
+          "name": "github.com/golang/protobuf",
+          "type": "vcs",
+          "url": "https://github.com/golang/protobuf"
+        },
+        {
+          "name": "github.com/golang/protobuf",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/golang/protobuf"
+        },
+        {
+          "name": "github.com/google/go-cmp",
+          "type": "vcs",
+          "url": "https://github.com/google/go-cmp"
+        },
+        {
+          "name": "github.com/google/go-cmp",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/google/go-cmp"
+        },
+        {
+          "name": "github.com/jmank88/nuts",
+          "type": "vcs",
+          "url": "https://github.com/jmank88/nuts"
+        },
+        {
+          "name": "github.com/jmank88/nuts",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/jmank88/nuts"
+        },
+        {
+          "name": "github.com/nightlyone/lockfile",
+          "type": "license",
+          "url": "https://github.com/nightlyone/lockfile/blob/e83dc5e7bba095e8d32fb2124714bf41f2a30cb5/LICENSE"
+        },
+        {
+          "name": "github.com/nightlyone/lockfile",
+          "type": "vcs",
+          "url": "https://github.com/nightlyone/lockfile"
+        },
+        {
+          "name": "github.com/nightlyone/lockfile",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/nightlyone/lockfile"
+        },
+        {
+          "name": "github.com/pelletier/go-toml",
+          "type": "vcs",
+          "url": "https://github.com/pelletier/go-toml"
+        },
+        {
+          "name": "github.com/pelletier/go-toml",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/pelletier/go-toml"
+        },
+        {
+          "name": "github.com/pkg/errors",
+          "type": "vcs",
+          "url": "https://github.com/pkg/errors"
+        },
+        {
+          "name": "github.com/pkg/errors",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/pkg/errors"
+        },
+        {
+          "name": "github.com/sdboyer/constext",
+          "type": "vcs",
+          "url": "https://github.com/sdboyer/constext"
+        },
+        {
+          "name": "github.com/sdboyer/constext",
+          "type": "website",
+          "url": "https://pkg.go.dev/github.com/sdboyer/constext"
+        },
+        {
+          "name": "golang.org/x/net",
+          "type": "vcs",
+          "url": "https://go.googlesource.com/net"
+        },
+        {
+          "name": "golang.org/x/net",
+          "type": "website",
+          "url": "https://pkg.go.dev/golang.org/x/net"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "type": "vcs",
+          "url": "https://go.googlesource.com/sync"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "type": "website",
+          "url": "https://pkg.go.dev/golang.org/x/sync"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "type": "vcs",
+          "url": "https://go.googlesource.com/sys"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "type": "website",
+          "url": "https://pkg.go.dev/golang.org/x/sys"
+        },
+        {
+          "name": "gopkg.in/yaml.v2",
+          "type": "website",
+          "url": "https://pkg.go.dev/gopkg.in/yaml.v2"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "absent_declaration",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/Masterminds/semver",
+          "observed_licenses": [],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/Masterminds/semver@24642bd0573145a5ee04f9be773641695289be46",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "24642bd0573145a5ee04f9be773641695289be46",
+          "type": "library",
+          "version": "24642bd0573145a5ee04f9be773641695289be46"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "absent_declaration",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "golang.org/x/net",
+          "observed_licenses": [],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/net@66aacef3dd8a676686c7ae3716979581e8b03c47",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+          "type": "library",
+          "version": "66aacef3dd8a676686c7ae3716979581e8b03c47"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "absent_declaration",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "golang.org/x/sync",
+          "observed_licenses": [],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/sync@f52d1811a62927559de87708c8913c1650ce4f26",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+          "type": "library",
+          "version": "f52d1811a62927559de87708c8913c1650ce4f26"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "absent_declaration",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "golang.org/x/sys",
+          "observed_licenses": [],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/sys@bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+          "type": "library",
+          "version": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "gopkg.in/yaml.v2",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "Apache-2.0"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/gopkg.in/yaml.v2@d670f9405373e636a5a2765eea47fac0c9bc91a4",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "d670f9405373e636a5a2765eea47fac0c9bc91a4",
+          "type": "library",
+          "version": "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-2-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/pkg/errors",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-2-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/pkg/errors@645ef00459ed84a119197bfb8d8205042c6df63d",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+          "type": "library",
+          "version": "v0.8.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/golang/protobuf",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/golang/protobuf@925541529c1fa6821df4e44ce2723319eb2be768",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "925541529c1fa6821df4e44ce2723319eb2be768",
+          "type": "library",
+          "version": "v1.0.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/google/go-cmp",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/google/go-cmp@3af367b6b30c263d47e8895973edcca9a49cf029",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "3af367b6b30c263d47e8895973edcca9a49cf029",
+          "type": "library",
+          "version": "v0.2.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/Masterminds/vcs",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/Masterminds/vcs@3084677c2c188840777bff30054f2b553729d329",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "3084677c2c188840777bff30054f2b553729d329",
+          "type": "library",
+          "version": "v1.11.1"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/boltdb/bolt",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/boltdb/bolt@2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+          "type": "library",
+          "version": "v1.3.1"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/jmank88/nuts",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/jmank88/nuts@8b28145dffc87104e66d074f62ea8080edfad7c8",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "8b28145dffc87104e66d074f62ea8080edfad7c8",
+          "type": "library",
+          "version": "v0.3.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/pelletier/go-toml",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/pelletier/go-toml@c01d1270ff3e442a8a57cddc1c92dc1138598194",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "c01d1270ff3e442a8a57cddc1c92dc1138598194",
+          "type": "library",
+          "version": "v1.2.0"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "pkg_go_dev_root_license_agreement",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/sdboyer/constext",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/sdboyer/constext@836a144573533ea4da4e6929c235fd348aed1c80",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "836a144573533ea4da4e6929c235fd348aed1c80",
+          "type": "library",
+          "version": "836a144573533ea4da4e6929c235fd348aed1c80"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/armon/go-radix",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/armon/go-radix@4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+          "type": "library",
+          "version": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gopkg.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "github.com/nightlyone/lockfile",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "MIT"
+              }
+            }
+          ],
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/nightlyone/lockfile@e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+          "type": "library",
+          "version": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "github.com/Masterminds/semver",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/Masterminds/semver@24642bd0573145a5ee04f9be773641695289be46",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "24642bd0573145a5ee04f9be773641695289be46",
+              "type": "library",
+              "version": "24642bd0573145a5ee04f9be773641695289be46"
+            },
+            {
+              "name": "github.com/Masterminds/vcs",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/Masterminds/vcs@3084677c2c188840777bff30054f2b553729d329",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "3084677c2c188840777bff30054f2b553729d329",
+              "type": "library",
+              "version": "v1.11.1"
+            },
+            {
+              "name": "github.com/armon/go-radix",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/armon/go-radix@4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+              "type": "library",
+              "version": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2"
+            },
+            {
+              "name": "github.com/boltdb/bolt",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/boltdb/bolt@2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+              "type": "library",
+              "version": "v1.3.1"
+            },
+            {
+              "name": "github.com/golang/protobuf",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/golang/protobuf@925541529c1fa6821df4e44ce2723319eb2be768",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "925541529c1fa6821df4e44ce2723319eb2be768",
+              "type": "library",
+              "version": "v1.0.0"
+            },
+            {
+              "name": "github.com/google/go-cmp",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/google/go-cmp@3af367b6b30c263d47e8895973edcca9a49cf029",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "3af367b6b30c263d47e8895973edcca9a49cf029",
+              "type": "library",
+              "version": "v0.2.0"
+            },
+            {
+              "name": "github.com/jmank88/nuts",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/jmank88/nuts@8b28145dffc87104e66d074f62ea8080edfad7c8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "8b28145dffc87104e66d074f62ea8080edfad7c8",
+              "type": "library",
+              "version": "v0.3.0"
+            },
+            {
+              "name": "github.com/nightlyone/lockfile",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/nightlyone/lockfile@e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+              "type": "library",
+              "version": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5"
+            },
+            {
+              "name": "github.com/pelletier/go-toml",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/pelletier/go-toml@c01d1270ff3e442a8a57cddc1c92dc1138598194",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "c01d1270ff3e442a8a57cddc1c92dc1138598194",
+              "type": "library",
+              "version": "v1.2.0"
+            },
+            {
+              "name": "github.com/pkg/errors",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/pkg/errors@645ef00459ed84a119197bfb8d8205042c6df63d",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+              "type": "library",
+              "version": "v0.8.0"
+            },
+            {
+              "name": "github.com/sdboyer/constext",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/sdboyer/constext@836a144573533ea4da4e6929c235fd348aed1c80",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "836a144573533ea4da4e6929c235fd348aed1c80",
+              "type": "library",
+              "version": "836a144573533ea4da4e6929c235fd348aed1c80"
+            },
+            {
+              "name": "golang.org/x/net",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/net@66aacef3dd8a676686c7ae3716979581e8b03c47",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+              "type": "library",
+              "version": "66aacef3dd8a676686c7ae3716979581e8b03c47"
+            },
+            {
+              "name": "golang.org/x/sync",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/sync@f52d1811a62927559de87708c8913c1650ce4f26",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+              "type": "library",
+              "version": "f52d1811a62927559de87708c8913c1650ce4f26"
+            },
+            {
+              "name": "golang.org/x/sys",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/sys@bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+              "type": "library",
+              "version": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+            },
+            {
+              "name": "gopkg.in/yaml.v2",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/gopkg.in/yaml.v2@d670f9405373e636a5a2765eea47fac0c9bc91a4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "d670f9405373e636a5a2765eea47fac0c9bc91a4",
+              "type": "library",
+              "version": "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "github.com/Masterminds/semver",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/Masterminds/semver@24642bd0573145a5ee04f9be773641695289be46",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "24642bd0573145a5ee04f9be773641695289be46",
+              "type": "library",
+              "version": "24642bd0573145a5ee04f9be773641695289be46"
+            },
+            {
+              "name": "github.com/Masterminds/vcs",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/Masterminds/vcs@3084677c2c188840777bff30054f2b553729d329",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "3084677c2c188840777bff30054f2b553729d329",
+              "type": "library",
+              "version": "v1.11.1"
+            },
+            {
+              "name": "github.com/armon/go-radix",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/armon/go-radix@4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+              "type": "library",
+              "version": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2"
+            },
+            {
+              "name": "github.com/boltdb/bolt",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/boltdb/bolt@2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+              "type": "library",
+              "version": "v1.3.1"
+            },
+            {
+              "name": "github.com/golang/protobuf",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/golang/protobuf@925541529c1fa6821df4e44ce2723319eb2be768",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "925541529c1fa6821df4e44ce2723319eb2be768",
+              "type": "library",
+              "version": "v1.0.0"
+            },
+            {
+              "name": "github.com/google/go-cmp",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/google/go-cmp@3af367b6b30c263d47e8895973edcca9a49cf029",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "3af367b6b30c263d47e8895973edcca9a49cf029",
+              "type": "library",
+              "version": "v0.2.0"
+            },
+            {
+              "name": "github.com/jmank88/nuts",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/jmank88/nuts@8b28145dffc87104e66d074f62ea8080edfad7c8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "8b28145dffc87104e66d074f62ea8080edfad7c8",
+              "type": "library",
+              "version": "v0.3.0"
+            },
+            {
+              "name": "github.com/nightlyone/lockfile",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/nightlyone/lockfile@e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+              "type": "library",
+              "version": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5"
+            },
+            {
+              "name": "github.com/pelletier/go-toml",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/pelletier/go-toml@c01d1270ff3e442a8a57cddc1c92dc1138598194",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "c01d1270ff3e442a8a57cddc1c92dc1138598194",
+              "type": "library",
+              "version": "v1.2.0"
+            },
+            {
+              "name": "github.com/pkg/errors",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/pkg/errors@645ef00459ed84a119197bfb8d8205042c6df63d",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+              "type": "library",
+              "version": "v0.8.0"
+            },
+            {
+              "name": "github.com/sdboyer/constext",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/github.com/sdboyer/constext@836a144573533ea4da4e6929c235fd348aed1c80",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "836a144573533ea4da4e6929c235fd348aed1c80",
+              "type": "library",
+              "version": "836a144573533ea4da4e6929c235fd348aed1c80"
+            },
+            {
+              "name": "golang.org/x/net",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/net@66aacef3dd8a676686c7ae3716979581e8b03c47",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+              "type": "library",
+              "version": "66aacef3dd8a676686c7ae3716979581e8b03c47"
+            },
+            {
+              "name": "golang.org/x/sync",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/sync@f52d1811a62927559de87708c8913c1650ce4f26",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+              "type": "library",
+              "version": "f52d1811a62927559de87708c8913c1650ce4f26"
+            },
+            {
+              "name": "golang.org/x/sys",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/golang.org/x/sys@bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+              "type": "library",
+              "version": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+            },
+            {
+              "name": "gopkg.in/yaml.v2",
+              "paths": [
+                "Gopkg.lock"
+              ],
+              "purl": "pkg:golang/gopkg.in/yaml.v2@d670f9405373e636a5a2765eea47fac0c9bc91a4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "source_revision": "d670f9405373e636a5a2765eea47fac0c9bc91a4",
+              "type": "library",
+              "version": "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/Masterminds/semver",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/Masterminds/semver@24642bd0573145a5ee04f9be773641695289be46",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "24642bd0573145a5ee04f9be773641695289be46",
+            "type": "library",
+            "version": "24642bd0573145a5ee04f9be773641695289be46"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/Masterminds/vcs",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/Masterminds/vcs@3084677c2c188840777bff30054f2b553729d329",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "3084677c2c188840777bff30054f2b553729d329",
+            "type": "library",
+            "version": "v1.11.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/armon/go-radix",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/armon/go-radix@4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+            "type": "library",
+            "version": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/boltdb/bolt",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/boltdb/bolt@2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+            "type": "library",
+            "version": "v1.3.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/golang/protobuf",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/golang/protobuf@925541529c1fa6821df4e44ce2723319eb2be768",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "925541529c1fa6821df4e44ce2723319eb2be768",
+            "type": "library",
+            "version": "v1.0.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/google/go-cmp",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/google/go-cmp@3af367b6b30c263d47e8895973edcca9a49cf029",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "3af367b6b30c263d47e8895973edcca9a49cf029",
+            "type": "library",
+            "version": "v0.2.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/jmank88/nuts",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/jmank88/nuts@8b28145dffc87104e66d074f62ea8080edfad7c8",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "8b28145dffc87104e66d074f62ea8080edfad7c8",
+            "type": "library",
+            "version": "v0.3.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/nightlyone/lockfile",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/nightlyone/lockfile@e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+            "type": "library",
+            "version": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/pelletier/go-toml",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/pelletier/go-toml@c01d1270ff3e442a8a57cddc1c92dc1138598194",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "c01d1270ff3e442a8a57cddc1c92dc1138598194",
+            "type": "library",
+            "version": "v1.2.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/pkg/errors",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/pkg/errors@645ef00459ed84a119197bfb8d8205042c6df63d",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+            "type": "library",
+            "version": "v0.8.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "github.com/sdboyer/constext",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/github.com/sdboyer/constext@836a144573533ea4da4e6929c235fd348aed1c80",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "836a144573533ea4da4e6929c235fd348aed1c80",
+            "type": "library",
+            "version": "836a144573533ea4da4e6929c235fd348aed1c80"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "golang.org/x/net",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/golang.org/x/net@66aacef3dd8a676686c7ae3716979581e8b03c47",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+            "type": "library",
+            "version": "66aacef3dd8a676686c7ae3716979581e8b03c47"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "golang.org/x/sync",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/golang.org/x/sync@f52d1811a62927559de87708c8913c1650ce4f26",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+            "type": "library",
+            "version": "f52d1811a62927559de87708c8913c1650ce4f26"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "golang.org/x/sys",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/golang.org/x/sys@bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+            "type": "library",
+            "version": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "gopkg.in/yaml.v2",
+            "paths": [
+              "Gopkg.lock"
+            ],
+            "purl": "pkg:golang/gopkg.in/yaml.v2@d670f9405373e636a5a2765eea47fac0c9bc91a4",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "source_revision": "d670f9405373e636a5a2765eea47fac0c9bc91a4",
+            "type": "library",
+            "version": "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GO_DEP",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Gopkg.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "github.com/Masterminds/semver",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/Masterminds/semver@24642bd0573145a5ee04f9be773641695289be46",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "24642bd0573145a5ee04f9be773641695289be46",
+          "type": "library",
+          "version": "24642bd0573145a5ee04f9be773641695289be46"
+        },
+        {
+          "name": "github.com/Masterminds/vcs",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/Masterminds/vcs@3084677c2c188840777bff30054f2b553729d329",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "3084677c2c188840777bff30054f2b553729d329",
+          "type": "library",
+          "version": "v1.11.1"
+        },
+        {
+          "name": "github.com/armon/go-radix",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/armon/go-radix@4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2",
+          "type": "library",
+          "version": "4239b77079c7b5d1243b7b4736304ce8ddb6f0f2"
+        },
+        {
+          "name": "github.com/boltdb/bolt",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/boltdb/bolt@2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8",
+          "type": "library",
+          "version": "v1.3.1"
+        },
+        {
+          "name": "github.com/golang/protobuf",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/golang/protobuf@925541529c1fa6821df4e44ce2723319eb2be768",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "925541529c1fa6821df4e44ce2723319eb2be768",
+          "type": "library",
+          "version": "v1.0.0"
+        },
+        {
+          "name": "github.com/google/go-cmp",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/google/go-cmp@3af367b6b30c263d47e8895973edcca9a49cf029",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "3af367b6b30c263d47e8895973edcca9a49cf029",
+          "type": "library",
+          "version": "v0.2.0"
+        },
+        {
+          "name": "github.com/jmank88/nuts",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/jmank88/nuts@8b28145dffc87104e66d074f62ea8080edfad7c8",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "8b28145dffc87104e66d074f62ea8080edfad7c8",
+          "type": "library",
+          "version": "v0.3.0"
+        },
+        {
+          "name": "github.com/nightlyone/lockfile",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/nightlyone/lockfile@e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5",
+          "type": "library",
+          "version": "e83dc5e7bba095e8d32fb2124714bf41f2a30cb5"
+        },
+        {
+          "name": "github.com/pelletier/go-toml",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/pelletier/go-toml@c01d1270ff3e442a8a57cddc1c92dc1138598194",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "c01d1270ff3e442a8a57cddc1c92dc1138598194",
+          "type": "library",
+          "version": "v1.2.0"
+        },
+        {
+          "name": "github.com/pkg/errors",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/pkg/errors@645ef00459ed84a119197bfb8d8205042c6df63d",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "645ef00459ed84a119197bfb8d8205042c6df63d",
+          "type": "library",
+          "version": "v0.8.0"
+        },
+        {
+          "name": "github.com/sdboyer/constext",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/github.com/sdboyer/constext@836a144573533ea4da4e6929c235fd348aed1c80",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "836a144573533ea4da4e6929c235fd348aed1c80",
+          "type": "library",
+          "version": "836a144573533ea4da4e6929c235fd348aed1c80"
+        },
+        {
+          "name": "golang.org/x/net",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/net@66aacef3dd8a676686c7ae3716979581e8b03c47",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "66aacef3dd8a676686c7ae3716979581e8b03c47",
+          "type": "library",
+          "version": "66aacef3dd8a676686c7ae3716979581e8b03c47"
+        },
+        {
+          "name": "golang.org/x/sync",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/sync@f52d1811a62927559de87708c8913c1650ce4f26",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "f52d1811a62927559de87708c8913c1650ce4f26",
+          "type": "library",
+          "version": "f52d1811a62927559de87708c8913c1650ce4f26"
+        },
+        {
+          "name": "golang.org/x/sys",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/golang.org/x/sys@bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366",
+          "type": "library",
+          "version": "bb24a47a89eac6c1227fbcb2ae37a8b9ed323366"
+        },
+        {
+          "name": "gopkg.in/yaml.v2",
+          "paths": [
+            "Gopkg.lock"
+          ],
+          "purl": "pkg:golang/gopkg.in/yaml.v2@d670f9405373e636a5a2765eea47fac0c9bc91a4",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "source_revision": "d670f9405373e636a5a2765eea47fac0c9bc91a4",
+          "type": "library",
+          "version": "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GO_DEP",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "Gopkg.lock"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

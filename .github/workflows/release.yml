@@ -101,6 +101,11 @@ jobs:
             exit 1
           fi
           cargo test --release --locked -p githits-scan --test live -- --ignored
+      - name: Check the full live fixture corpus on the release candidate
+        if: github.event_name == 'workflow_dispatch' && inputs.release_candidate
+        env:
+          GITHITS_API_TOKEN: ${{ secrets.GITHITS_API_TOKEN }}
+        run: python3 scripts/live_fixtures.py check --binary target/release/githits-scan
 
   build:
     name: Build (${{ matrix.target }})

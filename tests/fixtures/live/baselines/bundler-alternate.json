@@ -1,0 +1,4069 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.105.0",
+          "package": "rubygems:async-http@0.87.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.12.0",
+          "package": "rubygems:async-pool@0.10.3"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.14.0",
+          "package": "rubygems:io-stream@0.6.1"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.15.0",
+          "package": "rubygems:metrics@0.12.1"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.18.2",
+          "package": "rubygems:traces@0.15.2"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.19.0",
+          "package": "rubygems:io-endpoint@0.15.1"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.29.2",
+          "package": "rubygems:protocol-http2@0.22.1"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.41.1",
+          "package": "rubygems:protocol-http1@0.30.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "0.72.1",
+          "package": "rubygems:protocol-http@0.49.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "1.0.1",
+          "package": "rubygems:fiber-storage@1.0.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "1.19.7",
+          "package": "rubygems:nokogiri@1.18.2"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "1.22.3",
+          "package": "rubygems:io-event@1.9.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "1.38.0",
+          "package": "rubygems:console@1.29.2"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "13.4.2",
+          "package": "rubygems:rake@13.2.1"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "2.46.0",
+          "package": "rubygems:async@2.23.0"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "3.1.1",
+          "package": "rubygems:rainbow@2.2.2"
+        },
+        {
+          "files": [
+            "gems.locked"
+          ],
+          "latest": "3.2.0",
+          "package": "rubygems:json@2.10.1"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-353f-x4gh-cqq8",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-3w22-6jfg-527w",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-4p39-36wj-23h4",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-5prr-v3j2-97mh",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-5v8h-3h3q-446p",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-5w6v-399v-w3cc",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-8678-w3jw-xfc2",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-9cv2-cfxc-v4v2",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-c4rq-3m3g-8wgx",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-mrxw-mxhj-p664",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-p67v-3w7g-wjg7",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-phwj-rprq-35pp",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-v2fc-qm4h-8hqv",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-v995-44v6-5fqm",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-vvfq-8hwr-qm4m",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-wfpw-mmfh-qq69",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-wjv4-x9w8-wm3h",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            },
+            {
+              "advisory": "GHSA-wx95-c6cv-8532",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:nokogiri@1.18.2"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "1.18.2",
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "registry": "rubygems",
+              "strategy": "unknown",
+              "target_version": "1.19.5"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "rubygems:nokogiri@1.18.2"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-9m3q-rhmv-5q44",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:json@2.10.1"
+            },
+            {
+              "advisory": "GHSA-x2f5-4prf-w687",
+              "files": [
+                "gems.locked"
+              ],
+              "package": "rubygems:json@2.10.1"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.10.1",
+              "name": "json",
+              "paths": [
+                "gems.locked"
+              ],
+              "registry": "rubygems",
+              "strategy": "upgrade",
+              "target_version": "2.19.9"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "rubygems:json@2.10.1"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-353f-x4gh-cqq8",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 9.5"
+        },
+        {
+          "advisory": "GHSA-3w22-6jfg-527w",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-4p39-36wj-23h4",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-5prr-v3j2-97mh",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 6"
+        },
+        {
+          "advisory": "GHSA-5v8h-3h3q-446p",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-5w6v-399v-w3cc",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-8678-w3jw-xfc2",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 2.6"
+        },
+        {
+          "advisory": "GHSA-9cv2-cfxc-v4v2",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-9m3q-rhmv-5q44",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:json@2.10.1",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-c4rq-3m3g-8wgx",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-mrxw-mxhj-p664",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 7.8"
+        },
+        {
+          "advisory": "GHSA-p67v-3w7g-wjg7",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-phwj-rprq-35pp",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-v2fc-qm4h-8hqv",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-v995-44v6-5fqm",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 3.7"
+        },
+        {
+          "advisory": "GHSA-vvfq-8hwr-qm4m",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-wfpw-mmfh-qq69",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-wjv4-x9w8-wm3h",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-wx95-c6cv-8532",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:nokogiri@1.18.2",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-x2f5-4prf-w687",
+          "files": [
+            "gems.locked"
+          ],
+          "package": "rubygems:json@2.10.1",
+          "severity": "CVSS_V3 3.7"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 24,
+      "gaps": [
+        {
+          "actionable": false,
+          "check": "package checks",
+          "files": [
+            "gems.locked"
+          ],
+          "required_files": [],
+          "status": "excluded"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "async",
+          "type": "vcs",
+          "url": "https://github.com/socketry/async"
+        },
+        {
+          "name": "async",
+          "type": "website",
+          "url": "https://github.com/socketry/async"
+        },
+        {
+          "name": "async-dns",
+          "type": "vcs",
+          "url": "https://github.com/socketry/async-dns"
+        },
+        {
+          "name": "async-dns",
+          "type": "website",
+          "url": "https://github.com/socketry/async-dns"
+        },
+        {
+          "name": "async-http",
+          "type": "vcs",
+          "url": "https://github.com/socketry/async-http"
+        },
+        {
+          "name": "async-http",
+          "type": "website",
+          "url": "https://github.com/socketry/async-http"
+        },
+        {
+          "name": "async-pool",
+          "type": "vcs",
+          "url": "https://github.com/socketry/async-pool"
+        },
+        {
+          "name": "async-pool",
+          "type": "website",
+          "url": "https://github.com/socketry/async-pool"
+        },
+        {
+          "name": "console",
+          "type": "vcs",
+          "url": "https://github.com/socketry/console"
+        },
+        {
+          "name": "console",
+          "type": "website",
+          "url": "https://github.com/socketry/console"
+        },
+        {
+          "name": "fiber-annotation",
+          "type": "vcs",
+          "url": "https://github.com/ioquatix/fiber-annotation"
+        },
+        {
+          "name": "fiber-annotation",
+          "type": "website",
+          "url": "https://github.com/ioquatix/fiber-annotation"
+        },
+        {
+          "name": "fiber-local",
+          "type": "vcs",
+          "url": "https://github.com/socketry/fiber-local"
+        },
+        {
+          "name": "fiber-local",
+          "type": "website",
+          "url": "https://github.com/socketry/fiber-local"
+        },
+        {
+          "name": "fiber-storage",
+          "type": "vcs",
+          "url": "https://github.com/ioquatix/fiber-storage"
+        },
+        {
+          "name": "fiber-storage",
+          "type": "website",
+          "url": "https://github.com/ioquatix/fiber-storage"
+        },
+        {
+          "name": "geoip",
+          "type": "vcs",
+          "url": "https://github.com/cjheath/geoip"
+        },
+        {
+          "name": "geoip",
+          "type": "website",
+          "url": "http://github.com/cjheath/geoip"
+        },
+        {
+          "name": "io-endpoint",
+          "type": "vcs",
+          "url": "https://github.com/socketry/io-endpoint"
+        },
+        {
+          "name": "io-endpoint",
+          "type": "website",
+          "url": "https://github.com/socketry/io-endpoint"
+        },
+        {
+          "name": "io-event",
+          "type": "vcs",
+          "url": "https://github.com/socketry/io-event"
+        },
+        {
+          "name": "io-event",
+          "type": "website",
+          "url": "https://github.com/socketry/io-event"
+        },
+        {
+          "name": "io-stream",
+          "type": "vcs",
+          "url": "https://github.com/socketry/io-stream"
+        },
+        {
+          "name": "io-stream",
+          "type": "website",
+          "url": "https://github.com/socketry/io-stream"
+        },
+        {
+          "name": "json",
+          "type": "vcs",
+          "url": "https://github.com/ruby/json"
+        },
+        {
+          "name": "json",
+          "type": "website",
+          "url": "https://github.com/ruby/json"
+        },
+        {
+          "name": "metrics",
+          "type": "vcs",
+          "url": "https://github.com/socketry/metrics"
+        },
+        {
+          "name": "metrics",
+          "type": "website",
+          "url": "https://github.com/socketry/metrics"
+        },
+        {
+          "name": "nokogiri",
+          "type": "vcs",
+          "url": "https://github.com/sparklemotion/nokogiri"
+        },
+        {
+          "name": "nokogiri",
+          "type": "vcs",
+          "url": "https://github.com/sparklemotion/nokogiri"
+        },
+        {
+          "name": "nokogiri",
+          "type": "website",
+          "url": "https://nokogiri.org"
+        },
+        {
+          "name": "nokogiri",
+          "type": "website",
+          "url": "https://nokogiri.org"
+        },
+        {
+          "name": "process-daemon",
+          "type": "vcs",
+          "url": "https://github.com/ioquatix/process-daemon"
+        },
+        {
+          "name": "process-daemon",
+          "type": "website",
+          "url": "https://github.com/ioquatix/process-daemon"
+        },
+        {
+          "name": "protocol-hpack",
+          "type": "vcs",
+          "url": "https://github.com/socketry/http-hpack"
+        },
+        {
+          "name": "protocol-hpack",
+          "type": "website",
+          "url": "https://github.com/socketry/http-hpack"
+        },
+        {
+          "name": "protocol-http",
+          "type": "vcs",
+          "url": "https://github.com/socketry/protocol-http"
+        },
+        {
+          "name": "protocol-http",
+          "type": "website",
+          "url": "https://github.com/socketry/protocol-http"
+        },
+        {
+          "name": "protocol-http1",
+          "type": "vcs",
+          "url": "https://github.com/socketry/protocol-http1"
+        },
+        {
+          "name": "protocol-http1",
+          "type": "website",
+          "url": "https://github.com/socketry/protocol-http1"
+        },
+        {
+          "name": "protocol-http2",
+          "type": "vcs",
+          "url": "https://github.com/socketry/protocol-http2"
+        },
+        {
+          "name": "protocol-http2",
+          "type": "website",
+          "url": "https://github.com/socketry/protocol-http2"
+        },
+        {
+          "name": "racc",
+          "type": "vcs",
+          "url": "https://github.com/ruby/racc"
+        },
+        {
+          "name": "racc",
+          "type": "website",
+          "url": "https://github.com/ruby/racc"
+        },
+        {
+          "name": "rainbow",
+          "type": "vcs",
+          "url": "https://github.com/sickill/rainbow"
+        },
+        {
+          "name": "rainbow",
+          "type": "website",
+          "url": "https://github.com/sickill/rainbow"
+        },
+        {
+          "name": "rake",
+          "type": "vcs",
+          "url": "https://github.com/ruby/rake"
+        },
+        {
+          "name": "rake",
+          "type": "website",
+          "url": "https://github.com/ruby/rake"
+        },
+        {
+          "name": "traces",
+          "type": "vcs",
+          "url": "https://github.com/socketry/traces"
+        },
+        {
+          "name": "traces",
+          "type": "website",
+          "url": "https://github.com/socketry/traces"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "bundler_platform": "arm64-darwin"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "nokogiri",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.18.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby",
+            "source": {
+              "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+            }
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "rubydns",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+          "type": "library",
+          "version": "2.0.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "applicability_reason": "incomplete_expression",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "license": {
+                "name": "BSD-2-Clause"
+              }
+            },
+            {
+              "license": {
+                "name": "Ruby"
+              }
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "racc",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/racc@1.8.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.8.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "LGPL-2.1"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "LGPL-2.1"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "geoip",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/geoip@1.6.4",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.6.4"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "async",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async@2.23.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.23.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "async-dns",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-dns@1.4.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "async-http",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-http@0.87.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.87.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "async-pool",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-pool@0.10.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.10.3"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "console",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/console@1.29.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.29.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "fiber-annotation",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-annotation@0.2.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.2.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "fiber-local",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-local@1.1.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "fiber-storage",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-storage@1.0.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "io-endpoint",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-endpoint@0.15.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.15.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "io-event",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-event@1.9.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.9.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "io-stream",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-stream@0.6.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.6.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "metrics",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/metrics@0.12.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.12.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "process-daemon",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/process-daemon@1.0.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "protocol-hpack",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-hpack@1.5.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.5.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "protocol-http",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http@0.49.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.49.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "protocol-http1",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http1@0.30.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.30.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "protocol-http2",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http2@0.22.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.22.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "rainbow",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/rainbow@2.2.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "rake",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/rake@13.2.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "13.2.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "traces",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/traces@0.15.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.15.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Ruby"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Ruby"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "json",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/json@2.10.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.10.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "x86_64-linux-gnu"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "nokogiri",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.18.2"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "gems.locked"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "gems.locked",
+          "observed_licenses": [],
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "context": {
+                "bundler_platform": "arm64-darwin"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby",
+                "source": {
+                  "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+                }
+              },
+              "name": "rubydns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+              "type": "library",
+              "version": "2.0.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-dns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-dns@1.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-pool",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-pool@0.10.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.10.3"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-annotation",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-annotation@0.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-local",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-local@1.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-storage",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-storage@1.0.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "geoip",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/geoip@1.6.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.6.4"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-endpoint",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-endpoint@0.15.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-event",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-event@1.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.9.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-stream",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-stream@0.6.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.6.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "json",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/json@2.10.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.10.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "metrics",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/metrics@0.12.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.12.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "process-daemon",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/process-daemon@1.0.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-hpack",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-hpack@1.5.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.5.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http@0.49.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.49.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http1",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http1@0.30.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.30.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http2",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http2@0.22.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.22.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "racc",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/racc@1.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.8.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rainbow",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rainbow@2.2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "traces",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/traces@0.15.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "x86_64-linux-gnu"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "bundler_platform": "arm64-darwin"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby",
+                "source": {
+                  "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+                }
+              },
+              "name": "rubydns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+              "type": "library",
+              "version": "2.0.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-dns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-dns@1.4.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-pool",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-pool@0.10.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.10.3"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-annotation",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-annotation@0.2.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-local",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-local@1.1.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-storage",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-storage@1.0.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "geoip",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/geoip@1.6.4",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.6.4"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-endpoint",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-endpoint@0.15.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-event",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-event@1.9.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.9.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-stream",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-stream@0.6.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.6.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "json",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/json@2.10.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.10.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "metrics",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/metrics@0.12.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.12.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "process-daemon",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/process-daemon@1.0.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-hpack",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-hpack@1.5.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.5.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http@0.49.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.49.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http1",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http1@0.30.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.30.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http2",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http2@0.22.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.22.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "racc",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/racc@1.8.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.8.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rainbow",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rainbow@2.2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "traces",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/traces@0.15.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "x86_64-linux-gnu"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_BUNDLER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gems.locked"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "bundler_platform": "arm64-darwin"
+          },
+          "name": "nokogiri",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.18.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby",
+            "source": {
+              "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+            }
+          },
+          "name": "rubydns",
+          "paths": [
+            "gems.locked"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+          "type": "library",
+          "version": "2.0.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "async",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async@2.23.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.23.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "async-dns",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-dns@1.4.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.4.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "async-http",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-http@0.87.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.87.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "async-pool",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/async-pool@0.10.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.10.3"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "console",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/console@1.29.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.29.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "fiber-annotation",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-annotation@0.2.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.2.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "fiber-local",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-local@1.1.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.1.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "fiber-storage",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/fiber-storage@1.0.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "geoip",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/geoip@1.6.4",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.6.4"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "io-endpoint",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-endpoint@0.15.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.15.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "io-event",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-event@1.9.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.9.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "io-stream",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/io-stream@0.6.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.6.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "json",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/json@2.10.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.10.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "metrics",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/metrics@0.12.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.12.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "process-daemon",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/process-daemon@1.0.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "protocol-hpack",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-hpack@1.5.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.5.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "protocol-http",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http@0.49.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.49.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "protocol-http1",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http1@0.30.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.30.0"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "protocol-http2",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/protocol-http2@0.22.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.22.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "racc",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/racc@1.8.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.8.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "rainbow",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/rainbow@2.2.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "rake",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/rake@13.2.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "13.2.1"
+        },
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "traces",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/traces@0.15.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.15.2"
+        },
+        {
+          "context": {
+            "bundler_platform": "x86_64-linux-gnu"
+          },
+          "name": "nokogiri",
+          "paths": [
+            "gems.locked"
+          ],
+          "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.18.2"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_BUNDLER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gems.locked"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "arm64-darwin"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "racc",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/racc@1.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.8.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby",
+                "source": {
+                  "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+                }
+              },
+              "name": "rubydns",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+              "type": "library",
+              "version": "2.0.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-dns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-dns@1.4.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-annotation",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-annotation@0.2.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-event",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-event@1.9.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.9.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "metrics",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/metrics@0.12.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.12.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "traces",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/traces@0.15.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-dns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-dns@1.4.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-dns",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-dns@1.4.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.4.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-endpoint",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-endpoint@0.15.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-pool",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-pool@0.10.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.10.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-endpoint",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-endpoint@0.15.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "io-stream",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/io-stream@0.6.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.6.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "metrics",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/metrics@0.12.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.12.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http@0.49.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.49.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http1",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http1@0.30.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.30.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http2",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http2@0.22.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.22.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "traces",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/traces@0.15.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.15.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-pool",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-pool@0.10.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.10.3"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async@2.23.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.23.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-annotation",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-annotation@0.2.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.2.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-local",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-local@1.1.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "console",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/console@1.29.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.29.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "json",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/json@2.10.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.10.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-local",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-local@1.1.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.1.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "fiber-storage",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/fiber-storage@1.0.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "process-daemon",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/process-daemon@1.0.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rainbow",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rainbow@2.2.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http1",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http1@0.30.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.30.0"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http@0.49.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.49.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http2",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http2@0.22.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.22.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-hpack",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-hpack@1.5.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.5.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http2",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http2@0.22.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.22.1"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "protocol-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/protocol-http@0.49.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.49.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rainbow",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rainbow@2.2.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "bundler_platform": "x86_64-linux-gnu"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "racc",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/racc@1.8.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.8.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "arm64-darwin"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=arm64-darwin",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby",
+                "source": {
+                  "local_kind": "LOCKED_LOCAL_SOURCE_KIND_DIRECTORY"
+                }
+              },
+              "name": "rubydns",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_LOCAL",
+              "type": "library",
+              "version": "2.0.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "async-http",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/async-http@0.87.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.87.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "geoip",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/geoip@1.6.4",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.6.4"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "process-daemon",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/process-daemon@1.0.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "gems.locked",
+              "paths": [
+                "gems.locked"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "x86_64-linux-gnu"
+              },
+              "name": "nokogiri",
+              "paths": [
+                "gems.locked"
+              ],
+              "purl": "pkg:gem/nokogiri@1.18.2?platform=x86_64-linux-gnu",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.18.2"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}
