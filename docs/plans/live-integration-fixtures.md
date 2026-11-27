@@ -25,8 +25,8 @@ recommendation. Maintainers can review and refresh one baseline or all of them.
 - [The ignored live tests](../../tests/live.rs) make five submissions for
   npm/Cargo workspace SBOM, Bun SBOM, manifest-only resolution, npm audit and
   npm licenses. The audit checks a qualified minimist upgrade within the
-  fixture's patched range. License replay, workspace attribution and format handling have distinct
-  assertions worth retaining. PR tests already cover API errors and replay
+  fixture's patched range. License replay, workspace attribution and format
+  handling have distinct assertions worth retaining. PR tests already cover API errors and replay
   without contacting the service.
 - [Release](../../.github/workflows/release.yml) runs the ignored cases on both
   manual rehearsals and tags. It checks out the resolved SHA, uses the existing
@@ -51,12 +51,10 @@ recommendation. Maintainers can review and refresh one baseline or all of them.
   `v1.0.9` dependency. Include this input in the pilot to keep verifying
   admission. Qualify checksum attribution and workspace behavior separately
   when completing the corpus.
-- [fd v10.2.0](https://github.com/sharkdp/fd/tree/b19136871310b01500b4f09eadd7387b8476be47)
-  supplies a small public Cargo pilot. The exact two files were fetched and
-  parsed during planning. Its non-workspace manifest declares
-  `fd-find 10.2.0` and `MIT OR Apache-2.0`. The lock records 114 entries
-  including the project, `clap 4.5.16` and `regex 1.10.6`. That establishes
-  input facts. The production job outputs still need qualification.
+- The [pilot fixture definitions](../../tests/fixtures/live/fixtures.json)
+  record independent input facts, full public commits and content digests.
+  The runner exercises locked Cargo input, Go module and checksum evidence,
+  and the historical minimist remediation control.
 
 ## Design
 
@@ -197,57 +195,12 @@ fresh rehearsal of the resulting release SHA.
 
 ### 1. Run and refresh the pilot from one command
 
-**Outcome.** A contributor can run all three commands on a pinned Cargo
-project and a pinned Go module with checksum evidence, and exercise a known
-npm audit remediation case. Each fixture has a reviewed baseline.
-
-**Assumptions and dependencies.** Python 3, Cargo or an explicit Scan binary,
-public fixture downloads, and a matching authorized API credential are
-available for live runs. Python 3 already runs in the CI toolchain. Existing
-Scan CLI options and the contract above suffice. There are no open product
-decisions for the pilot. Its measured production output is verification
-evidence required before merging the increment.
-
-| Fixture | Inputs and evidence | Checks |
-| --- | --- | --- |
-| `cargo-fd` | fd v10.2.0 at `b19136871310b01500b4f09eadd7387b8476be47`. `Cargo.toml` SHA-256 `de934f7081bbf86223d6cdea7c0b9456ae48f5c6ce4545854293d4ff3d47f66c`. `Cargo.lock` SHA-256 `dbe6158dbf001a489a53617a531d11dbee22daed2529f87790547ee65d1018d4` | Exact selected pair. Recorded CycloneDX with known locked dependency witnesses. Native audit report with dependency accounting and qualified coverage. License report with fd's project declaration and dependency attribution. Offline license policy on the generated SBOM |
-| `go-cobra` | [Cobra v1.10.1](https://github.com/spf13/cobra/tree/7da941c3547e93b8c9f70bbd3befca79c6335388) at `7da941c3547e93b8c9f70bbd3befca79c6335388`. `go.mod` SHA-256 `a501ef186772adafdaabb7aa78623b691890e87accd0715674e69949da6b586e`. `go.sum` SHA-256 `47ddb5ec5a98cda2ef8dbebd40eea3af7bc7cc17894a886e149fdfff71592358` | Exact selected pair and successful job admission. Manifest-resolved SBOM with a versioned pflag occurrence and its expected manifest evidence. Audit coverage and license provenance tied to the selected input. Record changes to the selected dependency versions |
-| `npm-minimist-remediation` | The [package and lock](../../tests/fixtures/audit/live-minimist) fix installed minimist at `0.0.8` with manifest range `>=0.0.8 <0.3.0`. The [historical advisory](https://github.com/advisories/GHSA-vh95-rmgr-6w4m) and [later advisory](https://github.com/advisories/GHSA-xvch-5gv4-984h) put the patched stable target in `>=0.2.4 <0.3.0` within this requirement | Require one complete upgrade proposal covering both advisory IDs for the affected copy. Check the stable target against the fixture's patched range and the service's release availability, advisory and requirement checks from the same alternative. Record native resolution qualification and proposed version as observations |
-
-1. Add `scripts/live_fixtures.py` and its network-free tests. Set the existing
-   Python unittest discovery step in `ci.yml` to `-p 'test_*.py'`. Expose `list`,
-   `check [--fixture ID]` and `refresh [--fixture ID]`. Default selection is
-   all fixtures, and `--binary PATH` skips the one-time locked debug build.
-   Print selected fixture IDs, check count and planned submissions before live
-   work. Acquire credentials after preflight and before the first online child.
-2. Register the three fixtures and drive `detect --json`, `sbom generate`
-   with CycloneDX, `audit --json`, `license report --json` and the offline
-   policy check in the declared cases. Match structured output and command exit
-   together. In audit, 0 and 1 are completed reports, and 1 represents findings
-   or actionable gaps. The minimist fixture requires exit 1. Change the minimist
-   smoke case's exact target pin to the same semantic expectation for the
-   required alternative and retain its native audit envelope checks.
-3. Separate authored fixture assertions from generated baseline facts.
-   `check` reads baselines and never writes them. `refresh` prints the diff
-   and writes only selected baselines after all selected commands and required
-   assertions pass. Replace each file atomically. Require a valid baseline for
-   `check`, and allow `refresh` to create one for a new fixture. Review
-   input and baseline diffs before committing. A refresh cannot change pins,
-   expected paths or authored assertions.
-4. Run the focused Python tests and the changed exact minimist live case, then
-   refresh and check the pilot fixtures on production. Record realized job
-   counts, run time, projected baseline size and coverage. Compare a
-   representative output diff for a moved audit target and a lost locked
-   dependency, then document the runner commands and review procedure.
-
-| Scenario | Acceptance |
-| --- | --- |
-| List, known fixture and all | List works offline. One known ID runs its declared checks. All runs exactly the three pilot fixtures and seven online submissions. Invalid arguments, an unknown ID, an empty inventory or invalid fixture metadata exits 2 before live work |
-| Input or credential failure | Missing input, bad hash, redirect or unavailable credential exits 3 before any submissions. Unexpected selected upload paths exit 1 before any submissions. A secret-echo test uses a fake token and verifies the harness exits 3 and withholds the output and baseline |
-| Regression or execution error | Removing a locked witness, losing a required audit check or losing required license evidence exits 1. Malformed output or unexpected Scan execution/configuration failure exits 3. A failed selected case leaves existing baselines untouched. Tests cover key ordering and repeated occurrences |
-| Mutable audit results | Two results with different qualified targets for the same audit positive control pass with harness exit 0. The comparison names the changed target. Lost required advisory evidence, a new coverage gap or failed qualification yields harness exit 1 |
-| Baseline maintenance | Unchanged check leaves the working tree untouched. Check with changed stable evidence exits 1 and prints the actionable diff. Refresh-one updates only its chosen baseline. Refresh-all updates all selected drift with stable formatting and preserves fixture definitions |
-| Production qualification | fd returns the recorded versions and expected path and license evidence. Cobra's pinned pair passes all three checks with coverage represented explicitly. The npm control exercises a qualified remediation and passes the changed ignored test with exactly one test executed. The phase report includes the commands and actual counts |
+The runner checks and refreshes the pinned fd, Cobra and minimist fixtures
+individually or together. These cases qualify recorded inventory, Go
+supplement admission, license evidence and audit remediation. Ordinary CI
+runs the offline runner tests. The
+[live fixture procedure](../implementation/live-integration-fixtures.md)
+owns the commands, baseline semantics and credential handling.
 
 ### 2. Complete and qualify the corpus
 
