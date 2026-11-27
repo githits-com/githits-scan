@@ -4,6 +4,7 @@ import argparse
 from contextlib import redirect_stdout
 from copy import deepcopy
 from hashlib import sha256
+from http.client import IncompleteRead
 from io import BytesIO, StringIO
 import json
 from pathlib import Path
@@ -407,6 +408,11 @@ class RunnerTests(unittest.TestCase):
             opener.open.side_effect = HTTPError("", 302, "redirect", {}, None)
             with self.assertRaisesRegex(runner.ExecutionError, "HTTP 302"):
                 runner.stage_inputs(fixture, self.root / "redirected", self.root)
+            opener.open.side_effect = IncompleteRead(b"partial package data")
+            with self.assertRaisesRegex(runner.ExecutionError, "IncompleteRead") as failure:
+                runner.stage_inputs(fixture, self.root / "truncated", self.root)
+            self.assertEqual(failure.exception.exit_code, 3)
+            self.assertNotIn("partial package data", str(failure.exception))
 
     def test_echoed_token_is_withheld_before_report_or_baseline(self):
         original = self.fake_scan

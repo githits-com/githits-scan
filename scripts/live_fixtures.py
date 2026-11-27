@@ -3,6 +3,7 @@
 import argparse
 import difflib
 import hashlib
+import http.client
 import json
 import os
 from pathlib import Path
@@ -176,7 +177,7 @@ def stage_inputs(fixture, root, workspace):
             destination.write_bytes(contents)
         except urllib.error.HTTPError as error:
             raise ExecutionError(f"Cannot fetch pinned input {origin} (HTTP {error.code})") from error
-        except OSError as error:
+        except (OSError, http.client.HTTPException) as error:
             raise ExecutionError(f"Cannot stage pinned input {origin} ({type(error).__name__})") from error
 
 
