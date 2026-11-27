@@ -2,8 +2,10 @@
   "audit": {
     "observations": {
       "dependencies": 6,
+      "duplicates": [],
       "exit": 1,
       "lifecycle": [],
+      "manifest_lock_mismatches": [],
       "outdated": [
         {
           "files": [
@@ -372,7 +374,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/inconshreveable/mousetrap",
@@ -380,7 +383,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/russross/blackfriday/v2",
@@ -388,7 +392,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/spf13/cobra",
@@ -398,6 +403,7 @@
               "purl": "pkg:golang/github.com/spf13/cobra",
               "record_kind": "manifest",
               "scope": null,
+              "type": "library",
               "version": null
             },
             {
@@ -406,7 +412,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "gopkg.in/check.v1",
@@ -414,7 +421,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "gopkg.in/yaml.v3",
@@ -422,7 +430,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             }
           ]
         },
@@ -435,7 +444,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/inconshreveable/mousetrap",
@@ -443,7 +453,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/russross/blackfriday/v2",
@@ -451,7 +462,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "github.com/spf13/cobra",
@@ -461,6 +473,7 @@
               "purl": "pkg:golang/github.com/spf13/cobra",
               "record_kind": "manifest",
               "scope": null,
+              "type": "library",
               "version": null
             },
             {
@@ -469,7 +482,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "gopkg.in/check.v1",
@@ -477,7 +491,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             },
             {
               "name": "gopkg.in/yaml.v3",
@@ -485,7 +500,8 @@
                 "go.mod"
               ],
               "record_kind": "resolved_package",
-              "scope": null
+              "scope": null,
+              "type": "library"
             }
           ]
         }
@@ -732,6 +748,56 @@
     },
     "stable": {
       "completeness": "resolved_manifest_inventory",
+      "occurrences": [
+        {
+          "name": "github.com/cpuguy83/go-md2man/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/inconshreveable/mousetrap",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/russross/blackfriday/v2",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "github.com/spf13/pflag",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "gopkg.in/check.v1",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "gopkg.in/yaml.v3",
+          "paths": [
+            "go.mod"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        }
+      ],
       "resolutions": [
         {
           "diagnostics": [],

@@ -1,8 +1,10 @@
 {
   "audit": {
     "observations": {
+      "duplicates": [],
       "exit": 1,
       "lifecycle": [],
+      "manifest_lock_mismatches": [],
       "outdated": [
         {
           "files": [

@@ -24,8 +24,8 @@ recommendation. Maintainers can review and refresh one baseline or all of them.
   automatic companions, uncombined inputs and native workspace evidence.
 - [The ignored live tests](../../tests/live.rs) make five submissions for
   npm/Cargo workspace SBOM, Bun SBOM, manifest-only resolution, npm audit and
-  npm licenses. The audit asserts an exact minimist target of `0.2.4`.
-  License replay, workspace attribution and format handling have distinct
+  npm licenses. The audit checks a qualified minimist upgrade within the
+  fixture's patched range. License replay, workspace attribution and format handling have distinct
   assertions worth retaining. PR tests already cover API errors and replay
   without contacting the service.
 - [Release](../../.github/workflows/release.yml) runs the ignored cases on both
@@ -94,7 +94,7 @@ continues to own discovery, pairing, report decoding, transport and retries.
 | Surface | Authored requirements | Baseline changes that fail `check` | Observations shown on a passing check |
 | --- | --- | --- | --- |
 | Discovery | Exact selected paths and fixture-specific companion or workspace behavior. Compare before submissions | Paths are authored expectations | — |
-| SBOM | Valid CycloneDX, expected inventory mode and supplied path evidence, independently checked occurrence witnesses | Locked occurrence identities, versions, multiplicity, relevant relationships and attribution. Manifest-only declarations and resolution coverage | Unpinned resolved versions and relationships tied to them |
+| SBOM | Valid CycloneDX, expected inventory mode and supplied path evidence, independently checked occurrence witnesses | Locked occurrence identities, versions, multiplicity, relevant relationships and attribution. Manifest-only declarations, version-independent occurrence identities and resolution coverage | Unpinned resolved versions and relationships tied to them |
 | Audit | Valid CLI report, exit consistent with findings and actionable gaps, accounted-for dependencies and required fixture findings. For the remediation control, require a whole alternative for the affected copy with known advisory IDs and the applicable service checks | Dependency count on locked input, coverage status and actionable gap categories with affected input paths | Current advisory and lifecycle findings, latest versions, qualified target versions and report-consistent changes between Scan exits 0 and 1 |
 | License report | Valid report, expected scoped occurrences and provenance, with license evidence where independently checked | Identities and paths for locked or pinned occurrences, declared versus observed license IDs or expressions, applicability, and resolution and evidence coverage states for those occurrences | Enrichment links and package facts that change solely with an unpinned resolution |
 | License policy | For fd, apply a fixture-owned deny-all policy using `license check --sbom`. Require exit 1 and a `not_allowed` finding for a known locked witness with a parseable SPDX expression | — | Other evidence-backed policy findings on the same input |

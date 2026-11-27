@@ -30,9 +30,10 @@ check uses the generated SBOM locally.
 Authored expectations live in `fixtures.json`. They tie the input pins and
 selected paths to facts that can be checked independently, such as known
 locked package versions, supplied license declarations, and the affected copy
-and advisories for minimist. The SBOM and license report baselines retain
-locked inventory, input attribution, relationships, and coverage. The audit
-baseline retains required coverage and the accounted dependency count for
+and advisories for minimist. The baselines retain locked inventory, input
+attribution, relationships, and coverage. Manifest-resolved SBOMs check the
+resolved occurrence names and scopes. Their selected versions are observations.
+The audit baseline retains required coverage and the accounted dependency count for
 locked inputs. A stable difference exits 1 and prints the changed evidence.
 
 Advisories, latest versions, qualified recommendations, and selections from

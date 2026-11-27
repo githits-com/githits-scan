@@ -1,6 +1,495 @@
 {
   "audit": {
     "observations": {
+      "duplicates": [
+        {
+          "package": "crates:bitflags",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^1.2.1",
+                  "requester": "faccess@0.2.4",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^1.1",
+                  "requester": "nix@0.24.3",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "1.3.2"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^2",
+                  "requester": "libredox@0.1.3",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^2.3.1",
+                  "requester": "nix@0.29.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^2.4",
+                  "requester": "redox_syscall@0.5.3",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^2.4.0",
+                  "requester": "rustix@0.38.34",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "2.6.0"
+            }
+          ]
+        },
+        {
+          "package": "crates:nix",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.24.2",
+                  "requester": "argmax@0.3.1",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.24.3"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "attribution_basis": "lockfile_recorded",
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.29",
+                  "requester": "ctrlc@3.4.5",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "attribution_basis": "manifest_lock_agreement",
+                  "file": "Cargo.lock",
+                  "requested_requirement": "0.29.0",
+                  "requester": "fd-find@10.2.0",
+                  "status": "recorded"
+                }
+              ],
+              "version": "0.29.0"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows-sys",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48",
+                  "requester": "etcetera@0.8.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.0",
+                  "requester": "terminal_size@0.3.0",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.0"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "anstyle-query@1.1.1",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "anstyle-wincon@3.0.4",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52",
+                  "requester": "errno@0.3.9",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52",
+                  "requester": "home@0.5.9",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "nu-ansi-term@0.50.1",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "rustix@0.38.34",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.0"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "ctrlc@3.4.5",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59.0",
+                  "requester": "filetime@0.2.24",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "normpath@1.3.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.59",
+                  "requester": "tempfile@3.12.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": ">=0.48.0, <=0.59",
+                  "requester": "winapi-util@0.1.9",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.59.0"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows-targets",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.0",
+                  "requester": "windows-sys@0.48.0",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52",
+                  "requester": "chrono@0.4.38",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "windows-core@0.52.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.0",
+                  "requester": "windows-sys@0.52.0",
+                  "status": "parent_release_declared"
+                },
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-sys@0.59.0",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_aarch64_gnullvm",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_aarch64_msvc",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_i686_gnu",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_i686_msvc",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_x86_64_gnu",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_x86_64_gnullvm",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        },
+        {
+          "package": "crates:windows_x86_64_msvc",
+          "versions": [
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.48.5",
+                  "requester": "windows-targets@0.48.5",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.48.5"
+            },
+            {
+              "files": [
+                "Cargo.lock"
+              ],
+              "origins": [
+                {
+                  "file": "Cargo.lock",
+                  "requested_requirement": "^0.52.6",
+                  "requester": "windows-targets@0.52.6",
+                  "status": "parent_release_declared"
+                }
+              ],
+              "version": "0.52.6"
+            }
+          ]
+        }
+      ],
       "exit": 1,
       "lifecycle": [
         {
@@ -32,6 +521,7 @@
           "version": "0.5.13"
         }
       ],
+      "manifest_lock_mismatches": [],
       "outdated": [
         {
           "files": [
@@ -6928,6 +7418,8 @@
               "purl": "pkg:cargo/aho-corasick@1.1.3",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.3"
             },
             {
@@ -6938,6 +7430,8 @@
               "purl": "pkg:cargo/android-tzdata@0.1.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.1"
             },
             {
@@ -6948,6 +7442,8 @@
               "purl": "pkg:cargo/android_system_properties@0.1.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.5"
             },
             {
@@ -6958,6 +7454,8 @@
               "purl": "pkg:cargo/anstream@0.6.15",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.6.15"
             },
             {
@@ -6968,6 +7466,8 @@
               "purl": "pkg:cargo/anstyle@1.0.8",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.8"
             },
             {
@@ -6978,6 +7478,8 @@
               "purl": "pkg:cargo/anstyle-parse@0.2.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.5"
             },
             {
@@ -6988,6 +7490,8 @@
               "purl": "pkg:cargo/anstyle-query@1.1.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.1"
             },
             {
@@ -6998,6 +7502,8 @@
               "purl": "pkg:cargo/anstyle-wincon@3.0.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.0.4"
             },
             {
@@ -7008,6 +7514,8 @@
               "purl": "pkg:cargo/anyhow@1.0.86",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.86"
             },
             {
@@ -7018,6 +7526,8 @@
               "purl": "pkg:cargo/argmax@0.3.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.1"
             },
             {
@@ -7028,6 +7538,8 @@
               "purl": "pkg:cargo/autocfg@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -7038,6 +7550,8 @@
               "purl": "pkg:cargo/bitflags@1.3.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.2"
             },
             {
@@ -7048,6 +7562,8 @@
               "purl": "pkg:cargo/bitflags@2.6.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.6.0"
             },
             {
@@ -7058,6 +7574,8 @@
               "purl": "pkg:cargo/bstr@1.10.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.10.0"
             },
             {
@@ -7068,6 +7586,8 @@
               "purl": "pkg:cargo/bumpalo@3.16.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.16.0"
             },
             {
@@ -7078,6 +7598,8 @@
               "purl": "pkg:cargo/cc@1.1.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.13"
             },
             {
@@ -7088,6 +7610,8 @@
               "purl": "pkg:cargo/cfg-if@1.0.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.0"
             },
             {
@@ -7098,6 +7622,8 @@
               "purl": "pkg:cargo/cfg_aliases@0.2.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.1"
             },
             {
@@ -7108,6 +7634,8 @@
               "purl": "pkg:cargo/chrono@0.4.38",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.38"
             },
             {
@@ -7118,6 +7646,8 @@
               "purl": "pkg:cargo/clap@4.5.16",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.16"
             },
             {
@@ -7128,6 +7658,8 @@
               "purl": "pkg:cargo/clap_builder@4.5.15",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.15"
             },
             {
@@ -7138,6 +7670,8 @@
               "purl": "pkg:cargo/clap_complete@4.5.19",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.19"
             },
             {
@@ -7148,6 +7682,8 @@
               "purl": "pkg:cargo/clap_derive@4.5.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.13"
             },
             {
@@ -7158,6 +7694,8 @@
               "purl": "pkg:cargo/clap_lex@0.7.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.7.2"
             },
             {
@@ -7168,6 +7706,8 @@
               "purl": "pkg:cargo/colorchoice@1.0.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.2"
             },
             {
@@ -7178,6 +7718,8 @@
               "purl": "pkg:cargo/core-foundation-sys@0.8.7",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.7"
             },
             {
@@ -7188,6 +7730,8 @@
               "purl": "pkg:cargo/crossbeam-channel@0.5.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.13"
             },
             {
@@ -7198,6 +7742,8 @@
               "purl": "pkg:cargo/crossbeam-deque@0.8.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.5"
             },
             {
@@ -7208,6 +7754,8 @@
               "purl": "pkg:cargo/crossbeam-epoch@0.9.18",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.9.18"
             },
             {
@@ -7218,6 +7766,8 @@
               "purl": "pkg:cargo/crossbeam-utils@0.8.20",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.20"
             },
             {
@@ -7228,6 +7778,8 @@
               "purl": "pkg:cargo/ctrlc@3.4.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.4.5"
             },
             {
@@ -7238,6 +7790,8 @@
               "purl": "pkg:cargo/diff@0.1.13",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.13"
             },
             {
@@ -7248,6 +7802,8 @@
               "purl": "pkg:cargo/errno@0.3.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.9"
             },
             {
@@ -7258,6 +7814,8 @@
               "purl": "pkg:cargo/etcetera@0.8.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.0"
             },
             {
@@ -7268,6 +7826,8 @@
               "purl": "pkg:cargo/faccess@0.2.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.4"
             },
             {
@@ -7278,6 +7838,8 @@
               "purl": "pkg:cargo/fastrand@2.1.0",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.1.0"
             },
             {
@@ -7289,6 +7851,7 @@
               "purl": null,
               "record_kind": "manifest",
               "scope": null,
+              "type": "application",
               "version": "10.2.0"
             },
             {
@@ -7299,6 +7862,8 @@
               "purl": "pkg:cargo/filetime@0.2.24",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.24"
             },
             {
@@ -7309,6 +7874,8 @@
               "purl": "pkg:cargo/globset@0.4.14",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.14"
             },
             {
@@ -7319,6 +7886,8 @@
               "purl": "pkg:cargo/heck@0.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.0"
             },
             {
@@ -7329,6 +7898,8 @@
               "purl": "pkg:cargo/home@0.5.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.9"
             },
             {
@@ -7339,6 +7910,8 @@
               "purl": "pkg:cargo/humantime@2.1.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.1.0"
             },
             {
@@ -7349,6 +7922,8 @@
               "purl": "pkg:cargo/iana-time-zone@0.1.60",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.60"
             },
             {
@@ -7359,6 +7934,8 @@
               "purl": "pkg:cargo/iana-time-zone-haiku@0.1.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.2"
             },
             {
@@ -7369,6 +7946,8 @@
               "purl": "pkg:cargo/ignore@0.4.22",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.22"
             },
             {
@@ -7379,6 +7958,8 @@
               "purl": "pkg:cargo/is_terminal_polyfill@1.70.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.70.1"
             },
             {
@@ -7389,6 +7970,8 @@
               "purl": "pkg:cargo/jemalloc-sys@0.5.4%2B5.3.0-patched",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.4+5.3.0-patched"
             },
             {
@@ -7399,6 +7982,8 @@
               "purl": "pkg:cargo/jemallocator@0.5.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.4"
             },
             {
@@ -7409,6 +7994,8 @@
               "purl": "pkg:cargo/js-sys@0.3.70",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.70"
             },
             {
@@ -7419,6 +8006,8 @@
               "purl": "pkg:cargo/lazy_static@1.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.5.0"
             },
             {
@@ -7429,6 +8018,8 @@
               "purl": "pkg:cargo/libc@0.2.158",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.158"
             },
             {
@@ -7439,6 +8030,8 @@
               "purl": "pkg:cargo/libredox@0.1.3",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.3"
             },
             {
@@ -7449,6 +8042,8 @@
               "purl": "pkg:cargo/linux-raw-sys@0.4.14",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.14"
             },
             {
@@ -7459,6 +8054,8 @@
               "purl": "pkg:cargo/log@0.4.22",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.22"
             },
             {
@@ -7469,6 +8066,8 @@
               "purl": "pkg:cargo/lscolors@0.19.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.19.0"
             },
             {
@@ -7479,6 +8078,8 @@
               "purl": "pkg:cargo/memchr@2.7.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.7.4"
             },
             {
@@ -7489,6 +8090,8 @@
               "purl": "pkg:cargo/nix@0.24.3",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.24.3"
             },
             {
@@ -7499,6 +8102,8 @@
               "purl": "pkg:cargo/nix@0.29.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.29.0"
             },
             {
@@ -7509,6 +8114,8 @@
               "purl": "pkg:cargo/normpath@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -7519,6 +8126,8 @@
               "purl": "pkg:cargo/nu-ansi-term@0.50.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.50.1"
             },
             {
@@ -7529,6 +8138,8 @@
               "purl": "pkg:cargo/num-traits@0.2.19",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.19"
             },
             {
@@ -7539,6 +8150,8 @@
               "purl": "pkg:cargo/once_cell@1.19.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.19.0"
             },
             {
@@ -7549,6 +8162,8 @@
               "purl": "pkg:cargo/proc-macro2@1.0.86",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.86"
             },
             {
@@ -7559,6 +8174,8 @@
               "purl": "pkg:cargo/quote@1.0.36",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.36"
             },
             {
@@ -7569,6 +8186,8 @@
               "purl": "pkg:cargo/redox_syscall@0.5.3",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.3"
             },
             {
@@ -7579,6 +8198,8 @@
               "purl": "pkg:cargo/regex@1.10.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.10.6"
             },
             {
@@ -7589,6 +8210,8 @@
               "purl": "pkg:cargo/regex-automata@0.4.7",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.7"
             },
             {
@@ -7599,6 +8222,8 @@
               "purl": "pkg:cargo/regex-syntax@0.8.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.4"
             },
             {
@@ -7609,6 +8234,8 @@
               "purl": "pkg:cargo/rustix@0.38.34",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.38.34"
             },
             {
@@ -7619,6 +8246,8 @@
               "purl": "pkg:cargo/same-file@1.0.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.6"
             },
             {
@@ -7629,6 +8258,8 @@
               "purl": "pkg:cargo/serde@1.0.208",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.208"
             },
             {
@@ -7639,6 +8270,8 @@
               "purl": "pkg:cargo/serde_derive@1.0.208",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.208"
             },
             {
@@ -7649,6 +8282,8 @@
               "purl": "pkg:cargo/shlex@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -7659,6 +8294,8 @@
               "purl": "pkg:cargo/strsim@0.11.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.11.1"
             },
             {
@@ -7669,6 +8306,8 @@
               "purl": "pkg:cargo/syn@2.0.75",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.0.75"
             },
             {
@@ -7679,6 +8318,8 @@
               "purl": "pkg:cargo/tempfile@3.12.0",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.12.0"
             },
             {
@@ -7689,6 +8330,8 @@
               "purl": "pkg:cargo/terminal_size@0.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.0"
             },
             {
@@ -7699,6 +8342,8 @@
               "purl": "pkg:cargo/test-case@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -7709,6 +8354,8 @@
               "purl": "pkg:cargo/test-case-core@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -7719,6 +8366,8 @@
               "purl": "pkg:cargo/test-case-macros@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -7729,6 +8378,8 @@
               "purl": "pkg:cargo/unicode-ident@1.0.12",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.12"
             },
             {
@@ -7739,6 +8390,8 @@
               "purl": "pkg:cargo/utf8parse@0.2.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.2"
             },
             {
@@ -7749,6 +8402,8 @@
               "purl": "pkg:cargo/version_check@0.9.5",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.9.5"
             },
             {
@@ -7759,6 +8414,8 @@
               "purl": "pkg:cargo/walkdir@2.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.5.0"
             },
             {
@@ -7769,6 +8426,8 @@
               "purl": "pkg:cargo/wasm-bindgen@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -7779,6 +8438,8 @@
               "purl": "pkg:cargo/wasm-bindgen-backend@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -7789,6 +8450,8 @@
               "purl": "pkg:cargo/wasm-bindgen-macro@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -7799,6 +8462,8 @@
               "purl": "pkg:cargo/wasm-bindgen-macro-support@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -7809,6 +8474,8 @@
               "purl": "pkg:cargo/wasm-bindgen-shared@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -7819,6 +8486,8 @@
               "purl": "pkg:cargo/winapi@0.3.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.9"
             },
             {
@@ -7829,6 +8498,8 @@
               "purl": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.0"
             },
             {
@@ -7839,6 +8510,8 @@
               "purl": "pkg:cargo/winapi-util@0.1.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.9"
             },
             {
@@ -7849,6 +8522,8 @@
               "purl": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.0"
             },
             {
@@ -7859,6 +8534,8 @@
               "purl": "pkg:cargo/windows-core@0.52.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.0"
             },
             {
@@ -7869,6 +8546,8 @@
               "purl": "pkg:cargo/windows-sys@0.48.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.0"
             },
             {
@@ -7879,6 +8558,8 @@
               "purl": "pkg:cargo/windows-sys@0.52.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.0"
             },
             {
@@ -7889,6 +8570,8 @@
               "purl": "pkg:cargo/windows-sys@0.59.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.59.0"
             },
             {
@@ -7899,6 +8582,8 @@
               "purl": "pkg:cargo/windows-targets@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -7909,6 +8594,8 @@
               "purl": "pkg:cargo/windows-targets@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -7919,6 +8606,8 @@
               "purl": "pkg:cargo/windows_aarch64_gnullvm@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -7929,6 +8618,8 @@
               "purl": "pkg:cargo/windows_aarch64_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -7939,6 +8630,8 @@
               "purl": "pkg:cargo/windows_aarch64_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -7949,6 +8642,8 @@
               "purl": "pkg:cargo/windows_aarch64_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -7959,6 +8654,8 @@
               "purl": "pkg:cargo/windows_i686_gnu@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -7969,6 +8666,8 @@
               "purl": "pkg:cargo/windows_i686_gnu@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -7979,6 +8678,8 @@
               "purl": "pkg:cargo/windows_i686_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -7989,6 +8690,8 @@
               "purl": "pkg:cargo/windows_i686_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -7999,6 +8702,8 @@
               "purl": "pkg:cargo/windows_i686_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -8009,6 +8714,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnu@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -8019,6 +8726,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnu@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -8029,6 +8738,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnullvm@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -8039,6 +8750,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -8049,6 +8762,8 @@
               "purl": "pkg:cargo/windows_x86_64_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -8059,6 +8774,8 @@
               "purl": "pkg:cargo/windows_x86_64_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             }
           ]
@@ -8074,6 +8791,8 @@
               "purl": "pkg:cargo/aho-corasick@1.1.3",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.3"
             },
             {
@@ -8084,6 +8803,8 @@
               "purl": "pkg:cargo/android-tzdata@0.1.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.1"
             },
             {
@@ -8094,6 +8815,8 @@
               "purl": "pkg:cargo/android_system_properties@0.1.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.5"
             },
             {
@@ -8104,6 +8827,8 @@
               "purl": "pkg:cargo/anstream@0.6.15",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.6.15"
             },
             {
@@ -8114,6 +8839,8 @@
               "purl": "pkg:cargo/anstyle@1.0.8",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.8"
             },
             {
@@ -8124,6 +8851,8 @@
               "purl": "pkg:cargo/anstyle-parse@0.2.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.5"
             },
             {
@@ -8134,6 +8863,8 @@
               "purl": "pkg:cargo/anstyle-query@1.1.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.1"
             },
             {
@@ -8144,6 +8875,8 @@
               "purl": "pkg:cargo/anstyle-wincon@3.0.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.0.4"
             },
             {
@@ -8154,6 +8887,8 @@
               "purl": "pkg:cargo/anyhow@1.0.86",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.86"
             },
             {
@@ -8164,6 +8899,8 @@
               "purl": "pkg:cargo/argmax@0.3.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.1"
             },
             {
@@ -8174,6 +8911,8 @@
               "purl": "pkg:cargo/autocfg@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -8184,6 +8923,8 @@
               "purl": "pkg:cargo/bitflags@1.3.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.2"
             },
             {
@@ -8194,6 +8935,8 @@
               "purl": "pkg:cargo/bitflags@2.6.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.6.0"
             },
             {
@@ -8204,6 +8947,8 @@
               "purl": "pkg:cargo/bstr@1.10.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.10.0"
             },
             {
@@ -8214,6 +8959,8 @@
               "purl": "pkg:cargo/bumpalo@3.16.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.16.0"
             },
             {
@@ -8224,6 +8971,8 @@
               "purl": "pkg:cargo/cc@1.1.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.1.13"
             },
             {
@@ -8234,6 +8983,8 @@
               "purl": "pkg:cargo/cfg-if@1.0.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.0"
             },
             {
@@ -8244,6 +8995,8 @@
               "purl": "pkg:cargo/cfg_aliases@0.2.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.1"
             },
             {
@@ -8254,6 +9007,8 @@
               "purl": "pkg:cargo/chrono@0.4.38",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.38"
             },
             {
@@ -8264,6 +9019,8 @@
               "purl": "pkg:cargo/clap@4.5.16",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.16"
             },
             {
@@ -8274,6 +9031,8 @@
               "purl": "pkg:cargo/clap_builder@4.5.15",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.15"
             },
             {
@@ -8284,6 +9043,8 @@
               "purl": "pkg:cargo/clap_complete@4.5.19",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.19"
             },
             {
@@ -8294,6 +9055,8 @@
               "purl": "pkg:cargo/clap_derive@4.5.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "4.5.13"
             },
             {
@@ -8304,6 +9067,8 @@
               "purl": "pkg:cargo/clap_lex@0.7.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.7.2"
             },
             {
@@ -8314,6 +9079,8 @@
               "purl": "pkg:cargo/colorchoice@1.0.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.2"
             },
             {
@@ -8324,6 +9091,8 @@
               "purl": "pkg:cargo/core-foundation-sys@0.8.7",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.7"
             },
             {
@@ -8334,6 +9103,8 @@
               "purl": "pkg:cargo/crossbeam-channel@0.5.13",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.13"
             },
             {
@@ -8344,6 +9115,8 @@
               "purl": "pkg:cargo/crossbeam-deque@0.8.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.5"
             },
             {
@@ -8354,6 +9127,8 @@
               "purl": "pkg:cargo/crossbeam-epoch@0.9.18",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.9.18"
             },
             {
@@ -8364,6 +9139,8 @@
               "purl": "pkg:cargo/crossbeam-utils@0.8.20",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.20"
             },
             {
@@ -8374,6 +9151,8 @@
               "purl": "pkg:cargo/ctrlc@3.4.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.4.5"
             },
             {
@@ -8384,6 +9163,8 @@
               "purl": "pkg:cargo/diff@0.1.13",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.13"
             },
             {
@@ -8394,6 +9175,8 @@
               "purl": "pkg:cargo/errno@0.3.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.9"
             },
             {
@@ -8404,6 +9187,8 @@
               "purl": "pkg:cargo/etcetera@0.8.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.0"
             },
             {
@@ -8414,6 +9199,8 @@
               "purl": "pkg:cargo/faccess@0.2.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.4"
             },
             {
@@ -8424,6 +9211,8 @@
               "purl": "pkg:cargo/fastrand@2.1.0",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.1.0"
             },
             {
@@ -8435,6 +9224,7 @@
               "purl": null,
               "record_kind": "manifest",
               "scope": null,
+              "type": "application",
               "version": "10.2.0"
             },
             {
@@ -8445,6 +9235,8 @@
               "purl": "pkg:cargo/filetime@0.2.24",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.24"
             },
             {
@@ -8455,6 +9247,8 @@
               "purl": "pkg:cargo/globset@0.4.14",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.14"
             },
             {
@@ -8465,6 +9259,8 @@
               "purl": "pkg:cargo/heck@0.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.0"
             },
             {
@@ -8475,6 +9271,8 @@
               "purl": "pkg:cargo/home@0.5.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.9"
             },
             {
@@ -8485,6 +9283,8 @@
               "purl": "pkg:cargo/humantime@2.1.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.1.0"
             },
             {
@@ -8495,6 +9295,8 @@
               "purl": "pkg:cargo/iana-time-zone@0.1.60",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.60"
             },
             {
@@ -8505,6 +9307,8 @@
               "purl": "pkg:cargo/iana-time-zone-haiku@0.1.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.2"
             },
             {
@@ -8515,6 +9319,8 @@
               "purl": "pkg:cargo/ignore@0.4.22",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.22"
             },
             {
@@ -8525,6 +9331,8 @@
               "purl": "pkg:cargo/is_terminal_polyfill@1.70.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.70.1"
             },
             {
@@ -8535,6 +9343,8 @@
               "purl": "pkg:cargo/jemalloc-sys@0.5.4%2B5.3.0-patched",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.4+5.3.0-patched"
             },
             {
@@ -8545,6 +9355,8 @@
               "purl": "pkg:cargo/jemallocator@0.5.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.4"
             },
             {
@@ -8555,6 +9367,8 @@
               "purl": "pkg:cargo/js-sys@0.3.70",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.70"
             },
             {
@@ -8565,6 +9379,8 @@
               "purl": "pkg:cargo/lazy_static@1.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.5.0"
             },
             {
@@ -8575,6 +9391,8 @@
               "purl": "pkg:cargo/libc@0.2.158",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.158"
             },
             {
@@ -8585,6 +9403,8 @@
               "purl": "pkg:cargo/libredox@0.1.3",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.3"
             },
             {
@@ -8595,6 +9415,8 @@
               "purl": "pkg:cargo/linux-raw-sys@0.4.14",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.14"
             },
             {
@@ -8605,6 +9427,8 @@
               "purl": "pkg:cargo/log@0.4.22",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.22"
             },
             {
@@ -8615,6 +9439,8 @@
               "purl": "pkg:cargo/lscolors@0.19.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.19.0"
             },
             {
@@ -8625,6 +9451,8 @@
               "purl": "pkg:cargo/memchr@2.7.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.7.4"
             },
             {
@@ -8635,6 +9463,8 @@
               "purl": "pkg:cargo/nix@0.24.3",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.24.3"
             },
             {
@@ -8645,6 +9475,8 @@
               "purl": "pkg:cargo/nix@0.29.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.29.0"
             },
             {
@@ -8655,6 +9487,8 @@
               "purl": "pkg:cargo/normpath@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -8665,6 +9499,8 @@
               "purl": "pkg:cargo/nu-ansi-term@0.50.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.50.1"
             },
             {
@@ -8675,6 +9511,8 @@
               "purl": "pkg:cargo/num-traits@0.2.19",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.19"
             },
             {
@@ -8685,6 +9523,8 @@
               "purl": "pkg:cargo/once_cell@1.19.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.19.0"
             },
             {
@@ -8695,6 +9535,8 @@
               "purl": "pkg:cargo/proc-macro2@1.0.86",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.86"
             },
             {
@@ -8705,6 +9547,8 @@
               "purl": "pkg:cargo/quote@1.0.36",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.36"
             },
             {
@@ -8715,6 +9559,8 @@
               "purl": "pkg:cargo/redox_syscall@0.5.3",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.5.3"
             },
             {
@@ -8725,6 +9571,8 @@
               "purl": "pkg:cargo/regex@1.10.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.10.6"
             },
             {
@@ -8735,6 +9583,8 @@
               "purl": "pkg:cargo/regex-automata@0.4.7",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.7"
             },
             {
@@ -8745,6 +9595,8 @@
               "purl": "pkg:cargo/regex-syntax@0.8.4",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.8.4"
             },
             {
@@ -8755,6 +9607,8 @@
               "purl": "pkg:cargo/rustix@0.38.34",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.38.34"
             },
             {
@@ -8765,6 +9619,8 @@
               "purl": "pkg:cargo/same-file@1.0.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.6"
             },
             {
@@ -8775,6 +9631,8 @@
               "purl": "pkg:cargo/serde@1.0.208",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.208"
             },
             {
@@ -8785,6 +9643,8 @@
               "purl": "pkg:cargo/serde_derive@1.0.208",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.208"
             },
             {
@@ -8795,6 +9655,8 @@
               "purl": "pkg:cargo/shlex@1.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.3.0"
             },
             {
@@ -8805,6 +9667,8 @@
               "purl": "pkg:cargo/strsim@0.11.1",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.11.1"
             },
             {
@@ -8815,6 +9679,8 @@
               "purl": "pkg:cargo/syn@2.0.75",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.0.75"
             },
             {
@@ -8825,6 +9691,8 @@
               "purl": "pkg:cargo/tempfile@3.12.0",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.12.0"
             },
             {
@@ -8835,6 +9703,8 @@
               "purl": "pkg:cargo/terminal_size@0.3.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.0"
             },
             {
@@ -8845,6 +9715,8 @@
               "purl": "pkg:cargo/test-case@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -8855,6 +9727,8 @@
               "purl": "pkg:cargo/test-case-core@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -8865,6 +9739,8 @@
               "purl": "pkg:cargo/test-case-macros@3.3.1",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "3.3.1"
             },
             {
@@ -8875,6 +9751,8 @@
               "purl": "pkg:cargo/unicode-ident@1.0.12",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "1.0.12"
             },
             {
@@ -8885,6 +9763,8 @@
               "purl": "pkg:cargo/utf8parse@0.2.2",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.2"
             },
             {
@@ -8895,6 +9775,8 @@
               "purl": "pkg:cargo/version_check@0.9.5",
               "record_kind": "locked_package",
               "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.9.5"
             },
             {
@@ -8905,6 +9787,8 @@
               "purl": "pkg:cargo/walkdir@2.5.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "2.5.0"
             },
             {
@@ -8915,6 +9799,8 @@
               "purl": "pkg:cargo/wasm-bindgen@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -8925,6 +9811,8 @@
               "purl": "pkg:cargo/wasm-bindgen-backend@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -8935,6 +9823,8 @@
               "purl": "pkg:cargo/wasm-bindgen-macro@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -8945,6 +9835,8 @@
               "purl": "pkg:cargo/wasm-bindgen-macro-support@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -8955,6 +9847,8 @@
               "purl": "pkg:cargo/wasm-bindgen-shared@0.2.93",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.2.93"
             },
             {
@@ -8965,6 +9859,8 @@
               "purl": "pkg:cargo/winapi@0.3.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.3.9"
             },
             {
@@ -8975,6 +9871,8 @@
               "purl": "pkg:cargo/winapi-i686-pc-windows-gnu@0.4.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.0"
             },
             {
@@ -8985,6 +9883,8 @@
               "purl": "pkg:cargo/winapi-util@0.1.9",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.1.9"
             },
             {
@@ -8995,6 +9895,8 @@
               "purl": "pkg:cargo/winapi-x86_64-pc-windows-gnu@0.4.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.4.0"
             },
             {
@@ -9005,6 +9907,8 @@
               "purl": "pkg:cargo/windows-core@0.52.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.0"
             },
             {
@@ -9015,6 +9919,8 @@
               "purl": "pkg:cargo/windows-sys@0.48.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.0"
             },
             {
@@ -9025,6 +9931,8 @@
               "purl": "pkg:cargo/windows-sys@0.52.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.0"
             },
             {
@@ -9035,6 +9943,8 @@
               "purl": "pkg:cargo/windows-sys@0.59.0",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.59.0"
             },
             {
@@ -9045,6 +9955,8 @@
               "purl": "pkg:cargo/windows-targets@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9055,6 +9967,8 @@
               "purl": "pkg:cargo/windows-targets@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9065,6 +9979,8 @@
               "purl": "pkg:cargo/windows_aarch64_gnullvm@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9075,6 +9991,8 @@
               "purl": "pkg:cargo/windows_aarch64_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9085,6 +10003,8 @@
               "purl": "pkg:cargo/windows_aarch64_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9095,6 +10015,8 @@
               "purl": "pkg:cargo/windows_aarch64_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9105,6 +10027,8 @@
               "purl": "pkg:cargo/windows_i686_gnu@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9115,6 +10039,8 @@
               "purl": "pkg:cargo/windows_i686_gnu@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9125,6 +10051,8 @@
               "purl": "pkg:cargo/windows_i686_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9135,6 +10063,8 @@
               "purl": "pkg:cargo/windows_i686_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9145,6 +10075,8 @@
               "purl": "pkg:cargo/windows_i686_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9155,6 +10087,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnu@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9165,6 +10099,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnu@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9175,6 +10111,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnullvm@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9185,6 +10123,8 @@
               "purl": "pkg:cargo/windows_x86_64_gnullvm@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             },
             {
@@ -9195,6 +10135,8 @@
               "purl": "pkg:cargo/windows_x86_64_msvc@0.48.5",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.48.5"
             },
             {
@@ -9205,6 +10147,8 @@
               "purl": "pkg:cargo/windows_x86_64_msvc@0.52.6",
               "record_kind": "locked_package",
               "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
               "version": "0.52.6"
             }
           ]

@@ -122,6 +122,39 @@ class ProjectionTests(unittest.TestCase):
         self.assertTrue(changed)
         self.assertIn("fd audit stable changed", output.getvalue())
 
+    def test_audit_duplicate_and_manifest_mismatch_drift_are_visible_at_the_same_exit(self):
+        document = audit_document()
+        document["outdated"] = [{"package": "cargo:example@1.0.0", "files": ["Cargo.lock"]}]
+        expected = {"manifests": ["Cargo.toml"]}
+        first = reports.audit(document, 1, expected)
+        document["duplicates"] = [{"package": "cargo:example", "versions": [{"version": "1.0.0"}]}]
+        document["manifest_lock_mismatches"] = [{"name": "example", "path": "Cargo.lock"}]
+        second = reports.audit(document, 1, expected)
+        self.assertEqual(first["stable"], second["stable"])
+        self.assertEqual(second["observations"]["duplicates"], document["duplicates"])
+        self.assertEqual(second["observations"]["manifest_lock_mismatches"], document["manifest_lock_mismatches"])
+
+    def test_manifest_resolved_sbom_gates_occurrence_loss_but_allows_version_changes(self):
+        completeness = "resolved_manifest_inventory"
+        document = {
+            "bomFormat": "CycloneDX", "specVersion": "1.7",
+            "properties": [{"name": "githits:completeness", "value": completeness}],
+            "components": [
+                {"name": name, "version": "v1.0.0", "type": "library", "bom-ref": name,
+                 "properties": [{"name": "githits:manifest_path", "value": "go.mod"}]}
+                for name in ("pflag", "secondary")
+            ],
+        }
+        expected = {"completeness": completeness, "witnesses": [{"name": "pflag", "paths": ["go.mod"]}]}
+        before = reports.sbom(document, 0, expected)
+        document["components"][1]["version"] = "v1.1.0"
+        after = reports.sbom(document, 0, expected)
+        self.assertEqual(before["stable"], after["stable"])
+        self.assertNotEqual(before["observations"], after["observations"])
+        document["components"].pop()
+        missing = reports.sbom(document, 0, expected)
+        self.assertNotEqual(after["stable"]["occurrences"], missing["stable"]["occurrences"])
+
     def test_sbom_preserves_repeated_occurrences_and_resolves_ephemeral_references(self):
         def component(ref):
             return {"name": "example", "version": "1.0.0", "type": "library", "bom-ref": ref,
@@ -303,6 +336,17 @@ class RunnerTests(unittest.TestCase):
         with self.assertRaisesRegex(runner.UsageError, "empty"):
             self.run_fixture("list")
 
+    def test_license_expression_is_rejected_as_an_sbom_expectation(self):
+        fixture = self.fixtures[0]
+        fixture["checks"] = {
+            "sbom": {"completeness": "recorded_lockfile_inventory", "witnesses": [
+                {"name": "example", "paths": ["Cargo.toml"], "expression": "MIT"}
+            ]}
+        }
+        with self.assertRaises(runner.UsageError) as failure:
+            runner.validate_fixture(fixture)
+        self.assertEqual(failure.exception.exit_code, 2)
+
     def test_remote_fetch_uses_pinned_files_rejects_redirect_and_checks_bytes(self):
         fixture = self.fixtures[0]
         fixture["project"] = {"repository": "owner/repo", "release": "v1", "commit": "a" * 40}
@@ -342,6 +386,10 @@ class RunnerTests(unittest.TestCase):
             runner.acquire_token({"CI": "true"}, self.root)
         with self.assertRaisesRegex(runner.ExecutionError, "empty"):
             runner.acquire_token({runner.TOKEN_ENV: ""}, self.root)
+        with patch.object(runner, "process") as child:
+            with self.assertRaisesRegex(runner.ExecutionError, "matching"):
+                runner.acquire_token({"GITHITS_API_URL": "https://example.com"}, self.root)
+            child.assert_not_called()
         for code, output in [(3, b"{}"), (0, b"malformed"), (0, b"[]")]:
             with self.subTest(code=code, output=output):
                 with patch.object(runner, "process", return_value=CompletedProcess([], code, output, b"")):

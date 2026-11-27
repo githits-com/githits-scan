@@ -197,7 +197,7 @@ def acquire_token(environment, workspace):
     supplied = environment.get(TOKEN_ENV)
     if supplied is None:
         if environment.get("GITHITS_API_URL", PRODUCTION) != PRODUCTION:
-            raise UsageError(f"Supply a matching {TOKEN_ENV} for a custom API origin")
+            raise ExecutionError(f"Supply a matching {TOKEN_ENV} for a custom API origin")
         if environment.get("CI") == "true":
             raise ExecutionError(f"Configure the {TOKEN_ENV} secret for the live job")
         acquired = process(

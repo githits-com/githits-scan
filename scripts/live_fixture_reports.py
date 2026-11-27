@@ -82,6 +82,7 @@ def validate_expectations(checks):
                     or not isinstance(witness.get("name"), str)
                     or not fixture_strings(witness.get("paths"))
                     or any(not isinstance(witness[key], str) for key in ("version", "expression") if key in witness)
+                    or (name == "sbom" and "expression" in witness)
                     or ("versioned" in witness and witness["versioned"] is not True)
                     for witness in witnesses
                 )
@@ -227,6 +228,10 @@ def sbom(document, _code, expected):
     if locked:
         stable.update(inventory)
         return result(stable)
+    stable["occurrences"] = sorted_rows(
+        occurrence_subject(identity, identity.get("record_kind") == "manifest")
+        for identity in entries
+    )
     return result(stable, inventory)
 
 
@@ -274,15 +279,21 @@ def license_component(component):
     return identity
 
 
+def occurrence_subject(identity, pinned):
+    subject = fields(identity, "name", "paths", "type", "record_kind", "scope", "context", "source_kind")
+    if pinned:
+        subject.update(fields(identity, "version", "purl", "source_revision"))
+    return subject
+
+
 def coverage_subjects(components, identities):
     subjects = {}
     for component, identity in zip(components, identities):
         if component.get("bom_ref") is None:
             continue
         reference = typed(component, "bom_ref", str)
-        subject = fields(identity, "name", "paths", "record_kind", "scope", "context", "source_revision")
-        if identity["lockfile_paths"] or identity.get("record_kind") == "manifest":
-            subject.update(fields(identity, "version", "purl"))
+        pinned = bool(identity["lockfile_paths"]) or identity.get("record_kind") == "manifest"
+        subject = occurrence_subject(identity, pinned)
         if reference in subjects and subjects[reference] != subject:
             raise BadReport("A license report reference names different occurrences")
         subjects[reference] = subject
@@ -410,6 +421,8 @@ def audit(document, code, expected):
            "Audit could not verify service report accounting")
     findings = audit_findings(document, "vulnerabilities")
     outdated = audit_findings(document, "outdated")
+    duplicates = rows(document, "duplicates", optional=True)
+    mismatches = rows(document, "manifest_lock_mismatches", optional=True)
     lifecycle = typed(document, "lifecycle", dict)
     native_findings = rows(lifecycle, "findings")
     warnings = rows(lifecycle, "retained_warnings")
@@ -418,8 +431,7 @@ def audit(document, code, expected):
     actionable = typed(document, "actionable_incomplete", bool)
     has_findings = (
         any(not row.get("ignored") for row in findings) or outdated or native_findings or warnings
-        or rows(document, "duplicates", optional=True)
-        or rows(document, "manifest_lock_mismatches", optional=True)
+        or duplicates or mismatches
     )
     expect(code == int(bool(has_findings or actionable)), "Audit exit disagrees with the report")
     if "remediation" in expected:
@@ -451,6 +463,8 @@ def audit(document, code, expected):
         "dependencies": dependencies,
         "vulnerabilities": findings,
         "outdated": outdated,
+        "duplicates": sorted_rows(duplicates),
+        "manifest_lock_mismatches": sorted_rows(mismatches),
         "lifecycle": sorted_rows(
             {**fields(row, "registry", "name", "version", "category", "kind", "scope", "source"),
              "observations": sorted_rows(fields(observation, "reason", "replacement", "source_version", "affected")
