@@ -46,6 +46,11 @@ and meets the fixture's requirement and qualification checks. The affected
 version, advisory identities and allowed range are authored. The selected
 target is recorded as an observation.
 
+For a revision-only locked occurrence with empty license lists, an absent
+declaration or missing registry coordinate stays visible as an observation.
+The revision, input attribution, both license lists and reported coverage
+remain part of the stable comparison.
+
 Refresh after reviewing the reported differences. Select a single fixture or
 all fixtures just as with `check`.
 

@@ -309,6 +309,37 @@ class ProjectionTests(unittest.TestCase):
         with self.assertRaisesRegex(reports.BadReport, "absent occurrence"):
             reports.license_report(document, 0, expected)
 
+    def test_revision_lookup_drift_stays_visible_and_reported_licenses_remain_stable(self):
+        revision = "a" * 40
+        document = {
+            "schema_version": 2,
+            "inventory": {"completeness": "recorded_lockfile_inventory", "coverage": []},
+            "components": [{
+                "name": "example.net/locked", "version": revision,
+                "record_kind": "locked_package", "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+                "source_revision": revision, "inputs": {"lockfile_paths": ["Gopkg.lock"], "manifest_paths": []},
+                "licenses": [], "observed_licenses": [], "external_references": [],
+                "metadata_status": "available",
+                "license_evidence": {"applicability_reason": "absent_declaration",
+                                     "artifact_verification": "not_checked"},
+            }],
+        }
+        expected = {"completeness": "recorded_lockfile_inventory", "witnesses": [
+            {"name": "example.net/locked", "version": revision, "paths": ["Gopkg.lock"]}
+        ]}
+        available = reports.license_report(document, 0, expected)
+        component = document["components"][0]
+        del component["license_evidence"]
+        component["metadata_status"] = "not_eligible"
+        component["metadata_reason"] = "missing_coordinate"
+        not_eligible = reports.license_report(document, 0, expected)
+        self.assertEqual(available["stable"], not_eligible["stable"])
+        self.assertEqual(not_eligible["observations"]["revision_only_license_metadata"][0]["metadata_reason"],
+                         "missing_coordinate")
+        self.assertNotEqual(available["observations"], not_eligible["observations"])
+        component["licenses"] = [{"expression": "BSD-3-Clause"}]
+        self.assertNotEqual(reports.license_report(document, 0, expected)["stable"], not_eligible["stable"])
+
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):

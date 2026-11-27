@@ -1740,6 +1740,16 @@
               "build.zig.zon"
             ]
           }
+        ],
+        "declarations": [
+          {
+            "name": "diffz",
+            "manifest_path": "build.zig.zon"
+          },
+          {
+            "name": "known_folders",
+            "manifest_path": "build.zig.zon"
+          }
         ]
       },
       "audit": {
@@ -1756,6 +1766,16 @@
             "paths": [
               "build.zig.zon"
             ]
+          }
+        ],
+        "declarations": [
+          {
+            "name": "diffz",
+            "manifest_path": "build.zig.zon"
+          },
+          {
+            "name": "known_folders",
+            "manifest_path": "build.zig.zon"
           }
         ]
       }

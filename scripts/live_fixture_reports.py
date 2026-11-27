@@ -375,6 +375,37 @@ def license_coverage(inventory, subjects):
     return coverage, dependency_coverage
 
 
+def revision_only_license_metadata(identities):
+    observed = []
+    for identity in identities:
+        # A display version can come from a locked source revision even when
+        # the registry cannot resolve a version coordinate for license lookup.
+        evidence = identity.get("license_evidence")
+        lookup_only = (
+            identity.get("metadata_reason") == "missing_coordinate" and evidence is None
+        ) or (
+            isinstance(evidence, dict)
+            and evidence.get("applicability_reason") == "absent_declaration"
+            and evidence.get("artifact_verification") == "not_checked"
+        )
+        if (
+            identity.get("record_kind") == "locked_package"
+            and identity.get("source_kind") == "LOCKED_PACKAGE_SOURCE_KIND_OTHER"
+            and identity.get("source_revision")
+            and identity.get("version") == identity["source_revision"]
+            and not identity["licenses"]
+            and not identity["observed_licenses"]
+            and lookup_only
+        ):
+            evidence = {
+                key: identity.pop(key) for key in ("metadata_status", "metadata_reason", "license_evidence")
+                if key in identity
+            }
+            if evidence:
+                observed.append({"subject": occurrence_subject(identity, True), **evidence})
+    return sorted_rows(observed)
+
+
 def license_report(document, _code, expected):
     if document.get("schema_version") != 2:
         raise BadReport("Expected license report schema 2")
@@ -386,6 +417,7 @@ def license_report(document, _code, expected):
     identities = [license_component(component) for component in components]
     assertions(expected["witnesses"], identities)
     coverage, dependency_coverage = license_coverage(inventory, coverage_subjects(components, identities))
+    revision_metadata = revision_only_license_metadata(identities)
 
     stable = {
         "completeness": completeness,
@@ -406,6 +438,8 @@ def license_report(document, _code, expected):
             for link in rows(row, "external_references")
         ),
     }
+    if revision_metadata:
+        observations["revision_only_license_metadata"] = revision_metadata
     return result(stable, observations)
 
 
