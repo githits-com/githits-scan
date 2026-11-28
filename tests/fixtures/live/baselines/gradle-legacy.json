@@ -1,0 +1,607 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "latest": "6.2.19",
+          "package": "maven:org.springframework:spring-jcl@5.0.5.RELEASE"
+        },
+        {
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "latest": "7.1.0",
+          "package": "maven:org.springframework:spring-beans@5.0.5.RELEASE"
+        },
+        {
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "latest": "7.1.0",
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-36p3-wjmg-h94x",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-beans@5.0.5.RELEASE"
+            },
+            {
+              "advisory": "GHSA-hh26-6xwr-ggv7",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-beans@5.0.5.RELEASE"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "5.0.5.RELEASE",
+              "name": "org.springframework:spring-beans",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "registry": "maven",
+              "strategy": "unknown",
+              "target_version": "5.2.22.RELEASE"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "maven:org.springframework:spring-beans@5.0.5.RELEASE"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-659m-px2c-25wj",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+            },
+            {
+              "advisory": "GHSA-cxrj-66c5-9fmh",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+            },
+            {
+              "advisory": "GHSA-f26x-pr96-vw86",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+            },
+            {
+              "advisory": "GHSA-ffvq-7w96-97p7",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+            },
+            {
+              "advisory": "GHSA-rcpf-vj53-7h2m",
+              "files": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "package": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "5.0.5.RELEASE",
+              "name": "org.springframework:spring-core",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "registry": "maven",
+              "strategy": "unknown",
+              "target_version": "6.2.19"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "maven:org.springframework:spring-core@5.0.5.RELEASE"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-36p3-wjmg-h94x",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-beans@5.0.5.RELEASE",
+          "severity": "CVSS_V3 9.8"
+        },
+        {
+          "advisory": "GHSA-659m-px2c-25wj",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE",
+          "severity": "CVSS_V3 3.7"
+        },
+        {
+          "advisory": "GHSA-cxrj-66c5-9fmh",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE",
+          "severity": "CVSS_V3 8.8"
+        },
+        {
+          "advisory": "GHSA-f26x-pr96-vw86",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE",
+          "severity": "CVSS_V3 5.9"
+        },
+        {
+          "advisory": "GHSA-ffvq-7w96-97p7",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-hh26-6xwr-ggv7",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-beans@5.0.5.RELEASE",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-rcpf-vj53-7h2m",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "package": "maven:org.springframework:spring-core@5.0.5.RELEASE",
+          "severity": "CVSS_V3 6.5"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 3,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "org.springframework:spring-beans",
+          "type": "license",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        },
+        {
+          "name": "org.springframework:spring-beans",
+          "type": "website",
+          "url": "https://github.com/spring-projects/spring-framework"
+        },
+        {
+          "name": "org.springframework:spring-core",
+          "type": "license",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        },
+        {
+          "name": "org.springframework:spring-core",
+          "type": "website",
+          "url": "https://github.com/spring-projects/spring-framework"
+        },
+        {
+          "name": "org.springframework:spring-jcl",
+          "type": "license",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        },
+        {
+          "name": "org.springframework:spring-jcl",
+          "type": "website",
+          "url": "https://github.com/spring-projects/spring-framework"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "org.springframework:spring-beans",
+          "observed_licenses": [],
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-beans@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "org.springframework:spring-core",
+          "observed_licenses": [],
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-core@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "org.springframework:spring-jcl",
+          "observed_licenses": [],
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-jcl@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "org.springframework:spring-beans",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-beans@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            },
+            {
+              "name": "org.springframework:spring-core",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-core@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            },
+            {
+              "name": "org.springframework:spring-jcl",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-jcl@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "org.springframework:spring-beans",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-beans@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            },
+            {
+              "name": "org.springframework:spring-core",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-core@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            },
+            {
+              "name": "org.springframework:spring-jcl",
+              "paths": [
+                "gradle/dependency-locks/compileClasspath.lockfile"
+              ],
+              "purl": "pkg:maven/org.springframework/spring-jcl@5.0.5.RELEASE",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "5.0.5.RELEASE"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "org.springframework:spring-beans",
+            "paths": [
+              "gradle/dependency-locks/compileClasspath.lockfile"
+            ],
+            "purl": "pkg:maven/org.springframework/spring-beans@5.0.5.RELEASE",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "5.0.5.RELEASE"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "org.springframework:spring-core",
+            "paths": [
+              "gradle/dependency-locks/compileClasspath.lockfile"
+            ],
+            "purl": "pkg:maven/org.springframework/spring-core@5.0.5.RELEASE",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "5.0.5.RELEASE"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "org.springframework:spring-jcl",
+            "paths": [
+              "gradle/dependency-locks/compileClasspath.lockfile"
+            ],
+            "purl": "pkg:maven/org.springframework/spring-jcl@5.0.5.RELEASE",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "5.0.5.RELEASE"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gradle/dependency-locks/compileClasspath.lockfile"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "org.springframework:spring-beans",
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-beans@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        },
+        {
+          "name": "org.springframework:spring-core",
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-core@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        },
+        {
+          "name": "org.springframework:spring-jcl",
+          "paths": [
+            "gradle/dependency-locks/compileClasspath.lockfile"
+          ],
+          "purl": "pkg:maven/org.springframework/spring-jcl@5.0.5.RELEASE",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "5.0.5.RELEASE"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gradle/dependency-locks/compileClasspath.lockfile"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

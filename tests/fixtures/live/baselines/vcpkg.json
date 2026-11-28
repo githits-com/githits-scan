@@ -1,0 +1,581 @@
+{
+  "audit": {
+    "observations": {
+      "dependencies": 4,
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "vcpkg"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "vcpkg"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "vcpkg"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "vcpkg"
+          ],
+          "unknown": false
+        }
+      },
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [
+            "vcpkg.json"
+          ],
+          "required_files": [],
+          "status": "unsupported"
+        },
+        {
+          "actionable": true,
+          "check": "vulnerabilities",
+          "files": [],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "fmt",
+          "type": "vcs",
+          "url": "https://github.com/fmtlib/fmt"
+        },
+        {
+          "name": "fmt",
+          "type": "website",
+          "url": "https://github.com/fmtlib/fmt"
+        },
+        {
+          "name": "zlib",
+          "type": "vcs",
+          "url": "https://github.com/madler/zlib"
+        },
+        {
+          "name": "zlib",
+          "type": "website",
+          "url": "https://www.zlib.net/"
+        }
+      ],
+      "resolved": [
+        {
+          "license_evidence": {
+            "applicability_reason": "not_selected_release",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "vcpkg.json"
+          ],
+          "metadata_status": "available",
+          "name": "fmt",
+          "observed_licenses": [],
+          "paths": [
+            "vcpkg.json"
+          ],
+          "purl": null,
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "12.2.1"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "not_selected_release",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "vcpkg.json"
+          ],
+          "metadata_status": "available",
+          "name": "vcpkg-cmake",
+          "observed_licenses": [],
+          "paths": [
+            "vcpkg.json"
+          ],
+          "purl": null,
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": "excluded",
+          "type": "library",
+          "version": "2026-11-09"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "not_selected_release",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "vcpkg.json"
+          ],
+          "metadata_status": "available",
+          "name": "vcpkg-cmake-config",
+          "observed_licenses": [],
+          "paths": [
+            "vcpkg.json"
+          ],
+          "purl": null,
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": "excluded",
+          "type": "library",
+          "version": "2026-07-21"
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "not_selected_release",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "vcpkg.json"
+          ],
+          "metadata_status": "available",
+          "name": "zlib",
+          "observed_licenses": [],
+          "paths": [
+            "vcpkg.json"
+          ],
+          "purl": null,
+          "record_kind": "resolved_package",
+          "resolution_basis": "manifest_resolution",
+          "scope": null,
+          "type": "library",
+          "version": "1.4"
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "components": [
+        {
+          "licenses": [],
+          "lockfile_paths": [],
+          "manifest_paths": [
+            "vcpkg.json"
+          ],
+          "name": "githits-scan-fixture",
+          "observed_licenses": [],
+          "paths": [
+            "vcpkg.json"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "1.0.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "fmt",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "githits-scan-fixture",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "vcpkg-cmake",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library"
+            },
+            {
+              "name": "vcpkg-cmake-config",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "fmt",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            },
+            {
+              "name": "githits-scan-fixture",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "vcpkg-cmake",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library"
+            },
+            {
+              "name": "vcpkg-cmake-config",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": null,
+              "type": "library"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_scope": "runtime",
+          "manifest_path": "vcpkg.json",
+          "name": "fmt"
+        },
+        {
+          "declared_scope": "runtime",
+          "manifest_path": "vcpkg.json",
+          "name": "zlib"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "vcpkg.json",
+          "status": "complete"
+        }
+      ]
+    }
+  },
+  "sbom": {
+    "observations": {
+      "components": [
+        {
+          "name": "fmt",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "12.2.1"
+        },
+        {
+          "name": "vcpkg-cmake",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "scope": "excluded",
+          "type": "library",
+          "version": "2026-11-09"
+        },
+        {
+          "name": "vcpkg-cmake-config",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "scope": "excluded",
+          "type": "library",
+          "version": "2026-07-21"
+        },
+        {
+          "name": "zlib",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library",
+          "version": "1.4"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "fmt",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "12.2.1"
+            },
+            {
+              "name": "vcpkg-cmake",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library",
+              "version": "2026-11-09"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "fmt",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "12.2.1"
+            },
+            {
+              "name": "vcpkg-cmake-config",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library",
+              "version": "2026-07-21"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "githits-scan-fixture",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "fmt",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "12.2.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "githits-scan-fixture",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "1.4"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "zlib",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "1.4"
+            },
+            {
+              "name": "vcpkg-cmake",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library",
+              "version": "2026-11-09"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "zlib",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "type": "library",
+              "version": "1.4"
+            },
+            {
+              "name": "vcpkg-cmake-config",
+              "paths": [
+                "vcpkg.json"
+              ],
+              "record_kind": "resolved_package",
+              "scope": "excluded",
+              "type": "library",
+              "version": "2026-07-21"
+            }
+          ]
+        }
+      ]
+    },
+    "stable": {
+      "completeness": "resolved_manifest_inventory",
+      "declarations": [
+        {
+          "declared_scope": "runtime",
+          "manifest_path": "vcpkg.json",
+          "name": "fmt"
+        },
+        {
+          "declared_scope": "runtime",
+          "manifest_path": "vcpkg.json",
+          "name": "zlib"
+        }
+      ],
+      "occurrences": [
+        {
+          "name": "fmt",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        },
+        {
+          "name": "vcpkg-cmake",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "scope": "excluded",
+          "type": "library"
+        },
+        {
+          "name": "vcpkg-cmake-config",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "scope": "excluded",
+          "type": "library"
+        },
+        {
+          "name": "zlib",
+          "paths": [
+            "vcpkg.json"
+          ],
+          "record_kind": "resolved_package",
+          "type": "library"
+        }
+      ],
+      "resolutions": [
+        {
+          "diagnostics": [],
+          "path": "vcpkg.json",
+          "status": "complete"
+        }
+      ]
+    }
+  }
+}

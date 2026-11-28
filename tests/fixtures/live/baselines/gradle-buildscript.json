@@ -1,0 +1,277 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "buildscript-gradle.lockfile"
+          ],
+          "latest": "3.22.0",
+          "package": "maven:org.apache.commons:commons-lang3@3.12.0"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-j288-q9x7-2f5v",
+              "files": [
+                "buildscript-gradle.lockfile"
+              ],
+              "package": "maven:org.apache.commons:commons-lang3@3.12.0"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.12.0",
+              "name": "org.apache.commons:commons-lang3",
+              "paths": [
+                "buildscript-gradle.lockfile"
+              ],
+              "registry": "maven",
+              "strategy": "unknown",
+              "target_version": "3.18.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "maven:org.apache.commons:commons-lang3@3.12.0"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-j288-q9x7-2f5v",
+          "files": [
+            "buildscript-gradle.lockfile"
+          ],
+          "package": "maven:org.apache.commons:commons-lang3@3.12.0",
+          "severity": "CVSS_V3 6.5"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 1,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "buildscript-gradle.lockfile"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "org.apache.commons:commons-lang3",
+          "type": "license",
+          "url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+        },
+        {
+          "name": "org.apache.commons:commons-lang3",
+          "type": "website",
+          "url": "https://commons.apache.org/proper/commons-lang/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "buildscript-gradle.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "org.apache.commons:commons-lang3",
+          "observed_licenses": [],
+          "paths": [
+            "buildscript-gradle.lockfile"
+          ],
+          "purl": "pkg:maven/org.apache.commons/commons-lang3@3.12.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "3.12.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "org.apache.commons:commons-lang3",
+              "paths": [
+                "buildscript-gradle.lockfile"
+              ],
+              "purl": "pkg:maven/org.apache.commons/commons-lang3@3.12.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "3.12.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "org.apache.commons:commons-lang3",
+              "paths": [
+                "buildscript-gradle.lockfile"
+              ],
+              "purl": "pkg:maven/org.apache.commons/commons-lang3@3.12.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "3.12.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "org.apache.commons:commons-lang3",
+            "paths": [
+              "buildscript-gradle.lockfile"
+            ],
+            "purl": "pkg:maven/org.apache.commons/commons-lang3@3.12.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "3.12.0"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "buildscript-gradle.lockfile"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "org.apache.commons:commons-lang3",
+          "paths": [
+            "buildscript-gradle.lockfile"
+          ],
+          "purl": "pkg:maven/org.apache.commons/commons-lang3@3.12.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "3.12.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "buildscript-gradle.lockfile"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}

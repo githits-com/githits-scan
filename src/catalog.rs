@@ -573,6 +573,9 @@ pub(crate) fn is_excluded_directory(path: &Path) -> bool {
 }
 
 #[cfg(test)]
+mod fixture_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

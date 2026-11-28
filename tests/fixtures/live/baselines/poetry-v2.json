@@ -1,0 +1,1422 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "2.34.2",
+          "package": "pypi:requests@2.32.2"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "2.8.0",
+          "package": "pypi:urllib3@2.2.1"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "2026.11.20",
+          "package": "pypi:certifi@2024.2.2"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.20",
+          "package": "pypi:idna@3.7"
+        },
+        {
+          "files": [
+            "poetry.lock"
+          ],
+          "latest": "3.5.3",
+          "package": "pypi:charset-normalizer@3.3.2"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-248v-346w-9cwc",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:certifi@2024.2.2"
+            },
+            {
+              "advisory": "GHSA-6q48-6c7w-9gw2",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:certifi@2024.2.2"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2024.2.2",
+              "name": "certifi",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2026.10.18"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:certifi@2024.2.2"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-2xpw-w6gg-jr37",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-34jh-p97f-mpxf",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-38jv-5279-wg99",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-48p4-8xcf-vxj5",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-8988-9cw3-xx77",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-gm62-xv2j-4w53",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-pq67-6m6q-mj2v",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-qccp-gfcp-xxvc",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            },
+            {
+              "advisory": "GHSA-vxq7-64xx-v4gw",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:urllib3@2.2.1"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.2.1",
+              "name": "urllib3",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2.8.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:urllib3@2.2.1"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-65pc-fj4g-8rjx",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:idna@3.7"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "3.7",
+              "name": "idna",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "3.15"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "limited",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:idna@3.7"
+        },
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-9hjg-9r4m-mvj7",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:requests@2.32.2"
+            },
+            {
+              "advisory": "GHSA-gc5v-m9x4-r6x2",
+              "files": [
+                "poetry.lock"
+              ],
+              "package": "pypi:requests@2.32.2"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "2.32.2",
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "registry": "pypi",
+              "strategy": "unknown",
+              "target_version": "2.33.0"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "pypi:requests@2.32.2"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-248v-346w-9cwc",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:certifi@2024.2.2",
+          "severity": "SEVERITY_LABEL 3"
+        },
+        {
+          "advisory": "GHSA-2xpw-w6gg-jr37",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-34jh-p97f-mpxf",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "CVSS_V3 4.4"
+        },
+        {
+          "advisory": "GHSA-38jv-5279-wg99",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "CVSS_V3 7.5"
+        },
+        {
+          "advisory": "GHSA-48p4-8xcf-vxj5",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-65pc-fj4g-8rjx",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:idna@3.7",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-6q48-6c7w-9gw2",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:certifi@2024.2.2",
+          "severity": "SEVERITY_LABEL 9.5"
+        },
+        {
+          "advisory": "GHSA-8988-9cw3-xx77",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-9hjg-9r4m-mvj7",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:requests@2.32.2",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-gc5v-m9x4-r6x2",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:requests@2.32.2",
+          "severity": "CVSS_V3 4.4"
+        },
+        {
+          "advisory": "GHSA-gm62-xv2j-4w53",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "SEVERITY_LABEL 8"
+        },
+        {
+          "advisory": "GHSA-pq67-6m6q-mj2v",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-qccp-gfcp-xxvc",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "CVSS_V3 5.3"
+        },
+        {
+          "advisory": "GHSA-vxq7-64xx-v4gw",
+          "files": [
+            "poetry.lock"
+          ],
+          "package": "pypi:urllib3@2.2.1",
+          "severity": "SEVERITY_LABEL 8"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [
+            "pypi"
+          ],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pypi"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 5,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "poetry.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "pyproject.toml"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "resolution",
+          "files": [
+            "poetry.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "vcs",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "certifi",
+          "type": "website",
+          "url": "https://github.com/certifi/python-certifi"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "vcs",
+          "url": "https://github.com/jawah/charset_normalizer"
+        },
+        {
+          "name": "charset-normalizer",
+          "type": "website",
+          "url": "https://pypi.org/project/charset-normalizer/"
+        },
+        {
+          "name": "idna",
+          "type": "license",
+          "url": "https://github.com/kjd/idna/blob/1d365e17e10d72d0b7876316fc7b9ca0eebdd38d/LICENSE.md"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/kjd/idna"
+        },
+        {
+          "name": "idna",
+          "type": "vcs",
+          "url": "https://github.com/kjd/idna"
+        },
+        {
+          "name": "idna",
+          "type": "website",
+          "url": "https://pypi.org/project/idna/"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "vcs",
+          "url": "https://github.com/psf/requests"
+        },
+        {
+          "name": "requests",
+          "type": "website",
+          "url": "https://pypi.org/project/requests/"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "vcs",
+          "url": "https://github.com/urllib3/urllib3"
+        },
+        {
+          "name": "urllib3",
+          "type": "website",
+          "url": "https://pypi.org/project/urllib3/"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "provided_extras": [
+              "brotli",
+              "h2",
+              "socks",
+              "zstd"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "license_evidence": {
+            "applicability_reason": "publisher_release_classifier",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "urllib3",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@2.2.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.1"
+        },
+        {
+          "context": {
+            "provided_extras": [
+              "socks",
+              "use-chardet-on-py3"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "requests",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.32.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.32.2"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.5"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "idna",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/idna@3.7",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.7"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.6"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MPL-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MPL-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "certifi",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2024.2.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2024.2.2"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.7.0"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "charset-normalizer",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@3.3.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.3.2"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "poetry.lock"
+          ],
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "name": "testpkg",
+          "observed_licenses": [],
+          "paths": [
+            "poetry.lock",
+            "pyproject.toml"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "provided_extras": [
+                  "brotli",
+                  "h2",
+                  "socks",
+                  "zstd"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "urllib3",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.1"
+            },
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.5"
+              },
+              "name": "idna",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.7",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.7"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.6"
+              },
+              "name": "certifi",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2024.2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2024.2.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.7.0"
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.2"
+            },
+            {
+              "name": "testpkg",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "provided_extras": [
+                  "brotli",
+                  "h2",
+                  "socks",
+                  "zstd"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "urllib3",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.1"
+            },
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.5"
+              },
+              "name": "idna",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.7",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.7"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.6"
+              },
+              "name": "certifi",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2024.2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2024.2.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.7.0"
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.2"
+            },
+            {
+              "name": "testpkg",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "^2.32.2",
+          "declared_scope": "runtime",
+          "manifest_path": "pyproject.toml",
+          "name": "requests"
+        },
+        {
+          "declared_scope": "build",
+          "manifest_path": "pyproject.toml",
+          "name": "poetry-core"
+        }
+      ],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only",
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "provided_extras": [
+                "brotli",
+                "h2",
+                "socks",
+                "zstd"
+              ],
+              "requires_python": ">=3.8"
+            },
+            "name": "urllib3",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/urllib3@2.2.1",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.2.1"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only",
+            "unknown_relationship"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "provided_extras": [
+                "socks",
+                "use-chardet-on-py3"
+              ],
+              "requires_python": ">=3.8"
+            },
+            "name": "requests",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/requests@2.32.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2.32.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "requires_python": ">=3.5"
+            },
+            "name": "idna",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/idna@3.7",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.7"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "requires_python": ">=3.6"
+            },
+            "name": "certifi",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/certifi@2024.2.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "2024.2.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "requires_python": ">=3.7.0"
+            },
+            "name": "charset-normalizer",
+            "paths": [
+              "poetry.lock"
+            ],
+            "purl": "pkg:pypi/charset-normalizer@3.3.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.3.2"
+          }
+        },
+        {
+          "reasons": [
+            "not_expanded"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "testpkg",
+            "paths": [
+              "poetry.lock",
+              "pyproject.toml"
+            ],
+            "purl": null,
+            "record_kind": "manifest",
+            "scope": null,
+            "type": "library",
+            "version": "0.1.0"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_POETRY",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "2.0",
+          "path": "poetry.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "provided_extras": [
+              "brotli",
+              "h2",
+              "socks",
+              "zstd"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "name": "urllib3",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/urllib3@2.2.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.2.1"
+        },
+        {
+          "context": {
+            "provided_extras": [
+              "socks",
+              "use-chardet-on-py3"
+            ],
+            "requires_python": ">=3.8"
+          },
+          "name": "requests",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/requests@2.32.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2.32.2"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.5"
+          },
+          "name": "idna",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/idna@3.7",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.7"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.6"
+          },
+          "name": "certifi",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/certifi@2024.2.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "2024.2.2"
+        },
+        {
+          "context": {
+            "requires_python": ">=3.7.0"
+          },
+          "name": "charset-normalizer",
+          "paths": [
+            "poetry.lock"
+          ],
+          "purl": "pkg:pypi/charset-normalizer@3.3.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.3.2"
+        },
+        {
+          "name": "testpkg",
+          "paths": [
+            "poetry.lock",
+            "pyproject.toml"
+          ],
+          "record_kind": "manifest",
+          "type": "library",
+          "version": "0.1.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_POETRY",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "pyproject.toml"
+          ],
+          "native_format_version": "2.0",
+          "path": "poetry.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "provided_extras": [
+                  "brotli",
+                  "h2",
+                  "socks",
+                  "zstd"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "urllib3",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/urllib3@2.2.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.2.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.5"
+              },
+              "name": "idna",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/idna@3.7",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.7"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.6"
+              },
+              "name": "certifi",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/certifi@2024.2.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2024.2.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            },
+            {
+              "context": {
+                "requires_python": ">=3.7.0"
+              },
+              "name": "charset-normalizer",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/charset-normalizer@3.3.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.3.2"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "testpkg",
+              "paths": [
+                "poetry.lock",
+                "pyproject.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "context": {
+                "provided_extras": [
+                  "socks",
+                  "use-chardet-on-py3"
+                ],
+                "requires_python": ">=3.8"
+              },
+              "name": "requests",
+              "paths": [
+                "poetry.lock"
+              ],
+              "purl": "pkg:pypi/requests@2.32.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "2.32.2"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

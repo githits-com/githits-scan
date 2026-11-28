@@ -1,0 +1,682 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 0,
+      "gaps": [
+        {
+          "actionable": false,
+          "check": "package checks",
+          "files": [
+            "conan.lock"
+          ],
+          "required_files": [],
+          "status": "excluded"
+        },
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "conan.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "boost",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.75.0"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "bzip2",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.0.8"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "libbacktrace",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "cci.20210118"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "mfast",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.2.2"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "tinyxml2",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "9.0.0"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "conan.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_reason": "non_registry_source",
+          "metadata_status": "not_eligible",
+          "name": "zlib",
+          "observed_licenses": [],
+          "paths": [
+            "conan.lock"
+          ],
+          "purl": null,
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.2.12"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            },
+            {
+              "name": "bzip2",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.0.8"
+            },
+            {
+              "name": "libbacktrace",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "cci.20210118"
+            },
+            {
+              "name": "mfast",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.2"
+            },
+            {
+              "name": "tinyxml2",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "9.0.0"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.12"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            },
+            {
+              "name": "bzip2",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.0.8"
+            },
+            {
+              "name": "libbacktrace",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "cci.20210118"
+            },
+            {
+              "name": "mfast",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.2"
+            },
+            {
+              "name": "tinyxml2",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "9.0.0"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "conan.lock"
+              ],
+              "purl": null,
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.12"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "boost",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "1.75.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "bzip2",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "1.0.8"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "libbacktrace",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "cci.20210118"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "mfast",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "1.2.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "tinyxml2",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "9.0.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "zlib",
+            "paths": [
+              "conan.lock"
+            ],
+            "purl": null,
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "1.2.12"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_CONAN",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "0.4",
+          "path": "conan.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "boost",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.75.0"
+        },
+        {
+          "name": "bzip2",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.0.8"
+        },
+        {
+          "name": "libbacktrace",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "cci.20210118"
+        },
+        {
+          "name": "mfast",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.2.2"
+        },
+        {
+          "name": "tinyxml2",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "9.0.0"
+        },
+        {
+          "name": "zlib",
+          "paths": [
+            "conan.lock"
+          ],
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.2.12"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_CONAN",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "0.4",
+          "path": "conan.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            },
+            {
+              "name": "bzip2",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.0.8"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            },
+            {
+              "name": "libbacktrace",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "cci.20210118"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            },
+            {
+              "name": "zlib",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.12"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "mfast",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.2"
+            },
+            {
+              "name": "boost",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.75.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "mfast",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.2.2"
+            },
+            {
+              "name": "tinyxml2",
+              "paths": [
+                "conan.lock"
+              ],
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "9.0.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

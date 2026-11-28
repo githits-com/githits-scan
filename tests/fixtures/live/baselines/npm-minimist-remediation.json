@@ -117,5 +117,239 @@
       "incomplete": false,
       "native_gaps": []
     }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "minimist",
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz"
+        },
+        {
+          "name": "minimist",
+          "type": "vcs",
+          "url": "git://github.com/substack/minimist.git"
+        },
+        {
+          "name": "minimist",
+          "type": "vcs",
+          "url": "https://github.com/minimistjs/minimist"
+        },
+        {
+          "name": "minimist",
+          "type": "website",
+          "url": "https://github.com/minimistjs/minimist"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "uploaded_declaration",
+            "artifact_verification": "not_checked",
+            "source": "manifest_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "package-lock.json"
+          ],
+          "manifest_paths": [
+            "package.json"
+          ],
+          "name": "audit-live-minimist",
+          "observed_licenses": [],
+          "paths": [
+            "package-lock.json",
+            "package.json"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "1.0.0"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "package-lock.json"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "minimist",
+          "observed_licenses": [],
+          "paths": [
+            "package-lock.json"
+          ],
+          "purl": "pkg:npm/minimist@0.0.8",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.0.8"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "audit-live-minimist",
+              "paths": [
+                "package-lock.json",
+                "package.json"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "minimist",
+              "paths": [
+                "package-lock.json"
+              ],
+              "purl": "pkg:npm/minimist@0.0.8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.0.8"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "audit-live-minimist",
+              "paths": [
+                "package-lock.json",
+                "package.json"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "minimist",
+              "paths": [
+                "package-lock.json"
+              ],
+              "purl": "pkg:npm/minimist@0.0.8",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.0.8"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": ">=0.0.8 <0.3.0",
+          "manifest_path": "package.json",
+          "name": "minimist"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_NPM_PACKAGE_LOCK",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "package.json"
+          ],
+          "native_format_version": "",
+          "path": "package-lock.json"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "minimist",
+          "paths": [
+            "package-lock.json"
+          ],
+          "purl": "pkg:npm/minimist@0.0.8",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "0.0.8"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_NPM_PACKAGE_LOCK",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "package.json"
+          ],
+          "native_format_version": "",
+          "path": "package-lock.json"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "audit-live-minimist",
+              "paths": [
+                "package-lock.json",
+                "package.json"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "minimist",
+              "paths": [
+                "package-lock.json"
+              ],
+              "purl": "pkg:npm/minimist@0.0.8",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "0.0.8"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
   }
 }

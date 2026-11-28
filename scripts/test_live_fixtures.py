@@ -123,6 +123,29 @@ class ProjectionTests(unittest.TestCase):
         self.assertTrue(changed)
         self.assertIn("fd audit stable changed", output.getvalue())
 
+    def test_lock_only_audit_and_explicit_unassessed_gap(self):
+        document = audit_document(dependencies=2)
+        del document["manifests"]
+        reports.validate_expectations({"audit": {"manifests": []}})
+        self.assertEqual(reports.audit(document, 0, {"manifests": []})["observations"]["dependencies"], 2)
+
+        gap = {"check": "dependency information", "status": "incomplete", "files": ["Gopkg.lock"]}
+        expected = {"manifests": [], "unassessed_gap": gap}
+        reports.validate_expectations({"audit": expected})
+        document["summary"]["dependencies"] = 0
+        document["incomplete"] = True
+        document["actionable_incomplete"] = True
+        document["issues"] = [{**gap, "actionable": True}]
+        self.assertEqual(reports.audit(document, 1, expected)["stable"]["gaps"][0]["files"], ["Gopkg.lock"])
+        document["issues"][0]["files"] = ["other/Gopkg.lock"]
+        with self.assertRaisesRegex(reports.Regression, "unassessed audit"):
+            reports.audit(document, 1, expected)
+        document["issues"] = []
+        with self.assertRaisesRegex(reports.Regression, "unassessed audit"):
+            reports.audit(document, 1, expected)
+        with self.assertRaisesRegex(reports.Regression, "any dependencies"):
+            reports.audit(document, 1, {"manifests": []})
+
     def test_audit_duplicate_and_manifest_mismatch_drift_are_visible_at_the_same_exit(self):
         document = audit_document()
         document["outdated"] = [{"package": "cargo:example@1.0.0", "files": ["Cargo.lock"]}]
@@ -169,6 +192,19 @@ class ProjectionTests(unittest.TestCase):
         document["components"].pop()
         missing = reports.sbom(document, 0, expected)
         self.assertNotEqual(after["stable"]["occurrences"], missing["stable"]["occurrences"])
+
+    def test_manifest_declaration_witness_requires_its_owning_path(self):
+        declaration = {
+            "name": "github.com/spf13/pflag",
+            "manifest_path": "go.mod",
+            "declared_requirement": "v1.0.9",
+        }
+        expected = {"declarations": [declaration]}
+        projected = reports.dependency_declarations({"declarations": [declaration]}, expected)
+        self.assertEqual(projected, [declaration])
+        other = {**declaration, "manifest_path": "other/go.mod"}
+        with self.assertRaisesRegex(reports.Regression, "declaration.*in go.mod"):
+            reports.dependency_declarations({"declarations": [other]}, expected)
 
     def test_mixed_sbom_gates_locked_versions_and_relationships(self):
         completeness = "mixed_dependency_inventory"
@@ -273,6 +309,37 @@ class ProjectionTests(unittest.TestCase):
         with self.assertRaisesRegex(reports.BadReport, "absent occurrence"):
             reports.license_report(document, 0, expected)
 
+    def test_revision_lookup_drift_stays_visible_and_reported_licenses_remain_stable(self):
+        revision = "a" * 40
+        document = {
+            "schema_version": 2,
+            "inventory": {"completeness": "recorded_lockfile_inventory", "coverage": []},
+            "components": [{
+                "name": "example.net/locked", "version": revision,
+                "record_kind": "locked_package", "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+                "source_revision": revision, "inputs": {"lockfile_paths": ["Gopkg.lock"], "manifest_paths": []},
+                "licenses": [], "observed_licenses": [], "external_references": [],
+                "metadata_status": "available",
+                "license_evidence": {"applicability_reason": "absent_declaration",
+                                     "artifact_verification": "not_checked"},
+            }],
+        }
+        expected = {"completeness": "recorded_lockfile_inventory", "witnesses": [
+            {"name": "example.net/locked", "version": revision, "paths": ["Gopkg.lock"]}
+        ]}
+        available = reports.license_report(document, 0, expected)
+        component = document["components"][0]
+        del component["license_evidence"]
+        component["metadata_status"] = "not_eligible"
+        component["metadata_reason"] = "missing_coordinate"
+        not_eligible = reports.license_report(document, 0, expected)
+        self.assertEqual(available["stable"], not_eligible["stable"])
+        self.assertEqual(not_eligible["observations"]["revision_only_license_metadata"][0]["metadata_reason"],
+                         "missing_coordinate")
+        self.assertNotEqual(available["observations"], not_eligible["observations"])
+        component["licenses"] = [{"expression": "BSD-3-Clause"}]
+        self.assertNotEqual(reports.license_report(document, 0, expected)["stable"], not_eligible["stable"])
+
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):
@@ -341,6 +408,12 @@ class RunnerTests(unittest.TestCase):
         self.run_fixture("refresh")
         self.assertNotEqual(second.read_bytes(), originals[1])
 
+    def test_list_reports_job_count_offline(self):
+        code, output, calls = self.run_fixture("list")
+        self.assertEqual(code, 0)
+        self.assertEqual(calls, [])
+        self.assertIn("2 fixtures, 2 planned API jobs.", output)
+
     def test_failed_selected_command_preserves_every_baseline(self):
         self.run_fixture("refresh")
         paths = sorted((self.root / "baselines").glob("*.json"))
@@ -364,6 +437,12 @@ class RunnerTests(unittest.TestCase):
             with self.assertRaisesRegex(reports.Regression, "selected"):
                 self.run_fixture("refresh")
             auth.assert_not_called()
+
+    def test_each_online_command_obtains_a_current_credential_after_preflight(self):
+        with patch.object(runner, "acquire_token", wraps=runner.acquire_token) as auth:
+            _, _, calls = self.run_fixture("refresh")
+        self.assertEqual(auth.call_count, 2)
+        self.assertEqual([call.args[0][1] for call in calls], ["detect", "detect", "audit", "audit"])
 
     def test_invalid_selection_inventory_and_baseline_fail_closed(self):
         with self.assertRaisesRegex(runner.UsageError, "Unknown fixture"):
@@ -413,6 +492,26 @@ class RunnerTests(unittest.TestCase):
                 runner.stage_inputs(fixture, self.root / "truncated", self.root)
             self.assertEqual(failure.exception.exit_code, 3)
             self.assertNotIn("partial package data", str(failure.exception))
+
+    def test_remote_subdirectory_is_verified_and_preserves_the_project_root(self):
+        fixture = self.fixtures[0]
+        fixture["project"] = {"repository": "owner/repo", "commit": "a" * 40, "subdirectory": "test projects/example"}
+        del fixture["local"]
+        runner.validate_fixture(fixture)
+        opener = Mock()
+        opener.open.return_value = BytesIO(b"test package")
+        with patch.object(runner.urllib.request, "build_opener", return_value=opener):
+            staged = self.root / "staged"
+            runner.stage_inputs(fixture, staged, self.root)
+            opener.open.assert_called_once_with(
+                "https://raw.githubusercontent.com/owner/repo/" + "a" * 40
+                + "/test%20projects/example/Cargo.toml", timeout=30
+            )
+            self.assertEqual((staged / "Cargo.toml").read_bytes(), b"test package")
+        for path in ("../escape", "/root", "a//b", "a\\b"):
+            with self.subTest(path=path), self.assertRaises(runner.UsageError):
+                fixture["project"]["subdirectory"] = path
+                runner.validate_fixture(fixture)
 
     def test_echoed_token_is_withheld_before_report_or_baseline(self):
         original = self.fake_scan

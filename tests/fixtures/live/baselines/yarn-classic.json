@@ -1,0 +1,346 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [
+        {
+          "category": "deprecation",
+          "kind": "deprecated",
+          "name": "left-pad",
+          "observations": [
+            {
+              "affected": [
+                {
+                  "coordinate": {
+                    "name": "left-pad",
+                    "registry": "npm",
+                    "version": "1.3.0"
+                  },
+                  "paths": [
+                    "yarn.lock"
+                  ]
+                }
+              ],
+              "reason": "use String.prototype.padStart()",
+              "replacement": null,
+              "source_version": "1.3.0"
+            }
+          ],
+          "registry": "npm",
+          "scope": "release",
+          "source": "npm.deprecated",
+          "version": "1.3.0"
+        }
+      ],
+      "manifest_lock_mismatches": [],
+      "outdated": [],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "npm"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 1,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "package.json"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "left-pad",
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/left-pad/-/left-pad-1.3.0.tgz"
+        },
+        {
+          "name": "left-pad",
+          "type": "vcs",
+          "url": "https://github.com/stevemao/left-pad"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "uploaded_declaration",
+            "artifact_verification": "not_checked",
+            "source": "manifest_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "yarn.lock"
+          ],
+          "manifest_paths": [
+            "package.json"
+          ],
+          "name": "yarn-classic-native",
+          "observed_licenses": [],
+          "paths": [
+            "package.json",
+            "yarn.lock"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "1.0.0"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "WTFPL"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "WTFPL"
+            }
+          ],
+          "lockfile_paths": [
+            "yarn.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "left-pad",
+          "observed_licenses": [],
+          "paths": [
+            "yarn.lock"
+          ],
+          "purl": "pkg:npm/left-pad@1.3.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.0"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "left-pad",
+              "paths": [
+                "yarn.lock"
+              ],
+              "purl": "pkg:npm/left-pad@1.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "left-pad",
+              "paths": [
+                "yarn.lock"
+              ],
+              "purl": "pkg:npm/left-pad@1.3.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            },
+            {
+              "name": "yarn-classic-native",
+              "paths": [
+                "package.json",
+                "yarn.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "yarn-classic-native",
+              "paths": [
+                "package.json",
+                "yarn.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "1.0.0"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "1.3.0",
+          "manifest_path": "package.json",
+          "name": "left-pad"
+        }
+      ],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "not_expanded"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "yarn-classic-native",
+            "paths": [
+              "package.json",
+              "yarn.lock"
+            ],
+            "purl": null,
+            "record_kind": "manifest",
+            "scope": null,
+            "type": "library",
+            "version": "1.0.0"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_YARN_CLASSIC",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "package.json"
+          ],
+          "native_format_version": "",
+          "path": "yarn.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "left-pad",
+          "paths": [
+            "yarn.lock"
+          ],
+          "purl": "pkg:npm/left-pad@1.3.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.0"
+        },
+        {
+          "name": "yarn-classic-native",
+          "paths": [
+            "package.json",
+            "yarn.lock"
+          ],
+          "record_kind": "manifest",
+          "type": "library",
+          "version": "1.0.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_YARN_CLASSIC",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "package.json"
+          ],
+          "native_format_version": "",
+          "path": "yarn.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "yarn-classic-native",
+              "paths": [
+                "package.json",
+                "yarn.lock"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "1.0.0"
+            },
+            {
+              "name": "left-pad",
+              "paths": [
+                "yarn.lock"
+              ],
+              "purl": "pkg:npm/left-pad@1.3.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

@@ -1,0 +1,356 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "Cargo.lock"
+          ],
+          "latest": "1.0.19",
+          "package": "crates:itoa@1.0.18"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": false,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "crates"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "crates"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "crates"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 1,
+      "gaps": [],
+      "incomplete": false,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "itoa",
+          "type": "other",
+          "url": "https://github.com/rust-lang/crates.io-index"
+        },
+        {
+          "name": "itoa",
+          "type": "vcs",
+          "url": "https://github.com/dtolnay/itoa"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "applicability_reason": "uploaded_declaration",
+            "artifact_verification": "not_checked",
+            "origin_scope": "manifest",
+            "source": "manifest_declared",
+            "status": "absent"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "Cargo.lock"
+          ],
+          "manifest_paths": [
+            "Cargo.toml"
+          ],
+          "name": "Cargo.toml",
+          "observed_licenses": [],
+          "paths": [
+            "Cargo.lock",
+            "Cargo.toml"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        },
+        {
+          "license_evidence": {
+            "applicability_reason": "uploaded_declaration",
+            "artifact_verification": "not_checked",
+            "origin_scope": "manifest",
+            "source": "manifest_declared",
+            "status": "expression"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Cargo.lock"
+          ],
+          "manifest_paths": [
+            "member/Cargo.toml"
+          ],
+          "name": "fixture-member",
+          "observed_licenses": [],
+          "paths": [
+            "Cargo.lock",
+            "member/Cargo.toml"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": "0.1.0"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT OR Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT OR Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "Cargo.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "itoa",
+          "observed_licenses": [],
+          "paths": [
+            "Cargo.lock"
+          ],
+          "purl": "pkg:cargo/itoa@1.0.18",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.18"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "name": "Cargo.toml",
+              "paths": [
+                "Cargo.lock",
+                "Cargo.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "fixture-member",
+              "paths": [
+                "Cargo.lock",
+                "member/Cargo.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "itoa",
+              "paths": [
+                "Cargo.lock"
+              ],
+              "purl": "pkg:cargo/itoa@1.0.18",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.18"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "Cargo.toml",
+              "paths": [
+                "Cargo.lock",
+                "Cargo.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "fixture-member",
+              "paths": [
+                "Cargo.lock",
+                "member/Cargo.toml"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "itoa",
+              "paths": [
+                "Cargo.lock"
+              ],
+              "purl": "pkg:cargo/itoa@1.0.18",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.18"
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "=1.0.18",
+          "declared_scope": "runtime",
+          "manifest_path": "member/Cargo.toml",
+          "name": "itoa"
+        },
+        {
+          "declared_requirement": "=1.0.18",
+          "manifest_path": "member/Cargo.toml",
+          "name": "itoa"
+        }
+      ],
+      "dependency_coverage": [],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_CARGO",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "Cargo.toml",
+            "member/Cargo.toml"
+          ],
+          "native_format_version": "",
+          "path": "Cargo.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "Cargo.toml",
+          "paths": [
+            "Cargo.lock",
+            "Cargo.toml"
+          ],
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "itoa",
+          "paths": [
+            "Cargo.lock"
+          ],
+          "purl": "pkg:cargo/itoa@1.0.18",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.0.18"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_CARGO",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "Cargo.toml",
+            "member/Cargo.toml"
+          ],
+          "native_format_version": "",
+          "path": "Cargo.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "fixture-member",
+              "paths": [
+                "Cargo.lock",
+                "member/Cargo.toml"
+              ],
+              "record_kind": "manifest",
+              "type": "library",
+              "version": "0.1.0"
+            },
+            {
+              "name": "itoa",
+              "paths": [
+                "Cargo.lock"
+              ],
+              "purl": "pkg:cargo/itoa@1.0.18",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.0.18"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

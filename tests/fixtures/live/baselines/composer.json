@@ -1,0 +1,503 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "composer.lock"
+          ],
+          "latest": "1.14.6",
+          "package": "packagist:pear/log@1.13.3"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "packagist"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "packagist"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "packagist"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 2,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "composer.json"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        },
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "composer.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "pear/log",
+          "type": "distribution",
+          "url": "https://api.github.com/repos/pear/Log/zipball/21af0be11669194d72d88b5ee9d5f176dc75d9a3"
+        },
+        {
+          "name": "pear/log",
+          "type": "vcs",
+          "url": "https://github.com/pear/Log"
+        },
+        {
+          "name": "pear/log",
+          "type": "vcs",
+          "url": "https://github.com/pear/Log.git"
+        },
+        {
+          "name": "pear/log",
+          "type": "website",
+          "url": "https://packagist.org/packages/pear/log"
+        },
+        {
+          "name": "pear/pear_exception",
+          "type": "distribution",
+          "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/b14fbe2ddb0b9f94f5b24cf08783d599f776fff0"
+        },
+        {
+          "name": "pear/pear_exception",
+          "type": "vcs",
+          "url": "https://github.com/pear/PEAR_Exception"
+        },
+        {
+          "name": "pear/pear_exception",
+          "type": "vcs",
+          "url": "https://github.com/pear/PEAR_Exception.git"
+        },
+        {
+          "name": "pear/pear_exception",
+          "type": "website",
+          "url": "https://packagist.org/packages/pear/pear_exception"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-2-Clause"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "BSD-2-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "composer.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "pear/pear_exception",
+          "observed_licenses": [],
+          "paths": [
+            "composer.lock"
+          ],
+          "purl": "pkg:composer/pear/pear_exception@1.0.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+          "type": "library",
+          "version": "v1.0.2"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "composer.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "pear/log",
+          "observed_licenses": [],
+          "paths": [
+            "composer.lock"
+          ],
+          "purl": "pkg:composer/pear/log@1.13.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+          "type": "library",
+          "version": "1.13.3"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "composer.lock"
+          ],
+          "manifest_paths": [
+            "composer.json"
+          ],
+          "name": "composer.json",
+          "observed_licenses": [],
+          "paths": [
+            "composer.json",
+            "composer.lock"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "composer.json",
+              "paths": [
+                "composer.json",
+                "composer.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "pear/log",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/log@1.13.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+              "type": "library",
+              "version": "1.13.3"
+            },
+            {
+              "name": "pear/pear_exception",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/pear_exception@1.0.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+              "type": "library",
+              "version": "v1.0.2"
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "dependencies": [
+            {
+              "name": "pear/log",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/log@1.13.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+              "type": "library",
+              "version": "1.13.3"
+            },
+            {
+              "name": "pear/pear_exception",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/pear_exception@1.0.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+              "type": "library",
+              "version": "v1.0.2"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "composer.json",
+              "paths": [
+                "composer.json",
+                "composer.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "^1.13",
+          "declared_scope": "runtime",
+          "manifest_path": "composer.json",
+          "name": "pear/log"
+        }
+      ],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "not_expanded"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "composer.json",
+            "paths": [
+              "composer.json",
+              "composer.lock"
+            ],
+            "purl": null,
+            "record_kind": "manifest",
+            "scope": null,
+            "type": "library",
+            "version": null
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "name": "pear/log",
+            "paths": [
+              "composer.lock"
+            ],
+            "purl": "pkg:composer/pear/log@1.13.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+            "type": "library",
+            "version": "1.13.3"
+          }
+        },
+        {
+          "reasons": [
+            "untargeted_requirement"
+          ],
+          "state": "incomplete",
+          "subject": {
+            "name": "pear/pear_exception",
+            "paths": [
+              "composer.lock"
+            ],
+            "purl": "pkg:composer/pear/pear_exception@1.0.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+            "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+            "type": "library",
+            "version": "v1.0.2"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_COMPOSER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "composer.json"
+          ],
+          "native_format_version": "",
+          "path": "composer.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "composer.json",
+          "paths": [
+            "composer.json",
+            "composer.lock"
+          ],
+          "record_kind": "manifest",
+          "type": "library"
+        },
+        {
+          "name": "pear/log",
+          "paths": [
+            "composer.lock"
+          ],
+          "purl": "pkg:composer/pear/log@1.13.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+          "type": "library",
+          "version": "1.13.3"
+        },
+        {
+          "name": "pear/pear_exception",
+          "paths": [
+            "composer.lock"
+          ],
+          "purl": "pkg:composer/pear/pear_exception@1.0.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+          "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+          "type": "library",
+          "version": "v1.0.2"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_COMPOSER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "composer.json"
+          ],
+          "native_format_version": "",
+          "path": "composer.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "composer.json",
+              "paths": [
+                "composer.json",
+                "composer.lock"
+              ],
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "name": "pear/log",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/log@1.13.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+              "type": "library",
+              "version": "1.13.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "pear/log",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/log@1.13.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "21af0be11669194d72d88b5ee9d5f176dc75d9a3",
+              "type": "library",
+              "version": "1.13.3"
+            },
+            {
+              "name": "pear/pear_exception",
+              "paths": [
+                "composer.lock"
+              ],
+              "purl": "pkg:composer/pear/pear_exception@1.0.2",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_GIT",
+              "source_revision": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+              "type": "library",
+              "version": "v1.0.2"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

@@ -748,6 +748,28 @@
     },
     "stable": {
       "completeness": "resolved_manifest_inventory",
+      "declarations": [
+        {
+          "declared_requirement": "v1.0.9",
+          "manifest_path": "go.mod",
+          "name": "github.com/spf13/pflag"
+        },
+        {
+          "declared_requirement": "v1.1.0",
+          "manifest_path": "go.mod",
+          "name": "github.com/inconshreveable/mousetrap"
+        },
+        {
+          "declared_requirement": "v2.0.6",
+          "manifest_path": "go.mod",
+          "name": "github.com/cpuguy83/go-md2man/v2"
+        },
+        {
+          "declared_requirement": "v3.0.1",
+          "manifest_path": "go.mod",
+          "name": "gopkg.in/yaml.v3"
+        }
+      ],
       "occurrences": [
         {
           "name": "github.com/cpuguy83/go-md2man/v2",

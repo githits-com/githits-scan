@@ -1,0 +1,407 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "Gemfile.lock"
+          ],
+          "latest": "13.4.2",
+          "package": "rubygems:rake@13.2.1"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "rubygems"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 1,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "Gemfile"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "rake",
+          "type": "vcs",
+          "url": "https://github.com/ruby/rake"
+        },
+        {
+          "name": "rake",
+          "type": "website",
+          "url": "https://github.com/ruby/rake"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "Gemfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "rake",
+          "observed_licenses": [],
+          "paths": [
+            "Gemfile.lock"
+          ],
+          "purl": "pkg:gem/rake@13.2.1",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "13.2.1"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "Gemfile.lock"
+          ],
+          "manifest_paths": [
+            "Gemfile"
+          ],
+          "name": "Gemfile",
+          "observed_licenses": [],
+          "paths": [
+            "Gemfile",
+            "Gemfile.lock"
+          ],
+          "purl": null,
+          "record_kind": "manifest",
+          "scope": null,
+          "type": "library",
+          "version": null
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "Gemfile.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "Gemfile.lock",
+          "observed_licenses": [],
+          "paths": [
+            "Gemfile.lock"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "complete",
+          "dependencies": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            },
+            {
+              "name": "Gemfile.lock",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            },
+            {
+              "name": "Gemfile",
+              "paths": [
+                "Gemfile",
+                "Gemfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            },
+            {
+              "name": "Gemfile.lock",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "Gemfile",
+              "paths": [
+                "Gemfile",
+                "Gemfile.lock"
+              ],
+              "purl": null,
+              "record_kind": "manifest",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [
+        {
+          "declared_requirement": "13.2.1",
+          "declared_scope": "runtime",
+          "manifest_path": "Gemfile",
+          "name": "rake"
+        },
+        {
+          "declared_requirement": "13.2.1",
+          "manifest_path": "Gemfile",
+          "name": "rake"
+        }
+      ],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "not_expanded"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "Gemfile",
+            "paths": [
+              "Gemfile",
+              "Gemfile.lock"
+            ],
+            "purl": null,
+            "record_kind": "manifest",
+            "scope": null,
+            "type": "library",
+            "version": null
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_BUNDLER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "Gemfile"
+          ],
+          "native_format_version": "",
+          "path": "Gemfile.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "bundler_platform": "ruby"
+          },
+          "name": "rake",
+          "paths": [
+            "Gemfile.lock"
+          ],
+          "purl": "pkg:gem/rake@13.2.1",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "13.2.1"
+        },
+        {
+          "name": "Gemfile",
+          "paths": [
+            "Gemfile",
+            "Gemfile.lock"
+          ],
+          "record_kind": "manifest",
+          "type": "library"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "associated",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_BUNDLER",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [
+            "Gemfile"
+          ],
+          "native_format_version": "",
+          "path": "Gemfile.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "Gemfile",
+              "paths": [
+                "Gemfile",
+                "Gemfile.lock"
+              ],
+              "record_kind": "manifest",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "Gemfile.lock",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "bundler_platform": "ruby"
+              },
+              "name": "rake",
+              "paths": [
+                "Gemfile.lock"
+              ],
+              "purl": "pkg:gem/rake@13.2.1",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "13.2.1"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

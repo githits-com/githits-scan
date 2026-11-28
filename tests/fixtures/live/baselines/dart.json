@@ -1,0 +1,740 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "pubspec.lock"
+          ],
+          "latest": "1.19.0",
+          "package": "pub:meta@1.11.0"
+        },
+        {
+          "files": [
+            "pubspec.lock"
+          ],
+          "latest": "1.19.1",
+          "package": "pub:collection@1.17.0"
+        },
+        {
+          "files": [
+            "pubspec.lock"
+          ],
+          "latest": "1.4.0",
+          "package": "pub:typed_data@1.3.2"
+        },
+        {
+          "files": [
+            "pubspec.lock"
+          ],
+          "latest": "3.0.8",
+          "package": "pub:crypto@3.0.3"
+        }
+      ],
+      "recommendations": [],
+      "retained_warnings": [],
+      "vulnerabilities": []
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pub"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "pub"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 4,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "pubspec.lock"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "collection",
+          "type": "license",
+          "url": "https://github.com/dart-archive/collection/blob/ca45fc4cb2ec4d6aece51cd8e61c8eed5a207c4e/LICENSE"
+        },
+        {
+          "name": "collection",
+          "type": "other",
+          "url": "https://pub.dev"
+        },
+        {
+          "name": "collection",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/collection"
+        },
+        {
+          "name": "collection",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/core"
+        },
+        {
+          "name": "crypto",
+          "type": "license",
+          "url": "https://github.com/dart-archive/crypto/blob/c5403c8a69c62e8f899de73892d9e9b12ce965bd/LICENSE"
+        },
+        {
+          "name": "crypto",
+          "type": "other",
+          "url": "https://pub.dev"
+        },
+        {
+          "name": "crypto",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/core"
+        },
+        {
+          "name": "crypto",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/crypto"
+        },
+        {
+          "name": "meta",
+          "type": "other",
+          "url": "https://pub.dev"
+        },
+        {
+          "name": "meta",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/sdk"
+        },
+        {
+          "name": "meta",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/sdk"
+        },
+        {
+          "name": "typed_data",
+          "type": "license",
+          "url": "https://github.com/dart-archive/typed_data/blob/921f5c0380c6c487d8a065c45618162efa4cbd92/LICENSE"
+        },
+        {
+          "name": "typed_data",
+          "type": "other",
+          "url": "https://pub.dev"
+        },
+        {
+          "name": "typed_data",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/core"
+        },
+        {
+          "name": "typed_data",
+          "type": "vcs",
+          "url": "https://github.com/dart-lang/typed_data"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+          },
+          "license_evidence": {
+            "applicability_reason": "absent_declaration",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [],
+          "lockfile_paths": [
+            "pubspec.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "meta",
+          "observed_licenses": [],
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/meta@1.11.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": "excluded",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.11.0"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "pubspec.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "crypto",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/crypto@3.0.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.3"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "pubspec.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "collection",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/collection@1.17.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.17.0"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+          },
+          "license_evidence": {
+            "applicability_reason": "repository_source_license",
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "pubspec.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "typed_data",
+          "observed_licenses": [
+            {
+              "license": {
+                "name": "BSD-3-Clause"
+              }
+            }
+          ],
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/typed_data@1.3.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.2"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "pubspec.lock"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "pubspec.lock",
+          "observed_licenses": [],
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+              },
+              "name": "meta",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/meta@1.11.0",
+              "record_kind": "locked_package",
+              "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+              },
+              "name": "crypto",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/crypto@3.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.3"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+              },
+              "name": "collection",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/collection@1.17.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.17.0"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+              },
+              "name": "typed_data",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/typed_data@1.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.2"
+            },
+            {
+              "name": "pubspec.lock",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+              },
+              "name": "meta",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/meta@1.11.0",
+              "record_kind": "locked_package",
+              "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+              },
+              "name": "crypto",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/crypto@3.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.3"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+              },
+              "name": "collection",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/collection@1.17.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.17.0"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+              },
+              "name": "typed_data",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/typed_data@1.3.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.3.2"
+            },
+            {
+              "name": "pubspec.lock",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+            },
+            "name": "meta",
+            "paths": [
+              "pubspec.lock"
+            ],
+            "purl": "pkg:pub/meta@1.11.0",
+            "record_kind": "locked_package",
+            "scope": "excluded",
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.11.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+            },
+            "name": "crypto",
+            "paths": [
+              "pubspec.lock"
+            ],
+            "purl": "pkg:pub/crypto@3.0.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "3.0.3"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+            },
+            "name": "collection",
+            "paths": [
+              "pubspec.lock"
+            ],
+            "purl": "pkg:pub/collection@1.17.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.17.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+            },
+            "name": "typed_data",
+            "paths": [
+              "pubspec.lock"
+            ],
+            "purl": "pkg:pub/typed_data@1.3.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "1.3.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "pubspec.lock",
+            "paths": [
+              "pubspec.lock"
+            ],
+            "purl": null,
+            "record_kind": "lock_subject",
+            "scope": null,
+            "type": "library",
+            "version": null
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_DART",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "pubspec.lock"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+          },
+          "name": "meta",
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/meta@1.11.0",
+          "record_kind": "locked_package",
+          "scope": "excluded",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.11.0"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+          },
+          "name": "crypto",
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/crypto@3.0.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "3.0.3"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+          },
+          "name": "collection",
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/collection@1.17.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.17.0"
+        },
+        {
+          "context": {
+            "dart_dependency_kind": "DART_DEPENDENCY_KIND_TRANSITIVE"
+          },
+          "name": "typed_data",
+          "paths": [
+            "pubspec.lock"
+          ],
+          "purl": "pkg:pub/typed_data@1.3.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "1.3.2"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_DART",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "pubspec.lock"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "name": "pubspec.lock",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_DEV"
+              },
+              "name": "meta",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/meta@1.11.0",
+              "record_kind": "locked_package",
+              "scope": "excluded",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "1.11.0"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "pubspec.lock",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "dart_dependency_kind": "DART_DEPENDENCY_KIND_DIRECT_MAIN"
+              },
+              "name": "crypto",
+              "paths": [
+                "pubspec.lock"
+              ],
+              "purl": "pkg:pub/crypto@3.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "3.0.3"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

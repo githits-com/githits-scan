@@ -1,0 +1,614 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [
+        {
+          "category": "deprecation",
+          "kind": "deprecated",
+          "name": "nuget.frameworks",
+          "observations": [
+            {
+              "affected": [
+                {
+                  "coordinate": {
+                    "name": "nuget.frameworks",
+                    "registry": "nuget",
+                    "version": "5.7.0"
+                  },
+                  "paths": [
+                    "packages.lock.json"
+                  ]
+                }
+              ],
+              "reason": "You can learn more about NuGet Client SDK support policy from https://learn.microsoft.com/nuget/reference/nuget-client-sdk",
+              "replacement": null,
+              "source_version": "5.7.0"
+            }
+          ],
+          "registry": "nuget",
+          "scope": "release",
+          "source": "nuget.deprecation",
+          "version": "5.7.0"
+        },
+        {
+          "category": "withdrawal",
+          "kind": "unlisted",
+          "name": "nuget.frameworks",
+          "observations": [
+            {
+              "affected": [
+                {
+                  "coordinate": {
+                    "name": "nuget.frameworks",
+                    "registry": "nuget",
+                    "version": "5.7.0"
+                  },
+                  "paths": [
+                    "packages.lock.json"
+                  ]
+                }
+              ],
+              "reason": null,
+              "replacement": null,
+              "source_version": "5.7.0"
+            }
+          ],
+          "registry": "nuget",
+          "scope": "release",
+          "source": "nuget.listed",
+          "version": "5.7.0"
+        }
+      ],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "packages.lock.json"
+          ],
+          "latest": "13.0.4",
+          "package": "nuget:newtonsoft.json@12.0.3"
+        },
+        {
+          "files": [
+            "packages.lock.json"
+          ],
+          "latest": "8.0.0",
+          "package": "nuget:nuget.frameworks@5.7.0"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-5crp-9r3c-p9vr",
+              "files": [
+                "packages.lock.json"
+              ],
+              "package": "nuget:newtonsoft.json@12.0.3"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "12.0.3",
+              "name": "newtonsoft.json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "registry": "nuget",
+              "strategy": "upgrade",
+              "target_version": "14.0.1-beta1"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": true,
+            "release_availability": "observed",
+            "requirements": "matched",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "nuget:newtonsoft.json@12.0.3"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-5crp-9r3c-p9vr",
+          "files": [
+            "packages.lock.json"
+          ],
+          "package": "nuget:newtonsoft.json@12.0.3",
+          "severity": "CVSS_V3 7.5"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "nuget"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "nuget"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [],
+          "unknown": false
+        }
+      },
+      "dependencies": 2,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "packages.lock.json"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "Newtonsoft.Json",
+          "type": "license",
+          "url": "https://www.nuget.org/packages/Newtonsoft.Json/12.0.3/license"
+        },
+        {
+          "name": "Newtonsoft.Json",
+          "type": "vcs",
+          "url": "https://github.com/JamesNK/Newtonsoft.Json"
+        },
+        {
+          "name": "Newtonsoft.Json",
+          "type": "website",
+          "url": "https://www.nuget.org/packages/Newtonsoft.Json"
+        },
+        {
+          "name": "NuGet.Frameworks",
+          "type": "license",
+          "url": "https://www.nuget.org/packages/NuGet.Frameworks/5.7.0/license"
+        },
+        {
+          "name": "NuGet.Frameworks",
+          "type": "vcs",
+          "url": "https://github.com/NuGet/NuGet.Client"
+        },
+        {
+          "name": "NuGet.Frameworks",
+          "type": "website",
+          "url": "https://www.nuget.org/packages/NuGet.Frameworks"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "packages.lock.json"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "NuGet.Frameworks",
+          "observed_licenses": [],
+          "paths": [
+            "packages.lock.json"
+          ],
+          "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.7.0"
+        },
+        {
+          "context": {
+            "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+          },
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "MIT"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "MIT"
+            }
+          ],
+          "lockfile_paths": [
+            "packages.lock.json"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "Newtonsoft.Json",
+          "observed_licenses": [],
+          "paths": [
+            "packages.lock.json"
+          ],
+          "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "12.0.3"
+        },
+        {
+          "licenses": [],
+          "lockfile_paths": [
+            "packages.lock.json"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "not_eligible",
+          "name": "packages.lock.json",
+          "observed_licenses": [],
+          "paths": [
+            "packages.lock.json"
+          ],
+          "purl": null,
+          "record_kind": "lock_subject",
+          "scope": null,
+          "type": "library",
+          "version": null
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "Newtonsoft.Json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "12.0.3"
+            },
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "NuGet.Frameworks",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.7.0"
+            },
+            {
+              "name": "packages.lock.json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "Newtonsoft.Json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "12.0.3"
+            },
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "NuGet.Frameworks",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.7.0"
+            },
+            {
+              "name": "packages.lock.json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": null,
+              "record_kind": "lock_subject",
+              "scope": null,
+              "type": "library",
+              "version": null
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+            },
+            "name": "Newtonsoft.Json",
+            "paths": [
+              "packages.lock.json"
+            ],
+            "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "12.0.3"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "context": {
+              "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+            },
+            "name": "NuGet.Frameworks",
+            "paths": [
+              "packages.lock.json"
+            ],
+            "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+            "type": "library",
+            "version": "5.7.0"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "packages.lock.json",
+            "paths": [
+              "packages.lock.json"
+            ],
+            "purl": null,
+            "record_kind": "lock_subject",
+            "scope": null,
+            "type": "library",
+            "version": null
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_NUGET",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "packages.lock.json"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "context": {
+            "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+          },
+          "name": "Newtonsoft.Json",
+          "paths": [
+            "packages.lock.json"
+          ],
+          "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "12.0.3"
+        },
+        {
+          "context": {
+            "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+          },
+          "name": "NuGet.Frameworks",
+          "paths": [
+            "packages.lock.json"
+          ],
+          "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+          "type": "library",
+          "version": "5.7.0"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_AND_RECORDED_RELATIONSHIPS",
+          "format": "LOCKFILE_FORMAT_NUGET",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "packages.lock.json"
+        }
+      ],
+      "relationships": [
+        {
+          "dependsOn": [
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "NuGet.Frameworks",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.7.0"
+            },
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "Newtonsoft.Json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "12.0.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "packages.lock.json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "Newtonsoft.Json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/Newtonsoft.Json@12.0.3",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "12.0.3"
+            }
+          ]
+        },
+        {
+          "dependsOn": [
+            {
+              "name": "packages.lock.json",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "record_kind": "lock_subject",
+              "type": "library"
+            },
+            {
+              "context": {
+                "nuget_dependency_type": "NUGET_DEPENDENCY_TYPE_DIRECT"
+              },
+              "name": "NuGet.Frameworks",
+              "paths": [
+                "packages.lock.json"
+              ],
+              "purl": "pkg:nuget/NuGet.Frameworks@5.7.0",
+              "record_kind": "locked_package",
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_REGISTRY",
+              "type": "library",
+              "version": "5.7.0"
+            }
+          ]
+        }
+      ],
+      "resolutions": []
+    }
+  }
+}

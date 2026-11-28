@@ -1,0 +1,480 @@
+{
+  "audit": {
+    "observations": {
+      "duplicates": [],
+      "exit": 1,
+      "lifecycle": [],
+      "manifest_lock_mismatches": [],
+      "outdated": [
+        {
+          "files": [
+            "gradle.lockfile"
+          ],
+          "latest": "2.15.1",
+          "package": "maven:joda-time:joda-time@2.2"
+        },
+        {
+          "files": [
+            "gradle.lockfile"
+          ],
+          "latest": "3.0",
+          "package": "maven:org.hamcrest:hamcrest-core@1.3"
+        },
+        {
+          "files": [
+            "gradle.lockfile"
+          ],
+          "latest": "4.13.2",
+          "package": "maven:junit:junit@4.12"
+        }
+      ],
+      "recommendations": [
+        {
+          "addressed_findings": [
+            {
+              "advisory": "GHSA-269g-pwp5-87pp",
+              "files": [
+                "gradle.lockfile"
+              ],
+              "package": "maven:junit:junit@4.12"
+            }
+          ],
+          "changes": [
+            {
+              "from_version": "4.12",
+              "name": "junit:junit",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "registry": "maven",
+              "strategy": "unknown",
+              "target_version": "4.13.1"
+            }
+          ],
+          "checks": {
+            "advisories": "non_affecting",
+            "availability_source": "catalog",
+            "catalog_freshness": "unknown",
+            "deprecated_target": false,
+            "native_resolution": "not_checked",
+            "parent_search": "not_assessed",
+            "preference_differences": 0,
+            "prerelease_target": false,
+            "release_availability": "observed",
+            "requirements": "unchecked",
+            "withdrawal": "unknown"
+          },
+          "outcome": "proposed",
+          "remaining_findings": [],
+          "subject": "maven:junit:junit@4.12"
+        }
+      ],
+      "retained_warnings": [],
+      "vulnerabilities": [
+        {
+          "advisory": "GHSA-269g-pwp5-87pp",
+          "files": [
+            "gradle.lockfile"
+          ],
+          "package": "maven:junit:junit@4.12",
+          "severity": "CVSS_V3 4.4"
+        }
+      ]
+    },
+    "stable": {
+      "actionable_incomplete": true,
+      "coverage": {
+        "deprecation": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "registry_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "repository_archival": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        },
+        "withdrawal": {
+          "not_applicable": [],
+          "not_collected": [
+            "maven"
+          ],
+          "unknown": false
+        }
+      },
+      "dependencies": 3,
+      "gaps": [
+        {
+          "actionable": true,
+          "check": "dependency information",
+          "files": [
+            "gradle.lockfile"
+          ],
+          "required_files": [],
+          "status": "incomplete"
+        }
+      ],
+      "incomplete": true,
+      "native_gaps": []
+    }
+  },
+  "license_report": {
+    "observations": {
+      "links": [
+        {
+          "name": "joda-time:joda-time",
+          "type": "license",
+          "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        },
+        {
+          "name": "joda-time:joda-time",
+          "type": "website",
+          "url": "http://joda-time.sourceforge.net"
+        },
+        {
+          "name": "junit:junit",
+          "type": "license",
+          "url": "http://www.eclipse.org/legal/epl-v10.html"
+        },
+        {
+          "name": "junit:junit",
+          "type": "website",
+          "url": "http://junit.org"
+        },
+        {
+          "name": "org.hamcrest:hamcrest-core",
+          "type": "license",
+          "url": "http://www.opensource.org/licenses/bsd-license.php"
+        }
+      ],
+      "resolved": []
+    },
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "Apache-2.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "Apache-2.0"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "joda-time:joda-time",
+          "observed_licenses": [],
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/joda-time/joda-time@2.2",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "2.2"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "BSD-3-Clause"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "org.hamcrest:hamcrest-core",
+          "observed_licenses": [],
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/org.hamcrest/hamcrest-core@1.3",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.3"
+        },
+        {
+          "license_evidence": {
+            "artifact_verification": "not_checked",
+            "lookup_basis": "registry_name_version",
+            "source": "registry_declared"
+          },
+          "licenses": [
+            {
+              "acknowledgement": "concluded",
+              "expression": "EPL-1.0"
+            },
+            {
+              "acknowledgement": "declared",
+              "expression": "EPL-1.0"
+            }
+          ],
+          "lockfile_paths": [
+            "gradle.lockfile"
+          ],
+          "manifest_paths": [],
+          "metadata_status": "available",
+          "name": "junit:junit",
+          "observed_licenses": [],
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/junit/junit@4.12",
+          "record_kind": "locked_package",
+          "resolution_basis": "lockfile_record",
+          "scope": null,
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "4.12"
+        }
+      ],
+      "coverage": [
+        {
+          "aggregate": "incomplete",
+          "assemblies": [
+            {
+              "name": "joda-time:joda-time",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/joda-time/joda-time@2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "2.2"
+            },
+            {
+              "name": "junit:junit",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/junit/junit@4.12",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "4.12"
+            },
+            {
+              "name": "org.hamcrest:hamcrest-core",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/org.hamcrest/hamcrest-core@1.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.3"
+            }
+          ]
+        },
+        {
+          "aggregate": "unknown",
+          "dependencies": [
+            {
+              "name": "joda-time:joda-time",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/joda-time/joda-time@2.2",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "2.2"
+            },
+            {
+              "name": "junit:junit",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/junit/junit@4.12",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "4.12"
+            },
+            {
+              "name": "org.hamcrest:hamcrest-core",
+              "paths": [
+                "gradle.lockfile"
+              ],
+              "purl": "pkg:maven/org.hamcrest/hamcrest-core@1.3",
+              "record_kind": "locked_package",
+              "scope": null,
+              "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+              "type": "library",
+              "version": "1.3"
+            }
+          ]
+        }
+      ],
+      "declarations": [],
+      "dependency_coverage": [
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "joda-time:joda-time",
+            "paths": [
+              "gradle.lockfile"
+            ],
+            "purl": "pkg:maven/joda-time/joda-time@2.2",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "2.2"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "junit:junit",
+            "paths": [
+              "gradle.lockfile"
+            ],
+            "purl": "pkg:maven/junit/junit@4.12",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "4.12"
+          }
+        },
+        {
+          "reasons": [
+            "inventory_only"
+          ],
+          "state": "unknown",
+          "subject": {
+            "name": "org.hamcrest:hamcrest-core",
+            "paths": [
+              "gradle.lockfile"
+            ],
+            "purl": "pkg:maven/org.hamcrest/hamcrest-core@1.3",
+            "record_kind": "locked_package",
+            "scope": null,
+            "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+            "type": "library",
+            "version": "1.3"
+          }
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gradle.lockfile"
+        }
+      ],
+      "resolutions": []
+    }
+  },
+  "sbom": {
+    "observations": null,
+    "stable": {
+      "completeness": "recorded_lockfile_inventory",
+      "components": [
+        {
+          "name": "joda-time:joda-time",
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/joda-time/joda-time@2.2",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "2.2"
+        },
+        {
+          "name": "junit:junit",
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/junit/junit@4.12",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "4.12"
+        },
+        {
+          "name": "org.hamcrest:hamcrest-core",
+          "paths": [
+            "gradle.lockfile"
+          ],
+          "purl": "pkg:maven/org.hamcrest/hamcrest-core@1.3",
+          "record_kind": "locked_package",
+          "source_kind": "LOCKED_PACKAGE_SOURCE_KIND_OTHER",
+          "type": "library",
+          "version": "1.3"
+        }
+      ],
+      "lockfiles": [
+        {
+          "association_diagnostics": [],
+          "association_status": "standalone",
+          "completeness": "LOCKFILE_COMPLETENESS_PACKAGE_ENTRIES_ONLY",
+          "format": "LOCKFILE_FORMAT_GRADLE",
+          "manifest_lock_consistency": "not_checked",
+          "manifest_paths": [],
+          "native_format_version": "",
+          "path": "gradle.lockfile"
+        }
+      ],
+      "relationships": [],
+      "resolutions": []
+    }
+  }
+}
