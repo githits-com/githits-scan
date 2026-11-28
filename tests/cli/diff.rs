@@ -617,3 +617,44 @@ fn diff_go_modules_preserve_supplemental_paths_in_each_snapshot() {
         assert!(!body.contains(&format!("filename=\"{path}\"")), "{path}");
     }
 }
+
+#[test]
+fn diff_handles_tracked_manifest_under_replaced_directory() {
+    use super::support::{diff as fixture, jobs::ScriptedServer};
+
+    let (manifest, lock) = fixture::files(false);
+    let repo = super::support::repository(&[
+        ("app/package.json", manifest),
+        ("app/package-lock.json", lock),
+    ]);
+    committed(repo.path());
+
+    fs::remove_dir_all(repo.path().join("app")).expect("remove directory");
+    fs::write(repo.path().join("app"), "replacement").expect("replacement file");
+
+    let before = git(repo.path(), &["status", "--porcelain=v1"]);
+    let bytes = serde_json::to_vec(&fixture::report()).expect("report");
+    let server = ScriptedServer::respond_with(fixture::exchanges(&bytes));
+
+    let output = githits_scan()
+        .arg("diff")
+        .arg(repo.path())
+        .args(["--base", "HEAD", "--format", "json"])
+        .env("GITHITS_API_TOKEN", "test-token")
+        .env("GITHITS_API_URL", server.origin())
+        .output()
+        .expect("diff");
+
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert_eq!(output.stdout, bytes);
+    let requests = server.requests();
+    assert_eq!(requests.len(), 3);
+
+    let body = String::from_utf8_lossy(&requests[0]);
+    assert!(body.contains("\"head\":{\"state\":\"empty\"}"));
+    assert!(body.contains("name=\"base_files[]\""));
+    assert!(!body.contains("name=\"head_files[]\""));
+    assert!(body.contains(manifest));
+    assert!(body.contains(lock));
+    assert_eq!(git(repo.path(), &["status", "--porcelain=v1"]), before);
+}

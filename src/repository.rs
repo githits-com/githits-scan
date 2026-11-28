@@ -239,7 +239,14 @@ fn regular_file(root: &Path, relative: &str) -> Result<Option<u64>, Error> {
         path.push(part);
         let metadata = match std::fs::symlink_metadata(&path) {
             Ok(metadata) => metadata,
-            Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    io::ErrorKind::NotFound | io::ErrorKind::NotADirectory
+                ) =>
+            {
+                return Ok(None);
+            }
             Err(error) => return Err(Error::Io(error)),
         };
         if metadata.is_symlink() {
