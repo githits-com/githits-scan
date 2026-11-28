@@ -207,6 +207,40 @@ fn audit_search_default_keeps_the_generic_metadata_limit_without_a_concrete_decl
 }
 
 #[test]
+fn audit_search_binary_explains_unchecked_new_dependency() {
+    let root = repo();
+    let archive = root.path().join("analysis.json");
+    let mut saved: Value =
+        serde_json::from_slice(include_bytes!("../fixtures/audit/analysis.json")).expect("archive");
+    let record = &mut saved["producer_report"]["remediation"]["recommendations"][0];
+    record["search_detail_status"] = "retained".into();
+    let detail = json!({
+        "kind": "unavailable",
+        "operation": "boundary",
+        "reasons": ["new_dependency_not_checked"],
+        "witness": {}
+    });
+    record["search_details"] = json!([detail]);
+    fs::write(&archive, serde_json::to_vec(&saved).expect("JSON")).expect("archive");
+
+    let summary = "Dependency relationship: a new dependency was not checked.";
+    let output = offline(&archive, &["--explain", "npm:demo@1.0.0", "--no-color"]);
+    assert_eq!(output.status.code(), Some(1), "{}", stderr(&output));
+    let text = stdout(&output);
+    assert!(prose(&text).contains(summary), "{text}");
+    assert!(!text.contains("new_dependency_not_checked"), "{text}");
+
+    let view = json_output(&offline(&archive, &["--presentation-json"]));
+    assert_eq!(
+        view["remediation"]["recommendations"][0]["search_explanations"][0]["summary"],
+        summary
+    );
+    assert_eq!(
+        view["audit"]["remediation"]["recommendations"][0]["search_details"][0],
+        detail
+    );
+}
+#[test]
 fn audit_search_binary_malformed_evidence_preserves_existing_output() {
     let root = repo();
     let path = root.path().join("keep.json");
